@@ -745,9 +745,15 @@ describe("goal check schema", () => {
 			marketing: { devlogs: [], links: [] },
 		});
 
-		expect(user.content).toContain("Lantern Keeper (Puzzle)");
-		expect(user.content).toContain('"Two jam games in Godot"');
-		expect(user.content).toContain('"Ships by night"');
+		expect(user.content).toContain(
+			"<participant_text>Lantern Keeper</participant_text> (<participant_text>Puzzle</participant_text>)",
+		);
+		expect(user.content).toContain(
+			"<participant_text>Two jam games in Godot</participant_text>",
+		);
+		expect(user.content).toContain(
+			"<participant_text>Ships by night</participant_text>",
+		);
 		expect(user.content).toContain("Programmer, Beginner level");
 	});
 });

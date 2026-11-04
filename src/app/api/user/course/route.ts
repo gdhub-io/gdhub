@@ -6,10 +6,12 @@ import { SpaceRole } from "@/config/permissions/roles";
 import {
 	apiError,
 	json,
+	pipe,
 	type SessionUser,
 	withAuth,
 	withValidation,
 } from "@/lib/api-handlers";
+import { withSpaceGuard } from "@/lib/space-guard";
 import { userSpacesCacheKey } from "@/repositories/user/spaces";
 import { deleteSpaceMembership, joinSpace } from "@/services/access/membership";
 import { cacheDelete } from "@/services/cache";
@@ -81,21 +83,18 @@ export const POST = withAuth({ mode: "user" })(
 	}),
 );
 
-export const DELETE = withAuth({ mode: "user" })(
-	withValidation(
-		DeleteCourseQuerySchema,
-		"query",
-	)(async (_req, _ctx, { user, body }) => {
-		const currentUser = user as SessionUser | undefined;
-		if (!currentUser) return apiError.unauthorized();
-		const { id } = body as DeleteCourseQuery;
+export const DELETE = pipe(
+	withAuth({ mode: "user" }),
+	withSpaceGuard({ permission: "course.lifecycle.delete", idFrom: "query.id" }),
+	withValidation(DeleteCourseQuerySchema, "query"),
+)(async (_req, _ctx, { body }) => {
+	const { id } = body as DeleteCourseQuery;
 
-		await prisma.course.delete({
-			where: { id },
-		});
+	await prisma.course.delete({
+		where: { id },
+	});
 
-		await deleteSpaceMembership("course", id);
+	await deleteSpaceMembership("course", id);
 
-		return json({ success: true });
-	}),
-);
+	return json({ success: true });
+});

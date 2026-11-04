@@ -7,6 +7,7 @@ import {
 	withAuth,
 	withValidation,
 } from "@/lib/api-handlers";
+import { limitAiCalls } from "@/lib/rate-limit";
 import {
 	aiValidation,
 	type FieldInput,
@@ -98,6 +99,9 @@ export const POST = withAuth({ mode: "user" })(
 
 		const { data } = body as CreateSpecialityBody;
 
+		const limited = await limitAiCalls("onboarding-validation", currentUser.id);
+		if (limited) return limited;
+
 		const validation = await aiValidation.validate(buildSpecialityFields(data));
 		if (!validation.ok) {
 			return json(
@@ -125,6 +129,9 @@ export const PUT = withAuth({ mode: "user" })(
 
 		const { id, data } = body as UpdateSpecialityBody;
 		const { workDirectionId, tools, ...otherData } = data;
+
+		const limited = await limitAiCalls("onboarding-validation", currentUser.id);
+		if (limited) return limited;
 
 		const validation = await aiValidation.validate(buildSpecialityFields(data));
 		if (!validation.ok) {

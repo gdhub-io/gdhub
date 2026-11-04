@@ -25,14 +25,11 @@ import dayjs from "dayjs";
 import { useEffect, useState } from "react";
 import { DirectionSelect } from "@/components/DirectionSelect";
 import { TeamVacancyStatus } from "@/config/prisma-enums";
-import { LISTING_WINDOW_DAYS } from "@/config/vacancy";
+import { LISTING_FEE_EUR, LISTING_WINDOW_DAYS } from "@/config/vacancy";
 import { gtmEventTrigger } from "@/helpers/gtm";
 import { useWorkDirections } from "@/hooks/library";
 import { payListingFee } from "@/hooks/useListingFee";
 import styles from "./style.module.scss";
-
-// Display-only: the actual charge is the configured Paddle price.
-const PAID_VACANCY_FEE = 9;
 
 interface VacancyModalProps {
 	teamId?: string;
@@ -481,7 +478,7 @@ const VacancyModal = ({
 							>
 								{t(
 									"modal.vacancy.paymentNotice",
-									`Paid positions require a listing fee of €${PAID_VACANCY_FEE} to publish.`,
+									`Paid positions require a listing fee of €${LISTING_FEE_EUR} to publish.`,
 								)}{" "}
 								{t(
 									"modal.vacancy.paymentRefundWindow",

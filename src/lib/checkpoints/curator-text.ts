@@ -10,6 +10,23 @@ export const capped = (text: string, max: number) =>
 export const devlogText = (content: string) =>
 	capped(content, CURATOR_DEVLOG_MAX_CHARS);
 
+const PARTICIPANT_TAG = "participant_text";
+const FENCE = /<\s*\/?\s*participant_text\b[^>]*>?/gi;
+
+/**
+ * Text the participant wrote, fenced for a prompt so the model reads it as data
+ * (prompt injection). A fence inside it is removed until none is left, so the
+ * text can neither close the block early nor rebuild a tag from the pieces.
+ */
+export const fenced = (text: string | null | undefined) => {
+	let inner = text ?? "";
+	for (let before = ""; before !== inner; ) {
+		before = inner;
+		inner = inner.replace(FENCE, "");
+	}
+	return `<${PARTICIPANT_TAG}>${inner}</${PARTICIPANT_TAG}>`;
+};
+
 type ListItem =
 	| string
 	| { content?: string; text?: string; checked?: boolean; items?: ListItem[] };

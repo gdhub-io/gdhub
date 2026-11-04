@@ -29,7 +29,7 @@ import {
  * author pays it in Paddle's overlay: what is sold, and to which `Payment` row it
  * belongs, is decided on the server rather than in the browser.
  */
-const aiPrice = () => env("PADDLE_AI_CHECKPOINT_PRICE_ID");
+export const aiPrice = () => env("PADDLE_AI_CHECKPOINT_PRICE_ID");
 
 /** A paid Paddle transaction, as a settled checkout: Paddle charges at once. */
 export const paidOfTransaction = (transaction: {

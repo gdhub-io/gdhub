@@ -1,5 +1,8 @@
 import { createHmac, timingSafeEqual } from "node:crypto";
-import { CALL_MAX_PARTICIPANTS } from "@/config/checkpoint";
+import {
+	CALL_MAX_PARTICIPANTS,
+	DAILY_WEBHOOK_MAX_AGE_SECONDS,
+} from "@/config/checkpoint";
 import { env } from "@/helpers/env";
 import { dailyEmulated } from "@/lib/stand";
 import { emulatedDaily, emulatedText } from "@/services/daily-emulated";
@@ -166,8 +169,18 @@ export const isDailyWebhook = (
 	body: string,
 	timestamp: string | null,
 	signature: string | null,
+	now = Date.now(),
 ) => {
 	if (!timestamp || !signature) return false;
+	// Daily sends seconds; milliseconds are read as such rather than refused.
+	const sent = Number(timestamp);
+	const sentMs = sent > 1e12 ? sent : sent * 1000;
+	if (
+		!Number.isFinite(sent) ||
+		Math.abs(now - sentMs) > DAILY_WEBHOOK_MAX_AGE_SECONDS * 1000
+	) {
+		return false;
+	}
 	const expected = createHmac(
 		"sha256",
 		Buffer.from(env<string>("DAILY_WEBHOOK_SECRET"), "base64"),

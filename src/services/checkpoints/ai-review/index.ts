@@ -3,7 +3,7 @@ import { stripIndents } from "common-tags";
 import { z } from "zod";
 import { AI_MODELS } from "@/config/ai-models";
 import { CHECKPOINT_DAYS, DIRECTIONS } from "@/config/checkpoint";
-import { devlogText } from "@/lib/checkpoints/curator-text";
+import { devlogText, fenced } from "@/lib/checkpoints/curator-text";
 import { settleDirection } from "@/lib/checkpoints/picture";
 import { aiModel } from "@/services/ai/model";
 import { traceGenerated } from "@/services/ai-trace";
@@ -16,6 +16,7 @@ import {
 	LENSES,
 	legOfSprint,
 	localeLine,
+	PARTICIPANT_DATA,
 	type RoadLeg,
 	renderCharacter,
 	renderDirection,
@@ -110,6 +111,7 @@ const voice = (
 	praise without a reason.
 	Use only task ids given to you, and only in the id fields: in text the
 	author reads, name a task by its own words, never by its id.
+	${PARTICIPANT_DATA}
 
 	${AUTHOR_VOICE}
 `;
@@ -229,7 +231,7 @@ export const writePlanAdvice = async (
 			${renderWorkflow(input.workflow)}
 
 			${renderTeam(input.team, input.moment === "start" ? 0 : 2)}
-			Goal: ${input.goal}
+			Goal: ${fenced(input.goal)}
 
 			Tasks:
 			${input.tasks.length ? input.tasks.map(taskLine).join("\n") : "(none yet)"}
@@ -336,6 +338,7 @@ export const writeSprintReview = async (
 			${HIRING}
 			${TIME_LEFT}
 			${LENSES}
+			${PARTICIPANT_DATA}
 			${final ? `This is the final review: the ${CHECKPOINT_DAYS} days are over. The verdict comes after it and reads it; do not judge here whether the goal was reached.` : ""}
 
 			${AUTHOR_VOICE}
@@ -343,7 +346,7 @@ export const writeSprintReview = async (
 		`,
 		prompt: stripIndents`
 			${renderWorkflow(input.workflow)}
-			Goal: ${input.goal}
+			Goal: ${fenced(input.goal)}
 
 			Tasks:
 			${input.tasks.map(taskLine).join("\n")}
@@ -352,15 +355,15 @@ export const writeSprintReview = async (
 
 			${
 				input.devlogs.length
-					? `The sprint's devlogs (${input.devlogs.length}):\n${input.devlogs.map((post, index) => `--- devlog ${index + 1}\n${devlogText(post)}`).join("\n")}`
+					? `The sprint's devlogs (${input.devlogs.length}):\n${input.devlogs.map((post, index) => `--- devlog ${index + 1}\n${fenced(devlogText(post))}`).join("\n")}`
 					: "No devlog for the sprint."
 			}
 
-			${input.devlogMedia.length ? `What the devlogs' images and videos show:\n${input.devlogMedia.join("\n")}` : ""}
+			${input.devlogMedia.length ? `What the devlogs' images and videos show:\n${input.devlogMedia.map(fenced).join("\n")}` : ""}
 
 			${artifactLines(input.artifacts) || "No artifacts added in the sprint."}
 
-			${input.artifactsSeen?.length ? `What the sprint's artifacts beside its tasks show — its build video among them:\n${input.artifactsSeen.join("\n")}` : ""}
+			${input.artifactsSeen?.length ? `What the sprint's artifacts beside its tasks show — its build video among them:\n${input.artifactsSeen.map(fenced).join("\n")}` : ""}
 
 			${renderTeam(input.team, input.sprint)}
 			${renderPulse(input.team, input.sprint)}
@@ -414,16 +417,16 @@ const shown = (input: SprintReviewInput) =>
 	[
 		...input.devlogs.map(
 			(post) =>
-				`- Devlog: ${
+				`- Devlog: ${fenced(
 					post
 						.split("\n")
 						.find((line) => line.trim())
-						?.slice(0, 160) ?? ""
-				}`,
+						?.slice(0, 160),
+				)}`,
 		),
 		...input.artifacts.map(
 			(artifact) =>
-				`- Artifact: ${artifact.type}${artifact.name ? ` "${artifact.name}"` : ""}`,
+				`- Artifact: ${artifact.type}${artifact.name ? ` ${fenced(artifact.name)}` : ""}`,
 		),
 	].join("\n") || "Nothing: no devlog and no artifact.";
 
@@ -504,10 +507,10 @@ const writeReviewLetter = async (
 		prompt: stripIndents`
 			${renderJournal(input.journal)}
 
-			Goal: ${input.goal}
+			Goal: ${fenced(input.goal)}
 
 			Tasks, by id for the focus:
-			${input.tasks.map((task) => `- [${task.id}] ${task.text}`).join("\n")}
+			${input.tasks.map((task) => `- [${task.id}] ${fenced(task.text)}`).join("\n")}
 
 			What the team showed in the sprint:
 			${shown(input)}

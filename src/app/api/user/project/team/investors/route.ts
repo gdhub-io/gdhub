@@ -1,5 +1,14 @@
 import { z } from "zod";
-import { json, withAuth, withValidation } from "@/lib/api-handlers";
+import {
+	json,
+	pipe,
+	type SessionUser,
+	withAuth,
+	withValidation,
+} from "@/lib/api-handlers";
+import { withSpaceGuard } from "@/lib/space-guard";
+import { projectOfTeam } from "@/lib/space-ids";
+import { scopeOf } from "@/services/access";
 import { prisma } from "@/services/prisma";
 
 const InvestorsQuerySchema = z.object({
@@ -8,35 +17,21 @@ const InvestorsQuerySchema = z.object({
 
 type InvestorsQuery = z.infer<typeof InvestorsQuerySchema>;
 
-export const GET = withAuth({ mode: "user" })(
-	withValidation(
-		InvestorsQuerySchema,
-		"query",
-	)(async (_req, _ctx, { body }) => {
-		const { teamId } = body as InvestorsQuery;
+export const GET = pipe(
+	withAuth({ mode: "user" }),
+	withSpaceGuard({ permission: "project.equity.view", idFrom: projectOfTeam }),
+	withValidation(InvestorsQuerySchema, "query"),
+)(async (_req, _ctx, { user, access, body }) => {
+	const { teamId } = body as InvestorsQuery;
+	const ownOnly = !!access && scopeOf(access, "project.equity.view") === "own";
 
-		const teamInvestors = await prisma.teamInvestor.findMany({
-			where: { teamId },
-			include: {
-				user: {
-					select: {
-						id: true,
-						name: true,
-						email: true,
-						image: true,
-						profile: {
-							include: {
-								preferredGenres: true,
-								preferredLevels: true,
-								preferredSettings: true,
-							},
-						},
-					},
-				},
-			},
-			orderBy: { purchasedAt: "desc" },
-		});
+	const teamInvestors = await prisma.teamInvestor.findMany({
+		where: { teamId, ...(ownOnly ? { userId: (user as SessionUser).id } : {}) },
+		include: {
+			user: { select: { id: true, name: true, image: true } },
+		},
+		orderBy: { purchasedAt: "desc" },
+	});
 
-		return json(teamInvestors);
-	}),
-);
+	return json(teamInvestors);
+});

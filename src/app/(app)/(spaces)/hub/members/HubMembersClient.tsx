@@ -29,7 +29,6 @@ import {
 	useSearchBox,
 	useStats,
 } from "react-instantsearch";
-import { useAccess } from "@/components/access/AccessProvider";
 import { getWorkDirection } from "@/components/DirectionBadge";
 import { ProtectedPageHeader } from "@/components/layouts/ProtectedPageHeader";
 import {
@@ -57,15 +56,15 @@ const levelRank = (label: string) =>
 export function HubMembersClient({
 	usersCount,
 	specialitiesCount,
-	hasApprovedProjects = false,
+	searchKey,
 }: {
 	usersCount: number;
 	specialitiesCount: number;
-	hasApprovedProjects?: boolean;
+	/** Scoped Typesense key, issued by the page only to those past the gate. */
+	searchKey: string | null;
 }) {
 	const session = useSession();
 	const { t } = useTranslate();
-	const { can } = useAccess();
 	const [selectedSpecialistId, setSelectedSpecialistId] = useState<
 		string | undefined
 	>();
@@ -79,7 +78,7 @@ export function HubMembersClient({
 					10,
 				),
 				protocol: process.env.NEXT_PUBLIC_TYPESENSE_PROTOCOL as string,
-				apiKey: process.env.NEXT_PUBLIC_TYPESENSE_API_KEY as string,
+				apiKey: searchKey ?? "",
 				additionalSearchParameters: {
 					query_by:
 						"name,city,country,schools,jobs,tools,skills,direction,specialization",
@@ -87,13 +86,10 @@ export function HubMembersClient({
 					sort_by: "_text_match:desc,createdAt:desc",
 				},
 			}),
-		[],
+		[searchKey],
 	);
 
-	// `hasApprovedProjects` is the product rule and stays: the talent pool opens
-	// to people who actually run a project. The legacy `Author` role said the
-	// same thing less reliably.
-	if (!can("hub.talent_pool.view") || !hasApprovedProjects) {
+	if (!searchKey) {
 		return (
 			<div className="layout-background">
 				<ProtectedPageHeader title={t("Community Members")} />

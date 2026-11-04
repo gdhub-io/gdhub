@@ -1,9 +1,10 @@
 import { stripIndents } from "common-tags";
 import { z } from "zod";
 import type { CheckpointVerdict } from "@/config/prisma-enums";
+import { fenced } from "@/lib/checkpoints/curator-text";
 import type { AiMeter } from "@/services/ai-usage";
 import { runStructured } from "@/services/checkpoints/ai-review";
-import { renderCharacter } from "./prompts/card";
+import { PARTICIPANT_DATA, renderCharacter } from "./prompts/card";
 
 type ShareLineInput = {
 	character?: string | null;
@@ -60,15 +61,17 @@ export const writeShareLine = async (
 					- No stage names, no "goal", "tasks", "checkpoint" or "verdict", no
 					  hashtags, no emoji, no quotes around it.
 					Write in the language of the goal.
+
+					${PARTICIPANT_DATA}
 				`,
 				prompt: stripIndents`
-					Game: ${input.project.name}${input.project.pitch ? ` — ${input.project.pitch}` : ""}
-					Checkpoint ${input.number}, stage ${input.stage}. Its goal: ${input.goal}
+					Game: ${fenced(input.project.name)}${input.project.pitch ? ` — ${fenced(input.project.pitch)}` : ""}
+					Checkpoint ${input.number}, stage ${input.stage}. Its goal: ${fenced(input.goal)}
 					Verdict: ${input.verdict}. The verdict note you wrote for the team:
 					${input.verdictNote ?? "(none)"}
 
 					What the team wrote in its devlogs:
-					${input.devlogs.length ? input.devlogs.map((post) => `- ${post}`).join("\n") : "(nothing)"}
+					${input.devlogs.length ? input.devlogs.map((post) => `- ${fenced(post)}`).join("\n") : "(nothing)"}
 				`,
 			},
 			meter,

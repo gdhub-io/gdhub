@@ -1,12 +1,8 @@
 import { Currency } from "@gdhub-io/gdhub-prisma";
 import { z } from "zod";
-import {
-	apiError,
-	json,
-	type SessionUser,
-	withAuth,
-	withValidation,
-} from "@/lib/api-handlers";
+import { json, pipe, withAuth, withValidation } from "@/lib/api-handlers";
+import { withSpaceGuard } from "@/lib/space-guard";
+import { projectOfTeam } from "@/lib/space-ids";
 import { prisma } from "@/services/prisma";
 
 const TeamInvestorCreateSchema = z.object({
@@ -15,31 +11,30 @@ const TeamInvestorCreateSchema = z.object({
 	userId: z.string().optional(),
 	teamId: z.string(),
 	share: z.number(),
-	currency: z.enum(Object.values(Currency) as [string, ...string[]]).optional(),
+	currency: z.nativeEnum(Currency).optional(),
 	value: z.number(),
 	purchasedAt: z.string().optional(),
 });
 
 type TeamInvestorCreateBody = z.infer<typeof TeamInvestorCreateSchema>;
 
-export const POST = withAuth({ mode: "user" })(
-	withValidation(TeamInvestorCreateSchema)(
-		async (_req, _ctx, { user, body }) => {
-			const currentUser = user as SessionUser | undefined;
-			if (!currentUser) return apiError.unauthorized();
-			const data = body as TeamInvestorCreateBody;
+export const POST = pipe(
+	withAuth({ mode: "user" }),
+	withSpaceGuard({
+		permission: "project.equity.manage",
+		idFrom: projectOfTeam,
+	}),
+	withValidation(TeamInvestorCreateSchema),
+)(async (_req, _ctx, { body }) => {
+	const data = body as TeamInvestorCreateBody;
 
-			const result = await prisma.teamInvestor.create({
-				data: {
-					...data,
-					currency: (data.currency as Currency) || Currency.USD,
-					purchasedAt: data.purchasedAt
-						? new Date(data.purchasedAt)
-						: undefined,
-				},
-			});
-
-			return json(result);
+	const result = await prisma.teamInvestor.create({
+		data: {
+			...data,
+			currency: data.currency ?? Currency.USD,
+			purchasedAt: data.purchasedAt ? new Date(data.purchasedAt) : undefined,
 		},
-	),
-);
+	});
+
+	return json(result);
+});

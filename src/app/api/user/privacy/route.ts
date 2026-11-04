@@ -1,11 +1,14 @@
+import { sessionUserCacheKey } from "@/auth";
 import { apiError, json, type SessionUser, withAuth } from "@/lib/api-handlers";
 import { deleteBrevoContact } from "@/services/brevo/sync";
+import { cacheDelete } from "@/services/cache";
 import {
 	collectUserChatRooms,
 	deleteUserChats,
 } from "@/services/chat/delete-user-chats";
 import { deactivateMatrixUser } from "@/services/matrix/admin";
 import { prisma } from "@/services/prisma";
+import { eraseFromProviders } from "@/services/privacy/erase-external";
 
 export const GET = withAuth({ mode: "user" })(async (req, _ctx, { user }) => {
 	const currentUser = user as SessionUser | undefined;
@@ -31,9 +34,7 @@ export const GET = withAuth({ mode: "user" })(async (req, _ctx, { user }) => {
 		return apiError.badRequest("Unsupported user privacy action");
 	} catch (error) {
 		console.error("[user/privacy] error", error);
-		return apiError.internal(
-			error instanceof Error ? error.message : "Unknown error",
-		);
+		return apiError.internal();
 	}
 });
 
@@ -60,13 +61,17 @@ export const POST = withAuth({ mode: "user" })(async (req, _ctx, { user }) => {
 				console.error("[user/privacy] chat collection failed", error);
 			}
 
-			// Read the address before it is wiped: Brevo keys contacts by email, so
-			// afterwards there is no way left to find what to remove.
-			const { email } =
-				(await prisma.user.findUnique({
-					where: { id: userId },
-					select: { email: true },
-				})) ?? {};
+			// Read before it is wiped: the providers key the person by email, avatar
+			// URL and speciality ids, and afterwards there is no way left to find them.
+			const subject = await prisma.user.findUnique({
+				where: { id: userId },
+				select: {
+					email: true,
+					image: true,
+					specialities: { select: { id: true } },
+				},
+			});
+			const email = subject?.email;
 
 			const result = await prisma.user.deletePersonalData({
 				userId,
@@ -87,7 +92,17 @@ export const POST = withAuth({ mode: "user" })(async (req, _ctx, { user }) => {
 			} catch (error) {
 				console.error("[user/privacy] matrix deactivation failed", error);
 			}
-			if (email) await deleteBrevoContact(email);
+			await Promise.all([
+				email ? deleteBrevoContact(email) : null,
+				eraseFromProviders({
+					userId,
+					email: email ?? null,
+					image: subject?.image ?? null,
+					specialityIds: subject?.specialities.map(({ id }) => id) ?? [],
+				}),
+				// The session snapshot is cached by email; dropping it makes the next sync see the erasure.
+				email ? cacheDelete(sessionUserCacheKey(email)) : null,
+			]);
 
 			return json(result);
 		}
@@ -95,8 +110,6 @@ export const POST = withAuth({ mode: "user" })(async (req, _ctx, { user }) => {
 		return apiError.badRequest("Unsupported user privacy action");
 	} catch (error) {
 		console.error("[user/privacy] error", error);
-		return apiError.internal(
-			error instanceof Error ? error.message : "Unknown error",
-		);
+		return apiError.internal();
 	}
 });

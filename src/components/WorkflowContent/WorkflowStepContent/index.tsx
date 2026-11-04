@@ -1,6 +1,5 @@
-import Blocks from "editorjs-blocks-react-renderer";
+import { SafeBlocks } from "@/components/ui/SafeBlocks";
 import { hasBlocks } from "@/helpers/editorjs";
-import { editorjsRenderers } from "@/helpers/editorjs-renderers";
 import styles from "./style.module.scss";
 
 /**
@@ -14,10 +13,7 @@ const WorkflowStepContent = ({
 }) =>
 	hasBlocks(content) ? (
 		<div className={styles.container}>
-			<Blocks
-				data={{ time: 0, version: "", ...content }}
-				renderers={editorjsRenderers}
-			/>
+			<SafeBlocks data={content} />
 		</div>
 	) : null;
 

@@ -40,6 +40,16 @@ export class NovuService {
 		);
 	}
 
+	/** Removes the subscriber with its messages and preferences; an unknown id is not an error. */
+	static async deleteSubscriber(subscriberId: string) {
+		try {
+			await novuClient.subscribers.delete(subscriberId);
+		} catch (error) {
+			if ((error as { statusCode?: number })?.statusCode === 404) return;
+			throw error;
+		}
+	}
+
 	static async send({ to, payload, template, transactionId }: NovuSendArgs) {
 		// Before the E2E guard: dev-signin needs that flag, and the point is to
 		// see in dev what would have gone out.

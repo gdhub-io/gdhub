@@ -30,7 +30,7 @@ vi.mock("@/services/prisma", () => ({
 		$transaction: vi.fn(),
 		checkpointSession: { deleteMany: vi.fn(), createMany: vi.fn() },
 		payment: { findUnique: vi.fn(), update: vi.fn(), updateMany: vi.fn() },
-		paymentEvent: { create: vi.fn() },
+		paymentEvent: { create: vi.fn(), deleteMany: vi.fn() },
 		projectCheckpoint: {
 			findUnique: vi.fn(),
 			findUniqueOrThrow: vi.fn(async () => ({ startedAt: null })),

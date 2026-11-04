@@ -26,6 +26,9 @@ import type {
 //     (built with NEXT_PUBLIC_E2E_STAND=1, and not on Vercel)
 //   - E2E_TEST_AUTH must be exactly "1"
 // Lets Playwright sign in as an existing user by email, no SMTP/Google needed.
+/** The Redis key the session sync caches a user under; erasure clears it. */
+export const sessionUserCacheKey = (email: string) => `session-user:${email}`;
+
 export const isE2EAuth = onTheStand();
 
 const e2eCredentialsProvider = CredentialsProvider({
@@ -225,7 +228,7 @@ export const authConfig: NextAuthConfig = {
 
 			// Bare `auth()` drops the refreshed cookie, so a stale token lands here
 			// on every call; Redis keeps that to one database read per interval.
-			const key = `session-user:${token.email}`;
+			const key = sessionUserCacheKey(token.email as string);
 			const ttl = USER_SYNC_INTERVAL_MS / 1000;
 			const synced = trigger
 				? await readSessionUser(token).then(async (fresh) => {
@@ -234,7 +237,8 @@ export const authConfig: NextAuthConfig = {
 					})
 				: await cached(key, ttl, () => readSessionUser(token));
 
-			if (!synced) return token;
+			// The account is gone or erased: null makes Auth.js drop the cookie.
+			if (!synced || synced.personalDataDeletedAt) return null;
 
 			return { ...token, ...synced } as any;
 		},

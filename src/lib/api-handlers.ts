@@ -82,13 +82,7 @@ export const apiError = {
 		NextResponse.json({ error: msg, statusCode: 503 }, { status: 503 }),
 };
 
-export type AuthMode =
-	| "user"
-	| "any"
-	| "api"
-	| "public_api"
-	| "vercel_cron"
-	| "gumroad";
+export type AuthMode = "user" | "any" | "api" | "public_api" | "vercel_cron";
 
 export interface AuthOptions {
 	mode?: AuthMode;
@@ -105,6 +99,10 @@ function bearerMatches(req: NextRequest, expected: string) {
 	return header === `Bearer ${expected}`;
 }
 
+/** A server-to-server call carrying `Bearer base64(BACKEND_KEY)`. */
+export const isBackendCall = (req: NextRequest) =>
+	bearerMatches(req, Buffer.from(env("BACKEND_KEY", "")).toString("base64"));
+
 /**
  * What `AuditLog.source` says about a write. The auth mode is how the caller
  * proved itself, which is not the same thing — a signed-in web request and an
@@ -116,7 +114,6 @@ const AUDIT_SOURCE: Record<AuthMode, string> = {
 	api: "backend",
 	public_api: "public_api",
 	vercel_cron: "cron",
-	gumroad: "webhook",
 };
 
 /**
@@ -171,8 +168,7 @@ export function withAuth(opts: AuthOptions = {}) {
 			}
 
 			if (mode === "api") {
-				const token = Buffer.from(env("BACKEND_KEY")).toString("base64");
-				if (bearerMatches(req, token)) {
+				if (isBackendCall(req)) {
 					return audited(req, mode, null, () =>
 						handler(req, ctx, locals as L & { user: SessionUser }),
 					);
@@ -191,23 +187,8 @@ export function withAuth(opts: AuthOptions = {}) {
 			}
 
 			if (mode === "vercel_cron") {
-				const cronSecret = process.env.CRON_SECRET ?? "";
-				const publicToken = Buffer.from(env("NEXT_PUBLIC_API_KEY")).toString(
-					"base64",
-				);
-				if (bearerMatches(req, cronSecret) || bearerMatches(req, publicToken)) {
-					return audited(req, mode, null, () =>
-						handler(req, ctx, locals as L & { user: SessionUser }),
-					);
-				}
-			}
-
-			if (mode === "gumroad") {
-				const body = (await req
-					.clone()
-					.json()
-					.catch(() => ({}))) as { access_token?: string };
-				if (body?.access_token === env("GUMROAD_ACCESS_TOKEN")) {
+				// Only the Vercel secret: the public key ships in the client bundle.
+				if (bearerMatches(req, process.env.CRON_SECRET ?? "")) {
 					return audited(req, mode, null, () =>
 						handler(req, ctx, locals as L & { user: SessionUser }),
 					);

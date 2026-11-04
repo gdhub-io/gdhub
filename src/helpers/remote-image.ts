@@ -45,3 +45,7 @@ export function isAllowedRemoteImage(url: string): boolean {
 		ALLOWED_IMAGE_HOSTS.has(parsed.hostname) || parsed.hostname === appHost()
 	);
 }
+
+/** The URL itself when it may be fetched, otherwise null. */
+export const allowedImage = (url: string | null | undefined): string | null =>
+	url && isAllowedRemoteImage(url) ? url : null;

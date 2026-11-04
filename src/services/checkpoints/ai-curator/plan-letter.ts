@@ -2,11 +2,17 @@ import { generateText, Output } from "ai";
 import { stripIndents } from "common-tags";
 import { z } from "zod";
 import { AI_MODELS } from "@/config/ai-models";
+import { fenced } from "@/lib/checkpoints/curator-text";
 import { aiModel } from "@/services/ai/model";
 import { traceGenerated } from "@/services/ai-trace";
 import { type AiMeter, recordAiUsage } from "@/services/ai-usage";
 import type { JournalEntry } from "@/types/checkpoint-curator";
-import { AUTHOR_VOICE, renderCharacter, renderJournal } from "./prompts/card";
+import {
+	AUTHOR_VOICE,
+	PARTICIPANT_DATA,
+	renderCharacter,
+	renderJournal,
+} from "./prompts/card";
 
 export type PlanLetterInput = {
 	character?: string | null;
@@ -40,6 +46,8 @@ export const composePlanLetter = async (
 
 			${AUTHOR_VOICE}
 
+			${PARTICIPANT_DATA}
+
 			The plan is approved: the route is laid and the team sets out. Write
 			the short entry they will read for the whole first sprint. Say the
 			plan is ready, so they start on it; ask them to tell you how it goes
@@ -51,8 +59,8 @@ export const composePlanLetter = async (
 		prompt: stripIndents`
 			${renderJournal(input.journal)}
 
-			The goal: ${input.goal}
-			The tasks: ${input.tasks.map((task) => `"${task}"`).join("; ")}
+			The goal: ${fenced(input.goal)}
+			The tasks: ${input.tasks.map(fenced).join("; ")}
 			You look at what is new on: ${input.reviewOn}
 		`,
 	};

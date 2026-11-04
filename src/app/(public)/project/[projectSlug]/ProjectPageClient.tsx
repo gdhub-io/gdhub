@@ -22,9 +22,6 @@ import {
 import axios from "axios";
 import { usePathname } from "next/navigation";
 import { useRef, useState } from "react";
-import ReactMarkdown from "react-markdown";
-import rehypeRaw from "rehype-raw";
-import type { Pluggable } from "unified";
 import GDHubLogoImg from "@/assets/images/gdhub-short-logo.png";
 import { ApplauseButton } from "@/components/ApplauseButton";
 import DevlogPosts from "@/components/DevlogPosts";
@@ -35,6 +32,7 @@ import { ProjectPositions } from "@/components/project/ProjectPositions";
 import { ProjectVideoCover } from "@/components/project/ProjectVideoCover";
 import TeamMembers from "@/components/TeamMembers";
 import { DisclosureSection } from "@/components/ui";
+import { SafeMarkdown } from "@/components/ui/SafeMarkdown";
 import { platformOptions } from "@/helpers/react-content";
 import { useContentPageView } from "@/hooks/useContentViews";
 import { useScrollAwareSticky } from "@/hooks/useScrollAwareSticky";
@@ -135,8 +133,6 @@ export function ProjectPageClient({
 		const option = platformOptions.find((opt) => opt.value === type);
 		return option?.label;
 	};
-
-	const markdownRehypePlugins = [rehypeRaw] as Pluggable[];
 
 	const renderProjectLinks = (links: ProjectLink[]) => {
 		const linkElements = links
@@ -264,9 +260,7 @@ export function ProjectPageClient({
 										title={t("page.project.aboutTitle", "About Game")}
 									>
 										<div className={styles.descriptionBody}>
-											<ReactMarkdown rehypePlugins={markdownRehypePlugins}>
-												{project.description}
-											</ReactMarkdown>
+											<SafeMarkdown>{project.description}</SafeMarkdown>
 										</div>
 									</DisclosureSection>
 								</div>

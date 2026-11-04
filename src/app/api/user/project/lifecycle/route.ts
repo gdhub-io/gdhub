@@ -43,9 +43,7 @@ export const GET = withAuth({ mode: "user" })(
 			return json(preview);
 		} catch (error) {
 			console.error("[user/project/lifecycle] error", error);
-			return apiError.internal(
-				error instanceof Error ? error.message : "Unknown error",
-			);
+			return apiError.internal();
 		}
 	}),
 );
@@ -116,9 +114,7 @@ export const POST = withAuth({ mode: "user" })(
 			return apiError.badRequest("Unsupported project lifecycle action");
 		} catch (error) {
 			console.error("[user/project/lifecycle] error", error);
-			return apiError.internal(
-				error instanceof Error ? error.message : "Unknown error",
-			);
+			return apiError.internal();
 		}
 	}),
 );

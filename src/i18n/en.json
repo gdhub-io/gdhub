@@ -1463,7 +1463,7 @@
 				"q": "How accurate is the AI curator?"
 			},
 			"missed": {
-				"a": "Two missed sessions in a row and the platform replaces the curator inside the same Checkpoint and returns the money for the sessions that did not happen. If no verdict is published by day 30, an administrator closes the Checkpoint and that money goes back as well.",
+				"a": "Two missed sessions in a row and the platform replaces the curator inside the same Checkpoint and returns the money for the sessions that did not happen. If no verdict is published by day {verdictDay}, an administrator closes the Checkpoint and that money goes back as well.",
 				"q": "What if my curator misses sessions?"
 			}
 		},

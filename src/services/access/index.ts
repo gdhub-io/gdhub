@@ -46,7 +46,11 @@ const noAccess = (type: SpaceType, id: string): SpaceAccess => ({
  *
  * Enforcing is the default: forgetting to flip a flag must fail closed.
  */
-export const isEnforcing = (): boolean => process.env.RBAC_ENFORCE !== "false";
+// A production build ignores the flag: one stray env var must not open every gate.
+export const isEnforcing = (): boolean =>
+	process.env.NODE_ENV === "production" ||
+	process.env.VERCEL_ENV === "production" ||
+	process.env.RBAC_ENFORCE !== "false";
 
 /**
  * Where a membership's permissions come from.

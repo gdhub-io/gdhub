@@ -1,7 +1,7 @@
 import { stripIndents } from "common-tags";
 import { CHECKPOINT_DAYS } from "@/config/checkpoint";
 import { CheckpointVerdict } from "@/config/prisma-enums";
-import { devlogText } from "@/lib/checkpoints/curator-text";
+import { devlogText, fenced } from "@/lib/checkpoints/curator-text";
 import type { TrustReason, UnprovenReason } from "@/lib/checkpoints/verdict";
 import type { ReportInput } from "@/types/checkpoint-curator";
 import {
@@ -155,7 +155,7 @@ export const reportMessages = (input: ReportInput, locale = "en") => [
 
 			${
 				input.revision
-					? `Day-15 scope change on ${input.revision.revisedAt}: ${input.revision.note ?? "(no reason given)"}`
+					? `Day-15 scope change on ${input.revision.revisedAt}: ${input.revision.note ? fenced(input.revision.note) : "(no reason given)"}`
 					: "No day-15 scope change."
 			}
 
@@ -164,7 +164,7 @@ export const reportMessages = (input: ReportInput, locale = "en") => [
 				input.artifacts
 					.map(
 						(artifact) =>
-							`- [${artifact.itemId}] ${artifact.type}: ${artifact.name ?? artifact.link}${artifact.readable ? "" : " — the platform could not open this"}${artifact.description ? `\n  author's description: ${artifact.description}` : ""}${artifact.seen ? `\n  looked at: ${artifact.seen.match}${artifact.seen.note ? `, ${artifact.seen.note}` : ""}` : ""}`,
+							`- [${artifact.itemId}] ${artifact.type}: ${fenced(artifact.name ?? artifact.link)}${artifact.readable ? "" : " — the platform could not open this"}${artifact.description ? `\n  author's description: ${fenced(artifact.description)}` : ""}${artifact.seen ? `\n  looked at: ${artifact.seen.match}${artifact.seen.note ? `, ${fenced(artifact.seen.note)}` : ""}` : ""}`,
 					)
 					.join("\n") || "- (nothing attached)"
 			}
@@ -172,24 +172,27 @@ export const reportMessages = (input: ReportInput, locale = "en") => [
 			Not delivered (final, decided by the platform):
 			${
 				input.unproven
-					.map((item) => `- ${item.text} (${UNPROVEN[item.reason]})`)
+					.map((item) => `- ${fenced(item.text)} (${UNPROVEN[item.reason]})`)
 					.join("\n") || "- (none)"
 			}
 
 			Taken on trust (final — say so in the verdict note):
 			${
 				input.trusted
-					.map((item) => `- ${item.text} (${TRUSTED[item.reason]})`)
+					.map((item) => `- ${fenced(item.text)} (${TRUSTED[item.reason]})`)
 					.join("\n") || "- (none)"
 			}
 
 			Shown in part (final — name what was missing; what was seen is above):
-			${input.partly.map((item) => `- ${item.text}`).join("\n") || "- (none)"}
+			${input.partly.map((item) => `- ${fenced(item.text)}`).join("\n") || "- (none)"}
 
 			Devlogs:
 			${
 				input.devlogs
-					.map((post) => `- ${post.publishedAt}: ${devlogText(post.content)}`)
+					.map(
+						(post) =>
+							`- ${post.publishedAt}: ${fenced(devlogText(post.content))}`,
+					)
 					.join("\n") || "- (none)"
 			}
 

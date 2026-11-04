@@ -9,6 +9,7 @@ import {
 } from "@/lib/api-handlers";
 import { withSpaceGuard } from "@/lib/space-guard";
 import { projectOfEquity } from "@/lib/space-ids";
+import { scopeOf } from "@/services/access";
 import { prisma } from "@/services/prisma";
 
 const EquityQuerySchema = z.object({
@@ -24,35 +25,39 @@ const EquityUpdateSchema = z.object({
 type EquityQuery = z.infer<typeof EquityQuerySchema>;
 type EquityUpdateBody = z.infer<typeof EquityUpdateSchema>;
 
-export const GET = withAuth({ mode: "user" })(
-	withValidation(
-		EquityQuerySchema,
-		"query",
-	)(async (_req, _ctx, { body }) => {
-		const { projectId } = body as EquityQuery;
+export const GET = pipe(
+	withAuth({ mode: "user" }),
+	withSpaceGuard({
+		permission: "project.equity.view",
+		idFrom: "query.projectId",
+	}),
+	withValidation(EquityQuerySchema, "query"),
+)(async (_req, _ctx, { user, access, body }) => {
+	const { projectId } = body as EquityQuery;
+	const ownOnly = !!access && scopeOf(access, "project.equity.view") === "own";
 
-		const projectEquity = await prisma.projectEquity.findUnique({
-			where: { projectId },
-			include: {
-				equityAllocations: {
-					include: {
-						promises: {
-							where: { isExecuted: false },
-							take: 1,
-							orderBy: { createdAt: "desc" },
-						},
+	const projectEquity = await prisma.projectEquity.findUnique({
+		where: { projectId },
+		include: {
+			equityAllocations: {
+				...(ownOnly ? { where: { ownerId: (user as SessionUser).id } } : {}),
+				include: {
+					promises: {
+						where: { isExecuted: false },
+						take: 1,
+						orderBy: { createdAt: "desc" },
 					},
 				},
 			},
-		});
+		},
+	});
 
-		if (!projectEquity) {
-			return apiError.notFound("Project not found");
-		}
+	if (!projectEquity) {
+		return apiError.notFound("Project not found");
+	}
 
-		return json(projectEquity);
-	}),
-);
+	return json(projectEquity);
+});
 
 export const PUT = pipe(
 	withAuth({ mode: "user" }),

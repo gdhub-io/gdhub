@@ -29,7 +29,6 @@ export const POST = withAuth({ mode: "user" })(async (req, _ctx, { user }) => {
 	}
 
 	const filename = formData.get("filename");
-	const tag = formData.get("tag");
 
 	const maxSizeMb = env("NEXT_PUBLIC_UPLOAD_FILE_FOR_REPORT_MAX_SIZE", 5);
 	if (file.size > 1024 * 1024 * maxSizeMb) {
@@ -44,14 +43,14 @@ export const POST = withAuth({ mode: "user" })(async (req, _ctx, { user }) => {
 	const response = await SanityService.uploadImage(
 		(typeof filename === "string" && filename) || file.name,
 		data,
-		typeof tag === "string" ? tag : undefined,
+		currentUser.id,
 	);
 
 	return json(response);
 });
 
 const DeleteFileQuerySchema = z.object({
-	fileUrl: z.string(),
+	fileUrl: z.string().url(),
 });
 
 type DeleteFileQuery = z.infer<typeof DeleteFileQuerySchema>;
@@ -65,7 +64,7 @@ export const DELETE = withAuth({ mode: "user" })(
 		if (!currentUser) return apiError.unauthorized();
 
 		const { fileUrl } = body as DeleteFileQuery;
-		await SanityService.removeFile(fileUrl);
+		await SanityService.removeFile(fileUrl, currentUser.id);
 
 		return json(null);
 	}),

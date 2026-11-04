@@ -1,4 +1,7 @@
-import { VacancyApplicationStatus } from "@gdhub-io/gdhub-prisma";
+import {
+	TeamVacancyStatus,
+	VacancyApplicationStatus,
+} from "@gdhub-io/gdhub-prisma";
 import { z } from "zod";
 import {
 	apiError,
@@ -65,6 +68,14 @@ export const POST = withAuth({ mode: "user" })(
 		});
 
 		if (!vacancy || !currentUser.id) return json({ success: false });
+		if (vacancy.status !== TeamVacancyStatus.Published) {
+			return apiError.badRequest("This position is not open for applications");
+		}
+
+		const ownSpeciality = await prisma.speciality.count({
+			where: { id: specialityId, userId: currentUser.id },
+		});
+		if (!ownSpeciality) return apiError.forbidden();
 
 		if (await currentMembership(currentUser.id, { teamId: vacancy.teamId })) {
 			return apiError.badRequest("You are already a member of this team");

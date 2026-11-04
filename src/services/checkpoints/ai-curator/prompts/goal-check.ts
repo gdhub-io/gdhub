@@ -1,5 +1,6 @@
 import { stripIndents } from "common-tags";
 import { CHECKPOINT_DAYS } from "@/config/checkpoint";
+import { fenced } from "@/lib/checkpoints/curator-text";
 import type {
 	CuratorAuthor,
 	CuratorProject,
@@ -28,13 +29,15 @@ import {
 
 const renderProject = (project: CuratorProject) =>
 	[
-		`The game: ${project.name}${project.genre ? ` (${project.genre})` : ""}.`,
-		project.pitch ? `Its pitch: "${project.pitch}"` : "It has no pitch yet.",
+		`The game: ${fenced(project.name)}${project.genre ? ` (${fenced(project.genre)})` : ""}.`,
+		project.pitch
+			? `Its pitch: ${fenced(project.pitch)}`
+			: "It has no pitch yet.",
 	].join(" ");
 
 const renderAuthor = (author: CuratorAuthor | null) =>
 	author
-		? `The author: ${author.speciality}, ${author.level} level.${author.experience ? ` In their words: "${author.experience}"` : ""}`
+		? `The author: ${author.speciality}, ${author.level} level.${author.experience ? ` In their words: ${fenced(author.experience)}` : ""}`
 		: "The author's speciality is not known.";
 
 export const GOAL_CHECK_FUNCTION_NAME = "report_goal_check";
@@ -142,7 +145,7 @@ export const goalCheckMessages = (input: GoalCheckInput, locale = "en") => [
 			${renderAuthor(input.author)}
 
 			${renderCard(input.card)}
-			${input.inputsSeen?.length ? `What the day-1 artifacts show, as looked at:\n${input.inputsSeen.map((line) => `- ${line}`).join("\n")}` : ""}
+			${input.inputsSeen?.length ? `What the day-1 artifacts show, as looked at:\n${input.inputsSeen.map((line) => `- ${fenced(line)}`).join("\n")}` : ""}
 
 			${renderWorkflow(input.workflow)}
 

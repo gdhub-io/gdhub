@@ -1,11 +1,34 @@
-import { PayableType, PaymentProvider } from "@gdhub-io/gdhub-prisma";
+import {
+	PayableType,
+	PaymentProvider,
+	PaymentStatus,
+} from "@gdhub-io/gdhub-prisma";
 import { type NextRequest, NextResponse } from "next/server";
 import { recordPaddleAdjustment } from "@/repositories/checkpoints/payment";
-import { paymentOf, recordPaymentEvent } from "@/repositories/payments/records";
+import { oncePerEvent, paymentOf } from "@/repositories/payments/records";
 import { settleCheckpointCheckout } from "@/services/checkpoints/flows/payment";
 import { paddleMinor, verifyPaddleWebhook } from "@/services/paddle/server";
-import { paidOfTransaction } from "@/services/payments/paddle";
-import { settleListingFee } from "@/services/vacancies/listing-fee";
+import { aiPrice, paidOfTransaction } from "@/services/payments/paddle";
+import { prisma } from "@/services/prisma";
+import {
+	listingFeePriceId,
+	recordListingFeeReversal,
+	settleListingFee,
+} from "@/services/vacancies/listing-fee";
+
+/** The catalog price each payable is sold at: a transaction at another price is not its payment. */
+const EXPECTED_PRICE: Partial<Record<PayableType, () => string | null>> = {
+	[PayableType.CHECKPOINT]: aiPrice,
+	[PayableType.VACANCY]: listingFeePriceId,
+};
+
+// A checkout opened in the browser can carry our custom data with any items, so the items are checked too.
+const soldAtOurPrice = (payableType: PayableType, items: unknown) => {
+	const expected = EXPECTED_PRICE[payableType]?.();
+	if (!expected || !Array.isArray(items) || items.length !== 1) return false;
+	const [item] = items as { price?: { id?: string }; quantity?: number }[];
+	return item?.price?.id === expected && item.quantity === 1;
+};
 
 export async function POST(request: NextRequest) {
 	try {
@@ -53,75 +76,70 @@ export async function POST(request: NextRequest) {
 }
 
 async function handleTransactionCompleted(body: any) {
-	try {
-		const data = body?.data ?? {};
-		const eventId = body?.event_id;
-		const transactionId = data.id;
-		const paymentId = data.custom_data?.paymentId;
+	const data = body?.data ?? {};
+	const paymentId = data.custom_data?.paymentId;
+	const payment = paymentId
+		? await paymentOf(PaymentProvider.PADDLE, { id: paymentId })
+		: null;
 
-		const payment = paymentId
-			? await paymentOf(PaymentProvider.PADDLE, { id: paymentId })
-			: null;
+	const applied = await oncePerEvent(
+		PaymentProvider.PADDLE,
+		{ id: body.event_id, type: body.event_type, payload: body },
+		payment?.id ?? null,
+		() => settleTransaction(data, payment),
+	);
+	if (!applied) console.log("[paddle.webhook] duplicate event:", body.event_id);
 
-		if (
-			eventId &&
-			!(await recordPaymentEvent(
-				PaymentProvider.PADDLE,
-				{ id: eventId, type: body.event_type, payload: body },
-				payment?.id ?? null,
-			))
-		) {
-			console.log("[paddle.webhook] duplicate event, skipping:", eventId);
-			return NextResponse.json({ success: true });
+	return NextResponse.json({ success: true });
+}
+
+async function settleTransaction(
+	data: any,
+	payment: Awaited<ReturnType<typeof paymentOf>>,
+) {
+	if (!payment) {
+		console.log("[paddle.webhook] no matching payment for", data.id);
+		return;
+	}
+	if (!soldAtOurPrice(payment.payableType, data.items)) {
+		console.warn("[paddle.webhook] price mismatch for", payment.id, data.id);
+		return;
+	}
+
+	const paid = paidOfTransaction({
+		id: data.id,
+		grandTotal: data.details?.totals?.grand_total,
+		customerId: data.customer_id,
+		invoiceId: data.invoice_id,
+	});
+
+	if (payment.payableType === PayableType.CHECKPOINT) {
+		if (data.custom_data?.checkpointId !== payment.payableId) {
+			console.warn("[paddle.webhook] checkpoint mismatch for", payment.id);
+			return;
 		}
+		await settleCheckpointCheckout(payment, paid);
+		return;
+	}
 
-		if (!paymentId || !payment) {
-			console.log("[paddle.webhook] no matching payment for", transactionId);
-			return NextResponse.json({ success: true });
+	if (payment.payableType === PayableType.VACANCY) {
+		if (data.custom_data?.vacancyId !== payment.payableId) {
+			console.warn("[paddle.webhook] vacancy mismatch for", payment.id);
+			return;
 		}
-
-		if (payment.payableType === PayableType.CHECKPOINT) {
-			if (data.custom_data?.checkpointId !== payment.payableId) {
-				console.warn("[paddle.webhook] checkpoint mismatch for", payment.id);
-				return NextResponse.json({ success: true });
-			}
-
-			await settleCheckpointCheckout(
-				payment,
-				paidOfTransaction({
-					id: transactionId,
-					grandTotal: data.details?.totals?.grand_total,
-					customerId: data.customer_id,
-					invoiceId: data.invoice_id,
-				}),
-			);
-
-			return NextResponse.json({ success: true });
-		}
-
-		if (payment.payableType === PayableType.VACANCY) {
-			await settleListingFee(payment, {
-				...paidOfTransaction({
-					id: transactionId,
-					grandTotal: data.details?.totals?.grand_total,
-					customerId: data.customer_id,
-					invoiceId: data.invoice_id,
-				}),
-				priceId: data.items?.[0]?.price?.id,
-				currency: data.currency_code,
-			});
-		}
-
-		return NextResponse.json({ success: true });
-	} catch (error) {
-		console.error("[paddle.webhook.transaction.completed]", error);
-		throw error;
+		await settleListingFee(payment, {
+			...paid,
+			priceId: data.items[0].price.id,
+			currency: data.currency_code,
+		});
 	}
 }
 
 async function handleAdjustment(body: any) {
 	const data = body?.data ?? {};
-	if (data.action !== "refund") return NextResponse.json({ success: true });
+	if (data.action !== "refund" && data.action !== "chargeback") {
+		return NextResponse.json({ success: true });
+	}
 
 	const payment = data.transaction_id
 		? await paymentOf(PaymentProvider.PADDLE, {
@@ -129,20 +147,42 @@ async function handleAdjustment(body: any) {
 			})
 		: null;
 
-	const fresh = await recordPaymentEvent(
+	await oncePerEvent(
 		PaymentProvider.PADDLE,
 		{ id: body.event_id, type: body.event_type, payload: body },
 		payment?.id ?? null,
-	);
+		async () => {
+			if (!payment) return;
+			const reversal = {
+				id: data.id,
+				status: data.status,
+				amount: paddleMinor(data.totals?.total),
+				currency: data.currency_code ?? payment.currency,
+			};
 
-	if (fresh && payment?.payableType === PayableType.CHECKPOINT) {
-		await recordPaddleAdjustment(payment, {
-			id: data.id,
-			status: data.status,
-			amount: paddleMinor(data.totals?.total),
-			currency: data.currency_code ?? payment.currency,
-		});
-	}
+			if (payment.payableType === PayableType.VACANCY) {
+				await recordListingFeeReversal(payment, {
+					...reversal,
+					kind: data.action,
+				});
+				return;
+			}
+
+			if (payment.payableType !== PayableType.CHECKPOINT) return;
+			if (data.action === "chargeback") {
+				console.error(
+					"[paddle.webhook] chargeback on checkpoint payment",
+					payment.id,
+				);
+				await prisma.payment.update({
+					where: { id: payment.id },
+					data: { status: PaymentStatus.DISPUTED },
+				});
+				return;
+			}
+			await recordPaddleAdjustment(payment, reversal);
+		},
+	);
 
 	return NextResponse.json({ success: true });
 }

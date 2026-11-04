@@ -1,10 +1,14 @@
 import { SearchEngineService } from "@gdhub-io/gdhub-typesense";
-import { json } from "@/lib/api-handlers";
+import type { NextRequest } from "next/server";
+import { isBackendCall, json } from "@/lib/api-handlers";
 import { prisma } from "@/services/prisma";
 import SanityService from "@/services/sanity";
 import TelegramService from "@/services/telegram";
 
-export async function GET() {
+// Uptime checks get a bare ok; the per-provider breakdown, which also calls every provider, needs BACKEND_KEY.
+export async function GET(req: NextRequest) {
+	if (!isBackendCall(req)) return json({ ok: true });
+
 	const telegramService = TelegramService.init();
 	const sanityService = SanityService;
 

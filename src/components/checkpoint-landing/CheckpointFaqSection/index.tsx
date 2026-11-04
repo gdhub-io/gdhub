@@ -3,7 +3,12 @@ import { useTranslate } from "@tolgee/react";
 import { Collapse } from "antd";
 import { useEffect, useState } from "react";
 import { AI_ACCURACY_ANCHOR } from "@/components/checkpoints/entry/hrefs";
-import { EXPERT_CHECKPOINT_OPEN } from "@/config/checkpoint";
+import {
+	CHECKPOINT_DAYS,
+	CHECKPOINT_MAX_TEAM,
+	EXPERT_CHECKPOINT_OPEN,
+	VERDICT_DUE_DAYS,
+} from "@/config/checkpoint";
 import { CheckpointSection } from "../CheckpointSection";
 import { SectionIntro } from "../SectionIntro";
 import styles from "./style.module.scss";
@@ -29,7 +34,8 @@ export const CheckpointFaqSection = () => {
 			),
 			a: t(
 				"checkpointLanding.faq.end.a",
-				"Within 48 hours, your curator publishes a final verdict: what changed, what to keep, and what the next Checkpoint should be. The result is saved as the baseline for the next cycle.",
+				"Within {days, plural, one {# day} other {# days}}, your curator publishes a final verdict: what changed, what to keep, and what the next Checkpoint should be. The result is saved as the baseline for the next cycle.",
+				{ days: VERDICT_DUE_DAYS },
 			),
 		},
 		{
@@ -53,7 +59,8 @@ export const CheckpointFaqSection = () => {
 			q: t("checkpointLanding.faq.solo.q", "I work alone. Is that a problem?"),
 			a: t(
 				"checkpointLanding.faq.solo.a",
-				"No. The lowest price is the one for an author working alone. A team can hold up to eight people besides you, and the price grows with it.",
+				"No. The price is the same for a team of 1 to {maxTeam}, the author included, so working alone costs what a full team pays.",
+				{ maxTeam: CHECKPOINT_MAX_TEAM },
 			),
 		},
 		{
@@ -89,7 +96,8 @@ export const CheckpointFaqSection = () => {
 						),
 						a: t(
 							"checkpointLanding.faq.missed.a",
-							"Two missed sessions in a row and the platform replaces the curator inside the same Checkpoint and returns the money for the sessions that did not happen. If no verdict is published by day 30, an administrator closes the Checkpoint and that money goes back as well.",
+							"Two missed sessions in a row and the platform replaces the curator inside the same Checkpoint and returns the money for the sessions that did not happen. If no verdict is published by day {verdictDay}, an administrator closes the Checkpoint and that money goes back as well.",
+							{ verdictDay: CHECKPOINT_DAYS + VERDICT_DUE_DAYS },
 						),
 					},
 				]

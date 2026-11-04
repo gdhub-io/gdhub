@@ -3,8 +3,8 @@ import { ImageResponse } from "next/og";
 import sharp from "sharp";
 import { brand, semantic } from "@/config/design/tokens";
 import type { CheckpointVerdict } from "@/config/prisma-enums";
-import { optimizedImage } from "@/helpers/image";
 import { dataUrl, ogAsset } from "@/helpers/og-asset";
+import { ogCover } from "@/helpers/og-cover";
 import { ogPalette } from "@/helpers/og-palette";
 import { apiError, type SessionUser, withAuth } from "@/lib/api-handlers";
 import { roadLine, SHARE_VERDICT_LABEL } from "@/lib/checkpoints/share-card";
@@ -65,7 +65,7 @@ export const GET = withAuth({ mode: "user" })(async (_req, ctx, { user }) => {
 		avatarPng(card.curator.avatar),
 		STATIC,
 	]);
-	const cover = optimizedImage(card.project.cover, {
+	const cover = ogCover(card.project.cover, {
 		...COVER,
 		fit: "crop",
 		quality: 75,

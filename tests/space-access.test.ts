@@ -388,6 +388,18 @@ describe("shadow mode", () => {
 		warn.mockRestore();
 	});
 
+	it("ignores RBAC_ENFORCE=false in production", async () => {
+		projectWith({ status: TeamMemberStatus.Hired });
+		const access = await getSpaceAccess("project", "slug", member);
+
+		vi.stubEnv("RBAC_ENFORCE", "false");
+		vi.stubEnv("VERCEL_ENV", "production");
+
+		expect(can(access, "project.members.invite")).toBe(false);
+
+		vi.unstubAllEnvs();
+	});
+
 	it("enforces by default", async () => {
 		projectWith({ status: TeamMemberStatus.Hired });
 		const access = await getSpaceAccess("project", "slug", member);

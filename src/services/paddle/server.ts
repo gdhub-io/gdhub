@@ -26,12 +26,8 @@ export function verifyPaddleWebhook(
 ): { ok: boolean; reason?: string } {
 	const secret = process.env.PADDLE_WEBHOOK_SECRET;
 
-	if (!secret) {
-		if (paddleLive()) {
-			return { ok: false, reason: "PADDLE_WEBHOOK_SECRET is not set" };
-		}
-		return { ok: true, reason: "skipped (no secret in the sandbox)" };
-	}
+	// No secret means no way to tell Paddle from anyone else, in the sandbox too.
+	if (!secret) return { ok: false, reason: "PADDLE_WEBHOOK_SECRET is not set" };
 
 	if (!signatureHeader)
 		return { ok: false, reason: "missing Paddle-Signature" };

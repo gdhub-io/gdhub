@@ -229,9 +229,9 @@ The test fails when this list and the code disagree, so it only shrinks: wire a
 check, then delete its line here.
 
 - **hub:** `hub.projects.create`, `hub.jobs.apply`, `hub.courses.view`, `hub.courses.create`, `hub.chat.use`
-- **project:** `project.members.view`, `project.lifecycle.archive`, `project.lifecycle.delete`, `project.workflow.view`, `project.vacancies.view`, `project.devlog.view`, `project.devlog.publish`, `project.room.manage`
+- **project:** `project.lifecycle.archive`, `project.lifecycle.delete`, `project.workflow.view`, `project.devlog.view`, `project.devlog.publish`, `project.room.manage`
 - **event:** `event.content.view`, `event.content.edit`, `event.schedule.view`
-- **course:** `course.info.view`, `course.info.edit`, `course.lifecycle.publish`, `course.lifecycle.delete`, `course.curriculum.view`, `course.curriculum.edit`, `course.classroom.access`, `course.classroom.teach`, `course.students.view`, `course.students.manage`, `course.groups.view`, `course.groups.manage`, `course.content.view`, `course.content.edit`, `course.certificates.view`, `course.certificates.issue`
+- **course:** `course.info.view`, `course.info.edit`, `course.curriculum.view`, `course.curriculum.edit`, `course.classroom.access`, `course.classroom.teach`, `course.students.view`, `course.students.manage`, `course.groups.view`, `course.groups.manage`, `course.content.view`, `course.content.edit`, `course.certificates.view`, `course.certificates.issue`
 - **scout:** `scout.deals.create`, `scout.deals.manage`, `scout.team.invite`, `scout.team.remove`
 - **advisor:** `advisor.requests.manage`, `advisor.checkpoints.manage`, `advisor.settings.manage`
 
