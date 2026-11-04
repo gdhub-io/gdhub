@@ -133,6 +133,7 @@ const AdminUsersQuerySchema = z.object({
 	spaceType: z.string().optional(),
 	role: z.string().optional(),
 	permission: z.string().optional(),
+	experts: z.string().optional(),
 });
 
 type AdminUsersQuery = z.infer<typeof AdminUsersQuerySchema>;
@@ -703,6 +704,7 @@ export const GET = pipe(
 		spaceType: spaceTypeQuery,
 		role: roleQuery,
 		permission: permissionQuery,
+		experts: expertsQuery,
 	} = body as AdminUsersQuery;
 
 	const page = toPositiveInt(pageQuery, 1);
@@ -715,6 +717,7 @@ export const GET = pipe(
 			search: searchQuery,
 			spaceType: spaceTypeQuery,
 			role: roleQuery,
+			experts: expertsQuery,
 		}),
 		permissionGrants: permission
 			? await resolvePermissionGrants(permission)

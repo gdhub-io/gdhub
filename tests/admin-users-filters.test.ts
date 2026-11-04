@@ -5,6 +5,7 @@ import {
 	buildAdminUsersWhere,
 	parseAdminUsersFilters,
 } from "@/repositories/admin/users";
+import { landingExpertWhere } from "@/repositories/content/landing";
 
 const clauses = (where: Prisma.UserWhereInput): Prisma.UserWhereInput[] =>
 	Array.isArray(where.AND) ? where.AND : where.AND ? [where.AND] : [];
@@ -132,5 +133,24 @@ describe("buildAdminUsersWhere", () => {
 		});
 
 		expect(clauses(where)).toHaveLength(3);
+	});
+});
+
+describe("the experts filter", () => {
+	it("drops an unknown value", () => {
+		expect(parseAdminUsersFilters({ experts: "gurus" }).experts).toBeUndefined();
+	});
+
+	// The same rule as the landing's strip, so the list shows exactly who can be featured.
+	it("keeps landing experts, and only the featured ones when asked", () => {
+		const experts = clauses(buildAdminUsersWhere({ experts: "experts" }));
+		expect(experts).toEqual([
+			{ specialities: { some: landingExpertWhere } },
+		]);
+
+		const featured = clauses(buildAdminUsersWhere({ experts: "featured" }));
+		expect(featured).toEqual([
+			{ specialities: { some: { ...landingExpertWhere, isFeatured: true } } },
+		]);
 	});
 });
