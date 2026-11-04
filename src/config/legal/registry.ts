@@ -45,6 +45,19 @@ export const LEGAL_DOCUMENTS = {
 				checksum:
 					"0a26b194777632ef6aae74153ccacae0ef94dfa9ecb0f8491e4973362dd9ecc0",
 			},
+			{
+				version: 2,
+				effectiveAt: "2026-11-18",
+				entity: "founder",
+				materialChange: true,
+				checksum:
+					"4f8530e4b66e0cd650c27e8383cce05c80c9891c98d914a1e3c684d2df39b8f6",
+				changes: [
+					"Paid services are described: a paid vacancy listing is the placement of a listing, and an AI Checkpoint is an automated software service.",
+					"Only these two services are sold; courses and events are free.",
+					"Buying a paid service requires being 18 or over.",
+				],
+			},
 		],
 	},
 	PrivacyPolicy: {
@@ -60,6 +73,14 @@ export const LEGAL_DOCUMENTS = {
 				materialChange: false,
 				checksum:
 					"934c1aab9f97c38f65bbe0e43ce3a2c56948a51c39f12e11a210b873bcdbe1c9",
+			},
+			{
+				version: 2,
+				effectiveAt: "2026-11-18",
+				entity: "founder",
+				materialChange: false,
+				checksum:
+					"27f8a2cb1d35de3be9bfba655ab68f6688d3c0f526f570910ec4bc2b70a0521f",
 			},
 		],
 	},
@@ -77,6 +98,14 @@ export const LEGAL_DOCUMENTS = {
 				checksum:
 					"53b46980251f7cb9855c2cff7cf5438a16ea46a933943eb3aac6a7912fe98a6b",
 			},
+			{
+				version: 2,
+				effectiveAt: "2026-11-18",
+				entity: "founder",
+				materialChange: false,
+				checksum:
+					"1f3119d5af71d433970384d4a86904bfb391aa4fd963fa9fda3dcd6c0da6a538",
+			},
 		],
 	},
 	RefundPolicy: {
@@ -91,7 +120,7 @@ export const LEGAL_DOCUMENTS = {
 				entity: "founder",
 				materialChange: false,
 				checksum:
-					"a1a65a10350e9e51e7fb54f12d0b5b15a4d46cce06c47c394f42d9efd7d1be37",
+					"4a57a14ad05b5b418016ff74a96b2c5808a0e01b967153f685d77f2cb715de4d",
 			},
 		],
 	},
@@ -144,7 +173,7 @@ export const LEGAL_DOCUMENTS = {
 				entity: "founder",
 				materialChange: false,
 				checksum:
-					"36e6728770eefde4efa6cc37b143f85e3d822bac448fa05876f8cde2a5de59ad",
+					"5462321185daa278e60659b233c14cc95f1e315c666e5d63fce4c4620ded757d",
 			},
 		],
 	},
@@ -160,7 +189,7 @@ export const LEGAL_DOCUMENTS = {
 				entity: "founder",
 				materialChange: false,
 				checksum:
-					"8ca9e939cafcd051f33cf7149fe697ce9450b49c73a9d62d56a67035e210ae0e",
+					"6f786c27fd1e7786422d16d6ffd836b0299ed82ad8f3319721d6e19f82d78c9d",
 			},
 		],
 	},
