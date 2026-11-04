@@ -5,6 +5,7 @@ import { Button, Flex, Typography } from "antd";
 import Link from "next/link";
 import type { ReactNode } from "react";
 import GdhubLogo from "@/assets/images/gdhub-beta-black-logo.svg";
+import { ExperimentalTag } from "@/components/checkpoints/ExperimentalTag";
 import { LogOutButton } from "@/components/layouts/AuthShell/AuthLogout";
 import styles from "./EntryShell.module.scss";
 
@@ -52,14 +53,20 @@ export function EntryShell({
 							<LogOutButton />
 						</Flex>
 					</Flex>
-					<Typography.Title level={1} className={styles.title}>
-						{next
-							? t("checkpointEntry.title.next", "Head for your next checkpoint")
-							: t(
-									"checkpointEntry.title.first",
-									"Head for your first checkpoint",
-								)}
-					</Typography.Title>
+					<Flex align="center" gap={12} wrap>
+						<Typography.Title level={1} className={styles.title}>
+							{next
+								? t(
+										"checkpointEntry.title.next",
+										"Head for your next checkpoint",
+									)
+								: t(
+										"checkpointEntry.title.first",
+										"Head for your first checkpoint",
+									)}
+						</Typography.Title>
+						<ExperimentalTag />
+					</Flex>
 					{stepper}
 				</header>
 

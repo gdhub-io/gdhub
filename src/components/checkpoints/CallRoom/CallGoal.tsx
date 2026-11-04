@@ -9,6 +9,7 @@ import {
 import { useTranslate } from "@tolgee/react";
 import { Alert, Button, Flex, Input, Tooltip, Typography } from "antd";
 import { type ReactNode, useState } from "react";
+import { AiNote } from "@/components/checkpoints/AiNote";
 import { IconTile } from "@/components/ui";
 import { CHECKPOINT_GOAL_MAX } from "@/config/checkpoint";
 import type { CheckpointCallDto } from "@/types/checkpoint-call";
@@ -84,6 +85,7 @@ export function GoalCard({ goal, editable, onSave, advice }: GoalCardProps) {
 					/>
 				)}
 				<StageFlag stage={advice?.stage} className={styles.goalAdvice} />
+				{advice && <AiNote />}
 			</div>
 			{canEdit && !editing && (
 				<Tooltip title={t("checkpoints.call.goal.edit", "Edit the goal")}>

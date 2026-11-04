@@ -12,6 +12,7 @@ import { useTranslate } from "@tolgee/react";
 import { Divider, Flex } from "antd";
 import Link from "next/link";
 import { type ReactNode, useState } from "react";
+import { AiNote } from "@/components/checkpoints/AiNote";
 import { dayRange } from "@/components/checkpoints/CheckpointCard/SprintTrack";
 import { CheckpointRating } from "@/components/checkpoints/CheckpointRating";
 import { useStandingStatus } from "@/components/checkpoints/EvidenceStanding";
@@ -282,7 +283,12 @@ export function CheckpointResult({
 							{meaning(checkpoint.verdict)}
 						</span>
 						{checkpoint.verdictNote && (
-							<span className={styles.prose}>{checkpoint.verdictNote}</span>
+							<>
+								<span className={styles.prose}>{checkpoint.verdictNote}</span>
+								{checkpoint.curatorKind === CheckpointCuratorKind.AI && (
+									<AiNote />
+								)}
+							</>
 						)}
 						{checkpoint.curator && (
 							<span className={styles.closedTitle}>

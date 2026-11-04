@@ -3,6 +3,7 @@ import { useTranslate } from "@tolgee/react";
 import { Button, Divider, Flex, Modal, Tooltip, Typography } from "antd";
 import { useRouter } from "next/navigation";
 import { useCallback, useEffect, useState } from "react";
+import { AiNote } from "@/components/checkpoints/AiNote";
 import { dayRange } from "@/components/checkpoints/CheckpointCard/SprintTrack";
 import { entryHubHref } from "@/components/checkpoints/entry/hrefs";
 import {
@@ -10,6 +11,7 @@ import {
 	VerdictChip,
 } from "@/components/checkpoints/VerdictChip";
 import { curatorKindParam, nextPlannedParams } from "@/config/analytics-events";
+import { CheckpointCuratorKind } from "@/config/prisma-enums";
 import { trackCheckpoint } from "@/helpers/gtm";
 import { useTakeSearchParam } from "@/hooks/useTakeSearchParam";
 import type { CheckpointDto } from "@/types/checkpoints";
@@ -119,7 +121,10 @@ export function AfterVerdict({
 			<Flex vertical gap={8}>
 				<span className={styles.secondary}>{meaning(verdict)}</span>
 				{checkpoint.verdictNote && (
-					<span className={styles.prose}>{checkpoint.verdictNote}</span>
+					<>
+						<span className={styles.prose}>{checkpoint.verdictNote}</span>
+						{curatorKind === CheckpointCuratorKind.AI && <AiNote />}
+					</>
 				)}
 				<Flex justify="space-between" align="center" gap={12} wrap>
 					<span className={styles.meta}>

@@ -1,6 +1,8 @@
 import { IconChevronDown } from "@tabler/icons-react";
 import { useTranslate } from "@tolgee/react";
 import { Collapse } from "antd";
+import { useEffect, useState } from "react";
+import { AI_ACCURACY_ANCHOR } from "@/components/checkpoints/entry/hrefs";
 import { EXPERT_CHECKPOINT_OPEN } from "@/config/checkpoint";
 import { CheckpointSection } from "../CheckpointSection";
 import { SectionIntro } from "../SectionIntro";
@@ -8,9 +10,19 @@ import styles from "./style.module.scss";
 
 export const CheckpointFaqSection = () => {
 	const { t } = useTranslate();
+	const [open, setOpen] = useState<string | string[]>("faq-end");
+
+	// A link to one question (the "AI can make mistakes" line's) opens it and brings it into view.
+	useEffect(() => {
+		const key = window.location.hash.slice(1);
+		if (!key.startsWith("faq-")) return;
+		setOpen(key);
+		document.getElementById(key)?.scrollIntoView({ block: "center" });
+	}, []);
 
 	const questions = [
 		{
+			key: "faq-end",
 			q: t(
 				"checkpointLanding.faq.end.q",
 				"What happens at the end of the 28 days?",
@@ -21,6 +33,7 @@ export const CheckpointFaqSection = () => {
 			),
 		},
 		{
+			key: "faq-unfinished",
 			q: t("checkpointLanding.faq.unfinished.q", "What if I don’t finish?"),
 			a: t(
 				"checkpointLanding.faq.unfinished.a",
@@ -28,6 +41,7 @@ export const CheckpointFaqSection = () => {
 			),
 		},
 		{
+			key: "faq-idea",
 			q: t("checkpointLanding.faq.idea.q", "My project is only an idea so far"),
 			a: t(
 				"checkpointLanding.faq.idea.a",
@@ -35,6 +49,7 @@ export const CheckpointFaqSection = () => {
 			),
 		},
 		{
+			key: "faq-solo",
 			q: t("checkpointLanding.faq.solo.q", "I work alone. Is that a problem?"),
 			a: t(
 				"checkpointLanding.faq.solo.a",
@@ -42,6 +57,7 @@ export const CheckpointFaqSection = () => {
 			),
 		},
 		{
+			key: "faq-ai",
 			q: t(
 				"checkpointLanding.faq.ai.q",
 				"What can the AI curator actually see?",
@@ -51,10 +67,22 @@ export const CheckpointFaqSection = () => {
 				"Your devlogs, the artifacts you attach, and the team’s activity during the sprint. It holds no calls. On each session day it returns written feedback and shows what is not moving, and you decide what to cut.",
 			),
 		},
+		{
+			key: AI_ACCURACY_ANCHOR,
+			q: t(
+				"checkpointLanding.faq.aiAccuracy.q",
+				"How accurate is the AI curator?",
+			),
+			a: t(
+				"checkpointLanding.faq.aiAccuracy.a",
+				"We have built the AI curator to read your project carefully: your devlogs, the artifacts and the team’s activity, against your goal and what the stage expects. Still, no one can predict an AI’s answer one hundred percent, so now and then a review may miss a detail or read it slightly off. Checkpoints are a new feature and we keep improving them. If something looks off, write to info@gdhub.io and we will look into it.",
+			),
+		},
 		// Only an expert holds sessions to miss; back with expert checkpoints.
 		...(EXPERT_CHECKPOINT_OPEN
 			? [
 					{
+						key: "faq-missed",
 						q: t(
 							"checkpointLanding.faq.missed.q",
 							"What if my curator misses sessions?",
@@ -87,7 +115,8 @@ export const CheckpointFaqSection = () => {
 					accordion
 					bordered={false}
 					className={styles.accordion}
-					defaultActiveKey={["0"]}
+					activeKey={open}
+					onChange={setOpen}
 					expandIconPlacement="end"
 					expandIcon={({ isActive }) => (
 						<IconChevronDown
@@ -95,9 +124,9 @@ export const CheckpointFaqSection = () => {
 							className={isActive ? styles.iconOpen : styles.icon}
 						/>
 					)}
-					items={questions.map((item, index) => ({
-						key: String(index),
-						label: item.q,
+					items={questions.map((item) => ({
+						key: item.key,
+						label: <span id={item.key}>{item.q}</span>,
 						children: <p className={styles.answer}>{item.a}</p>,
 					}))}
 				/>

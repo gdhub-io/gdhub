@@ -6,6 +6,7 @@ import { Button, Flex, Tag, Typography } from "antd";
 import Link from "next/link";
 import type { ReactNode } from "react";
 import callStyles from "@/components/checkpoints/CallRoom/style.module.scss";
+import { ExperimentalTag } from "@/components/checkpoints/ExperimentalTag";
 import { StatusDot, type StatusTone } from "@/components/ui";
 import { CheckpointCuratorKind } from "@/config/prisma-enums";
 
@@ -59,6 +60,7 @@ export function CuratorHeader({
 								? t("checkpoints.review.kindAi", "AI")
 								: t("checkpoints.review.kindPro", "Pro")}
 						</Tag>
+						<ExperimentalTag />
 						<Typography.Text className={callStyles.subtitle}>
 							{subtitle}
 						</Typography.Text>

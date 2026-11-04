@@ -1,0 +1,25 @@
+.tag {
+	display: inline-flex;
+	gap: var(--gd-space-1);
+	align-items: center;
+	margin: 0;
+	color: var(--gd-color-text-secondary);
+
+	// antd spaces the label off the icon with a margin; the gap does it here.
+	> * {
+		margin: 0;
+	}
+}
+
+// Inside the hero's inverse band the roles are already the dark ones.
+.outlined {
+	padding: 2px 10px;
+	border: 1px solid var(--gd-color-border);
+	border-radius: var(--gd-radius-pill);
+	corner-shape: round;
+	background: transparent;
+	font-size: var(--gd-font-size-label);
+	font-weight: 600;
+	letter-spacing: 0.11em;
+	text-transform: uppercase;
+}

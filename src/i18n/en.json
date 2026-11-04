@@ -1458,6 +1458,10 @@
 			}
 		},
 		"faq": {
+			"aiAccuracy": {
+				"a": "We have built the AI curator to read your project carefully: your devlogs, the artifacts and the team’s activity, against your goal and what the stage expects. Still, no one can predict an AI’s answer one hundred percent, so now and then a review may miss a detail or read it slightly off. Checkpoints are a new feature and we keep improving them. If something looks off, write to info@gdhub.io and we will look into it.",
+				"q": "How accurate is the AI curator?"
+			},
 			"missed": {
 				"a": "Two missed sessions in a row and the platform replaces the curator inside the same Checkpoint and returns the money for the sessions that did not happen. If no verdict is published by day 30, an administrator closes the Checkpoint and that money goes back as well.",
 				"q": "What if my curator misses sessions?"
@@ -1502,6 +1506,11 @@
 		}
 	},
 	"checkpoints": {
+		"aiNote": {
+			"link": "How it works",
+			"short": "AI can make mistakes.",
+			"text": "AI can make mistakes. Check important details."
+		},
 		"asks": {
 			"dueOnDay": "due on day {day}",
 			"dueToday": "due today",
@@ -1835,6 +1844,7 @@
 			"search": "Search the project's artifacts",
 			"whatItProves": "What it proves"
 		},
+		"experimental": "Experimental",
 		"fee": {
 			"formula": {
 				"full": "{share}% of {paid}",

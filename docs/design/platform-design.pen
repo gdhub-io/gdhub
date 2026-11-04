@@ -193391,14 +193391,61 @@
                   "gap": 4,
                   "children": [
                     {
-                      "type": "text",
-                      "id": "nBum5",
-                      "name": "Badge label",
-                      "fill": "#FFFFFF",
-                      "content": "Checkpoint",
-                      "fontFamily": "Onest",
-                      "fontSize": 22,
-                      "fontWeight": "700"
+                      "type": "frame",
+                      "id": "fkluF",
+                      "name": "Badge row",
+                      "gap": 10,
+                      "alignItems": "center",
+                      "children": [
+                        {
+                          "type": "text",
+                          "id": "MSDj6",
+                          "name": "Badge label",
+                          "fill": "#FFFFFF",
+                          "content": "Checkpoint",
+                          "fontFamily": "Onest",
+                          "fontSize": 22,
+                          "fontWeight": "700"
+                        },
+                        {
+                          "type": "frame",
+                          "id": "oVUcN",
+                          "name": "Experimental · hero capsule (outlined, descriptor type)",
+                          "cornerRadius": 999,
+                          "stroke": "#FFFFFF33",
+                          "strokeWidth": 1,
+                          "strokeAlignment": "inner",
+                          "gap": 4,
+                          "padding": [
+                            3,
+                            10
+                          ],
+                          "alignItems": "center",
+                          "children": [
+                            {
+                              "type": "icon",
+                              "id": "nCo0u",
+                              "name": "Ic",
+                              "width": 12,
+                              "height": 12,
+                              "icon": "flask-conical",
+                              "library": "lucide",
+                              "fill": "#FFFFFFB3"
+                            },
+                            {
+                              "type": "text",
+                              "id": "DBrdp",
+                              "name": "L",
+                              "fill": "#FFFFFFB3",
+                              "content": "EXPERIMENTAL",
+                              "fontFamily": "Onest",
+                              "fontSize": 11,
+                              "fontWeight": "600",
+                              "letterSpacing": 1.2
+                            }
+                          ]
+                        }
+                      ]
                     },
                     {
                       "type": "text",
@@ -197674,20 +197721,23 @@
                         {
                           "type": "icon",
                           "id": "ryHyo",
-                          "name": "Collapse",
+                          "name": "Expand",
                           "width": 18,
                           "height": 18,
-                          "icon": "chevron-up",
+                          "icon": "chevron-down",
                           "library": "lucide",
-                          "fill": "#F15541"
+                          "fill": "#9C9B97"
                         }
                       ]
                     },
                     {
                       "type": "frame",
                       "id": "uXvhV",
+                      "x": 0,
+                      "y": 64,
                       "name": "Expanded answer",
-                      "width": "fill_container",
+                      "enabled": false,
+                      "width": "fill_container(720)",
                       "padding": [
                         0,
                         64,
@@ -197923,6 +197973,87 @@
                           "icon": "chevron-down",
                           "library": "lucide",
                           "fill": "#9C9B97"
+                        }
+                      ]
+                    }
+                  ]
+                },
+                {
+                  "type": "rectangle",
+                  "id": "oqtf3",
+                  "name": "Divider",
+                  "fill": "#EBEAE8",
+                  "width": "fill_container",
+                  "height": 1
+                },
+                {
+                  "type": "frame",
+                  "id": "Px8TS",
+                  "name": "How accurate is the AI curator? (#faq-ai-accuracy, opened by the AI note's link)",
+                  "width": "fill_container",
+                  "layout": "vertical",
+                  "children": [
+                    {
+                      "type": "frame",
+                      "id": "UPbm9",
+                      "name": "Question",
+                      "width": "fill_container",
+                      "height": 64,
+                      "padding": [
+                        0,
+                        20
+                      ],
+                      "justifyContent": "space_between",
+                      "alignItems": "center",
+                      "children": [
+                        {
+                          "type": "text",
+                          "id": "B9TrmI",
+                          "name": "Question label",
+                          "fill": "#1A1917",
+                          "textGrowth": "fixed-width",
+                          "width": "fill_container",
+                          "content": "How accurate is the AI curator?",
+                          "fontFamily": "Onest",
+                          "fontSize": 16,
+                          "fontWeight": "600"
+                        },
+                        {
+                          "type": "icon",
+                          "id": "xKg5U",
+                          "name": "Collapse",
+                          "width": 18,
+                          "height": 18,
+                          "icon": "chevron-up",
+                          "library": "lucide",
+                          "fill": "#F15541"
+                        }
+                      ]
+                    },
+                    {
+                      "type": "frame",
+                      "id": "G6SrX",
+                      "name": "Expanded answer",
+                      "width": "fill_container",
+                      "padding": [
+                        0,
+                        64,
+                        20,
+                        20
+                      ],
+                      "children": [
+                        {
+                          "type": "text",
+                          "id": "ob8rK",
+                          "name": "Answer",
+                          "fill": "#5A5955",
+                          "textGrowth": "fixed-width",
+                          "width": "fill_container",
+                          "content": "We have built the AI curator to read your project carefully: your devlogs, the artifacts and the team's activity, against your goal and what the stage expects. Still, no one can predict an AI's answer one hundred percent, so now and then a review may miss a detail or read it slightly off. Checkpoints are a new feature and we keep improving them. If something looks off, write to info@gdhub.io and we will look into it.",
+                          "lineHeight": 1.6,
+                          "fontFamily": "Onest",
+                          "fontSize": 16,
+                          "fontWeight": "normal"
                         }
                       ]
                     }
@@ -285448,6 +285579,21 @@
                                   ]
                                 }
                               ]
+                            },
+                            {
+                              "id": "KKVWJ",
+                              "type": "ref",
+                              "ref": "m3tGe",
+                              "name": "AI note · compact (narrow aside)",
+                              "width": "fit_content",
+                              "alignItems": "center",
+                              "descendants": {
+                                "pHJTG": {
+                                  "textGrowth": "auto",
+                                  "width": "fit_content(0)",
+                                  "content": "AI can make mistakes."
+                                }
+                              }
                             }
                           ]
                         },
@@ -287592,6 +287738,12 @@
                               "fontFamily": "$font",
                               "fontSize": 13,
                               "fontWeight": "normal"
+                            },
+                            {
+                              "id": "Sz0VN",
+                              "type": "ref",
+                              "ref": "wCEJ7",
+                              "name": "Experimental tag"
                             }
                           ]
                         }
@@ -288299,6 +288451,12 @@
                               "fontFamily": "$font",
                               "fontSize": 17,
                               "fontWeight": "normal"
+                            },
+                            {
+                              "id": "Z9qeZ",
+                              "type": "ref",
+                              "ref": "m3tGe",
+                              "name": "AI note"
                             }
                           ]
                         }
@@ -289944,6 +290102,12 @@
                               "fontWeight": "normal"
                             }
                           ]
+                        },
+                        {
+                          "id": "DjYGX",
+                          "type": "ref",
+                          "ref": "m3tGe",
+                          "name": "AI note"
                         }
                       ]
                     }
@@ -358100,6 +358264,12 @@
                       ]
                     }
                   ]
+                },
+                {
+                  "id": "JQtO5",
+                  "type": "ref",
+                  "ref": "m3tGe",
+                  "name": "AI note"
                 }
               ]
             }
@@ -358228,6 +358398,12 @@
                           "fontWeight": "normal"
                         }
                       ]
+                    },
+                    {
+                      "id": "OA6fr",
+                      "type": "ref",
+                      "ref": "m3tGe",
+                      "name": "AI note"
                     }
                   ]
                 }
@@ -359254,6 +359430,12 @@
                       ]
                     }
                   ]
+                },
+                {
+                  "id": "GelMt",
+                  "type": "ref",
+                  "ref": "m3tGe",
+                  "name": "AI note"
                 }
               ]
             }
@@ -382709,6 +382891,12 @@
                       "fontFamily": "$font",
                       "fontSize": 32,
                       "fontWeight": "700"
+                    },
+                    {
+                      "id": "rFJVf",
+                      "type": "ref",
+                      "ref": "wCEJ7",
+                      "name": "Experimental tag"
                     }
                   ]
                 },
@@ -455115,6 +455303,12 @@
                                   "fontWeight": "normal"
                                 }
                               ]
+                            },
+                            {
+                              "id": "mXj9O",
+                              "type": "ref",
+                              "ref": "m3tGe",
+                              "name": "AI note"
                             }
                           ]
                         }
@@ -517127,6 +517321,86 @@
               ]
             }
           ]
+        }
+      ]
+    },
+    {
+      "type": "frame",
+      "id": "m3tGe",
+      "x": 17000,
+      "y": 63960,
+      "name": "12.15.5 · AI note (under the AI's words, AI curator only)",
+      "reusable": true,
+      "gap": 6,
+      "alignItems": "center",
+      "children": [
+        {
+          "type": "icon",
+          "id": "Bj383",
+          "name": "Ic",
+          "width": 14,
+          "height": 14,
+          "icon": "sparkles",
+          "library": "lucide",
+          "fill": "$text-tertiary"
+        },
+        {
+          "type": "text",
+          "id": "pHJTG",
+          "name": "Text",
+          "fill": "$text-tertiary",
+          "content": "AI can make mistakes. Check important details.",
+          "fontFamily": "$font",
+          "fontSize": 12,
+          "fontWeight": "normal"
+        },
+        {
+          "type": "text",
+          "id": "HPE05",
+          "name": "Link",
+          "fill": "$link",
+          "content": "How it works",
+          "fontFamily": "$font",
+          "fontSize": 12,
+          "fontWeight": "normal"
+        }
+      ]
+    },
+    {
+      "type": "frame",
+      "id": "wCEJ7",
+      "x": 17000,
+      "y": 64000,
+      "name": "12.15.6 · Experimental tag",
+      "reusable": true,
+      "fill": "$neutral-100",
+      "cornerRadius": 6,
+      "gap": 4,
+      "padding": [
+        4,
+        8
+      ],
+      "alignItems": "center",
+      "children": [
+        {
+          "type": "icon",
+          "id": "scXJV",
+          "name": "Ic",
+          "width": 12,
+          "height": 12,
+          "icon": "flask-conical",
+          "library": "lucide",
+          "fill": "$text-secondary"
+        },
+        {
+          "type": "text",
+          "id": "bvBsy",
+          "name": "L",
+          "fill": "$text-secondary",
+          "content": "Experimental",
+          "fontFamily": "$font",
+          "fontSize": 12,
+          "fontWeight": "500"
         }
       ]
     }

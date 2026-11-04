@@ -1,0 +1,16 @@
+.note {
+	display: flex;
+	gap: var(--gd-space-2);
+	align-items: flex-start;
+}
+
+.icon {
+	flex: none;
+	margin-top: 2px;
+	color: var(--gd-color-text-tertiary);
+}
+
+.text {
+	font-size: var(--gd-font-size-caption);
+	color: var(--gd-color-text-tertiary);
+}
