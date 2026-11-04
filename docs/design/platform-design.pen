@@ -518340,108 +518340,17 @@
               },
               "justifyContent": "center",
               "alignItems": "center"
-            },
-            {
-              "type": "frame",
-              "id": "Gcsr1",
-              "name": "Meta",
-              "width": "fill_container",
-              "gap": 12,
-              "padding": [
-                12,
-                16
-              ],
-              "justifyContent": "space_between",
-              "alignItems": "center",
-              "children": [
-                {
-                  "type": "text",
-                  "id": "INiyb",
-                  "name": "Size",
-                  "fill": "$text-tertiary",
-                  "content": "PNG · 1200×630",
-                  "fontFamily": "$font",
-                  "fontSize": 12,
-                  "fontWeight": "normal"
-                },
-                {
-                  "type": "frame",
-                  "id": "xjFdR",
-                  "name": "Btn Download image (primary)",
-                  "height": 32,
-                  "fill": "$text-primary",
-                  "cornerRadius": 10,
-                  "gap": 8,
-                  "padding": [
-                    0,
-                    12
-                  ],
-                  "alignItems": "center",
-                  "children": [
-                    {
-                      "type": "icon",
-                      "id": "hNPmz",
-                      "name": "Ic",
-                      "width": 16,
-                      "height": 16,
-                      "icon": "download",
-                      "library": "lucide",
-                      "fill": "$text-invert"
-                    },
-                    {
-                      "type": "text",
-                      "id": "wNZ6m",
-                      "name": "L",
-                      "fill": "$text-invert",
-                      "content": "Download image",
-                      "fontFamily": "$font",
-                      "fontSize": 14,
-                      "fontWeight": "500"
-                    }
-                  ]
-                }
-              ]
             }
           ]
         },
         {
           "type": "frame",
           "id": "ggtkX",
-          "name": "Post text",
+          "name": "Post text (the project's link inside it)",
           "width": "fill_container",
           "layout": "vertical",
           "gap": 8,
           "children": [
-            {
-              "type": "frame",
-              "id": "ezV4T",
-              "name": "Label row",
-              "width": "fill_container",
-              "justifyContent": "space_between",
-              "alignItems": "center",
-              "children": [
-                {
-                  "type": "text",
-                  "id": "Q7WcK",
-                  "name": "Label",
-                  "fill": "$text-primary",
-                  "content": "The post",
-                  "fontFamily": "$font",
-                  "fontSize": 14,
-                  "fontWeight": "600"
-                },
-                {
-                  "type": "text",
-                  "id": "ARMFl",
-                  "name": "Counter",
-                  "fill": "$text-tertiary",
-                  "content": "246 / 280 on X",
-                  "fontFamily": "$font",
-                  "fontSize": 12,
-                  "fontWeight": "normal"
-                }
-              ]
-            },
             {
               "type": "frame",
               "id": "spVix",
@@ -518471,79 +518380,6 @@
                   "fontWeight": "normal"
                 }
               ]
-            },
-            {
-              "type": "frame",
-              "id": "ULifA",
-              "name": "Checkbox · Add the project's page (on)",
-              "gap": 8,
-              "alignItems": "center",
-              "children": [
-                {
-                  "type": "frame",
-                  "id": "XkAGQ",
-                  "name": "Box",
-                  "width": 16,
-                  "height": 16,
-                  "fill": "$text-primary",
-                  "cornerRadius": 4,
-                  "justifyContent": "center",
-                  "alignItems": "center",
-                  "children": [
-                    {
-                      "type": "icon",
-                      "id": "em5kC",
-                      "name": "Tick",
-                      "width": 12,
-                      "height": 12,
-                      "icon": "check",
-                      "library": "lucide",
-                      "fill": "$text-invert"
-                    }
-                  ]
-                },
-                {
-                  "type": "text",
-                  "id": "RJoqq",
-                  "name": "L",
-                  "fill": "$text-primary",
-                  "content": "Add a link to the project's public page",
-                  "fontFamily": "$font",
-                  "fontSize": 14,
-                  "fontWeight": "normal"
-                }
-              ]
-            },
-            {
-              "type": "frame",
-              "id": "R4JaVY",
-              "name": "Hint",
-              "width": "fill_container",
-              "gap": 6,
-              "children": [
-                {
-                  "type": "icon",
-                  "id": "QwKct",
-                  "name": "Ic",
-                  "width": 14,
-                  "height": 14,
-                  "icon": "info",
-                  "library": "lucide",
-                  "fill": "$text-tertiary"
-                },
-                {
-                  "type": "text",
-                  "id": "JtnyR",
-                  "name": "Text",
-                  "fill": "$text-tertiary",
-                  "textGrowth": "fixed-width",
-                  "width": "fill_container",
-                  "content": "Networks don't take a picture from the post: download the image and attach it. LinkedIn and Facebook also take only the link, so copy the text first.",
-                  "fontFamily": "$font",
-                  "fontSize": 12,
-                  "fontWeight": "normal"
-                }
-              ]
             }
           ]
         },
@@ -518557,8 +518393,48 @@
           "children": [
             {
               "type": "frame",
-              "id": "Rz0xV",
-              "name": "Btn LinkedIn",
+              "id": "rLotA",
+              "name": "Btn Share (primary; the system's share sheet, image + text)",
+              "height": 40,
+              "fill": "$text-primary",
+              "cornerRadius": 10,
+              "stroke": "$card-border",
+              "strokeWidth": 1,
+              "strokeAlignment": "inner",
+              "gap": 8,
+              "padding": [
+                0,
+                12
+              ],
+              "justifyContent": "center",
+              "alignItems": "center",
+              "children": [
+                {
+                  "type": "icon",
+                  "id": "j7O3B9",
+                  "name": "Ic",
+                  "width": 16,
+                  "height": 16,
+                  "icon": "share-2",
+                  "library": "lucide",
+                  "fill": "$text-invert"
+                },
+                {
+                  "type": "text",
+                  "id": "XYKG2",
+                  "name": "L",
+                  "fill": "$text-invert",
+                  "content": "Share",
+                  "fontFamily": "$font",
+                  "fontSize": 14,
+                  "fontWeight": "500"
+                }
+              ]
+            },
+            {
+              "type": "frame",
+              "id": "NoKzX",
+              "name": "Btn Download image",
               "height": 40,
               "cornerRadius": 10,
               "stroke": "$card-border",
@@ -518574,149 +518450,25 @@
               "children": [
                 {
                   "type": "icon",
-                  "id": "h6uuFB",
+                  "id": "ThihP",
                   "name": "Ic",
                   "width": 16,
                   "height": 16,
-                  "icon": "linkedin",
+                  "icon": "download",
                   "library": "lucide",
                   "fill": "$text-primary"
                 },
                 {
                   "type": "text",
-                  "id": "re5QO",
+                  "id": "kp9qU",
                   "name": "L",
                   "fill": "$text-primary",
-                  "content": "LinkedIn",
+                  "content": "Download image",
                   "fontFamily": "$font",
                   "fontSize": 14,
                   "fontWeight": "500"
                 }
               ]
-            },
-            {
-              "type": "frame",
-              "id": "BHqpJ",
-              "name": "Btn Telegram",
-              "height": 40,
-              "cornerRadius": 10,
-              "stroke": "$card-border",
-              "strokeWidth": 1,
-              "strokeAlignment": "inner",
-              "gap": 8,
-              "padding": [
-                0,
-                12
-              ],
-              "justifyContent": "center",
-              "alignItems": "center",
-              "children": [
-                {
-                  "type": "icon",
-                  "id": "OOkYm",
-                  "name": "Ic",
-                  "width": 16,
-                  "height": 16,
-                  "icon": "send",
-                  "library": "lucide",
-                  "fill": "$text-primary"
-                },
-                {
-                  "type": "text",
-                  "id": "YUTxC",
-                  "name": "L",
-                  "fill": "$text-primary",
-                  "content": "Telegram",
-                  "fontFamily": "$font",
-                  "fontSize": 14,
-                  "fontWeight": "500"
-                }
-              ]
-            },
-            {
-              "type": "frame",
-              "id": "aRe8K",
-              "name": "Btn X",
-              "height": 40,
-              "cornerRadius": 10,
-              "stroke": "$card-border",
-              "strokeWidth": 1,
-              "strokeAlignment": "inner",
-              "gap": 8,
-              "padding": [
-                0,
-                12
-              ],
-              "justifyContent": "center",
-              "alignItems": "center",
-              "children": [
-                {
-                  "type": "icon",
-                  "id": "MFxZj",
-                  "name": "Ic",
-                  "width": 16,
-                  "height": 16,
-                  "icon": "twitter",
-                  "library": "lucide",
-                  "fill": "$text-primary"
-                },
-                {
-                  "type": "text",
-                  "id": "Gn4tt",
-                  "name": "L",
-                  "fill": "$text-primary",
-                  "content": "X",
-                  "fontFamily": "$font",
-                  "fontSize": 14,
-                  "fontWeight": "500"
-                }
-              ]
-            },
-            {
-              "type": "frame",
-              "id": "iQpZ9",
-              "name": "Btn Facebook",
-              "height": 40,
-              "cornerRadius": 10,
-              "stroke": "$card-border",
-              "strokeWidth": 1,
-              "strokeAlignment": "inner",
-              "gap": 8,
-              "padding": [
-                0,
-                12
-              ],
-              "justifyContent": "center",
-              "alignItems": "center",
-              "children": [
-                {
-                  "type": "icon",
-                  "id": "X8KXA",
-                  "name": "Ic",
-                  "width": 16,
-                  "height": 16,
-                  "icon": "facebook",
-                  "library": "lucide",
-                  "fill": "$text-primary"
-                },
-                {
-                  "type": "text",
-                  "id": "vQ6L0",
-                  "name": "L",
-                  "fill": "$text-primary",
-                  "content": "Facebook",
-                  "fontFamily": "$font",
-                  "fontSize": 14,
-                  "fontWeight": "500"
-                }
-              ]
-            },
-            {
-              "type": "frame",
-              "id": "LQjAt",
-              "name": "Spacer",
-              "width": "fill_container",
-              "height": 1
             },
             {
               "type": "frame",
