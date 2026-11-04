@@ -22,6 +22,12 @@
 	gap: 4px;
 }
 
+.productRow {
+	display: flex;
+	gap: var(--gd-space-3);
+	align-items: center;
+}
+
 .product {
 	margin: 0;
 	font-size: var(--gd-font-size-marketing-h3);

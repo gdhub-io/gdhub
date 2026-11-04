@@ -3,6 +3,7 @@ import { Button } from "antd";
 import Image from "next/image";
 import Link from "next/link";
 import heroImage from "@/assets/images/checkpoint/checkpoint-hero-bridge.jpg";
+import { ExperimentalTag } from "@/components/checkpoints/ExperimentalTag";
 import { CHECKPOINT_ENTRY_HREF } from "@/components/checkpoints/entry/hrefs";
 import {
 	CHECKPOINT_AI_PRICE,
@@ -21,9 +22,12 @@ export const CheckpointHeroSection = () => {
 			<div className={styles.hero}>
 				<div className={styles.copy}>
 					<div className={styles.badge}>
-						<p className={styles.product}>
-							{t("checkpointLanding.productName", "Checkpoint")}
-						</p>
+						<div className={styles.productRow}>
+							<p className={styles.product}>
+								{t("checkpointLanding.productName", "Checkpoint")}
+							</p>
+							<ExperimentalTag variant="outlined" />
+						</div>
 						<p className={styles.descriptor}>
 							{t(
 								"checkpointLanding.hero.descriptor",

@@ -11,6 +11,7 @@ import { Button, Tooltip, Typography } from "antd";
 import dayjs from "dayjs";
 import Link from "next/link";
 import type { ReactNode } from "react";
+import { AiNote } from "@/components/checkpoints/AiNote";
 import { firstName } from "@/components/checkpoints/CallRoom/CallHeader";
 import { useLockedJoinLabel } from "@/components/checkpoints/CallRoom/ClosedStage";
 import { useCuratorNow } from "@/components/checkpoints/CuratorReview/useCuratorNow";
@@ -251,6 +252,7 @@ export function CuratorNote({
 						))}
 				</div>
 			)}
+			{isAI && message && <AiNote compact />}
 		</div>
 	);
 }

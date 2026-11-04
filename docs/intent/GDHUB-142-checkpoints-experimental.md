@@ -28,7 +28,7 @@ Authors pay for an AI Checkpoint and read its reviews, its goal check and its ve
 - **The human curator's AI brief** gets the same line: it is AI-made too. The verdict modal's AI read keeps its existing subtitle, which already says this.
 - **An "Experimental" tag** sits on the Checkpoint entry points, whoever the curator is: the landing hero, the purchase shell's title and the checkpoint page header.
   - Wording: "Experimental", not "Beta". The logo already says beta for the whole platform.
-- **The long text is a new FAQ item** on the Checkpoint landing ("Can the AI curator be wrong?"). It has its own anchor so the short line can open it, and it links to the Purchase Terms.
+- **The long text is a new FAQ item** on the Checkpoint landing ("How accurate is the AI curator?"). It reassures rather than warns: we built the curator to read the project carefully, but no AI answer can be predicted fully, so a review may now and then be slightly off. It has its own anchor so the short line can open it, and it does not cite the terms.
 - **No legal text changes.** The Purchase Terms §2.5 and §12.2 already cover it, and this wording must not promise more than they do.
 - Copy goes through Tolgee, English only. Design comes first, in Pencil.
 
@@ -37,7 +37,7 @@ Authors pay for an AI Checkpoint and read its reviews, its goal check and its ve
 - [ ] Under every AI-written review, goal check, curator note and verdict the author sees, there is the line "AI can make mistakes. Check important details." and a link to the FAQ item.
 - [ ] Under a human curator's words there is no such line.
 - [ ] The landing hero, the purchase shell and the checkpoint page header show an "Experimental" tag.
-- [ ] The landing FAQ has "Can the AI curator be wrong?", and the line's link scrolls to it and opens it.
+- [ ] The landing FAQ has "How accurate is the AI curator?", and the line's link scrolls to it and opens it.
 - [ ] The human curator's call brief shows the same line.
 
 ## How to check it on the platform
@@ -60,5 +60,5 @@ Authors pay for an AI Checkpoint and read its reviews, its goal check and its ve
 
 ## Open questions
 
-- **Where the link goes.** Assumed: the landing FAQ item, not the terms. The terms are linked from the FAQ answer.
+- **Where the link goes.** Assumed: the landing FAQ item, not the terms. The FAQ answer does not cite the terms.
 - **"Experimental" on a human-curator Checkpoint.** Assumed: yes. It is the feature that is experimental, not only the AI. Expert Checkpoints are closed for now anyway.

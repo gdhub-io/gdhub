@@ -3,6 +3,7 @@
 import { useTranslate } from "@tolgee/react";
 import { Button, Dropdown, type MenuProps, Typography } from "antd";
 import type { ReactNode } from "react";
+import { AiNote } from "@/components/checkpoints/AiNote";
 import { initials } from "@/components/checkpoints/CallRoom/CallParts";
 import {
 	useVerdictCopy,
@@ -124,6 +125,7 @@ export function CuratorMessage({
 						})}
 					</div>
 				)}
+				{!curator && <AiNote />}
 			</div>
 		</div>
 	);

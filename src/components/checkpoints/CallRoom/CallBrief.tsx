@@ -4,6 +4,7 @@ import { IconSparkles } from "@tabler/icons-react";
 import { useTranslate } from "@tolgee/react";
 import { Flex, Typography } from "antd";
 import dayjs from "dayjs";
+import { AiNote } from "@/components/checkpoints/AiNote";
 import { EvidenceMatchTag } from "@/components/checkpoints/EvidenceMatchTag";
 import { IconTile } from "@/components/ui";
 import type {
@@ -105,6 +106,7 @@ export function CallBrief({
 					))}
 				</Flex>
 			)}
+			<AiNote />
 		</Flex>
 	);
 }

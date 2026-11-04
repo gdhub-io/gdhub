@@ -1,6 +1,10 @@
 /** The way into a checkpoint: the hub, which sends a signed-out visitor to sign in first. */
 export const CHECKPOINT_ENTRY_HREF = "/checkpoint/new";
 
+/** The landing FAQ item the "AI can make mistakes" line opens (GDHUB-142). */
+export const AI_ACCURACY_ANCHOR = "faq-ai-accuracy";
+export const AI_ACCURACY_HREF = `/checkpoint#${AI_ACCURACY_ANCHOR}`;
+
 /** `/registration?intent=checkpoint`: sign-up lands on the hub instead of onboarding. */
 export const CHECKPOINT_INTENT = "checkpoint";
 

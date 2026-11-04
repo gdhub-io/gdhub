@@ -3,6 +3,7 @@
 import { IconCalendarEvent, IconHourglass } from "@tabler/icons-react";
 import { useTranslate } from "@tolgee/react";
 import dayjs from "dayjs";
+import { AiNote } from "@/components/checkpoints/AiNote";
 import { NotesSummary } from "@/components/checkpoints/CallRoom/CallNotes";
 import { SprintDirectionView } from "@/components/checkpoints/SprintDirection";
 import { EmptyState } from "@/components/ui";
@@ -63,19 +64,22 @@ export function ReviewBody({
 		);
 	}
 	return (
-		<NotesSummary
-			index={index}
-			content={notes}
-			plan={review.plan}
-			review
-			direction={
-				notes.direction && (
-					<SprintDirectionView
-						direction={notes.direction}
-						stage={review.stageName}
-					/>
-				)
-			}
-		/>
+		<>
+			<NotesSummary
+				index={index}
+				content={notes}
+				plan={review.plan}
+				review
+				direction={
+					notes.direction && (
+						<SprintDirectionView
+							direction={notes.direction}
+							stage={review.stageName}
+						/>
+					)
+				}
+			/>
+			<AiNote />
+		</>
 	);
 }
