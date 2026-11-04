@@ -1,4 +1,4 @@
-# GDHUB-127 — Vacancy applications in their own table, and an admin page for vacancies
+# GDHUB-127 — Vacancy applications in their own table, and an admin page for open positions
 
 [Linear](https://linear.app/gdhub/issue/GDHUB-127/team-move-vacancy-applications-out-of-teammember-into-their-own-table) · intent written 2026-11-03
 
@@ -10,16 +10,27 @@
 - the author sees the candidate, chats with them, then hires or rejects them;
 - a hired person joins the team.
 
+**One thing is new for the candidate: they can withdraw their own application** from the
+vacancy page and the vacancy preview, where today they only read "You have already
+responded".
+
 **Under that, an application stops being a team member.** An application becomes its own
 record: the candidate, the vacancy, the message, the allowed contacts, its status and
 dates. The team holds only the people who really were on it: founders, hired and fired.
 Hiring creates the team member from the application and links the two, so the history
 stays.
 
-**Hub admins get a read-only `/admin/vacancies` page.**
+**Hub admins get a read-only `/admin/open-positions` page.**
 
-- Every vacancy on the platform, with its project, status, dates, pay and views.
+- Every open position on the platform, with its project, status, dates, pay, views and the state
+  of its listing payment: free, paid, pending, failed, cancelled or refunded.
 - For each vacancy, its applications: who applied, when, the status, and the message.
+  Each one also says whether the author reached the candidate through the vacancy chat:
+  when the chat opened, when the author last read it, and whether it is closed. This
+  comes from our `ChatRoom` row. Message counts live only in Matrix and are not shown.
+  It also says whether **the project viewed the candidate**: the first time the project's
+  author or one of its admins opened the candidate card. A platform admin opening it
+  counts for nothing. Only platform admins see this; the candidate and the team do not.
 - Links lead to the vacancy page, the project and the candidate's talent card.
 
 ## Why now
@@ -57,7 +68,8 @@ projects. Answering a support question means reading the database.
   - a rejected or hired application never reopens a chat.
 - **Admin:**
   - the page is read-only and has no actions;
-  - it uses a new admin feature `vacancies` with permission `view`, granted like the
+  - it uses a new admin feature `vacancies` with permission `view` (the page itself is named
+    "Open positions", as the product calls vacancies), granted like the
     other admin read pages;
   - every visible column comes from data that already exists.
 - **Design.** Admin tables follow the design system: outlined tables, plain empty states.
@@ -76,8 +88,16 @@ projects. Answering a support question means reading the database.
 - [ ] An applicant never appears anywhere a member does: the team, the project page,
       event pickers, advisor roles, the checkpoint pulse. This holds by construction, and
       a test still covers it.
-- [ ] `/admin/vacancies` lists every vacancy, filterable by status and project. Opening
+- [ ] `/admin/open-positions` lists every open position, filterable by status and project. Opening
       one shows its applications with candidate, date, status and message.
+- [ ] A candidate with an active application sees "Withdraw application" on the vacancy
+      page and in the vacancy preview. Withdrawing asks first, then marks the application
+      withdrawn, closes the vacancy chat with a line saying so, and drops them from the
+      author's candidates. They may apply again later as a new application.
+- [ ] The admin list shows each vacancy's listing payment as recorded: free, paid, pending,
+      failed, cancelled or refunded.
+- [ ] Opening a candidate's card as the project's author or a project admin stamps the
+      application as viewed, once. A platform admin opening it stamps nothing. Only `/admin/open-positions` shows it.
 - [ ] A user without the admin `vacancies.view` permission gets no page and no data.
 
 ## How to check it on the platform
@@ -89,16 +109,20 @@ projects. Answering a support question means reading the database.
    applicant and reject them: they leave the list and the chat closes.
 3. Open the project page and the advisor request role picker: the rejected candidate is
    not on the team.
-4. Sign in as a hub admin → `/admin/vacancies`. The vacancy is listed. Open it: both
+4. Sign in as a hub admin → `/admin/open-positions`. The vacancy is listed. Open it: both
    applications, one hired and one rejected, with their messages and dates.
-5. Sign in as a plain member and request `/admin/vacancies` and its API: both are refused.
+5. As a third specialist, apply, then press "Withdraw application" on `/job/<id>` and
+   confirm. The author's candidates list no longer shows them, and the chat says they
+   withdrew. The admin page lists the application as withdrawn.
+6. Sign in as a plain member and request `/admin/open-positions` and its API: both are refused.
 
 ## Out of scope
 
-- Letting a candidate withdraw their own application from the UI. There is no such flow
-  today.
+- A "my applications" list for the candidate. Withdrawing happens where the candidate
+  already sees that they applied.
 - Admin actions on vacancies or applications: unpublish, archive, reject.
-- Vacancy notifications, payments and the Paddle listing flow, beyond following the rename.
+- Vacancy notifications, and the Paddle listing flow itself. The admin page only reads
+  the payment rows.
 - New e2e scenarios. Those belong to GDHUB-128; this task only keeps the existing ones
   green.
 - The guard-test alternative from the issue: the table split makes it unnecessary.
@@ -110,5 +134,8 @@ projects. Answering a support question means reading the database.
   deleting, so the history stays. On a hired member it keeps doing what it does now.
 - **Application statuses.** Assumed: `Submitted`, `Hired`, `Rejected`, `Withdrawn`. "Hired"
   is kept on the application so that the admin page and the history read without a join.
-- **Pay on the admin list.** Assumed: show whether the listing is paid and the offered
-  amount from the vacancy itself. The Paddle payment rows are not read.
+- **Listing payment on the admin list.** Assumed: the latest `Payment` of type `VACANCY`
+  for the vacancy decides the shown state, and no payment means free. The offered pay
+  comes from the vacancy.
+- **Who is told when a candidate withdraws.** Assumed: a system line in the vacancy chat,
+  if one exists. No new email or notification template.

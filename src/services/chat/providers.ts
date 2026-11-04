@@ -59,7 +59,7 @@ const DEFAULT_CONTEXT: ChatContextResult = { type: "default", data: null };
 type VacancyOfferContext = {
 	vacancyId?: string;
 	candidateUserId?: string;
-	teamMemberId?: string | null;
+	applicationId?: string | null;
 	offerMessage?: string | null;
 };
 

@@ -49,7 +49,7 @@ Landing, about, public project / event / job / course pages, verify, footer, coo
 | 01.07 | Cookie Banner | 5 |
 | 01.08 | Project Page — `/project/[slug]` | 1 |
 | 01.09 | Event Page — `/event/[slug]` | 3 |
-| 01.10 | Job Page v2 — `/job/[id]` | — |
+| 01.10 | Job Page v2 — `/job/[id]` | 2 |
 | 01.11 | Course Detail Page | — |
 | 01.12 | Legal Details Page | — |
 | 01.13 | Verify Page - Empty State | 2 |
@@ -189,6 +189,7 @@ Workflow, tasks, roadmap, vacancies, artifacts, devlog.
 | 04.04 | Vacancy Modal — Create | 1 |
 | 04.05 | Artifacts — `/user/project/[slug]/artifacts` | 4 |
 | 04.06 | Modal — Devlog composer · empty | 5 |
+| 04.07 | Candidate Card Modal (redesign on the Talent Card) | — |
 
 ### 05 · Course space
 
@@ -283,3 +284,5 @@ Users and roles, workflows, audit log, views.
 | 10.16 | Dialog — Audit entry detail | 1 |
 | 10.17 | Popover — Audit filters | 1 |
 | 10.18 | Admin — Views — `/admin/views` | 6 |
+| 10.19 | Admin — Open positions — `/admin/open-positions` | 1 |
+| 10.20 | Dialog — Position applications (read-only) | 1 |

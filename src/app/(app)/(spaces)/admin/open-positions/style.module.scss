@@ -1,0 +1,28 @@
+/* Frame 10.19: the admin list of open positions. */
+.page {
+	width: 100%;
+}
+
+.title {
+	margin: 0 !important;
+}
+
+.search {
+	width: 260px;
+}
+
+.select {
+	width: 180px;
+}
+
+.min0 {
+	min-width: 0;
+}
+
+.detail {
+	font-size: var(--gd-font-size-caption);
+}
+
+.number {
+	font-feature-settings: "tnum";
+}

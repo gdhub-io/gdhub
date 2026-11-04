@@ -1,5 +1,4 @@
-import { TeamMemberStatus } from "@gdhub-io/gdhub-prisma";
-import dayjs from "dayjs";
+import { VacancyApplicationStatus } from "@gdhub-io/gdhub-prisma";
 import { z } from "zod";
 import {
 	apiError,
@@ -8,6 +7,7 @@ import {
 	withAuth,
 	withValidation,
 } from "@/lib/api-handlers";
+import { currentMembership } from "@/repositories/project/team";
 import { NovuService } from "@/services/novu";
 import { prisma } from "@/services/prisma";
 
@@ -64,30 +64,38 @@ export const POST = withAuth({ mode: "user" })(
 			},
 		});
 
-		const isTeamMember = await prisma.teamMember.findFirst({
-			where: { userId: currentUser.id, teamId: vacancy?.teamId },
-		});
+		if (!vacancy || !currentUser.id) return json({ success: false });
 
-		if (isTeamMember) {
+		if (await currentMembership(currentUser.id, { teamId: vacancy.teamId })) {
 			return apiError.badRequest("You are already a member of this team");
 		}
 
-		if (!vacancy || !currentUser.id) return json({ success: false });
+		// One open application per person and position; a withdrawn or rejected one
+		// does not stand in the way of applying again.
+		const open = await prisma.vacancyApplication.findFirst({
+			where: {
+				userId: currentUser.id,
+				vacancyId,
+				status: VacancyApplicationStatus.Submitted,
+			},
+			select: { id: true },
+		});
+		if (open) {
+			return apiError.badRequest("You have already applied to this position");
+		}
 
-		const candidate = await prisma.teamMember.create({
+		const candidate = await prisma.vacancyApplication.create({
 			data: {
 				userId: currentUser.id,
-				startedAt: dayjs().toISOString(),
-				enteredProjectStepId: vacancy.team.project?.workflow?.currentStepId,
 				vacancyId,
-				teamId: vacancy.teamId,
-				position: vacancy.title,
-				status: TeamMemberStatus.Applicant,
 				specialityId,
 				allowedContacts: contactType,
-				applicationMessage: applicationMessage || null,
+				message: applicationMessage || null,
 			},
-			include: { user: { include: { profile: true } } },
+			select: {
+				id: true,
+				user: { select: { name: true, profile: { select: { name: true } } } },
+			},
 		});
 
 		const candidateName =
@@ -124,6 +132,6 @@ export const POST = withAuth({ mode: "user" })(
 			console.error("[NovuService]", e);
 		}
 
-		return json(candidate);
+		return json({ id: candidate.id });
 	}),
 );

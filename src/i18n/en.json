@@ -4462,18 +4462,26 @@
 	},
 	"projectCandidatePreviewModal": {
 		"acceptTheTeam": "Accept the team",
+		"application": "Application",
+		"appliedOn": "Applied {date}",
+		"appliedTo": "Applied to {position}",
 		"close": "Close",
+		"contactsAllowed": "Contacts allowed: {list}",
 		"cvPortfolio": "CV/Portfolio",
 		"email": "Email",
 		"freeTime": "Free time",
 		"fromTo": "from {fromDate} to {toDate} hours a week",
 		"go": "Go",
 		"greeting": "Message from the candidate",
+		"hired": "{name} joined the team",
 		"message": "Message",
 		"motivation": "Motivation",
+		"noContacts": "No contacts shared — write in the chat.",
+		"noMessage": "No message.",
 		"notPointed": "(not pointed)",
 		"placeOfResidence": "Place of residence",
 		"reject": "Reject",
+		"rejected": "You rejected {name}",
 		"telegram": "Telegram",
 		"title": "Candidate card"
 	},
@@ -4741,7 +4749,16 @@
 			}
 		},
 		"title": "Vacancies",
-		"validUntil": "Valid until"
+		"validUntil": "Valid until",
+		"withdraw": {
+			"action": "Withdraw application",
+			"applied": "You applied on {date}. The author sees your message and may write to you.",
+			"confirmBody": "The author will no longer see you among the candidates, and your chat about this position closes. You can apply again later.",
+			"confirmCancel": "Keep it",
+			"confirmOk": "Withdraw",
+			"confirmTitle": "Withdraw your application?",
+			"done": "Your application is withdrawn"
+		}
 	},
 	"verify": {
 		"form": {

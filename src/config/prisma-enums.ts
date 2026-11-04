@@ -48,6 +48,7 @@ import type {
 	TeamMemberStatus as TeamMemberStatusType,
 	TeamVacancyStatus as TeamVacancyStatusType,
 	UserRole as UserRoleType,
+	VacancyApplicationStatus as VacancyApplicationStatusType,
 	WaitlistFeature as WaitlistFeatureType,
 } from "@gdhub-io/gdhub-prisma";
 
@@ -461,13 +462,22 @@ export const ProjectArtifactType = {
 export type ProjectArtifactType = ProjectArtifactTypeType;
 
 export const TeamMemberStatus = {
-	Applicant: "Applicant",
 	Hired: "Hired",
-	Rejected: "Rejected",
 	Fired: "Fired",
 	Founder: "Founder",
 } as const satisfies Record<TeamMemberStatusType, TeamMemberStatusType>;
 export type TeamMemberStatus = TeamMemberStatusType;
+
+export const VacancyApplicationStatus = {
+	Submitted: "Submitted",
+	Hired: "Hired",
+	Rejected: "Rejected",
+	Withdrawn: "Withdrawn",
+} as const satisfies Record<
+	VacancyApplicationStatusType,
+	VacancyApplicationStatusType
+>;
+export type VacancyApplicationStatus = VacancyApplicationStatusType;
 
 export const TeamVacancyStatus = {
 	Draft: "Draft",
