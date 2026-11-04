@@ -1414,6 +1414,8 @@
 		"fillIn": "Fill in",
 		"loadFailed": "Could not load your progress",
 		"lockedReason": "Locked until the step above is done",
+		"lockedUntilAbout": "Opens once you tell us about yourself",
+		"lockedUntilProject": "Opens once your project is filled in",
 		"project": {
 			"allRunning": "Every project has a checkpoint under way",
 			"allRunningHint": "Create a new project to head for another checkpoint.",
