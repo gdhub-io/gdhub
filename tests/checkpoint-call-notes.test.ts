@@ -57,8 +57,8 @@ const session = {
 		],
 		sessions: [],
 		project: {
-			name: "Hollow Tide",
-			slug: "hollow-tide",
+			name: "E2E Test Game",
+			slug: "e2e-test-game",
 			team: { members: [{ user: person("marta") }] },
 		},
 	},
@@ -117,7 +117,7 @@ describe("writeDueCallNotes", () => {
 		);
 		expect(Object.keys(letters).sort()).toEqual(["curator", "marta"]);
 		expect(letters.marta.url).toBe(
-			"https://gdhub.test/user/project/hollow-tide/workflow/cp1?sprint=2&tab=review",
+			"https://gdhub.test/user/project/e2e-test-game/workflow/cp1?sprint=2&tab=review",
 		);
 		expect(letters.curator.url).toBe(
 			"https://gdhub.test/advisor/checkpoints/cp/review/2",

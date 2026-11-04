@@ -64,8 +64,8 @@ describe("remindCallsSoon", () => {
 				advisorAvailability: { timeZone: "Europe/Minsk" },
 			},
 			project: {
-				name: "Hollow Tide",
-				slug: "hollow-tide",
+				name: "E2E Test Game",
+				slug: "e2e-test-game",
 				author: { ...person("author"), profile: { timezone: "Asia/Tbilisi" } },
 				team: {
 					members: [
@@ -109,7 +109,7 @@ describe("remindCallsSoon", () => {
 		expect(byUser.author.payload.message).toContain("18:00 (Asia/Tbilisi)");
 		expect(byUser.oleg.payload.message).toContain("14:00 (UTC)");
 		expect(byUser.oleg.payload.redirectUrl).toMatch(
-			/\/user\/project\/hollow-tide\/workflow\/cp2\?sprint=2$/,
+			/\/user\/project\/e2e-test-game\/workflow\/cp2\?sprint=2$/,
 		);
 		// The time is in the key, so a moved call is announced again.
 	expect(byUser.oleg.transactionId).toBe("cp-call-s2-1792591200000-oleg");
@@ -122,7 +122,7 @@ describe("remindDevlogsDue", () => {
 		id: "cp",
 		projectId: "p",
 		startedAt: new Date("2026-10-05T00:00:00Z"),
-		project: { name: "Hollow Tide", slug: "hollow-tide", author: person("author") },
+		project: { name: "E2E Test Game", slug: "e2e-test-game", author: person("author") },
 	};
 
 	it("reminds the author on the sprint's last day when no devlog landed", async () => {
@@ -153,7 +153,7 @@ describe("notifyAuthorOfAnswer", () => {
 			projectId: "p",
 			createdAt: new Date("2026-10-01T00:00:00Z"),
 			startedAt: null,
-			project: { slug: "hollow-tide", author: person("author") },
+			project: { slug: "e2e-test-game", author: person("author") },
 		});
 		paymentFindFirst.mockResolvedValue({ id: "pay", amount: 2000 });
 		await notifyAuthorOfAnswer("cp", "Patrick", "declined");
@@ -161,7 +161,7 @@ describe("notifyAuthorOfAnswer", () => {
 		expect(args.payload.message).toMatch(/^Your payment stays with the checkpoint/);
 		expect(args.to.subscriberId).toBe("author");
 		expect(args.payload.title).toBe("Patrick can't take Checkpoint 2");
-		expect(args.payload.redirectUrl).toMatch(/\/user\/project\/hollow-tide\/workflow$/);
+		expect(args.payload.redirectUrl).toMatch(/\/user\/project\/e2e-test-game\/workflow$/);
 		// The letter goes into the checkpoint's journal as the platform's step.
 		expect(args.payload).not.toHaveProperty("checkpointId");
 		expect(journal).toHaveBeenCalledWith(
@@ -178,7 +178,7 @@ describe("notifyAuthorOfAnswer", () => {
 			projectId: "p",
 			createdAt: new Date(),
 			startedAt: null,
-			project: { slug: "hollow-tide", author: person("author") },
+			project: { slug: "e2e-test-game", author: person("author") },
 		});
 		send.mockRejectedValueOnce(new Error("down"));
 		await expect(
@@ -192,7 +192,7 @@ describe("notifyAuthorOfAnswer", () => {
 			projectId: "p",
 			createdAt: new Date(),
 			startedAt: null,
-			project: { slug: "hollow-tide", author: person("author") },
+			project: { slug: "e2e-test-game", author: person("author") },
 		});
 		paymentFindFirst.mockResolvedValue(null);
 		await notifyAuthorOfAnswer("cp", "Patrick", "silent");
@@ -264,7 +264,7 @@ describe("remindPlansUnsent", () => {
 			projectId: "p",
 			createdAt: new Date(),
 			project: {
-				slug: "hollow-tide",
+				slug: "e2e-test-game",
 				author: { ...person("author"), profile: { timezone } },
 			},
 		},
@@ -318,7 +318,7 @@ describe("remindScopeClosing", () => {
 		checkpoint: {
 			projectId: "p",
 			createdAt: new Date(),
-			project: { slug: "hollow-tide", author: person("author") },
+			project: { slug: "e2e-test-game", author: person("author") },
 		},
 	});
 
@@ -343,7 +343,7 @@ describe("remindEvidenceDue", () => {
 		id: "cp",
 		projectId: "p",
 		createdAt: new Date(),
-		project: { slug: "hollow-tide", author: person("author") },
+		project: { slug: "e2e-test-game", author: person("author") },
 		items,
 	});
 

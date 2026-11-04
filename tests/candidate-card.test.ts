@@ -23,7 +23,7 @@ const row = (allowedContacts: string[]) => ({
 	message: "Hi",
 	allowedContacts,
 	createdAt: new Date("2026-11-03"),
-	vacancy: { id: "v1", title: "Level designer", teamId: "t1", team: { project: { name: "Hollow Tide" } } },
+	vacancy: { id: "v1", title: "Level designer", teamId: "t1", team: { project: { name: "E2E Test Game" } } },
 	speciality: { id: "sp1", name: "Level Designer", level: "Experienced", direction: { name: "game design" } },
 	user: {
 		id: "u1",

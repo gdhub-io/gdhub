@@ -80,8 +80,8 @@ describe("GET /api/scout/games/[id]", () => {
 	it("reads the header and the facts Overview leads with, and no more", async () => {
 		projectFindFirst.mockResolvedValue({
 			id: "p1",
-			name: "Hollow Tide",
-			slug: "hollow-tide",
+			name: "E2E Test Game",
+			slug: "e2e-test-game",
 			description: "A hand-painted adventure",
 			coverImage: null,
 			videoLink: null,
@@ -125,7 +125,7 @@ describe("GET /api/scout/games/[id]", () => {
 		const body = await (await call("overview", { id: "p1" })).json();
 
 		expect(body).toMatchObject({
-			name: "Hollow Tide",
+			name: "E2E Test Game",
 			stage: "Prototyping",
 			// The stage under the start date is the first step of the workflow,
 			// not the one the project happens to sit on now.

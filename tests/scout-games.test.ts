@@ -55,8 +55,8 @@ const scout = {
 
 const project = (over: Record<string, unknown> = {}) => ({
 	id: "p1",
-	name: "Hollow Tide",
-	slug: "hollow-tide",
+	name: "E2E Test Game",
+	slug: "e2e-test-game",
 	coverImage: null,
 	genre: "Strategy",
 	platform: "PC",

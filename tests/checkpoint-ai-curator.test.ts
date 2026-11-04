@@ -245,8 +245,8 @@ const reviewed = (index: number, overrides: Record<string, unknown> = {}) => ({
 		},
 	],
 	project: {
-		name: "Hollow Tide",
-		slug: "hollow-tide",
+		name: "E2E Test Game",
+		slug: "e2e-test-game",
 		author: person("author"),
 		team: { members: [{ user: person("author") }, { user: person("oleg") }] },
 	},
@@ -350,12 +350,12 @@ describe("writeDueReviews", () => {
 			[
 				"author",
 				"cp-review-s2-author",
-				"https://gdhub.test/user/project/hollow-tide/workflow/cp3?sprint=2&tab=review",
+				"https://gdhub.test/user/project/e2e-test-game/workflow/cp3?sprint=2&tab=review",
 			],
 			[
 				"oleg",
 				"cp-review-s2-oleg",
-				"https://gdhub.test/user/project/hollow-tide/workflow/cp3?sprint=2&tab=review",
+				"https://gdhub.test/user/project/e2e-test-game/workflow/cp3?sprint=2&tab=review",
 			],
 		]);
 	});

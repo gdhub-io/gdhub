@@ -53,11 +53,11 @@ describe("the smoke stage's routes", () => {
 	});
 
 	describe("the address it opens", () => {
-		const known = new Map([["/user/project/[slug]", "hollow-tide"]]);
+		const known = new Map([["/user/project/[slug]", "e2e-test-game"]]);
 
 		it("fills a parameter with its real value", () => {
 			expect(addressOf("/user/project/[slug]/team", known)).toEqual({
-				url: "/user/project/hollow-tide/team",
+				url: "/user/project/e2e-test-game/team",
 				real: true,
 			});
 		});

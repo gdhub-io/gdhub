@@ -19,7 +19,7 @@ vi.mock("@/repositories/checkpoints/detail", () => ({
 
 const row = {
 	project: {
-		name: "Hollow Tide",
+		name: "E2E Test Game",
 		description: null,
 		coverImage: null,
 		videoLink: null,

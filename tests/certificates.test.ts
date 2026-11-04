@@ -152,8 +152,8 @@ describe("getVerifyCertificate", () => {
 				goal: "A playable vertical slice",
 				curator: { ...user, profile: { name: "Marta Ilves" } },
 				project: {
-					name: "Hollow Tide",
-					slug: "hollow-tide",
+					name: "E2E Test Game",
+					slug: "e2e-test-game",
 					coverImage: null,
 					description: null,
 				},
@@ -163,7 +163,7 @@ describe("getVerifyCertificate", () => {
 		expect(data).toMatchObject({
 			source: "Checkpoint",
 			participant: { name: "Ann Lee" },
-			project: { name: "Hollow Tide" },
+			project: { name: "E2E Test Game" },
 			subject: {
 				title: "Prototyping",
 				endDate: "2026-11-19T00:00:00.000Z",

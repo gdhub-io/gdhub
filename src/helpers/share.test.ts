@@ -3,7 +3,7 @@ import { SHARE_NETWORKS, shareIntentUrl } from "./share";
 
 const post = {
 	url: "https://gdhub.io/devlog/abc?ref=a&b=1",
-	text: "Hollow Tide: 50% done & counting",
+	text: "E2E Test Game: 50% done & counting",
 };
 
 describe("shareIntentUrl", () => {
@@ -25,7 +25,7 @@ describe("shareIntentUrl", () => {
 	});
 
 	it("sends LinkedIn and Facebook the link alone", () => {
-		expect(shareIntentUrl("linkedin", post)).not.toContain("Hollow");
-		expect(shareIntentUrl("facebook", post)).not.toContain("Hollow");
+		expect(shareIntentUrl("linkedin", post)).not.toContain("Test");
+		expect(shareIntentUrl("facebook", post)).not.toContain("Test");
 	});
 });
