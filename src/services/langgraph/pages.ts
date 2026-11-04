@@ -26,7 +26,7 @@ export const LANGGRAPH_PAGES: ReadonlyArray<PageInfo> = [
 		description: "Project overview with team, reports, and open vacancies.",
 	},
 	{
-		path: "/vacancies",
+		path: "/jobs",
 		title: "Vacancies",
 		description: "Open positions across teams and projects.",
 	},

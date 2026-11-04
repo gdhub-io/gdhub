@@ -168,3 +168,10 @@ export const nextPlannedParams = (
 		? curatorKindParam(previous.curatorKind)
 		: null,
 });
+
+/**
+ * The hosts the tag manager loads on. Vercel previews are production builds too,
+ * so the build alone cannot tell: staging would send page views and ad
+ * conversions and load the chat widget on a domain it is not set up for.
+ */
+export const ANALYTICS_HOSTS = ["gdhub.io", "www.gdhub.io"];

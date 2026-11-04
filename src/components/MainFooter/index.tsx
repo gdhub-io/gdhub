@@ -20,7 +20,7 @@ export const MainFooter = () => {
 					label: t("mainFooter.gameProjects", "Video games"),
 				},
 				{
-					href: "/vacancies",
+					href: "/jobs",
 					label: t("mainFooter.vacancies", "Open positions"),
 				},
 				{ href: "/events", label: t("mainFooter.events", "Events") },

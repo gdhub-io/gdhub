@@ -20,6 +20,8 @@ export type EntryShellProps = {
 	children: ReactNode;
 	/** The page's actions, right-aligned under a hairline. */
 	foot?: ReactNode;
+	/** The project the way in was opened from: the top row leads back to its workflow. */
+	projectSlug?: string;
 };
 
 /**
@@ -35,6 +37,7 @@ export function EntryShell({
 	subtitle,
 	children,
 	foot,
+	projectSlug,
 }: EntryShellProps) {
 	const { t } = useTranslate();
 
@@ -45,6 +48,13 @@ export function EntryShell({
 					<Flex justify="space-between" align="center" className={styles.top}>
 						<GdhubLogo className={styles.logo} />
 						<Flex gap={4}>
+							{projectSlug && (
+								<Link href={`/user/project/${projectSlug}/workflow`}>
+									<Button type="text">
+										{t("checkpointEntry.toProject", "To project")}
+									</Button>
+								</Link>
+							)}
 							<Link href="/">
 								<Button type="text">
 									{t("checkpointEntry.toHome", "To home")}

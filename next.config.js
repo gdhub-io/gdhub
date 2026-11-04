@@ -14,16 +14,26 @@ const typesenseOrigin = process.env.NEXT_PUBLIC_TYPESENSE_HOST
 	: "";
 const matrixOrigin = originOf(process.env.NEXT_PUBLIC_MATRIX_CHAT_BASE_URL);
 
+// What the tag manager loads besides analytics: Google Ads, the Crisp chat, Plerdy, Brevo tracking.
+const tagManagerScripts =
+	"https://*.googleadservices.com https://*.googlesyndication.com https://*.doubleclick.net https://client.crisp.chat https://*.plerdy.com https://*.brevo.com https://*.sibautomation.com";
+const tagManagerConnect =
+	"https://*.google.com https://*.doubleclick.net https://*.googlesyndication.com https://*.adtrafficquality.google https://*.crisp.chat wss://*.relay.crisp.chat https://*.plerdy.com https://*.brevo.com https://*.sibautomation.com";
+// Vercel's feedback toolbar, on preview deployments only.
+const vercelLive = process.env.VERCEL_ENV === "preview" ? " https://vercel.live" : "";
+const tagManagerFrames =
+	"https://*.googlesyndication.com https://*.doubleclick.net https://*.adtrafficquality.google https://*.crisp.chat";
+
 // Report-only for now: violations show in the browser console and block nothing.
 // Enforce it once a release has run clean, with a nonce in place of 'unsafe-inline'.
 const contentSecurityPolicy = [
 	"default-src 'self'",
-	`script-src 'self' 'unsafe-inline'${process.env.NODE_ENV === "development" ? " 'unsafe-eval'" : ""} https://www.googletagmanager.com https://*.google-analytics.com https://cdn.paddle.com https://telegram.org https://*.daily.co https://www.youtube.com https://s.ytimg.com`,
-	"style-src 'self' 'unsafe-inline' https://fonts.googleapis.com https://cdn.paddle.com",
+	`script-src 'self' 'unsafe-inline'${process.env.NODE_ENV === "development" ? " 'unsafe-eval'" : ""} https://www.googletagmanager.com https://*.google-analytics.com https://cdn.paddle.com https://telegram.org https://*.daily.co https://www.youtube.com https://s.ytimg.com ${tagManagerScripts}${vercelLive}`,
+	"style-src 'self' 'unsafe-inline' https://fonts.googleapis.com https://cdn.paddle.com https://client.crisp.chat",
 	// Avatars, covers and devlog images come from user-supplied hosts.
 	"img-src 'self' data: blob: https:",
 	"media-src 'self' blob: https:",
-	"font-src 'self' data: https://fonts.gstatic.com",
+	"font-src 'self' data: https://fonts.gstatic.com https://client.crisp.chat",
 	[
 		"connect-src 'self'",
 		typesenseOrigin,
@@ -35,10 +45,11 @@ const contentSecurityPolicy = [
 		"https://*.paddle.com",
 		"https://*.daily.co wss://*.daily.co",
 		"https://cdn.sanity.io",
+		tagManagerConnect,
 	]
 		.filter(Boolean)
 		.join(" "),
-	"frame-src 'self' https://*.paddle.com https://*.daily.co https://www.youtube.com https://www.youtube-nocookie.com https://player.vimeo.com https://oauth.telegram.org https://www.googletagmanager.com",
+	`frame-src 'self' https://*.paddle.com https://*.daily.co https://www.youtube.com https://www.youtube-nocookie.com https://player.vimeo.com https://oauth.telegram.org https://www.googletagmanager.com ${tagManagerFrames}${vercelLive}`,
 	"worker-src 'self' blob:",
 	"object-src 'none'",
 	"base-uri 'self'",
@@ -153,6 +164,8 @@ const nextConfig = {
 		return config;
 	},
 	redirects: async () => [
+		// The board moved to /jobs; old links and bookmarks still point at /vacancies.
+		{ source: "/vacancies", destination: "/jobs", permanent: true },
 		// /profile/settings/X → /user/settings/X (settings moved from
 		// protected/profile → (app)/(spaces)/user/settings).
 		{

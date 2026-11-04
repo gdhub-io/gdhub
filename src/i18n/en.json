@@ -1436,6 +1436,7 @@
 			"next": "Head for your next checkpoint"
 		},
 		"toHome": "To home",
+		"toProject": "To project",
 		"tooManyTries": "Too many tries — wait a minute and try again."
 	},
 	"checkpointLanding": {

@@ -48,7 +48,7 @@ export function HubClient({ projectSlug }: { projectSlug?: string }) {
 			: (name ?? undefined);
 
 	return (
-		<EntryShell next={status.data?.hadCheckpoint}>
+		<EntryShell next={status.data?.hadCheckpoint} projectSlug={projectSlug}>
 			<EntryHub
 				status={status.data}
 				aboutSummary={aboutSummary}
