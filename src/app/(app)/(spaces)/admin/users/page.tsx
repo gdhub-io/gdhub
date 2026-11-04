@@ -39,6 +39,7 @@ import { AppAvatar } from "@/components/ui/AppAvatar";
 import { ROLE_META } from "@/config/permissions/role-meta";
 import { SPACE_ROLES, type SpaceRole } from "@/config/permissions/roles";
 import { SPACE_TYPES, type SpaceType } from "@/config/spaces";
+import type { ExpertFilter } from "@/repositories/admin/users";
 import { permissionCatalog } from "@/services/access/role-catalog";
 import styles from "./style.module.scss";
 
@@ -152,8 +153,11 @@ export default function UsersAdminPage() {
 	const [spaceType, setSpaceType] = useState<SpaceType>();
 	const [role, setRole] = useState<SpaceRole>();
 	const [permission, setPermission] = useState<string>();
+	const [experts, setExperts] = useState<ExpertFilter>();
 
-	const activeFilters = [spaceType, role, permission].filter(Boolean).length;
+	const activeFilters = [spaceType, role, permission, experts].filter(
+		Boolean,
+	).length;
 
 	const permissionOptions = useMemo(
 		() =>
@@ -189,6 +193,7 @@ export default function UsersAdminPage() {
 			setSpaceType(undefined);
 			setRole(undefined);
 			setPermission(undefined);
+			setExperts(undefined);
 		});
 
 	const { data: response, isFetching } = useQuery({
@@ -203,6 +208,7 @@ export default function UsersAdminPage() {
 			spaceType,
 			role,
 			permission,
+			experts,
 		],
 		queryFn: () =>
 			axios
@@ -216,6 +222,7 @@ export default function UsersAdminPage() {
 						spaceType,
 						role,
 						permission,
+						experts,
 					},
 				})
 				.then((r) => r.data),
@@ -570,6 +577,26 @@ export default function UsersAdminPage() {
 											onChange={(value) =>
 												applyFilter(() => setPermission(value))
 											}
+										/>
+									</div>
+									<div className={styles.filtersField}>
+										<Text type="secondary">Experts</Text>
+										<Select
+											allowClear
+											variant="filled"
+											placeholder="Everyone"
+											value={experts}
+											options={[
+												{
+													value: "experts",
+													label: "Experts open to mentoring",
+												},
+												{
+													value: "featured",
+													label: "Top experts on the landing",
+												},
+											]}
+											onChange={(value) => applyFilter(() => setExperts(value))}
 										/>
 									</div>
 								</div>
