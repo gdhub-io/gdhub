@@ -38,7 +38,7 @@ async function apply(page: Page, greeting: string) {
 	await modal.getByRole("button", { name: "Choose" }).click();
 
 	await expect(page.getByText("Your response is sent")).toBeVisible();
-	await expect(page.getByRole("button", { name: "Cancel my response" })).toBeVisible();
+	await expect(page.getByRole("button", { name: "Withdraw application" })).toBeVisible();
 }
 
 test.describe.serial("a vacancy, between its author and its candidates", () => {
