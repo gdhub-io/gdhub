@@ -3999,7 +3999,9 @@
 			"title": "Events"
 		},
 		"expert": {
-			"back": "Experts"
+			"back": "Experts",
+			"notTakingRequests": "The expert is not taking requests right now.",
+			"requestConsultation": "Request consultation"
 		},
 		"experts": {
 			"myExperts": "My requests"
@@ -4240,6 +4242,7 @@
 			"manage": "Manage cookies",
 			"marketing": "Marketing",
 			"marketingText": "Google Ads, Google AdSense, Meta Pixel and Brevo — measure and show ads, including to people who visited GDHub.",
+			"marketingText2": "Google Ads, Meta Pixel and Brevo — measure our ads and show them to people who visited GDHub.",
 			"more": "Read more",
 			"preferences": "Cookie Preferences",
 			"text": "This website uses cookies to improve the user experience. By using our website you agree to the use of all cookies in accordance with our Cookie policy."
