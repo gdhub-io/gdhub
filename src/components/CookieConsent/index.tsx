@@ -150,8 +150,8 @@ export const CookieConsent = () => {
 							</p>
 							<p className={styles.categoryDescription}>
 								<T keyName="popup.cookie.marketingText">
-									Google Ads, Meta Pixel and Brevo — measure our ads and show
-									them to people who visited GDHub.
+									Google Ads, Google AdSense, Meta Pixel and Brevo — measure and
+									show ads, including to people who visited GDHub.
 								</T>
 							</p>
 						</div>
