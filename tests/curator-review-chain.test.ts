@@ -11,14 +11,14 @@ vi.mock("@/services/ai-trace", () => ({ traceGenerated: vi.fn() }));
 vi.mock("@/services/ai-usage", () => ({ recordAiUsage: vi.fn() }));
 
 const { reviewSprint } = await import("@/services/checkpoints/ai-review");
-const { hollowTide } = await import(
-	"@/services/checkpoints/ai-curator-lab/situations/hollow-tide"
+const { e2eCheckpoint } = await import(
+	"@/services/checkpoints/ai-curator-lab/situations/e2e-test-game"
 );
-const project = hollowTide("en");
+const facts = e2eCheckpoint(3).facts(2);
 
 const input = {
 	goal: "A playable slice",
-	workflow: project.workflow("sprint2"),
+	workflow: facts.workflow,
 	sprint: 2,
 	tasks: [
 		{
@@ -32,7 +32,7 @@ const input = {
 	devlogs: [],
 	devlogMedia: [],
 	artifacts: [],
-	team: project.team("sprint2"),
+	team: facts.team,
 	focusLastReview: [],
 	final: false,
 	picture: "",

@@ -28,9 +28,9 @@ import styles from "./style.module.scss";
 
 const { Text } = Typography;
 
-/** The checkpoint every lab page is drawn in: 1–28 October, review days a week apart. */
-const DAYS = ["01", "08", "15", "22", "29"].map(
-	(day) => `2026-10-${day}T00:00:00.000Z`,
+/** The checkpoint every lab page is drawn in: E2E Test Game's third, 2–29 November, review days a week apart. */
+const DAYS = ["02", "09", "16", "23", "30"].map(
+	(day) => `2026-11-${day}T00:00:00.000Z`,
 );
 
 type Task = CheckpointReviewDto["plan"]["tasks"][number];
@@ -102,8 +102,8 @@ const review = ({
 		number: 2,
 		stageName: workflow.currentStage,
 		startedAt: DAYS[0],
-		dueAt: "2026-10-28T00:00:00.000Z",
-		project: { id: "lab", name: "Hollow Tide", slug: "hollow-tide" },
+		dueAt: "2026-11-29T00:00:00.000Z",
+		project: { id: "lab", name: "E2E Test Game", slug: "e2e-test-game" },
 		plan: {
 			goal,
 			edit,
@@ -331,6 +331,7 @@ export function AuthorView({
 
 	if (call === "run") {
 		const sprints = (fields.sprints as LabRunSprint[]) ?? [];
+		const stage = (fields.stage as string | undefined) ?? "";
 		const verdict = fields.verdict as {
 			verdict: CheckpointVerdict;
 			verdictNote: string;
@@ -348,7 +349,7 @@ export function AuthorView({
 								{row.direction && (
 									<SprintDirectionView
 										direction={row.direction}
-										stage="Prototyping"
+										stage={stage}
 									/>
 								)}
 								{row.inShort && <Text>{row.inShort}</Text>}

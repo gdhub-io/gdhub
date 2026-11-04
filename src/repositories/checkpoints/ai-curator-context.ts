@@ -9,6 +9,12 @@ import {
 	TeamVacancyStatus,
 	VacancyApplicationStatus,
 } from "@/config/prisma-enums";
+import {
+	ACTIVITY_LINE,
+	type ActivityKind,
+	activityLine,
+	activityText,
+} from "@/lib/checkpoints/activity-text";
 import { teamCapacity, weeklyRange } from "@/lib/checkpoints/capacity";
 import { devlogWords } from "@/lib/checkpoints/curator-text";
 import { dueDateFrom, MS_PER_DAY } from "@/lib/checkpoints/days";
@@ -168,15 +174,6 @@ export async function curatorTeam(
 	};
 }
 
-const ACTIVITY_LINE = {
-	artifact: (actor: string, subject: string) => `${actor} added "${subject}"`,
-	joined: (actor: string, subject: string) => `${actor} joined as ${subject}`,
-	left: (actor: string, subject: string) => `${actor} (${subject}) left`,
-	vacancyOpened: (_: string, subject: string) => `an open position: ${subject}`,
-	vacancyClosed: (_: string, subject: string) =>
-		`the open position closed: ${subject}`,
-} as const;
-
 /**
  * What happened on the project between two dates, oldest first. Devlogs are
  * read in full elsewhere, and the stage does not move inside a checkpoint.
@@ -194,10 +191,14 @@ async function activityLines(
 	const shown = page
 		.filter((event) => new Date(event.at) >= from)
 		.flatMap((event) => {
-			const line = ACTIVITY_LINE[event.kind as keyof typeof ACTIVITY_LINE];
-			return line
+			return event.kind in ACTIVITY_LINE
 				? [
-						`- ${day(event.at)} · ${line(event.actor ?? "Someone", event.subject ?? "untitled")}`,
+						activityLine(
+							day(event.at),
+							event.kind as ActivityKind,
+							event.actor ?? "Someone",
+							event.subject ?? "untitled",
+						),
 					]
 				: [];
 		})
@@ -208,12 +209,7 @@ async function activityLines(
 			? "\n- (earlier events in this period not listed)"
 			: "";
 
-	const period = leadIn
-		? `in the two weeks before the checkpoint started, from ${day(from)} to ${day(to)}`
-		: `from ${day(from)} to ${day(to)}`;
-	return shown.length
-		? `What happened on the project ${period}:\n${shown.join("\n")}${more}`
-		: `Nothing else happened on the project ${period}.`;
+	return activityText(shown, day(from), day(to), leadIn, more);
 }
 
 /**

@@ -4,47 +4,17 @@ import {
 	type Situation,
 	say,
 } from "../schemas";
-import { hollowTide } from "./hollow-tide";
+import { e2eCheckpoint } from "./e2e-test-game";
 
-/** Day 1, right after payment: the goal as paid for, no tasks yet. */
-const TEXT = {
-	en: {
-		experience: "Two jam games, one shipped mobile puzzle.",
-		tooBig:
-			"Release Hollow Tide on Steam: all five islands, online co-op and a trailer",
-		tooSmall: "Pick a colour palette for the first island",
-	},
-	ru: {
-		experience: "Две игры с джемов, одна вышедшая мобильная головоломка.",
-		tooBig:
-			"Выпустить Hollow Tide в Steam: все пять островов, онлайн-кооператив и трейлер",
-		tooSmall: "Подобрать палитру для первого острова",
-	},
-};
+const TOO_BIG =
+	"Release E2E Test Game on Steam: all eight worlds, a boss in each and online co-op";
+const TOO_SMALL = "Pick the gnome's colour palette";
 
+/** Day 1 of checkpoint 3, right after payment: the goal as paid for, no tasks yet. */
 export const goalCheckSituations = (
 	language: LabLanguage,
 ): Situation<typeof goalCheckInput>[] => {
-	const t = TEXT[language];
-	const project = hollowTide(language);
-	const base = {
-		card: {
-			goal: project.goal,
-			inputs: [{ id: "i1", text: project.input }],
-			outcomes: [],
-		},
-		workflow: project.workflow("start"),
-		project: { name: "Hollow Tide", pitch: project.pitch, genre: "Adventure" },
-		author: {
-			speciality: "Game designer",
-			level: "Middle",
-			experience: t.experience,
-		},
-		team: project.team("start"),
-		previous: null,
-		picture: project.picture("start"),
-		marketing: project.marketing("start"),
-	};
+	const base = e2eCheckpoint(3).goalCheck();
 	const withGoal = (goal: string) => ({
 		...base,
 		card: { ...base.card, goal },
@@ -67,7 +37,7 @@ export const goalCheckSituations = (
 				"A goal far bigger than four weeks",
 				"Цель намного больше четырёх недель",
 			),
-			input: withGoal(t.tooBig),
+			input: withGoal(TOO_BIG),
 		},
 		{
 			id: "too-small",
@@ -76,7 +46,7 @@ export const goalCheckSituations = (
 				"A goal that asks too little",
 				"Цель, которая просит слишком мало",
 			),
-			input: withGoal(t.tooSmall),
+			input: withGoal(TOO_SMALL),
 		},
 	];
 };

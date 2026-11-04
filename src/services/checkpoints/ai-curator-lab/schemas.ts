@@ -254,8 +254,17 @@ export const planLetterInput = z.object({
 	reviewOn: z.string(),
 });
 
-/** The whole road: the character is all it takes; the situations are the lab's own. */
-export const roadInput = z.object({ character });
+/** The whole road: the character, and which of E2E Test Game's checkpoints — all of them when absent. */
+export const roadInput = z.object({
+	character,
+	checkpoint: z.number().int().min(1).optional(),
+});
+
+/** One checkpoint of E2E Test Game run with its pictures and directions. */
+export const runInput = z.object({
+	character,
+	checkpoint: z.number().int().min(1),
+});
 
 /** A human call's transcript, read into notes (GDHUB-133). */
 export const callNotesLabInput = z.object({
