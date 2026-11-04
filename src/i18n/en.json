@@ -2193,7 +2193,8 @@
 				"acceptAll": "Accept all {n} suggestions",
 				"move": "Move to {stage}",
 				"plan": "Plan Checkpoint {n}",
-				"reviewTasks": "Review the tasks"
+				"reviewTasks": "Review the tasks",
+				"share": "Share the result"
 			},
 			"curator": "AI curator",
 			"empty": "No review yet",
@@ -2289,6 +2290,17 @@
 			"openCall": "Open call 3",
 			"subtitle": "Update the scope on day {day}.",
 			"why": "Why"
+		},
+		"share": {
+			"copied": "Text copied",
+			"copy": "Copy text",
+			"download": "Download image",
+			"failed": "The card could not be made right now. Try again in a minute.",
+			"hint": "Networks don't take a picture from the post: download the image and attach it. LinkedIn and Facebook also take only the link, so copy the text first.",
+			"limit": "{n} / {max} on X",
+			"link": "Add a link to the project's public page",
+			"post": "The post",
+			"title": "Share the result"
 		},
 		"signals": {
 			"artifacts": "Artifacts",

@@ -378,6 +378,10 @@ export function AuthorView({
 		);
 	}
 
+	if (call === "shareLine") {
+		return <Text className={styles.shareLine}>{fields.line as string}</Text>;
+	}
+
 	if (call === "callNotes") {
 		const notes = fields as unknown as CallNotes;
 		return (

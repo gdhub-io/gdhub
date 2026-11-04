@@ -895,6 +895,21 @@ export const E2E_ROAD: RoadCheckpoint[] = [
 							},
 						},
 					},
+					{
+						id: "a21b",
+						type: "Other",
+						name: "Devlogs about the demo",
+						link: `${LINKS.itch}/devlog`,
+						by: BO.name,
+						on: "2027-02-05",
+						proves: {
+							task: "c5-t3",
+							seen: {
+								match: "Matches",
+								note: "Devlogs #17, #19 and #20 are about the demo: the art, the frozen river and the release.",
+							},
+						},
+					},
 				],
 				links: { "itch.io demo": LINKS.demo },
 			},

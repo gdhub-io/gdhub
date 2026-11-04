@@ -115,7 +115,7 @@ const voice = (
 `;
 
 /** One structured call on the curator's model: traced, metered, null when unusable. */
-const runStructured = async <S extends z.ZodType>(
+export const runStructured = async <S extends z.ZodType>(
 	name: string,
 	schema: S,
 	request: { instructions: string; prompt: string },

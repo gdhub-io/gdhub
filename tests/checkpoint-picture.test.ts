@@ -309,6 +309,16 @@ describe("the lab's E2E Test Game road", async () => {
 		}
 	});
 
+	// The verdict rule misses a goal on any unproven task, so a road that means a met goal proves every one.
+	it("proves every task of a checkpoint whose goal the road does not miss", () => {
+		for (const checkpoint of E2E_ROAD.filter((each) => each.verdict !== "GoalMissed")) {
+			const unproven = e2eCheckpoint(checkpoint.number)
+				.tasks(4)
+				.filter((task) => !task.evidence.some((piece) => piece.seen?.match === "Matches"));
+			expect(unproven.map((task) => task.text), `checkpoint ${checkpoint.number}`).toEqual([]);
+		}
+	});
+
 	it("tells the team on the day it changes: Dan hired, Cleo gone", () => {
 		const names = (number: number, moment: "start" | "end") =>
 			e2eCheckpoint(number).facts(moment).team.people.map((person) => person.name);

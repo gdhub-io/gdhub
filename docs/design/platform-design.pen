@@ -517403,6 +517403,1870 @@
           "fontWeight": "500"
         }
       ]
+    },
+    {
+      "type": "frame",
+      "id": "n3Pen",
+      "x": 22000,
+      "y": 76421,
+      "name": "12.20 · Share card · the verdict, as an image (1200×630) · GDHUB-144",
+      "clip": true,
+      "width": 1200,
+      "height": 630,
+      "fill": "#0F0F0E",
+      "layout": "vertical",
+      "gap": 24,
+      "padding": [
+        72,
+        72,
+        56,
+        72
+      ],
+      "justifyContent": "space_between",
+      "children": [
+        {
+          "type": "frame",
+          "id": "Qn5H3",
+          "layoutPosition": "absolute",
+          "x": 520,
+          "y": 0,
+          "name": "Project cover · masked",
+          "clip": true,
+          "width": 680,
+          "height": 630,
+          "layout": "none",
+          "children": [
+            {
+              "type": "rectangle",
+              "id": "LrNyc",
+              "x": 0,
+              "y": 0,
+              "name": "Cover image (the project's cover)",
+              "fill": {
+                "type": "image",
+                "enabled": true,
+                "url": "generated-25.png",
+                "mode": "cover"
+              },
+              "width": 680,
+              "height": 630
+            },
+            {
+              "type": "rectangle",
+              "id": "jk8Us",
+              "x": 0,
+              "y": 0,
+              "name": "Mask · left",
+              "fill": {
+                "type": "gradient",
+                "gradientType": "linear",
+                "enabled": true,
+                "rotation": 270,
+                "size": {
+                  "height": 1
+                },
+                "colors": [
+                  {
+                    "color": "#0F0F0EFF",
+                    "position": 0
+                  },
+                  {
+                    "color": "#0F0F0EE6",
+                    "position": 0.2
+                  },
+                  {
+                    "color": "#0F0F0E80",
+                    "position": 0.5
+                  },
+                  {
+                    "color": "#0F0F0E00",
+                    "position": 1
+                  }
+                ]
+              },
+              "width": 680,
+              "height": 630
+            },
+            {
+              "type": "rectangle",
+              "id": "crTfF",
+              "x": 0,
+              "y": 0,
+              "name": "Mask · bottom",
+              "fill": {
+                "type": "gradient",
+                "gradientType": "linear",
+                "enabled": true,
+                "rotation": 180,
+                "size": {
+                  "height": 1
+                },
+                "colors": [
+                  {
+                    "color": "#0F0F0E00",
+                    "position": 0
+                  },
+                  {
+                    "color": "#0F0F0E00",
+                    "position": 0.5
+                  },
+                  {
+                    "color": "#0F0F0EB3",
+                    "position": 0.82
+                  },
+                  {
+                    "color": "#0F0F0EF2",
+                    "position": 1
+                  }
+                ]
+              },
+              "width": 680,
+              "height": 630
+            }
+          ]
+        },
+        {
+          "type": "frame",
+          "id": "wYLpl",
+          "name": "Main",
+          "width": "fill_container",
+          "height": "fill_container",
+          "layout": "vertical",
+          "gap": 28,
+          "justifyContent": "center",
+          "children": [
+            {
+              "type": "frame",
+              "id": "et308",
+              "name": "Signed",
+              "gap": 16,
+              "alignItems": "center",
+              "children": [
+                {
+                  "type": "frame",
+                  "id": "D4PLTw",
+                  "name": "Avatar · the character, or the robot",
+                  "clip": true,
+                  "width": 64,
+                  "height": 64,
+                  "fill": {
+                    "type": "image",
+                    "enabled": true,
+                    "url": "generated-2.png",
+                    "mode": "cover"
+                  },
+                  "cornerRadius": 999,
+                  "stroke": "#F1554166",
+                  "strokeWidth": 2,
+                  "strokeAlignment": "inner"
+                },
+                {
+                  "type": "frame",
+                  "id": "SZORG",
+                  "name": "Name",
+                  "layout": "vertical",
+                  "gap": 2,
+                  "children": [
+                    {
+                      "type": "text",
+                      "id": "zNShi",
+                      "name": "Name",
+                      "fill": "#FFFFFF",
+                      "content": "Elder Aldric",
+                      "fontFamily": "Onest",
+                      "fontSize": 24,
+                      "fontWeight": "700"
+                    },
+                    {
+                      "type": "text",
+                      "id": "CuacK",
+                      "name": "Role",
+                      "fill": "#FFFFFF99",
+                      "content": "AI curator",
+                      "fontFamily": "Onest",
+                      "fontSize": 18,
+                      "fontWeight": "normal"
+                    }
+                  ]
+                }
+              ]
+            },
+            {
+              "type": "text",
+              "id": "iotte",
+              "name": "Message · the curator's reaction and a wish (≤ 200 chars)",
+              "fill": "#FFFFFF",
+              "textGrowth": "fixed-width",
+              "width": 700,
+              "content": "By my staff, the gnome’s cracking-ice trial is taking shape! May the demo turn your last design doubts into clear answers.",
+              "lineHeight": 1.22,
+              "fontFamily": "Onest",
+              "fontSize": 40,
+              "fontWeight": "500"
+            },
+            {
+              "type": "text",
+              "id": "nIVWB",
+              "name": "When",
+              "fill": "#FFFFFF80",
+              "content": "3 January 2027",
+              "fontFamily": "Onest",
+              "fontSize": 18,
+              "fontWeight": "normal"
+            }
+          ]
+        },
+        {
+          "type": "frame",
+          "id": "RDpxX",
+          "name": "Footer",
+          "width": "fill_container",
+          "stroke": "#FFFFFF1F",
+          "strokeWidth": {
+            "top": 1
+          },
+          "strokeAlignment": "inner",
+          "padding": [
+            24,
+            0,
+            0,
+            0
+          ],
+          "justifyContent": "space_between",
+          "alignItems": "end",
+          "children": [
+            {
+              "type": "frame",
+              "id": "ALRFi",
+              "name": "What · for whom",
+              "layout": "vertical",
+              "gap": 6,
+              "children": [
+                {
+                  "type": "frame",
+                  "id": "QF2GG",
+                  "name": "What",
+                  "gap": 10,
+                  "alignItems": "center",
+                  "children": [
+                    {
+                      "type": "ellipse",
+                      "id": "InvcH",
+                      "name": "Verdict dot",
+                      "fill": "#3FB37F",
+                      "width": 10,
+                      "height": 10
+                    },
+                    {
+                      "type": "text",
+                      "id": "S4DmD",
+                      "name": "What",
+                      "fill": "#FFFFFFB3",
+                      "content": "Checkpoint 4 passed on the road to the release · Ready for the next stage",
+                      "fontFamily": "Onest",
+                      "fontSize": 18,
+                      "fontWeight": "normal"
+                    }
+                  ]
+                },
+                {
+                  "type": "text",
+                  "id": "ottX1",
+                  "name": "Project",
+                  "fill": "#FFFFFF",
+                  "content": "E2E Test Game",
+                  "fontFamily": "Onest",
+                  "fontSize": 22,
+                  "fontWeight": "700"
+                }
+              ]
+            },
+            {
+              "id": "PYzkR",
+              "type": "ref",
+              "ref": "S9E11",
+              "name": "Logo",
+              "width": 115,
+              "height": 31
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "type": "frame",
+      "id": "z8U8j",
+      "x": 23300,
+      "y": 76421,
+      "name": "12.20a · Share card · Goal met, the AI curator without a character",
+      "clip": true,
+      "width": 1200,
+      "height": 630,
+      "fill": "#0F0F0E",
+      "layout": "vertical",
+      "gap": 24,
+      "padding": [
+        72,
+        72,
+        56,
+        72
+      ],
+      "justifyContent": "space_between",
+      "children": [
+        {
+          "type": "frame",
+          "id": "FXHRI",
+          "layoutPosition": "absolute",
+          "x": 520,
+          "y": 0,
+          "name": "Project cover · masked",
+          "clip": true,
+          "width": 680,
+          "height": 630,
+          "layout": "none",
+          "children": [
+            {
+              "type": "rectangle",
+              "id": "V9NNDs",
+              "x": 0,
+              "y": 0,
+              "name": "Cover image (the project's cover)",
+              "fill": {
+                "type": "image",
+                "enabled": true,
+                "url": "generated-25.png",
+                "mode": "cover"
+              },
+              "width": 680,
+              "height": 630
+            },
+            {
+              "type": "rectangle",
+              "id": "B202a",
+              "x": 0,
+              "y": 0,
+              "name": "Mask · left",
+              "fill": {
+                "type": "gradient",
+                "gradientType": "linear",
+                "enabled": true,
+                "rotation": 270,
+                "size": {
+                  "height": 1
+                },
+                "colors": [
+                  {
+                    "color": "#0F0F0EFF",
+                    "position": 0
+                  },
+                  {
+                    "color": "#0F0F0EE6",
+                    "position": 0.2
+                  },
+                  {
+                    "color": "#0F0F0E80",
+                    "position": 0.5
+                  },
+                  {
+                    "color": "#0F0F0E00",
+                    "position": 1
+                  }
+                ]
+              },
+              "width": 680,
+              "height": 630
+            },
+            {
+              "type": "rectangle",
+              "id": "QNxxY",
+              "x": 0,
+              "y": 0,
+              "name": "Mask · bottom",
+              "fill": {
+                "type": "gradient",
+                "gradientType": "linear",
+                "enabled": true,
+                "rotation": 180,
+                "size": {
+                  "height": 1
+                },
+                "colors": [
+                  {
+                    "color": "#0F0F0E00",
+                    "position": 0
+                  },
+                  {
+                    "color": "#0F0F0E00",
+                    "position": 0.5
+                  },
+                  {
+                    "color": "#0F0F0EB3",
+                    "position": 0.82
+                  },
+                  {
+                    "color": "#0F0F0EF2",
+                    "position": 1
+                  }
+                ]
+              },
+              "width": 680,
+              "height": 630
+            }
+          ]
+        },
+        {
+          "type": "frame",
+          "id": "Ko9qv",
+          "name": "Main",
+          "width": "fill_container",
+          "height": "fill_container",
+          "layout": "vertical",
+          "gap": 28,
+          "justifyContent": "center",
+          "children": [
+            {
+              "type": "frame",
+              "id": "k4qL8C",
+              "name": "Signed",
+              "gap": 16,
+              "alignItems": "center",
+              "children": [
+                {
+                  "type": "frame",
+                  "id": "Scz9r",
+                  "name": "Avatar · the character, or the robot",
+                  "clip": true,
+                  "width": 64,
+                  "height": 64,
+                  "fill": {
+                    "type": "image",
+                    "enabled": true,
+                    "url": "generated-17.png",
+                    "mode": "cover"
+                  },
+                  "cornerRadius": 999,
+                  "stroke": "#F1554166",
+                  "strokeWidth": 2,
+                  "strokeAlignment": "inner"
+                },
+                {
+                  "type": "frame",
+                  "id": "M9svCB",
+                  "name": "Name",
+                  "layout": "vertical",
+                  "gap": 2,
+                  "children": [
+                    {
+                      "type": "text",
+                      "id": "B4tuok",
+                      "name": "Name",
+                      "fill": "#FFFFFF",
+                      "content": "AI curator",
+                      "fontFamily": "Onest",
+                      "fontSize": 24,
+                      "fontWeight": "700"
+                    },
+                    {
+                      "type": "text",
+                      "id": "Z9BpND",
+                      "name": "Role",
+                      "fill": "#FFFFFF99",
+                      "content": "GDHub",
+                      "fontFamily": "Onest",
+                      "fontSize": 18,
+                      "fontWeight": "normal"
+                    }
+                  ]
+                }
+              ]
+            },
+            {
+              "type": "text",
+              "id": "O3v0ru",
+              "name": "Message · the curator's reaction and a wish (≤ 200 chars)",
+              "fill": "#FFFFFF",
+              "textGrowth": "fixed-width",
+              "width": 700,
+              "content": "Snowy roofs that sparkle and a demo anyone can play — the gnome is showing off. Next, may the Steam page open its doors beside it.",
+              "lineHeight": 1.22,
+              "fontFamily": "Onest",
+              "fontSize": 40,
+              "fontWeight": "500"
+            },
+            {
+              "type": "text",
+              "id": "QuA8I",
+              "name": "When",
+              "fill": "#FFFFFF80",
+              "content": "7 February 2027",
+              "fontFamily": "Onest",
+              "fontSize": 18,
+              "fontWeight": "normal"
+            }
+          ]
+        },
+        {
+          "type": "frame",
+          "id": "c982TJ",
+          "name": "Footer",
+          "width": "fill_container",
+          "stroke": "#FFFFFF1F",
+          "strokeWidth": {
+            "top": 1
+          },
+          "strokeAlignment": "inner",
+          "padding": [
+            24,
+            0,
+            0,
+            0
+          ],
+          "justifyContent": "space_between",
+          "alignItems": "end",
+          "children": [
+            {
+              "type": "frame",
+              "id": "Fj8Jo",
+              "name": "What · for whom",
+              "layout": "vertical",
+              "gap": 6,
+              "children": [
+                {
+                  "type": "frame",
+                  "id": "uFczT",
+                  "name": "What",
+                  "gap": 10,
+                  "alignItems": "center",
+                  "children": [
+                    {
+                      "type": "ellipse",
+                      "id": "yHjYL",
+                      "name": "Verdict dot",
+                      "fill": "#4C8DF6",
+                      "width": 10,
+                      "height": 10
+                    },
+                    {
+                      "type": "text",
+                      "id": "ct0W5",
+                      "name": "What",
+                      "fill": "#FFFFFFB3",
+                      "content": "Checkpoint 5 passed on the road to the release · Goal met",
+                      "fontFamily": "Onest",
+                      "fontSize": 18,
+                      "fontWeight": "normal"
+                    }
+                  ]
+                },
+                {
+                  "type": "text",
+                  "id": "oUUvg",
+                  "name": "Project",
+                  "fill": "#FFFFFF",
+                  "content": "E2E Test Game",
+                  "fontFamily": "Onest",
+                  "fontSize": 22,
+                  "fontWeight": "700"
+                }
+              ]
+            },
+            {
+              "id": "oX4GX",
+              "type": "ref",
+              "ref": "S9E11",
+              "name": "Logo",
+              "width": 115,
+              "height": 31
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "type": "frame",
+      "id": "Q9QbZ",
+      "x": 22000,
+      "y": 77151,
+      "name": "12.20b · Share card · Goal missed",
+      "clip": true,
+      "width": 1200,
+      "height": 630,
+      "fill": "#0F0F0E",
+      "layout": "vertical",
+      "gap": 24,
+      "padding": [
+        72,
+        72,
+        56,
+        72
+      ],
+      "justifyContent": "space_between",
+      "children": [
+        {
+          "type": "frame",
+          "id": "u9CtsC",
+          "layoutPosition": "absolute",
+          "x": 520,
+          "y": 0,
+          "name": "Project cover · masked",
+          "clip": true,
+          "width": 680,
+          "height": 630,
+          "layout": "none",
+          "children": [
+            {
+              "type": "rectangle",
+              "id": "fQCZg",
+              "x": 0,
+              "y": 0,
+              "name": "Cover image (the project's cover)",
+              "fill": {
+                "type": "image",
+                "enabled": true,
+                "url": "generated-25.png",
+                "mode": "cover"
+              },
+              "width": 680,
+              "height": 630
+            },
+            {
+              "type": "rectangle",
+              "id": "u5Nn6",
+              "x": 0,
+              "y": 0,
+              "name": "Mask · left",
+              "fill": {
+                "type": "gradient",
+                "gradientType": "linear",
+                "enabled": true,
+                "rotation": 270,
+                "size": {
+                  "height": 1
+                },
+                "colors": [
+                  {
+                    "color": "#0F0F0EFF",
+                    "position": 0
+                  },
+                  {
+                    "color": "#0F0F0EE6",
+                    "position": 0.2
+                  },
+                  {
+                    "color": "#0F0F0E80",
+                    "position": 0.5
+                  },
+                  {
+                    "color": "#0F0F0E00",
+                    "position": 1
+                  }
+                ]
+              },
+              "width": 680,
+              "height": 630
+            },
+            {
+              "type": "rectangle",
+              "id": "n2si6f",
+              "x": 0,
+              "y": 0,
+              "name": "Mask · bottom",
+              "fill": {
+                "type": "gradient",
+                "gradientType": "linear",
+                "enabled": true,
+                "rotation": 180,
+                "size": {
+                  "height": 1
+                },
+                "colors": [
+                  {
+                    "color": "#0F0F0E00",
+                    "position": 0
+                  },
+                  {
+                    "color": "#0F0F0E00",
+                    "position": 0.5
+                  },
+                  {
+                    "color": "#0F0F0EB3",
+                    "position": 0.82
+                  },
+                  {
+                    "color": "#0F0F0EF2",
+                    "position": 1
+                  }
+                ]
+              },
+              "width": 680,
+              "height": 630
+            }
+          ]
+        },
+        {
+          "type": "frame",
+          "id": "pTyY4",
+          "name": "Main",
+          "width": "fill_container",
+          "height": "fill_container",
+          "layout": "vertical",
+          "gap": 28,
+          "justifyContent": "center",
+          "children": [
+            {
+              "type": "frame",
+              "id": "cE2gX",
+              "name": "Signed",
+              "gap": 16,
+              "alignItems": "center",
+              "children": [
+                {
+                  "type": "frame",
+                  "id": "dFFIE",
+                  "name": "Avatar · the character, or the robot",
+                  "clip": true,
+                  "width": 64,
+                  "height": 64,
+                  "fill": {
+                    "type": "image",
+                    "enabled": true,
+                    "url": "generated-2.png",
+                    "mode": "cover"
+                  },
+                  "cornerRadius": 999,
+                  "stroke": "#F1554166",
+                  "strokeWidth": 2,
+                  "strokeAlignment": "inner"
+                },
+                {
+                  "type": "frame",
+                  "id": "WaxlI",
+                  "name": "Name",
+                  "layout": "vertical",
+                  "gap": 2,
+                  "children": [
+                    {
+                      "type": "text",
+                      "id": "t59huu",
+                      "name": "Name",
+                      "fill": "#FFFFFF",
+                      "content": "Elder Aldric",
+                      "fontFamily": "Onest",
+                      "fontSize": 24,
+                      "fontWeight": "700"
+                    },
+                    {
+                      "type": "text",
+                      "id": "NfSOF",
+                      "name": "Role",
+                      "fill": "#FFFFFF99",
+                      "content": "AI curator",
+                      "fontFamily": "Onest",
+                      "fontSize": 18,
+                      "fontWeight": "normal"
+                    }
+                  ]
+                }
+              ]
+            },
+            {
+              "type": "text",
+              "id": "akjMi",
+              "name": "Message · the curator's reaction and a wish (≤ 200 chars)",
+              "fill": "#FFFFFF",
+              "textGrowth": "fixed-width",
+              "width": 700,
+              "content": "The gnome’s leap has a spark, but the proof-scroll is still half-written. May an open build carry five strangers all the way to the flag.",
+              "lineHeight": 1.22,
+              "fontFamily": "Onest",
+              "fontSize": 40,
+              "fontWeight": "500"
+            },
+            {
+              "type": "text",
+              "id": "oY2oT",
+              "name": "When",
+              "fill": "#FFFFFF80",
+              "content": "29 November 2026",
+              "fontFamily": "Onest",
+              "fontSize": 18,
+              "fontWeight": "normal"
+            }
+          ]
+        },
+        {
+          "type": "frame",
+          "id": "aEIOM",
+          "name": "Footer",
+          "width": "fill_container",
+          "stroke": "#FFFFFF1F",
+          "strokeWidth": {
+            "top": 1
+          },
+          "strokeAlignment": "inner",
+          "padding": [
+            24,
+            0,
+            0,
+            0
+          ],
+          "justifyContent": "space_between",
+          "alignItems": "end",
+          "children": [
+            {
+              "type": "frame",
+              "id": "IeaMn",
+              "name": "What · for whom",
+              "layout": "vertical",
+              "gap": 6,
+              "children": [
+                {
+                  "type": "frame",
+                  "id": "REfzD",
+                  "name": "What",
+                  "gap": 10,
+                  "alignItems": "center",
+                  "children": [
+                    {
+                      "type": "ellipse",
+                      "id": "NbgGC",
+                      "name": "Verdict dot",
+                      "fill": "#E8A23B",
+                      "width": 10,
+                      "height": 10
+                    },
+                    {
+                      "type": "text",
+                      "id": "tv4OP",
+                      "name": "What",
+                      "fill": "#FFFFFFB3",
+                      "content": "Checkpoint 3 done on the road to the release · Goal missed",
+                      "fontFamily": "Onest",
+                      "fontSize": 18,
+                      "fontWeight": "normal"
+                    }
+                  ]
+                },
+                {
+                  "type": "text",
+                  "id": "XdtQe",
+                  "name": "Project",
+                  "fill": "#FFFFFF",
+                  "content": "E2E Test Game",
+                  "fontFamily": "Onest",
+                  "fontSize": 22,
+                  "fontWeight": "700"
+                }
+              ]
+            },
+            {
+              "id": "V4AcW",
+              "type": "ref",
+              "ref": "S9E11",
+              "name": "Logo",
+              "width": 115,
+              "height": 31
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "type": "frame",
+      "id": "Tb2oP",
+      "x": 24600,
+      "y": 76421,
+      "name": "12.20.1 · Modal — Share the result (the verdict and the letter) · GDHUB-144",
+      "clip": true,
+      "width": 600,
+      "fill": "$surface",
+      "cornerRadius": 16,
+      "stroke": "$card-border",
+      "strokeWidth": 1,
+      "strokeAlignment": "inner",
+      "layout": "vertical",
+      "gap": 16,
+      "padding": 24,
+      "children": [
+        {
+          "type": "frame",
+          "id": "Vo1pj",
+          "name": "Head",
+          "width": "fill_container",
+          "justifyContent": "space_between",
+          "alignItems": "center",
+          "children": [
+            {
+              "type": "text",
+              "id": "HEhTJ",
+              "name": "Title",
+              "fill": "$text-primary",
+              "content": "Share the result",
+              "fontFamily": "$font",
+              "fontSize": 20,
+              "fontWeight": "600"
+            },
+            {
+              "id": "uKdnM",
+              "type": "ref",
+              "ref": "S9qItu",
+              "name": "Btn — Close"
+            }
+          ]
+        },
+        {
+          "type": "frame",
+          "id": "a6Qufu",
+          "name": "Preview card",
+          "clip": true,
+          "width": "fill_container",
+          "cornerRadius": 12,
+          "stroke": "$border",
+          "strokeWidth": 1,
+          "strokeAlignment": "inner",
+          "layout": "vertical",
+          "children": [
+            {
+              "type": "frame",
+              "id": "Malpt",
+              "name": "Card image 1200×630",
+              "width": "fill_container",
+              "height": 290,
+              "fill": {
+                "type": "image",
+                "enabled": true,
+                "url": "images/share-verdict-og.png",
+                "mode": "cover"
+              },
+              "justifyContent": "center",
+              "alignItems": "center"
+            },
+            {
+              "type": "frame",
+              "id": "Gcsr1",
+              "name": "Meta",
+              "width": "fill_container",
+              "gap": 12,
+              "padding": [
+                12,
+                16
+              ],
+              "justifyContent": "space_between",
+              "alignItems": "center",
+              "children": [
+                {
+                  "type": "text",
+                  "id": "INiyb",
+                  "name": "Size",
+                  "fill": "$text-tertiary",
+                  "content": "PNG · 1200×630",
+                  "fontFamily": "$font",
+                  "fontSize": 12,
+                  "fontWeight": "normal"
+                },
+                {
+                  "type": "frame",
+                  "id": "xjFdR",
+                  "name": "Btn Download image (primary)",
+                  "height": 32,
+                  "fill": "$text-primary",
+                  "cornerRadius": 10,
+                  "gap": 8,
+                  "padding": [
+                    0,
+                    12
+                  ],
+                  "alignItems": "center",
+                  "children": [
+                    {
+                      "type": "icon",
+                      "id": "hNPmz",
+                      "name": "Ic",
+                      "width": 16,
+                      "height": 16,
+                      "icon": "download",
+                      "library": "lucide",
+                      "fill": "$text-invert"
+                    },
+                    {
+                      "type": "text",
+                      "id": "wNZ6m",
+                      "name": "L",
+                      "fill": "$text-invert",
+                      "content": "Download image",
+                      "fontFamily": "$font",
+                      "fontSize": 14,
+                      "fontWeight": "500"
+                    }
+                  ]
+                }
+              ]
+            }
+          ]
+        },
+        {
+          "type": "frame",
+          "id": "ggtkX",
+          "name": "Post text",
+          "width": "fill_container",
+          "layout": "vertical",
+          "gap": 8,
+          "children": [
+            {
+              "type": "frame",
+              "id": "ezV4T",
+              "name": "Label row",
+              "width": "fill_container",
+              "justifyContent": "space_between",
+              "alignItems": "center",
+              "children": [
+                {
+                  "type": "text",
+                  "id": "Q7WcK",
+                  "name": "Label",
+                  "fill": "$text-primary",
+                  "content": "The post",
+                  "fontFamily": "$font",
+                  "fontSize": 14,
+                  "fontWeight": "600"
+                },
+                {
+                  "type": "text",
+                  "id": "ARMFl",
+                  "name": "Counter",
+                  "fill": "$text-tertiary",
+                  "content": "246 / 280 on X",
+                  "fontFamily": "$font",
+                  "fontSize": 12,
+                  "fontWeight": "normal"
+                }
+              ]
+            },
+            {
+              "type": "frame",
+              "id": "spVix",
+              "name": "TextArea · editable, 5 rows",
+              "width": "fill_container",
+              "fill": "$surface",
+              "cornerRadius": 10,
+              "stroke": "$border",
+              "strokeWidth": 1,
+              "strokeAlignment": "inner",
+              "padding": [
+                10,
+                12
+              ],
+              "children": [
+                {
+                  "type": "text",
+                  "id": "YMNfl",
+                  "name": "Value",
+                  "fill": "$text-primary",
+                  "textGrowth": "fixed-width",
+                  "width": "fill_container",
+                  "content": "Checkpoint 4 passed on the road to the release of my game, E2E Test Game: ready for the next stage. Elder Aldric, my AI curator: “By my staff, the gnome’s cracking-ice trial is taking shape! May the demo turn your last design doubts into clear answers.”\ngdhub.io/project/e2e-test-game",
+                  "lineHeight": 1.5,
+                  "fontFamily": "$font",
+                  "fontSize": 14,
+                  "fontWeight": "normal"
+                }
+              ]
+            },
+            {
+              "type": "frame",
+              "id": "ULifA",
+              "name": "Checkbox · Add the project's page (on)",
+              "gap": 8,
+              "alignItems": "center",
+              "children": [
+                {
+                  "type": "frame",
+                  "id": "XkAGQ",
+                  "name": "Box",
+                  "width": 16,
+                  "height": 16,
+                  "fill": "$text-primary",
+                  "cornerRadius": 4,
+                  "justifyContent": "center",
+                  "alignItems": "center",
+                  "children": [
+                    {
+                      "type": "icon",
+                      "id": "em5kC",
+                      "name": "Tick",
+                      "width": 12,
+                      "height": 12,
+                      "icon": "check",
+                      "library": "lucide",
+                      "fill": "$text-invert"
+                    }
+                  ]
+                },
+                {
+                  "type": "text",
+                  "id": "RJoqq",
+                  "name": "L",
+                  "fill": "$text-primary",
+                  "content": "Add a link to the project's public page",
+                  "fontFamily": "$font",
+                  "fontSize": 14,
+                  "fontWeight": "normal"
+                }
+              ]
+            },
+            {
+              "type": "frame",
+              "id": "R4JaVY",
+              "name": "Hint",
+              "width": "fill_container",
+              "gap": 6,
+              "children": [
+                {
+                  "type": "icon",
+                  "id": "QwKct",
+                  "name": "Ic",
+                  "width": 14,
+                  "height": 14,
+                  "icon": "info",
+                  "library": "lucide",
+                  "fill": "$text-tertiary"
+                },
+                {
+                  "type": "text",
+                  "id": "JtnyR",
+                  "name": "Text",
+                  "fill": "$text-tertiary",
+                  "textGrowth": "fixed-width",
+                  "width": "fill_container",
+                  "content": "Networks don't take a picture from the post: download the image and attach it. LinkedIn and Facebook also take only the link, so copy the text first.",
+                  "fontFamily": "$font",
+                  "fontSize": 12,
+                  "fontWeight": "normal"
+                }
+              ]
+            }
+          ]
+        },
+        {
+          "type": "frame",
+          "id": "U3DgMv",
+          "name": "Share to",
+          "width": "fill_container",
+          "gap": 8,
+          "alignItems": "center",
+          "children": [
+            {
+              "type": "frame",
+              "id": "Rz0xV",
+              "name": "Btn LinkedIn",
+              "height": 40,
+              "cornerRadius": 10,
+              "stroke": "$card-border",
+              "strokeWidth": 1,
+              "strokeAlignment": "inner",
+              "gap": 8,
+              "padding": [
+                0,
+                12
+              ],
+              "justifyContent": "center",
+              "alignItems": "center",
+              "children": [
+                {
+                  "type": "icon",
+                  "id": "h6uuFB",
+                  "name": "Ic",
+                  "width": 16,
+                  "height": 16,
+                  "icon": "linkedin",
+                  "library": "lucide",
+                  "fill": "$text-primary"
+                },
+                {
+                  "type": "text",
+                  "id": "re5QO",
+                  "name": "L",
+                  "fill": "$text-primary",
+                  "content": "LinkedIn",
+                  "fontFamily": "$font",
+                  "fontSize": 14,
+                  "fontWeight": "500"
+                }
+              ]
+            },
+            {
+              "type": "frame",
+              "id": "BHqpJ",
+              "name": "Btn Telegram",
+              "height": 40,
+              "cornerRadius": 10,
+              "stroke": "$card-border",
+              "strokeWidth": 1,
+              "strokeAlignment": "inner",
+              "gap": 8,
+              "padding": [
+                0,
+                12
+              ],
+              "justifyContent": "center",
+              "alignItems": "center",
+              "children": [
+                {
+                  "type": "icon",
+                  "id": "OOkYm",
+                  "name": "Ic",
+                  "width": 16,
+                  "height": 16,
+                  "icon": "send",
+                  "library": "lucide",
+                  "fill": "$text-primary"
+                },
+                {
+                  "type": "text",
+                  "id": "YUTxC",
+                  "name": "L",
+                  "fill": "$text-primary",
+                  "content": "Telegram",
+                  "fontFamily": "$font",
+                  "fontSize": 14,
+                  "fontWeight": "500"
+                }
+              ]
+            },
+            {
+              "type": "frame",
+              "id": "aRe8K",
+              "name": "Btn X",
+              "height": 40,
+              "cornerRadius": 10,
+              "stroke": "$card-border",
+              "strokeWidth": 1,
+              "strokeAlignment": "inner",
+              "gap": 8,
+              "padding": [
+                0,
+                12
+              ],
+              "justifyContent": "center",
+              "alignItems": "center",
+              "children": [
+                {
+                  "type": "icon",
+                  "id": "MFxZj",
+                  "name": "Ic",
+                  "width": 16,
+                  "height": 16,
+                  "icon": "twitter",
+                  "library": "lucide",
+                  "fill": "$text-primary"
+                },
+                {
+                  "type": "text",
+                  "id": "Gn4tt",
+                  "name": "L",
+                  "fill": "$text-primary",
+                  "content": "X",
+                  "fontFamily": "$font",
+                  "fontSize": 14,
+                  "fontWeight": "500"
+                }
+              ]
+            },
+            {
+              "type": "frame",
+              "id": "iQpZ9",
+              "name": "Btn Facebook",
+              "height": 40,
+              "cornerRadius": 10,
+              "stroke": "$card-border",
+              "strokeWidth": 1,
+              "strokeAlignment": "inner",
+              "gap": 8,
+              "padding": [
+                0,
+                12
+              ],
+              "justifyContent": "center",
+              "alignItems": "center",
+              "children": [
+                {
+                  "type": "icon",
+                  "id": "X8KXA",
+                  "name": "Ic",
+                  "width": 16,
+                  "height": 16,
+                  "icon": "facebook",
+                  "library": "lucide",
+                  "fill": "$text-primary"
+                },
+                {
+                  "type": "text",
+                  "id": "vQ6L0",
+                  "name": "L",
+                  "fill": "$text-primary",
+                  "content": "Facebook",
+                  "fontFamily": "$font",
+                  "fontSize": 14,
+                  "fontWeight": "500"
+                }
+              ]
+            },
+            {
+              "type": "frame",
+              "id": "LQjAt",
+              "name": "Spacer",
+              "width": "fill_container",
+              "height": 1
+            },
+            {
+              "type": "frame",
+              "id": "zgvAl",
+              "name": "Btn Copy text (copies the post)",
+              "height": 40,
+              "cornerRadius": 10,
+              "stroke": "$card-border",
+              "strokeWidth": 1,
+              "strokeAlignment": "inner",
+              "gap": 8,
+              "padding": [
+                0,
+                12
+              ],
+              "justifyContent": "center",
+              "alignItems": "center",
+              "children": [
+                {
+                  "type": "icon",
+                  "id": "eKu0a",
+                  "name": "Ic",
+                  "width": 16,
+                  "height": 16,
+                  "icon": "copy",
+                  "library": "lucide",
+                  "fill": "$text-primary"
+                },
+                {
+                  "type": "text",
+                  "id": "dI7do",
+                  "name": "L",
+                  "fill": "$text-primary",
+                  "content": "Copy text",
+                  "fontFamily": "$font",
+                  "fontSize": 14,
+                  "fontWeight": "500"
+                }
+              ]
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "type": "frame",
+      "id": "X6Csvs",
+      "x": 23300,
+      "y": 77151,
+      "name": "12.20c · Share card · the first checkpoint",
+      "clip": true,
+      "width": 1200,
+      "height": 630,
+      "fill": "#0F0F0E",
+      "layout": "vertical",
+      "gap": 24,
+      "padding": [
+        72,
+        72,
+        56,
+        72
+      ],
+      "justifyContent": "space_between",
+      "children": [
+        {
+          "type": "frame",
+          "id": "wYNiO",
+          "layoutPosition": "absolute",
+          "x": 520,
+          "y": 0,
+          "name": "Project cover · masked",
+          "clip": true,
+          "width": 680,
+          "height": 630,
+          "layout": "none",
+          "children": [
+            {
+              "type": "rectangle",
+              "id": "W1KKBt",
+              "x": 0,
+              "y": 0,
+              "name": "Cover image (the project's cover)",
+              "fill": {
+                "type": "image",
+                "enabled": true,
+                "url": "generated-25.png",
+                "mode": "cover"
+              },
+              "width": 680,
+              "height": 630
+            },
+            {
+              "type": "rectangle",
+              "id": "P85R38",
+              "x": 0,
+              "y": 0,
+              "name": "Mask · left",
+              "fill": {
+                "type": "gradient",
+                "gradientType": "linear",
+                "enabled": true,
+                "rotation": 270,
+                "size": {
+                  "height": 1
+                },
+                "colors": [
+                  {
+                    "color": "#0F0F0EFF",
+                    "position": 0
+                  },
+                  {
+                    "color": "#0F0F0EE6",
+                    "position": 0.2
+                  },
+                  {
+                    "color": "#0F0F0E80",
+                    "position": 0.5
+                  },
+                  {
+                    "color": "#0F0F0E00",
+                    "position": 1
+                  }
+                ]
+              },
+              "width": 680,
+              "height": 630
+            },
+            {
+              "type": "rectangle",
+              "id": "D0WC5",
+              "x": 0,
+              "y": 0,
+              "name": "Mask · bottom",
+              "fill": {
+                "type": "gradient",
+                "gradientType": "linear",
+                "enabled": true,
+                "rotation": 180,
+                "size": {
+                  "height": 1
+                },
+                "colors": [
+                  {
+                    "color": "#0F0F0E00",
+                    "position": 0
+                  },
+                  {
+                    "color": "#0F0F0E00",
+                    "position": 0.5
+                  },
+                  {
+                    "color": "#0F0F0EB3",
+                    "position": 0.82
+                  },
+                  {
+                    "color": "#0F0F0EF2",
+                    "position": 1
+                  }
+                ]
+              },
+              "width": 680,
+              "height": 630
+            }
+          ]
+        },
+        {
+          "type": "frame",
+          "id": "eeg16",
+          "name": "Main",
+          "width": "fill_container",
+          "height": "fill_container",
+          "layout": "vertical",
+          "gap": 28,
+          "justifyContent": "center",
+          "children": [
+            {
+              "type": "frame",
+              "id": "KAqbV",
+              "name": "Signed",
+              "gap": 16,
+              "alignItems": "center",
+              "children": [
+                {
+                  "type": "frame",
+                  "id": "bLd4z",
+                  "name": "Avatar · the character, or the robot",
+                  "clip": true,
+                  "width": 64,
+                  "height": 64,
+                  "fill": {
+                    "type": "image",
+                    "enabled": true,
+                    "url": "generated-2.png",
+                    "mode": "cover"
+                  },
+                  "cornerRadius": 999,
+                  "stroke": "#F1554166",
+                  "strokeWidth": 2,
+                  "strokeAlignment": "inner"
+                },
+                {
+                  "type": "frame",
+                  "id": "iI5ja",
+                  "name": "Name",
+                  "layout": "vertical",
+                  "gap": 2,
+                  "children": [
+                    {
+                      "type": "text",
+                      "id": "KtI6m",
+                      "name": "Name",
+                      "fill": "#FFFFFF",
+                      "content": "Elder Aldric",
+                      "fontFamily": "Onest",
+                      "fontSize": 24,
+                      "fontWeight": "700"
+                    },
+                    {
+                      "type": "text",
+                      "id": "nRu5d",
+                      "name": "Role",
+                      "fill": "#FFFFFF99",
+                      "content": "AI curator",
+                      "fontFamily": "Onest",
+                      "fontSize": 18,
+                      "fontWeight": "normal"
+                    }
+                  ]
+                }
+              ]
+            },
+            {
+              "type": "text",
+              "id": "WyxXe",
+              "name": "Message · the curator's reaction and a wish (≤ 200 chars)",
+              "fill": "#FFFFFF",
+              "textGrowth": "fixed-width",
+              "width": 700,
+              "content": "A Christmas-saving gnome earned his place on the spell-scroll — six pages of lore wisely shrunk to one! May a small jump test give it firm footing.",
+              "lineHeight": 1.22,
+              "fontFamily": "Onest",
+              "fontSize": 40,
+              "fontWeight": "500"
+            },
+            {
+              "type": "text",
+              "id": "xLjWr",
+              "name": "When",
+              "fill": "#FFFFFF80",
+              "content": "30 August 2026",
+              "fontFamily": "Onest",
+              "fontSize": 18,
+              "fontWeight": "normal"
+            }
+          ]
+        },
+        {
+          "type": "frame",
+          "id": "nn7iu",
+          "name": "Footer",
+          "width": "fill_container",
+          "stroke": "#FFFFFF1F",
+          "strokeWidth": {
+            "top": 1
+          },
+          "strokeAlignment": "inner",
+          "padding": [
+            24,
+            0,
+            0,
+            0
+          ],
+          "justifyContent": "space_between",
+          "alignItems": "end",
+          "children": [
+            {
+              "type": "frame",
+              "id": "QGKVu",
+              "name": "What · for whom",
+              "layout": "vertical",
+              "gap": 6,
+              "children": [
+                {
+                  "type": "frame",
+                  "id": "BmwDO",
+                  "name": "What",
+                  "gap": 10,
+                  "alignItems": "center",
+                  "children": [
+                    {
+                      "type": "ellipse",
+                      "id": "M90CLm",
+                      "name": "Verdict dot",
+                      "fill": "#3FB37F",
+                      "width": 10,
+                      "height": 10
+                    },
+                    {
+                      "type": "text",
+                      "id": "iAoJA",
+                      "name": "What",
+                      "fill": "#FFFFFFB3",
+                      "content": "The first checkpoint passed on the road to the release · Ready for the next stage",
+                      "fontFamily": "Onest",
+                      "fontSize": 18,
+                      "fontWeight": "normal"
+                    }
+                  ]
+                },
+                {
+                  "type": "text",
+                  "id": "D8e1O",
+                  "name": "Project",
+                  "fill": "#FFFFFF",
+                  "content": "E2E Test Game",
+                  "fontFamily": "Onest",
+                  "fontSize": 22,
+                  "fontWeight": "700"
+                }
+              ]
+            },
+            {
+              "id": "z3rtA1",
+              "type": "ref",
+              "ref": "S9E11",
+              "name": "Logo",
+              "width": 115,
+              "height": 31
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "type": "frame",
+      "id": "N0cU7",
+      "x": 22000,
+      "y": 77881,
+      "name": "12.20d · Share card · the project has no cover: the red glow",
+      "clip": true,
+      "width": 1200,
+      "height": 630,
+      "fill": "#0F0F0E",
+      "layout": "vertical",
+      "gap": 24,
+      "padding": [
+        72,
+        72,
+        56,
+        72
+      ],
+      "justifyContent": "space_between",
+      "children": [
+        {
+          "type": "rectangle",
+          "id": "ZTRpL",
+          "layoutPosition": "absolute",
+          "x": 640,
+          "y": -260,
+          "name": "Glow · red, top right (no cover)",
+          "fill": {
+            "type": "gradient",
+            "gradientType": "radial",
+            "enabled": true,
+            "rotation": 0,
+            "size": {
+              "width": 1,
+              "height": 1
+            },
+            "colors": [
+              {
+                "color": "#F1554140",
+                "position": 0
+              },
+              {
+                "color": "#F1554100",
+                "position": 1
+              }
+            ]
+          },
+          "width": 820,
+          "height": 820
+        },
+        {
+          "type": "frame",
+          "id": "G3TtrG",
+          "name": "Main",
+          "width": "fill_container",
+          "height": "fill_container",
+          "layout": "vertical",
+          "gap": 28,
+          "justifyContent": "center",
+          "children": [
+            {
+              "type": "frame",
+              "id": "k7wY4v",
+              "name": "Signed",
+              "gap": 16,
+              "alignItems": "center",
+              "children": [
+                {
+                  "type": "frame",
+                  "id": "h6FiS",
+                  "name": "Avatar · the character, or the robot",
+                  "clip": true,
+                  "width": 64,
+                  "height": 64,
+                  "fill": {
+                    "type": "image",
+                    "enabled": true,
+                    "url": "generated-2.png",
+                    "mode": "cover"
+                  },
+                  "cornerRadius": 999,
+                  "stroke": "#F1554166",
+                  "strokeWidth": 2,
+                  "strokeAlignment": "inner"
+                },
+                {
+                  "type": "frame",
+                  "id": "Y7d1A",
+                  "name": "Name",
+                  "layout": "vertical",
+                  "gap": 2,
+                  "children": [
+                    {
+                      "type": "text",
+                      "id": "zZePk",
+                      "name": "Name",
+                      "fill": "#FFFFFF",
+                      "content": "Elder Aldric",
+                      "fontFamily": "Onest",
+                      "fontSize": 24,
+                      "fontWeight": "700"
+                    },
+                    {
+                      "type": "text",
+                      "id": "aY06n",
+                      "name": "Role",
+                      "fill": "#FFFFFF99",
+                      "content": "AI curator",
+                      "fontFamily": "Onest",
+                      "fontSize": 18,
+                      "fontWeight": "normal"
+                    }
+                  ]
+                }
+              ]
+            },
+            {
+              "type": "text",
+              "id": "V0zEiU",
+              "name": "Message · the curator's reaction and a wish (≤ 200 chars)",
+              "fill": "#FFFFFF",
+              "textGrowth": "fixed-width",
+              "width": "fill_container",
+              "content": "By my staff, the gnome’s cracking-ice trial is taking shape! May the demo turn your last design doubts into clear answers.",
+              "lineHeight": 1.22,
+              "fontFamily": "Onest",
+              "fontSize": 46,
+              "fontWeight": "500"
+            },
+            {
+              "type": "text",
+              "id": "k0laVC",
+              "name": "When",
+              "fill": "#FFFFFF80",
+              "content": "3 January 2027",
+              "fontFamily": "Onest",
+              "fontSize": 18,
+              "fontWeight": "normal"
+            }
+          ]
+        },
+        {
+          "type": "frame",
+          "id": "VgKmc",
+          "name": "Footer",
+          "width": "fill_container",
+          "stroke": "#FFFFFF1F",
+          "strokeWidth": {
+            "top": 1
+          },
+          "strokeAlignment": "inner",
+          "padding": [
+            24,
+            0,
+            0,
+            0
+          ],
+          "justifyContent": "space_between",
+          "alignItems": "end",
+          "children": [
+            {
+              "type": "frame",
+              "id": "BswJy",
+              "name": "What · for whom",
+              "layout": "vertical",
+              "gap": 6,
+              "children": [
+                {
+                  "type": "frame",
+                  "id": "IOp8v",
+                  "name": "What",
+                  "gap": 10,
+                  "alignItems": "center",
+                  "children": [
+                    {
+                      "type": "ellipse",
+                      "id": "iofWi",
+                      "name": "Verdict dot",
+                      "fill": "#3FB37F",
+                      "width": 10,
+                      "height": 10
+                    },
+                    {
+                      "type": "text",
+                      "id": "oiynB",
+                      "name": "What",
+                      "fill": "#FFFFFFB3",
+                      "content": "Checkpoint 4 passed on the road to the release · Ready for the next stage",
+                      "fontFamily": "Onest",
+                      "fontSize": 18,
+                      "fontWeight": "normal"
+                    }
+                  ]
+                },
+                {
+                  "type": "text",
+                  "id": "ojG91",
+                  "name": "Project",
+                  "fill": "#FFFFFF",
+                  "content": "E2E Test Game",
+                  "fontFamily": "Onest",
+                  "fontSize": 22,
+                  "fontWeight": "700"
+                }
+              ]
+            },
+            {
+              "id": "bkVTF",
+              "type": "ref",
+              "ref": "S9E11",
+              "name": "Logo",
+              "width": 115,
+              "height": 31
+            }
+          ]
+        }
+      ]
     }
   ],
   "variables": {

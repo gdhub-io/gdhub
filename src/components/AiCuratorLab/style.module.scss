@@ -118,3 +118,9 @@
 .pre {
 	white-space: pre-wrap;
 }
+
+// The line as the share card sets it: large, the curator's own words (GDHUB-144).
+.shareLine {
+	font-size: var(--gd-font-size-h3);
+	line-height: var(--gd-line-height-heading);
+}

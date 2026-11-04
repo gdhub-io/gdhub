@@ -1,17 +1,10 @@
 import { useTranslate } from "@tolgee/react";
-import { StatusDot, type StatusTone } from "@/components/ui";
+import { StatusDot } from "@/components/ui";
 import { CheckpointVerdict } from "@/config/prisma-enums";
 
-/**
- * `GoalMissed` is warning, not danger. Red belongs to destructive and failed
- * platform actions; a missed goal is the starting position of the next
- * checkpoint, and the product should not shout at a team for it.
- */
-export const VERDICT_TONE: Record<CheckpointVerdict, StatusTone> = {
-	[CheckpointVerdict.StageClosed]: "success",
-	[CheckpointVerdict.GoalMet]: "info",
-	[CheckpointVerdict.GoalMissed]: "warning",
-};
+import { VERDICT_TONE } from "@/lib/checkpoints/verdict-tone";
+
+export { VERDICT_TONE };
 
 /** The order the curator is offered them in (frame `vC7gn`). */
 export const VERDICT_ORDER = [
