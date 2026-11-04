@@ -37,9 +37,9 @@ describe("sanitizeHtml", () => {
 
 	it("keeps the formatting editor.js produces", () => {
 		const html =
-			'<b>b</b> <i>i</i> <u>u</u> <mark class="cdx-marker">m</mark> <code class="inline-code">c</code><br><a href="https://gdhub.io">link</a>';
+			'<b>b</b> <i>i</i> <u>u</u> <mark class="cdx-marker">m</mark> <code class="inline-code">c</code><br /><a href="https://gdhub.io">link</a>';
 		expect(sanitizeHtml(html)).toBe(
-			'<b>b</b> <i>i</i> <u>u</u> <mark class="cdx-marker">m</mark> <code class="inline-code">c</code><br><a href="https://gdhub.io">link</a>',
+			'<b>b</b> <i>i</i> <u>u</u> <mark class="cdx-marker">m</mark> <code class="inline-code">c</code><br /><a href="https://gdhub.io">link</a>',
 		);
 	});
 

@@ -1,92 +1,60 @@
-import DOMPurify, {
-	type Config,
-	type UponSanitizeAttributeHook,
-} from "isomorphic-dompurify";
+import sanitize from "sanitize-html";
 
 /**
  * Untrusted HTML from authors — editor.js inline markup — is reduced to
  * formatting before it reaches the page: no scripts, no event handlers, no
  * `style`, no `javascript:` links, no iframes.
+ *
+ * sanitize-html and not DOMPurify: it needs no DOM, so it runs the same in the
+ * browser and in server rendering, where jsdom fails to load on Vercel.
  */
-
-const ALLOWED_TAGS = [
-	"a",
-	"b",
-	"strong",
-	"i",
-	"em",
-	"u",
-	"s",
-	"del",
-	"mark",
-	"code",
-	"pre",
-	"br",
-	"p",
-	"span",
-	"sub",
-	"sup",
-	"ul",
-	"ol",
-	"li",
-	"blockquote",
-];
-
-const ATTRIBUTES_BY_TAG: Record<string, string[]> = {
-	a: ["href", "target", "rel"],
-	mark: ["class"],
-	code: ["class"],
-};
-
-// The classes editor.js's marker and inline-code tools put on their tags.
-const CLASSES_BY_TAG: Record<string, string[]> = {
-	mark: ["cdx-marker"],
-	code: ["inline-code"],
-};
-
-const CONFIG: Config = {
-	ALLOWED_TAGS,
-	ALLOWED_ATTR: ["href", "target", "rel", "class"],
-	ALLOW_DATA_ATTR: false,
-	ALLOW_ARIA_ATTR: false,
+const OPTIONS: sanitize.IOptions = {
+	allowedTags: [
+		"a",
+		"b",
+		"strong",
+		"i",
+		"em",
+		"u",
+		"s",
+		"del",
+		"mark",
+		"code",
+		"pre",
+		"br",
+		"p",
+		"span",
+		"sub",
+		"sup",
+		"ul",
+		"ol",
+		"li",
+		"blockquote",
+	],
+	allowedAttributes: {
+		a: ["href", "target", "rel"],
+		mark: ["class"],
+		code: ["class"],
+	},
+	// The classes editor.js's marker and inline-code tools put on their tags.
+	allowedClasses: { mark: ["cdx-marker"], code: ["inline-code"] },
 	// http, https and mailto, or a relative URL; protocol-relative `//host` is refused.
-	ALLOWED_URI_REGEXP: /^(?:(?:https?|mailto):|(?![a-z][a-z\d+.-]*:|[/\\]{2}))/i,
-};
-
-const scopeAttribute: UponSanitizeAttributeHook = (node, data) => {
-	const tag = node.nodeName.toLowerCase();
-	if (!ATTRIBUTES_BY_TAG[tag]?.includes(data.attrName)) {
-		data.keepAttr = false;
-		return;
-	}
-	if (data.attrName === "class") {
-		const allowed = CLASSES_BY_TAG[tag] ?? [];
-		data.attrValue = data.attrValue
-			.split(/\s+/)
-			.filter((name) => allowed.includes(name))
-			.join(" ");
-		if (!data.attrValue) data.keepAttr = false;
-	}
-};
-
-const protectNewTab = (node: Element) => {
-	if (node.nodeName === "A" && node.getAttribute("target") === "_blank") {
-		node.setAttribute("rel", "noopener noreferrer");
-	}
+	allowedSchemes: ["http", "https", "mailto"],
+	allowProtocolRelative: false,
+	disallowedTagsMode: "discard",
+	transformTags: {
+		a: (tagName, attribs) => ({
+			tagName,
+			attribs:
+				attribs.target === "_blank"
+					? { ...attribs, rel: "noopener noreferrer" }
+					: attribs,
+		}),
+	},
 };
 
 /** Formatting markup only; anything executable is dropped. */
-export const sanitizeHtml = (html: string): string => {
-	// The DOMPurify instance is shared with other libraries, so the hooks live only for this call.
-	DOMPurify.addHook("uponSanitizeAttribute", scopeAttribute);
-	DOMPurify.addHook("afterSanitizeAttributes", protectNewTab);
-	try {
-		return DOMPurify.sanitize(html, CONFIG);
-	} finally {
-		DOMPurify.removeHook("afterSanitizeAttributes");
-		DOMPurify.removeHook("uponSanitizeAttribute");
-	}
-};
+export const sanitizeHtml = (html: string): string => sanitize(html, OPTIONS);
 
 /** An absolute http(s) URL or a same-site path; anything else becomes "". */
 export const safeUrl = (url: string): string => {
