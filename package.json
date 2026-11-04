@@ -106,7 +106,7 @@
 		"@react-email/components": "^0.0.34",
 		"@react-icons/all-files": "https://github.com/react-icons/react-icons/releases/download/v5.3.0/react-icons-all-files-5.3.0.tgz",
 		"@react-three/fiber": "^9",
-		"@sanity/client": "^3.4.1",
+		"@sanity/client": "^8.14.1",
 		"@tabler/icons-react": "^3.44.0",
 		"@tanstack/react-query": "^5.100.11",
 		"@tolgee/format-icu": "^6.2.7",
