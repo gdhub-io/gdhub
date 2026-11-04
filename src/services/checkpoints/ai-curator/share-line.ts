@@ -4,7 +4,12 @@ import type { CheckpointVerdict } from "@/config/prisma-enums";
 import { fenced } from "@/lib/checkpoints/curator-text";
 import type { AiMeter } from "@/services/ai-usage";
 import { runStructured } from "@/services/checkpoints/ai-review";
-import { PARTICIPANT_DATA, renderCharacter } from "./prompts/card";
+import {
+	CHARACTER_VOICE,
+	PARTICIPANT_DATA,
+	PLAIN_LANGUAGE,
+	renderCharacter,
+} from "./prompts/card";
 
 type ShareLineInput = {
 	character?: string | null;
@@ -51,9 +56,12 @@ export const writeShareLine = async (
 					read it, not the team.
 					- Two short sentences, at most ${SHARE_LINE_MAX} characters in all.
 					- The first: your playful, evaluative reaction to what the team pulled
-					  off — how it struck you, in your character's voice and world, with
-					  one concrete detail of the game in it. A reaction, not a list of what
-					  was done.
+					  off — how it struck you, in your character's voice, with one concrete
+					  detail of the game in it. A reaction, not a list of what was done.
+					- A stranger who has never seen the game must understand it. The
+					  detail is one a player gets at once — the gnome reached the flag, the
+					  boss fight works — not the game's own lore or a name only the team
+					  knows.
 					- The second: a wish for the project's next steps, warm and specific to
 					  where it stands now.
 					- Honest about the verdict: tease kindly when the goal was missed,
@@ -61,6 +69,10 @@ export const writeShareLine = async (
 					- No stage names, no "goal", "tasks", "checkpoint" or "verdict", no
 					  hashtags, no emoji, no quotes around it.
 					Write in the language of the goal.
+
+					${CHARACTER_VOICE}
+
+					${PLAIN_LANGUAGE}
 
 					${PARTICIPANT_DATA}
 				`,
