@@ -204,6 +204,8 @@ Entering a space is not guarded by a permission — any role gets you in
 | `admin.legal.view` | ✅ | ✅ | ✅ | — | read & take part |
 | | | | | | |
 | `admin.views.view` | ✅ | ✅ | ✅ | — | read & take part |
+| | | | | | |
+| `admin.vacancies.view` | ✅ | ✅ | ✅ | — | read & take part |
 
 Role is inherited from the `hub` space, from `Admin` upwards.
 

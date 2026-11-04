@@ -37,6 +37,9 @@ export const adminSpace = defineSpace({
 		// The content-view report. Read-only by nature: there is nothing here to
 		// manage, only numbers the platform already counted.
 		views: ["view"],
+		// Every open position and who applied (GDHUB-127). Read-only: the project
+		// decides on its applications, staff only look.
+		vacancies: ["view"],
 	},
 	overrides: {
 		[SpaceRole.Admin]: {

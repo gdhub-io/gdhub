@@ -1,8 +1,8 @@
 import type {
 	Speciality,
-	TeamMember,
 	TeamVacancy,
 	User,
+	VacancyApplication,
 } from "@gdhub-io/gdhub-prisma";
 import { useQuery } from "@tanstack/react-query";
 import { useTranslate } from "@tolgee/react";
@@ -32,7 +32,7 @@ const MyProjectCandidates = () => {
 		queryKey: ["candidates", contextProject?.id],
 		queryFn: () =>
 			axios.get<
-				(TeamMember & {
+				(VacancyApplication & {
 					vacancy: TeamVacancy;
 					speciality: Speciality;
 					user: User & { specialities: Speciality[] };
@@ -44,7 +44,7 @@ const MyProjectCandidates = () => {
 	});
 
 	const columns: ColumnsType<
-		TeamMember & {
+		VacancyApplication & {
 			vacancy: TeamVacancy;
 			speciality: Speciality;
 			user: User & { specialities: Speciality[] };

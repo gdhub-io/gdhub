@@ -1,4 +1,4 @@
-import { TeamMemberStatus } from "@gdhub-io/gdhub-prisma";
+import { VacancyApplicationStatus } from "@gdhub-io/gdhub-prisma";
 import { type Browser, expect, type Page, test } from "@playwright/test";
 import { prisma } from "../../src/services/prisma";
 import { createProjectInHub } from "./setup/project";
@@ -49,8 +49,8 @@ test.describe.serial("a vacancy, between its author and its candidates", () => {
 
 	const statusOf = async (user: StandUser) =>
 		(
-			await prisma.teamMember.findFirst({
-				where: { userId: user.id, team: { project: { slug } } },
+			await prisma.vacancyApplication.findFirst({
+				where: { userId: user.id, vacancy: { team: { project: { slug } } } },
 				orderBy: { createdAt: "desc" },
 				select: { status: true },
 			})
@@ -59,7 +59,8 @@ test.describe.serial("a vacancy, between its author and its candidates", () => {
 	const candidateCard = async (user: StandUser) => {
 		await authorPage.goto(`/user/project/${slug}/open-positions`);
 		await authorPage.getByRole("button", { name: user.name }).click();
-		const card = authorPage.getByRole("dialog", { name: "Candidate card" });
+		// Frame 04.07: the talent card in its candidate form, named by its eyebrow.
+		const card = authorPage.getByRole("dialog").filter({ hasText: "Candidate card" });
 		await expect(card).toBeVisible();
 		return card;
 	};
@@ -82,7 +83,7 @@ test.describe.serial("a vacancy, between its author and its candidates", () => {
 
 	const applyAs = async (browser: Browser, user: StandUser, greeting: string) => {
 		await apply(await signInAs(browser, user), greeting);
-		await expect.poll(() => statusOf(user)).toBe(TeamMemberStatus.Applicant);
+		await expect.poll(() => statusOf(user)).toBe(VacancyApplicationStatus.Submitted);
 	};
 
 	test("two candidates find the vacancy and apply", async ({ browser }) => {
@@ -96,13 +97,13 @@ test.describe.serial("a vacancy, between its author and its candidates", () => {
 		await expect(card.getByRole("button", { name: "Message" })).toBeEnabled();
 		await card.getByRole("button", { name: "Reject" }).click();
 
-		await expect.poll(() => statusOf(rejected)).toBe(TeamMemberStatus.Rejected);
+		await expect.poll(() => statusOf(rejected)).toBe(VacancyApplicationStatus.Rejected);
 	});
 
 	test("the author takes the other into the team", async () => {
 		const card = await candidateCard(hired);
 		await card.getByRole("button", { name: "Accept the team" }).click();
-		await expect.poll(() => statusOf(hired)).toBe(TeamMemberStatus.Hired);
+		await expect.poll(() => statusOf(hired)).toBe(VacancyApplicationStatus.Hired);
 
 		await authorPage.goto(`/user/project/${slug}/team`);
 		await expect(authorPage.getByText(hired.name)).toBeVisible({ timeout: 15_000 });

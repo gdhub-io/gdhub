@@ -125,12 +125,6 @@ export const GET = withAuth({ mode: "user" })(
 			},
 		});
 
-		const teamMember = await prisma.teamMember.findFirst({
-			where: { vacancyId: id, userId: currentUser.id },
-			// A second application to the same vacancy is the one that counts.
-			orderBy: { createdAt: "desc" },
-		});
-
 		// The Payment row is the listing fee (status/receipt). Surface the latest one
 		// so the edit form knows whether the fee is paid.
 		const payment = await prisma.payment.findFirst({
@@ -145,7 +139,6 @@ export const GET = withAuth({ mode: "user" })(
 			...data,
 			// Offered compensation lives on the vacancy; expose it in EUR for the form.
 			offeredAmount: fromCents(data?.offeredAmount),
-			myTeamMemberId: teamMember?.id,
 			payment,
 		});
 	}),

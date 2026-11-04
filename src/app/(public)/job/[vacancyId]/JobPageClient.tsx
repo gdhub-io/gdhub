@@ -38,6 +38,10 @@ import { ProjectGameDetails } from "@/components/project/ProjectGameDetails";
 import { ProjectVideoCover } from "@/components/project/ProjectVideoCover";
 import { gtmEventTrigger } from "@/helpers/gtm";
 import { useContentPageView } from "@/hooks/useContentViews";
+import {
+	type MyApplication,
+	useWithdrawApplication,
+} from "@/hooks/vacancy-application";
 import styles from "./styles.module.scss";
 
 const { Text } = Typography;
@@ -99,28 +103,25 @@ export function JobPageClient({ vacancy, pageCover }: JobPageProps) {
 		vacancy.id,
 		session?.user.id,
 	];
-	const { data: myTeamMemberId } = useQuery({
+	const { data: myApplication } = useQuery({
 		queryKey: myApplicationKey,
 		queryFn: () =>
 			axios
-				.get<{ myTeamMemberId: string | null }>(
+				.get<{ myApplication: MyApplication }>(
 					"/api/project/vacancy/application",
 					{ params: { id: vacancy.id } },
 				)
-				.then((response) => response.data.myTeamMemberId),
+				.then((response) => response.data.myApplication),
 		enabled: !!session,
 	});
 
-	const { mutateAsync: withdrawApply } = useMutation({
-		mutationFn: (data: { teamMemberId: string }) =>
-			axios.put<void>("/api/user/project/vacancy/withdraw", data),
-		onSuccess: () => {
-			gtmEventTrigger("job", {
-				action: "withdraw",
-				vacancyName: vacancy.title,
-				projectName: project?.name,
-			});
-		},
+	const confirmWithdraw = useWithdrawApplication(() => {
+		gtmEventTrigger("job", {
+			action: "withdraw",
+			vacancyName: vacancy.title,
+			projectName: project?.name,
+		});
+		queryClient.invalidateQueries({ queryKey: myApplicationKey });
 	});
 
 	const { mutateAsync: vacancyApply } = useMutation({
@@ -138,34 +139,21 @@ export function JobPageClient({ vacancy, pageCover }: JobPageProps) {
 		},
 	});
 
-	const withdrawApplyHandler = async (data: { teamMemberId: string }) => {
-		try {
-			await withdrawApply(data);
-			await queryClient.invalidateQueries({ queryKey: myApplicationKey });
-			message.success(
-				t("page.vacancy.withdrawSuccess", "Your response is withdrawn"),
-			);
-		} catch (error: any) {
-			console.log(error);
-			message.error(error.response?.data.message || error.message);
-		}
-	};
-
 	const functionOkButton = async () => {
 		if (!session) {
 			router.push(`/signin?callbackUrl=${pathname}`);
 			return;
 		}
 
-		return myTeamMemberId
-			? withdrawApplyHandler({ teamMemberId: myTeamMemberId })
+		return myApplication
+			? confirmWithdraw(myApplication.id)
 			: setShowSpecialitySelectModal(true);
 	};
 
 	const statusOkButton = () => {
 		if (!session) return t("signin", "Signin");
-		return myTeamMemberId
-			? t("modal.vacancy.cancelMyResponse", "Cancel my response")
+		return myApplication
+			? t("vacancy.withdraw.action", "Withdraw application")
 			: t("page.vacancy.applyAction", "Apply");
 	};
 
@@ -300,7 +288,7 @@ export function JobPageClient({ vacancy, pageCover }: JobPageProps) {
 
 									<div className={styles.headActions}>
 										<Button
-											type={myTeamMemberId ? "default" : "primary"}
+											type={myApplication ? "default" : "primary"}
 											size="large"
 											onClick={functionOkButton}
 										>
@@ -342,12 +330,18 @@ export function JobPageClient({ vacancy, pageCover }: JobPageProps) {
 										</Text>
 									)}
 
-									{myTeamMemberId && (
+									{myApplication && (
 										<Alert
-											type="warning"
+											type="success"
+											showIcon
 											title={t(
-												"page.vacancy.applied",
-												"You have already responded to this position",
+												"vacancy.withdraw.applied",
+												"You applied on {date}. The author sees your message and may write to you.",
+												{
+													date: dayjs(myApplication.createdAt).format(
+														"D MMM YYYY",
+													),
+												},
 											)}
 										/>
 									)}

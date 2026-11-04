@@ -147,7 +147,7 @@ describe("the project picture the AI curator reads", () => {
 				title: "Sound designer",
 				publishedAt: new Date("2026-10-12T00:00:00Z"),
 				createdAt: new Date("2026-10-11T00:00:00Z"),
-				_count: { applicants: 3 },
+				_count: { applications: 3 },
 			},
 		] as never);
 

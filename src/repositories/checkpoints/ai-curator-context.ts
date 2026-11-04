@@ -4,7 +4,11 @@ import {
 	CURATOR_STAGE_BRIEFS,
 	LEAD_IN_DAYS,
 } from "@/config/checkpoint";
-import { TeamMemberStatus, TeamVacancyStatus } from "@/config/prisma-enums";
+import {
+	TeamMemberStatus,
+	TeamVacancyStatus,
+	VacancyApplicationStatus,
+} from "@/config/prisma-enums";
 import { teamCapacity, weeklyRange } from "@/lib/checkpoints/capacity";
 import { devlogWords } from "@/lib/checkpoints/curator-text";
 import { dueDateFrom, MS_PER_DAY } from "@/lib/checkpoints/days";
@@ -127,7 +131,9 @@ export async function curatorTeam(
 				createdAt: true,
 				_count: {
 					select: {
-						applicants: { where: { status: TeamMemberStatus.Applicant } },
+						applications: {
+							where: { status: VacancyApplicationStatus.Submitted },
+						},
 					},
 				},
 			},
@@ -157,7 +163,7 @@ export async function curatorTeam(
 		openings: vacancies.map((vacancy) => ({
 			role: vacancy.title,
 			postedOn: day(vacancy.publishedAt ?? vacancy.createdAt),
-			applied: vacancy._count.applicants,
+			applied: vacancy._count.applications,
 		})),
 	};
 }

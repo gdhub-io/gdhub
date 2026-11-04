@@ -155,19 +155,19 @@ export const projectOfEquity = async (req: Request): Promise<string | null> => {
 	return equity?.projectId ?? null;
 };
 
-/** `teamMemberId` in the body — the project that member belongs to. */
-export const projectOfTeamMemberId = async (
+/** `id` in the body or the query is a `VacancyApplication` id — the project it applies to. */
+export const projectOfApplication = async (
 	req: Request,
 ): Promise<string | null> => {
-	const teamMemberId = await fromBodyOrQuery(req, "teamMemberId");
-	if (!teamMemberId) return null;
+	const id = await fromBodyOrQuery(req, "id");
+	if (!id) return null;
 
-	const member = await prisma.teamMember.findUnique({
-		where: { id: teamMemberId },
-		select: { team: { select: { projectId: true } } },
+	const application = await prisma.vacancyApplication.findUnique({
+		where: { id },
+		select: { vacancy: { select: { team: { select: { projectId: true } } } } },
 	});
 
-	return member?.team?.projectId ?? null;
+	return application?.vacancy.team.projectId ?? null;
 };
 
 /** `id` in the body or the query is a `TeamInvitation` id. */

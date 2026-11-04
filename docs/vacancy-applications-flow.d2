@@ -1,0 +1,82 @@
+vars: {
+  d2-config: {
+    layout-engine: elk
+  }
+}
+
+direction: down
+
+title: "Vacancy applications — from applying to the team, and what the admin reads" {
+  shape: text
+  near: top-center
+  style.font-size: 22
+}
+
+apply: "A specialist applies\n/job/[id] · message · allowed contacts"
+active: "Already has a submitted application\nto this vacancy?" {shape: diamond}
+refuse: "Refused — one at a time"
+submitted: "Application · Submitted"
+
+apply -> active
+active -> refuse: "yes"
+active -> submitted: "no"
+
+author: "The author\nMy Team → Candidates"
+submitted -> author: "listed"
+
+chat: "Vacancy chat\nauto-joined only while Submitted"
+author -> chat: "open chat"
+
+viewed: "Viewed — first time the author or a project admin\nopens the candidate card\n(a platform admin opening it counts for nothing)"
+author -> viewed: "opens the card"
+
+decide: "Author decides" {shape: diamond}
+author -> decide
+
+hired: "Application · Hired"
+member: "Team member · Hired\nlinked to its application"
+rejected: "Application · Rejected"
+
+decide -> hired: "hire"
+hired -> member: "created from it"
+decide -> rejected: "reject"
+
+withdraw: "The candidate withdraws\n\"Withdraw application\" → confirm"
+own: "Is it their own submitted application?" {shape: diamond}
+withdrawn: "Application · Withdrawn"
+denied: "Refused"
+
+submitted -> withdraw: "candidate"
+withdraw -> own
+own -> withdrawn: "yes"
+own -> denied: "no"
+
+closed: "Vacancy chat closed\nwith a line saying why"
+hired -> closed
+rejected -> closed
+withdrawn -> closed
+
+again: "May apply again\nas a new application"
+withdrawn -> again
+rejected -> again
+
+team: "The team\nFounder · Hired · Fired only"
+member -> team
+
+admin: "Hub admin\n/admin/open-positions (read-only)"
+list: "Every open position\nproject · status · listing payment · applications · dates · views"
+detail: "An open position's applications\ncandidate · status · date · message · contacts\nviewed by the project · chat: opened · author last read · closed"
+admin -> list
+list -> detail: "a row clicked"
+
+critical: |md
+  **Critical**
+  - An applicant is never a team member: the team holds only Founder, Hired and Fired.
+  - Every existing application moves, submitted and rejected, with its dates; no member is lost.
+  - Only the candidate withdraws their own application; the author hires or rejects.
+  - A closed application never reopens its chat, and never auto-joins anyone.
+  - "Viewed" is set by the project's author or admins, never by a platform admin, and only a platform admin reads it.
+  - The admin page changes nothing; the listing payment is read as recorded, none means free.
+| {
+  near: bottom-center
+}

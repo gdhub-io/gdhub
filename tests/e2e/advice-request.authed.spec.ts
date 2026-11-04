@@ -169,14 +169,26 @@ test.describe.serial("an advice request, between a member and an advisor", () =>
 			where: { userId: applicant.id },
 			select: { id: true },
 		});
-		// Applications still live in TeamMember until GDHUB-127.
-		await prisma.teamMember.create({
+		// An application is its own row (GDHUB-127); it never puts anyone on the team.
+		const direction = await prisma.workDirection.findFirstOrThrow({
+			select: { id: true },
+		});
+		const vacancy = await prisma.teamVacancy.create({
+			data: {
+				title: "Narrative designer",
+				description: "Branching dialogue for the harbour town.",
+				directionId: direction.id,
+				teamId: project.team?.id ?? "",
+				finishedAt: new Date(Date.now() + 30 * 24 * 60 * 60 * 1000),
+			},
+			select: { id: true },
+		});
+		await prisma.vacancyApplication.create({
 			data: {
 				userId: applicant.id,
-				teamId: project.team?.id ?? "",
+				vacancyId: vacancy.id,
 				specialityId: speciality.id,
-				status: TeamMemberStatus.Applicant,
-				startedAt: new Date(),
+				allowedContacts: ["email"],
 			},
 		});
 		const page = await signInAs(browser, applicant);

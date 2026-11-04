@@ -4462,18 +4462,26 @@
 	},
 	"projectCandidatePreviewModal": {
 		"acceptTheTeam": "Принять в команду",
+		"application": "Заявка",
+		"appliedOn": "Подано {date}",
+		"appliedTo": "Подано на {position}",
 		"close": "Закрыть",
+		"contactsAllowed": "Разрешенные контакты: {list}",
 		"cvPortfolio": "CV/Портфолио",
 		"email": "Email",
 		"freeTime": "Свободное время",
 		"fromTo": "от {fromDate} до {toDate} часов в неделю",
 		"go": "Перейти",
 		"greeting": "Сообщение от кандидата",
+		"hired": "{name} присоединился к команде",
 		"message": "Сообщение",
 		"motivation": "Мотивация",
+		"noContacts": "Нет общих контактов — напишите в чате.",
+		"noMessage": "Нет сообщения.",
 		"notPointed": "(не указано)",
 		"placeOfResidence": "Место проживания",
 		"reject": "Отклонить",
+		"rejected": "Вы отклонили {name}",
 		"telegram": "Telegram",
 		"title": "Карточка кандидата"
 	},
@@ -4741,7 +4749,16 @@
 			}
 		},
 		"title": "Вакансии",
-		"validUntil": "Актуально до"
+		"validUntil": "Актуально до",
+		"withdraw": {
+			"action": "Отозвать заявку",
+			"applied": "Вы подали заявку {date}. Автор видит ваше сообщение и может написать вам.",
+			"confirmBody": "Автор больше не увидит вас среди кандидатов, и ваш чат по поводу этой позиции закрывается. Вы можете подать заявку снова позже.",
+			"confirmCancel": "Сохранить это",
+			"confirmOk": "Вывод",
+			"confirmTitle": "Вы хотите отозвать свою заявку?",
+			"done": "Ваша заявка отозвана"
+		}
 	},
 	"verify": {
 		"form": {

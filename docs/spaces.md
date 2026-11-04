@@ -172,6 +172,7 @@ the hub: hub admin = admin, hub owner = owner.
 | `checkpoints` | `/admin/checkpoints` | **project** `checkpoints`: promo codes, refunds, verdicts, free checkpoints |
 | `curators` | `/admin/checkpoints` (curator tab) | **advisor**: who may curate |
 | `payouts` | `/admin/payouts` | **advisor** earnings |
+| `vacancies` | `/admin/open-positions` | **project** `vacancies`: every open position, its listing payment and who applied; read-only |
 | `audit_logs`, `legal`, `views` | `/admin/audit-logs`, `/admin/legal`, `/admin/views` | read-only |
 
 `payouts` and `curators` are **owner only** (off for admin by override).

@@ -26,6 +26,10 @@ import { useSession } from "next-auth/react";
 import { useEffect, useState } from "react";
 import { AppImage } from "@/components/ui/AppImage";
 import { getVideoPoster, toPlayableVideoUrl } from "@/helpers/video";
+import {
+	type MyApplication,
+	useWithdrawApplication,
+} from "@/hooks/vacancy-application";
 import SpecialitySelectModal from "../SpecialitySelectModal";
 import styles from "./style.module.scss";
 
@@ -69,7 +73,7 @@ const VacancyPreviewModal = ({ vacancyId, open, onOk, onCancel }: any) => {
 							};
 						};
 					};
-					myTeamMemberId: string;
+					myApplication: MyApplication;
 				}
 			>("/api/project/vacancy", {
 				params: { id: vacancyId },
@@ -78,10 +82,7 @@ const VacancyPreviewModal = ({ vacancyId, open, onOk, onCancel }: any) => {
 		refetchOnWindowFocus: false,
 	});
 
-	const { mutateAsync: withdrawApply } = useMutation({
-		mutationFn: (data: { teamMemberId: string }) =>
-			axios.put<void>("/api/user/project/vacancy/withdraw", data),
-	});
+	const confirmWithdraw = useWithdrawApplication(onCancel);
 
 	const { mutateAsync: vacancyApply } = useMutation({
 		mutationFn: (data: {
@@ -134,27 +135,13 @@ const VacancyPreviewModal = ({ vacancyId, open, onOk, onCancel }: any) => {
 		}
 	};
 
-	const withdrawApplyHandler = async (data: { teamMemberId: string }) => {
-		try {
-			await withdrawApply(data);
-
-			message.success(
-				t("modal.vacancy.withdrawSuccess", "Your response is withdrawn"),
-			);
-			onCancel();
-		} catch (error: any) {
-			console.error(error);
-			message.error(error.response?.data.message || error.message);
-		}
-	};
-
 	const statusOkButton = () => {
 		if (!session?.data) {
 			return t("signin", "Signin");
 		}
 
-		return vacancy?.data.myTeamMemberId
-			? t("modal.vacancy.cancelMyResponse", "Cancel my response")
+		return vacancy?.data.myApplication
+			? t("vacancy.withdraw.action", "Withdraw application")
 			: t("modal.vacancy.apply", "Respond");
 	};
 
@@ -163,8 +150,8 @@ const VacancyPreviewModal = ({ vacancyId, open, onOk, onCancel }: any) => {
 			router.push("/signin?callbackUrl=" + pathname);
 		}
 
-		return vacancy?.data.myTeamMemberId
-			? withdrawApplyHandler({ teamMemberId: vacancy.data.myTeamMemberId })
+		return vacancy?.data.myApplication
+			? confirmWithdraw(vacancy.data.myApplication.id)
 			: setShowSpecialitySelectModal(true);
 	};
 
@@ -343,12 +330,18 @@ const VacancyPreviewModal = ({ vacancyId, open, onOk, onCancel }: any) => {
 								)}
 
 							{/* Status Alerts */}
-							{vacancy.data.myTeamMemberId ? (
+							{vacancy.data.myApplication ? (
 								<Alert
 									type="success"
+									showIcon
 									title={t(
-										"modal.vacancy.applied",
-										"You have already responded to this position",
+										"vacancy.withdraw.applied",
+										"You applied on {date}. The author sees your message and may write to you.",
+										{
+											date: dayjs(vacancy.data.myApplication.createdAt).format(
+												"D MMM YYYY",
+											),
+										},
 									)}
 								/>
 							) : null}

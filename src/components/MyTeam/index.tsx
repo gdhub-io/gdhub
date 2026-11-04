@@ -502,10 +502,7 @@ const MyTeam = () => {
 			key: "promises",
 			align: "center",
 			render: (_, member) => {
-				if (
-					member.status === TeamMemberStatus.Fired ||
-					member.status === TeamMemberStatus.Rejected
-				) {
+				if (member.status === TeamMemberStatus.Fired) {
 					return <Text type="secondary">-</Text>;
 				}
 
