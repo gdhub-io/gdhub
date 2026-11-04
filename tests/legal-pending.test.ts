@@ -70,10 +70,16 @@ describe("pendingLegalCodes", () => {
 	it("is empty once the versions in effect are accepted", async () => {
 		specialityCount.mockResolvedValue(1);
 		acceptanceFindMany.mockResolvedValue([
-			{ code: "TermsOfUse", version: 1 },
+			{ code: "TermsOfUse", version: 2 },
 			{ code: "AdvisorAgreement", version: 1 },
 		]);
 		expect(await pendingLegalCodes("u1")).toEqual([]);
+	});
+
+	// Terms v2 is a material change: an acceptance of v1 no longer holds.
+	it("asks again someone who accepted only Terms v1", async () => {
+		acceptanceFindMany.mockResolvedValue([{ code: "TermsOfUse", version: 1 }]);
+		expect(await pendingLegalCodes("u1")).toEqual(["TermsOfUse"]);
 	});
 
 	it("reads only this user's acceptances", async () => {

@@ -38,8 +38,8 @@ did not see the reason.
 1. **EU representative, Article 27 GDPR — the VšĮ, named in Privacy Policy v2.** The
    controller is outside the EU and processes EU users' data continuously, so the exemption
    for occasional processing does not fit. The only place the VšĮ appears in a document,
-   and only in that role. **Still open: the written mandate** from the individual
-   entrepreneur to the VšĮ has to be signed before v2 takes effect.
+   and only in that role. **The written mandate** from the individual entrepreneur to the
+   VšĮ is signed on 2026-11-04, the day v2 took effect.
 2. **Withdrawal function, Article 11a.** Directive (EU) 2023/2673 adds to 2011/83/EU a
    "withdraw from contract here" function for contracts concluded online, applying from
    19 June 2026. The texts ask the buyer to write an email. Confirm whether Paddle's
