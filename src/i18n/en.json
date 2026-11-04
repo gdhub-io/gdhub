@@ -3999,7 +3999,9 @@
 			"title": "Events"
 		},
 		"expert": {
-			"back": "Experts"
+			"back": "Experts",
+			"notTakingRequests": "The expert is not taking requests right now.",
+			"requestConsultation": "Request consultation"
 		},
 		"experts": {
 			"myExperts": "My requests"
