@@ -3999,7 +3999,9 @@
 			"title": "События"
 		},
 		"expert": {
-			"back": "Эксперты"
+			"back": "Эксперты",
+			"notTakingRequests": "Эксперт сейчас не принимает запросы.",
+			"requestConsultation": "Запрос консультации"
 		},
 		"experts": {
 			"myExperts": "Мои запросы"
