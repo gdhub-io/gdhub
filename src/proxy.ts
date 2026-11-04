@@ -1,5 +1,7 @@
 import { NextResponse } from "next/server";
 import { auth } from "@/auth";
+import { skipsOnboarding } from "@/components/checkpoints/entry/hrefs";
+import { signedOutRedirect } from "@/lib/signed-out-redirect";
 
 export default auth((req) => {
 	const session = req.auth;
@@ -18,22 +20,15 @@ export default auth((req) => {
 	}
 
 	if (!session) {
-		const signInUrl = new URL("/signin", req.url);
-		// Keep the query: a chat deep link is `/hub?chat=1&roomId=…`, and a path
-		// without it drops the reader on the hub with no chat open.
-		signInUrl.searchParams.set(
-			"callbackUrl",
-			`${req.nextUrl.pathname}${req.nextUrl.search}`,
+		return NextResponse.redirect(
+			signedOutRedirect(req.nextUrl.pathname, req.nextUrl.search, req.url),
 		);
-		return NextResponse.redirect(signInUrl);
 	}
 
 	const { onboardingDone } = session.user;
 
-	if (
-		!onboardingDone &&
-		!req.nextUrl.pathname.startsWith("/registration/onboarding")
-	) {
+	// The checkpoint hub's "About you" finishes onboarding; sending it there would loop.
+	if (!onboardingDone && !skipsOnboarding(req.nextUrl.pathname)) {
 		return NextResponse.redirect(new URL("/registration/onboarding", req.url));
 	}
 
@@ -66,5 +61,7 @@ export const config = {
 		"/live/:path*",
 		"/admin/:path*",
 		"/dev/:path*",
+		"/checkpoint/new",
+		"/checkpoint/new/:path*",
 	],
 };

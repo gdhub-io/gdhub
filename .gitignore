@@ -80,3 +80,6 @@ storybook-static
 
 # debug logs
 debug-*.log
+
+# Overwritten by every `bun run top-games`; the dated folder is the record.
+docs/marketing/top-games/latest/

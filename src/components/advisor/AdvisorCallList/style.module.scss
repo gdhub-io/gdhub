@@ -1,0 +1,44 @@
+// A list in a white card, like a table: rules 1 and 8 of the UI guidelines.
+.card {
+	overflow: hidden;
+	border-radius: var(--gd-radius-card);
+	background: var(--gd-color-surface);
+}
+
+.day {
+	padding: var(--gd-space-2) var(--gd-space-4);
+	background: var(--gd-color-surface-sunken);
+	font-size: var(--gd-font-size-body-sm);
+	font-weight: 600;
+	color: var(--gd-color-text-secondary);
+}
+
+.row {
+	min-height: calc(var(--gd-space-12) + var(--gd-space-2));
+	padding: var(--gd-space-2) var(--gd-space-4);
+	border-bottom: 1px solid var(--gd-color-border-subtle);
+}
+
+.card > div:last-child .row:last-child {
+	border-bottom: none;
+}
+
+.time {
+	flex: none;
+	min-width: calc(var(--gd-space-8) * 3);
+	font-feature-settings: "tnum";
+}
+
+.text {
+	flex: 1;
+	min-width: 0;
+}
+
+.when {
+	flex: none;
+}
+
+.empty {
+	display: block;
+	padding: var(--gd-space-4);
+}

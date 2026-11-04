@@ -6,6 +6,24 @@
 			"headers": {
 				"X-API-Key": "${TOLGEE_API_KEY}"
 			}
+		},
+		"lt-eli": {
+			"type": "stdio",
+			"command": "uvx",
+			"args": ["--from", "lt-eli-mcp==0.3.3", "lt-eli-mcp"],
+			"env": {
+				"LT_ELI_RUNTIME_URL": "",
+				"LT_ELI_BASE_URL": "https://get.data.gov.lt"
+			}
+		},
+		"eur-lex": {
+			"type": "stdio",
+			"command": "bunx",
+			"args": ["@cyanheads/eur-lex-mcp-server@0.19.0"],
+			"env": {
+				"MCP_TRANSPORT_TYPE": "stdio",
+				"MCP_LOG_LEVEL": "error"
+			}
 		}
 	}
 }

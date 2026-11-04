@@ -2,6 +2,9 @@
 // the field's left edge, which lands it under the box and out of line with the
 // sentence it is about.
 .consentItem {
+	// 12 to the clickwrap below, frame `bjuWB`.
+	margin-bottom: var(--gd-space-3);
+
 	:global(.ant-form-item-explain) {
 		// Checkbox box (18px) plus antd's label gap (8px), so the message starts
 		// on the same pixel as the sentence above it.
@@ -9,11 +12,8 @@
 	}
 }
 
-.link {
-	color: var(--gd-color-link);
-	text-decoration: underline;
-
-	&:hover {
-		color: var(--gd-color-accent);
-	}
+// Genre and stage side by side, each taking half; they stack on a narrow modal.
+.pair > :global(.ant-form-item) {
+	flex: 1 1 220px;
+	min-width: 0;
 }

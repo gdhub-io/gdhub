@@ -28,7 +28,7 @@ export const useWorkDirections = () => {
 };
 
 export const useGameGenres = () => {
-	const { data: records } = useQuery({
+	const { data: records, isError } = useQuery({
 		queryKey: ["gameGenres"],
 		queryFn: () => axios.get<GameGenre[]>("/api/dictionary/game-genres"),
 		staleTime: Infinity,
@@ -43,7 +43,7 @@ export const useGameGenres = () => {
 	const getGameGenreName = (gameGenreId: string) =>
 		records?.data.find((r) => r.id == gameGenreId)?.name;
 
-	return { data: records?.data, options, getGameGenreName };
+	return { data: records?.data, options, getGameGenreName, isError };
 };
 
 export const useGameSettings = () => {

@@ -1,0 +1,201 @@
+@use '../../../styles/variables.scss';
+
+.section {
+	position: relative;
+	overflow: hidden;
+	padding-block: 28px 40px;
+}
+
+.hero {
+	display: grid;
+	gap: 20px;
+}
+
+.copy {
+	display: grid;
+	gap: 20px;
+	align-content: start;
+}
+
+.badge {
+	display: grid;
+	gap: 4px;
+}
+
+.productRow {
+	display: flex;
+	gap: var(--gd-space-3);
+	align-items: center;
+}
+
+.product {
+	margin: 0;
+	font-size: var(--gd-font-size-marketing-h3);
+	font-weight: 700;
+	color: var(--gd-color-text);
+}
+
+.descriptor {
+	margin: 0;
+	font-size: var(--gd-font-size-label);
+	font-weight: 600;
+	letter-spacing: 0.11em;
+	text-transform: uppercase;
+	color: var(--gd-color-accent);
+}
+
+.headline {
+	margin: 0;
+	font-size: var(--gd-font-size-marketing-hero);
+	font-weight: 700;
+	line-height: 1.02;
+	letter-spacing: -0.023em;
+	color: var(--gd-color-text);
+}
+
+.subhead {
+	margin: 0;
+	font-size: var(--gd-font-size-marketing-lead);
+	line-height: 1.55;
+	color: var(--gd-color-text-secondary);
+}
+
+.ctaLink,
+.primary {
+	width: 100%;
+}
+
+.primary {
+	font-weight: 600;
+}
+
+.visual {
+	position: relative;
+	aspect-ratio: 342 / 260;
+	overflow: hidden;
+}
+
+.frame {
+	position: absolute;
+	inset: 0;
+}
+
+// Muted so the blue scene sits on the warm-black band instead of glowing on it.
+.artwork {
+	object-fit: cover;
+	object-position: 100% 50%;
+	filter: saturate(0.6) brightness(0.85);
+}
+
+// Zoomed from the right edge: the door the team walks to is what must stay in.
+@media screen and (max-width: 991px) {
+	.artwork {
+		transform: scale(1.19);
+		transform-origin: 100% 50%;
+	}
+}
+
+// Needs an alpha, which cannot apply to a `var()` — keep in step with `--gd-neutral-950`.
+// The right edge barely fades: the door sits there.
+.visual::after {
+	content: "";
+	position: absolute;
+	inset: 0;
+	background:
+		linear-gradient(to right, rgb(15, 15, 14), rgba(15, 15, 14, 0) 30%),
+		linear-gradient(to left, rgb(15, 15, 14), rgba(15, 15, 14, 0) 4%),
+		linear-gradient(
+			to bottom,
+			rgb(15, 15, 14),
+			rgba(15, 15, 14, 0) 12%,
+			rgba(15, 15, 14, 0) 72%,
+			rgb(15, 15, 14)
+		);
+}
+
+.copy,
+.priceNote {
+	position: relative;
+	z-index: 1;
+}
+
+.priceNote {
+	margin: 0;
+	font-size: var(--gd-font-size-caption);
+	line-height: 1.5;
+	color: var(--gd-color-text-tertiary);
+}
+
+@media screen and (min-width: 992px) {
+	.section {
+		display: flex;
+		align-items: center;
+		// Pulled up under the transparent page bar, so the artwork starts at the top edge.
+		margin-top: -(variables.$landing-header-height);
+		min-height: calc(640px + #{variables.$landing-header-height});
+		box-sizing: border-box;
+		padding-block: calc(64px + #{variables.$landing-header-height}) 80px;
+	}
+
+	.hero {
+		grid-template-columns: minmax(0, 560px) minmax(0, 1fr);
+		column-gap: 64px;
+		align-items: center;
+	}
+
+	.copy {
+		grid-area: 1 / 1;
+		gap: 24px;
+	}
+
+	// Full-bleed behind the copy, absolute against the section as in the final CTA.
+	.visual {
+		position: absolute;
+		inset: 0;
+		aspect-ratio: auto;
+	}
+
+	// Anchored right, so the bridge clears the copy and the door keeps its edge.
+	.frame {
+		left: 7%;
+	}
+
+	.artwork {
+		object-position: 100% 40%;
+	}
+
+	.visual::after {
+		background:
+			linear-gradient(
+				to right,
+				rgb(15, 15, 14) 22%,
+				rgba(15, 15, 14, 0.7) 38%,
+				rgba(15, 15, 14, 0) 50%
+			),
+			linear-gradient(
+				to bottom,
+				rgba(15, 15, 14, 0.6),
+				rgba(15, 15, 14, 0) 18%,
+				rgba(15, 15, 14, 0) 78%,
+				rgba(15, 15, 14, 0.7)
+			);
+	}
+
+	.priceNote {
+		grid-area: 2 / 1;
+		font-size: var(--gd-font-size-body-sm);
+	}
+
+	// Taller than the page's other calls to action, as on the platform landing.
+	.ctaLink,
+	.primary {
+		width: auto;
+	}
+
+	.primary {
+		height: 64px;
+		padding-inline: 32px;
+		font-size: var(--gd-font-size-h3);
+		white-space: nowrap;
+	}
+}

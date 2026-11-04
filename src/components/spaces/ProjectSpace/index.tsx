@@ -1,8 +1,8 @@
 "use client";
 
-import { IconExternalLink } from "@tabler/icons-react";
+import { IconArrowLeft, IconExternalLink } from "@tabler/icons-react";
 import { useTranslate } from "@tolgee/react";
-import { Flex, Grid, Space, Typography } from "antd";
+import { Button, Flex, Grid, Space, Typography } from "antd";
 import type { ItemType } from "antd/es/menu/interface";
 import dayjs from "dayjs";
 import Link from "next/link";
@@ -33,14 +33,20 @@ const { Title, Text } = Typography;
  */
 export const ProjectSpace = ({
 	title,
+	titleExtra,
 	description,
 	children,
 	actions,
+	backHref,
 }: {
 	title?: string;
+	/** Sits on the title's line, after it — a stage tag, a status. */
+	titleExtra?: ReactNode;
 	description?: string;
 	children: ReactNode;
 	actions?: ReactNode;
+	/** A page one level below a tab — the hero gains the way back to it. */
+	backHref?: string;
 }) => {
 	const { t } = useTranslate();
 	const params = useParams<{ slug?: string }>();
@@ -86,11 +92,20 @@ export const ProjectSpace = ({
 
 	const spaceHeader: SpaceHeaderConfig = useMemo(() => {
 		const menuItems: (ItemType & { disabled?: boolean })[] = [
+			// Checkpoints live on the workflow path now; their old tab is gone.
 			{
-				key: `/user/project/${projectSlug}`,
+				key: `/user/project/${projectSlug}/workflow`,
 				label: (
-					<Link href={`/user/project/${projectSlug}`}>
+					<Link href={`/user/project/${projectSlug}/workflow`}>
 						{t("app.user-project.menu.workflow", "Workflow")}
+					</Link>
+				),
+			},
+			{
+				key: `/user/project/${projectSlug}/artifacts`,
+				label: (
+					<Link href={`/user/project/${projectSlug}/artifacts`}>
+						{t("app.user-project.menu.artifacts", "Artifacts")}
 					</Link>
 				),
 			},
@@ -99,6 +114,14 @@ export const ProjectSpace = ({
 				label: (
 					<Link href={`/user/project/${projectSlug}/devlog`}>
 						{t("app.user-project.menu.overview", "Devlog")}
+					</Link>
+				),
+			},
+			{
+				key: `/user/project/${projectSlug}/team`,
+				label: (
+					<Link href={`/user/project/${projectSlug}/team`}>
+						{t("app.user-project.menu.team", "Team")}
 					</Link>
 				),
 			},
@@ -116,22 +139,6 @@ export const ProjectSpace = ({
 						},
 					]
 				: []),
-			{
-				key: `/user/project/${projectSlug}/team`,
-				label: (
-					<Link href={`/user/project/${projectSlug}/team`}>
-						{t("app.user-project.menu.team", "Team")}
-					</Link>
-				),
-			},
-			{
-				key: `/user/project/${projectSlug}/artifacts`,
-				label: (
-					<Link href={`/user/project/${projectSlug}/artifacts`}>
-						{t("app.user-project.menu.artifacts", "Artifacts")}
-					</Link>
-				),
-			},
 			...(can("project.info.edit")
 				? [
 						{
@@ -172,7 +179,15 @@ export const ProjectSpace = ({
 				space: project?.id ? { kind: "project", id: project.id } : undefined,
 			},
 			menuItems: menuItems.filter((item) => !item.disabled),
-			menuSelectedKeys: [pathname],
+			// A tab stays lit for everything beneath it — buying a checkpoint and a
+			// session page are still the Workflow tab, and a nav that goes dark as
+			// soon as you use it tells the reader they have left the space.
+			menuSelectedKeys: [
+				menuItems
+					.map((item) => String(item?.key ?? ""))
+					.filter((key) => pathname === key || pathname.startsWith(`${key}/`))
+					.sort((a, b) => b.length - a.length)[0] ?? pathname,
+			],
 		};
 	}, [projectSlug, can, project?.name, pathname, screens.md, t]);
 
@@ -202,13 +217,40 @@ export const ProjectSpace = ({
 					})}
 				</div>
 			)}
-			<Flex justify="space-between" align="center" style={{ marginBottom: 24 }}>
-				<Space orientation="vertical" size={0}>
-					{!!title && <Title style={{ margin: 0 }}>{title}</Title>}
-					{!!description && <Text type="secondary">{description}</Text>}
-				</Space>
-				{actions}
-			</Flex>
+			{/* A page that draws its own header passes none of these. */}
+			{(!!backHref ||
+				!!title ||
+				!!titleExtra ||
+				!!description ||
+				!!actions) && (
+				<Flex
+					justify="space-between"
+					align="center"
+					style={{ marginBottom: 24 }}
+				>
+					<Flex gap={12} align="center">
+						{!!backHref && (
+							<Link href={backHref}>
+								{/* The same way back the protected pages draw: a text button on
+							    the left of the title, at the control size antd already is. */}
+								<Button
+									type="text"
+									aria-label={t("common.back", "Back")}
+									icon={<IconArrowLeft />}
+								/>
+							</Link>
+						)}
+						<Space orientation="vertical" size={0}>
+							<Flex gap={10} align="center" wrap>
+								{!!title && <Title style={{ margin: 0 }}>{title}</Title>}
+								{titleExtra}
+							</Flex>
+							{!!description && <Text type="secondary">{description}</Text>}
+						</Space>
+					</Flex>
+					{actions}
+				</Flex>
+			)}
 
 			{children}
 		</ProjectContext.Provider>

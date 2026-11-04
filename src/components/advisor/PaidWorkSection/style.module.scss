@@ -1,0 +1,82 @@
+// Frame `Q8dNW0`: the outlined payout details block, padding and gap 20.
+.block {
+	display: flex;
+	flex-direction: column;
+	gap: calc(var(--gd-space-4) + var(--gd-space-1));
+	padding: calc(var(--gd-space-4) + var(--gd-space-1));
+	border: 1px solid var(--gd-color-border);
+	border-radius: var(--gd-radius-card);
+}
+
+.item {
+	margin-bottom: 0;
+}
+
+.options {
+	gap: var(--gd-space-3);
+}
+
+.note {
+	font-size: var(--gd-font-size-body-sm);
+}
+
+.masked input {
+	color: var(--gd-color-text-secondary);
+}
+
+// A link sitting inside a field or its help row: no button box around the word.
+.inlineLink {
+	height: auto;
+	padding: 0;
+}
+
+.grow {
+	flex: 1;
+	min-width: 0;
+}
+
+.termsTitle {
+	font-weight: 500;
+}
+
+// Optical: drops the icon onto the first line of text.
+.noteIcon {
+	flex: none;
+	margin-top: calc(var(--gd-space-1) / 2);
+	color: var(--gd-color-text-tertiary);
+}
+
+// Frame `S5YkC`: 20 between the payout details block, the hairline and Project curation.
+.divider {
+	margin-block: calc(var(--gd-space-4) + var(--gd-space-1));
+}
+
+.curation {
+	display: flex;
+	flex-direction: column;
+	gap: calc(var(--gd-space-4) + var(--gd-space-1));
+}
+
+.rowTitle {
+	font-weight: 500;
+}
+
+.rowTitleLocked {
+	font-weight: 500;
+	color: var(--gd-color-text-tertiary);
+}
+
+.lockIcon {
+	color: var(--gd-color-text-tertiary);
+}
+
+.statusLabel {
+	font-weight: 500;
+}
+
+.askAgain {
+	height: auto;
+	padding: 0;
+	font-size: var(--gd-font-size-body-sm);
+	font-weight: 500;
+}

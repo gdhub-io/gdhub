@@ -1,0 +1,90 @@
+.subtitle {
+	font-size: var(--gd-font-size-caption);
+	font-weight: normal;
+}
+
+.meta {
+	font-size: var(--gd-font-size-caption);
+}
+
+// Frame 12.11.10: the conversation scrolls inside the drawer, opened at the
+// newest, with a thin scrollbar as a chat has.
+.conversation {
+	max-height: calc(100vh - 340px);
+	overflow-y: auto;
+	padding: var(--gd-space-4) var(--gd-space-2) var(--gd-space-4) 0;
+	scrollbar-width: thin;
+	scrollbar-color: var(--gd-color-border-strong) transparent;
+}
+
+// As wide as its options, not the drawer.
+.switcher {
+	align-self: flex-start;
+}
+
+.side {
+	min-width: 0;
+	max-width: 600px;
+}
+
+.curatorBubble.curatorBubble {
+	margin: 0;
+	padding: var(--gd-space-3) var(--gd-space-4);
+	border: 1px solid var(--gd-color-border);
+	border-radius: var(--gd-radius-card);
+	white-space: pre-wrap;
+}
+
+.teamBubble {
+	padding: var(--gd-space-2) var(--gd-space-4);
+	border-radius: var(--gd-radius-card);
+	background: var(--gd-info-tint);
+}
+
+.boundary {
+	width: 100%;
+}
+
+.divider.divider {
+	margin: 0;
+}
+
+.boundaryLabel {
+	display: inline-flex;
+	align-items: center;
+	gap: var(--gd-space-2);
+	font-size: var(--gd-font-size-caption);
+	color: var(--gd-color-text-secondary);
+}
+
+.foldOuts :global(.ant-collapse-header) {
+	padding: 0 !important;
+}
+
+// Panels are outlined, not filled (ui-guidelines, Layout 1).
+.card {
+	padding: var(--gd-space-4);
+	border: 1px solid var(--gd-color-border);
+	border-radius: var(--gd-radius-card);
+}
+
+.aiRead {
+	padding: var(--gd-space-2) var(--gd-space-3);
+	border-radius: var(--gd-radius-control);
+	background: var(--gd-color-surface-sunken);
+}
+
+.flush.flush {
+	margin: 0;
+}
+
+.pre {
+	max-height: 320px;
+	overflow: auto;
+	font-size: var(--gd-font-size-caption);
+	white-space: pre-wrap;
+}
+
+.lines {
+	white-space: pre-line;
+}

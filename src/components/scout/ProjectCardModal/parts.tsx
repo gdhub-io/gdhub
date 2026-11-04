@@ -54,7 +54,7 @@ export function Person({
 	size?: number;
 }) {
 	return (
-		<Flex align="center" gap={10} className={styles.person}>
+		<Flex align="center" gap={12} className={styles.person}>
 			<AppAvatar size={size} src={image}>
 				{name?.charAt(0)}
 			</AppAvatar>
@@ -267,6 +267,11 @@ function ActivityRow({
 				<Text ellipsis className={styles.feedLabel}>
 					{label}
 				</Text>
+				{item.note && (
+					<Text type="secondary" className={styles.caption}>
+						{item.note}
+					</Text>
+				)}
 				{detailed && item.author && (
 					<Text type="secondary" className={styles.caption}>
 						{t("scout.card.activity.by", "by {who}", { who: item.author })}

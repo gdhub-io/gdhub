@@ -1,5 +1,5 @@
 import { apiError, json } from "@/lib/api-handlers";
-import { loadPublicDevlogPost } from "@/repositories/devlog-post";
+import { loadPublicDevlogPost } from "@/repositories/devlog/post";
 
 type Params = Promise<{ projectReportId: string }>;
 

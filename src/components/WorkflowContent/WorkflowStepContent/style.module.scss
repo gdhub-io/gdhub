@@ -1,37 +1,24 @@
+// Frame 02: the stage text reads at body size, the lists a step quieter.
 .container {
-	:global(.additional-info) {
+	p,
+	li {
+		margin: 0 0 var(--gd-space-2);
+		font-size: var(--gd-font-size-body);
+		line-height: var(--gd-line-height-body);
+		color: var(--gd-color-text);
+	}
+
+	li {
 		color: var(--gd-color-text-secondary);
+
+		&::marker {
+			color: var(--gd-color-text-tertiary);
+		}
 	}
 
-	:global(.rnr-paragraph), :global(.rnr-bulleted_list_item) {
-		font-size: 16px;
-	}
-}
-
-.card {
-	border: 1px solid var(--gd-color-border-strong);
-
-	:global(.ant-card-cover) {
-		width: 100%;
-		padding-top: 56.25%; /* 16:9 Aspect Ratio */
-		position: relative;
-		aspect-ratio: 16 / 9;
-	}
-}
-
-.projectDescriptions {
-	padding: 16px 8px;
-
-	:global(.ant-descriptions-item) {
-		padding-bottom: 4px;
-	}
-
-	:global(.ant-descriptions-item-label) {
-		font-size: 12px;
-		color: var(--gd-color-text-secondary);
-	}
-
-	:global(.ant-descriptions-item-content) {
-		font-size: 12px;
+	img {
+		max-width: 100%;
+		height: auto;
+		border-radius: var(--gd-radius-card);
 	}
 }

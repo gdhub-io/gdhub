@@ -1,0 +1,50 @@
+vars: {
+  d2-config: {
+    layout-engine: elk
+  }
+}
+
+direction: down
+
+title: "GDHUB-72 B — the team pulse" {
+  shape: text
+  near: top-center
+  style.font-size: 22
+}
+
+cron: "Daily cron /api/cron/checkpoints (01:00 UTC)\nActive checkpoints whose today is a sprint's last day (7, 14, 21, 28)"
+
+team: "The team: confirmed TeamMember rows (not finished; the author is one),\nthe curator excluded; one CheckpointPulse per person and sprint\n(@@unique checkpoint, member, week)"
+cron -> team
+
+covered: "Already shown working this sprint?" {shape: diamond}
+team -> covered
+
+auto: "Yes: wrote a devlog of the project in the sprint\nor created one of its artifacts in the sprint\n→ pulse confirmed now, source 'devlog' / 'artifact', no letter"
+ask: "No → pulse row with requestedAt = now\n→ letter (bell + email, transactionId per pulse):\n'Were you working on <project> this sprint?'\n'… If you weren't working on it this sprint, ignore this email.'\nbutton → /pulse/<token>"
+covered -> auto: "yes"
+covered -> ask: "no"
+
+token: "token = pulseId + '.' + HMAC-SHA256(NEXTAUTH_SECRET, 'pulse:' + pulseId)\nno login needed: the link itself says who and which sprint"
+ask -> token
+
+page: "GET /pulse/<token> (public page, never writes)" {
+  check: "Signature valid and pulse found?" {shape: diamond}
+  state: "Pulse state?" {shape: diamond}
+  q: "09.1 Were you working… [Yes, I was]\nwith the person's four sprint cells:\nconfirmed ✓ · missed – · this one waiting · ahead empty"
+  done: "09.2 Thanks — noted"
+  dead: "09.3 This link no longer works"
+  check -> dead: "no"
+  check -> state: "yes"
+  state -> done: "confirmed"
+  state -> dead: "past the sprint's next call\n(session sprint+1, or day 29's call for sprint 4)"
+  state -> q: "open"
+}
+token -> page.check
+
+post: "POST /api/pulse/<token> — the button\nsame checks; confirmedAt = now, source 'email'\nonly if still unconfirmed (updateMany … confirmedAt: null)\n→ page switches to 09.2 in place: this sprint's cell turns ✓"
+page.q -> post
+
+matrix: "The pulse matrix on the path and the curator's card\n(already built) reads these rows"
+post -> matrix
+auto -> matrix

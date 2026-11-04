@@ -1,5 +1,9 @@
 import { randomUUID } from "node:crypto";
-import { ProjectStatus, TeamMemberStatus } from "@gdhub-io/gdhub-prisma";
+import {
+	type Prisma,
+	ProjectStatus,
+	TeamMemberStatus,
+} from "@gdhub-io/gdhub-prisma";
 import dayjs from "dayjs";
 import { z } from "zod";
 import { PROJECT_REGISTERED_DEVLOG_CONTENT } from "@/config/devlog";
@@ -13,8 +17,23 @@ import {
 	withAuth,
 	withValidation,
 } from "@/lib/api-handlers";
+import {
+	LegalAcceptancesSchema,
+	LegalError,
+	resolveLegal,
+} from "@/lib/legal/accept";
+import { legalErrorResponse, requestMeta } from "@/lib/legal/http";
+import { limitAiCalls } from "@/lib/rate-limit";
 import { withSpaceGuard } from "@/lib/space-guard";
-import { userSpacesCacheKey } from "@/repositories/user-spaces";
+import { matchKey } from "@/lib/workflow/matchKey";
+import { currentMemberOf } from "@/repositories/project/team";
+import {
+	DEFAULT_PROJECT_STAGE,
+	placeProjectOnStage,
+	selectableStageNames,
+} from "@/repositories/project/workflow";
+import { userSpacesCacheKey } from "@/repositories/user/spaces";
+import { getSpaceAccess, isStaff } from "@/services/access";
 import { deleteSpaceMembership, joinSpace } from "@/services/access/membership";
 import { aiValidation } from "@/services/ai-validation";
 import { cacheDelete } from "@/services/cache";
@@ -31,11 +50,14 @@ const GetProjectQuerySchema = z.object({
 
 const CreateProjectSchema = z.object({
 	name: z.string(),
-	agree: z.boolean(),
+	legal: LegalAcceptancesSchema,
 	// Creation-time gate only: the author confirms they are making the game
 	// themselves and that this form is not an AI prompt. Never persisted.
 	understandsNotAi: z.boolean(),
 	description: z.string().optional(),
+	genre: z.string().trim().min(1).optional(),
+	/** A stage name of the default template; Ideation when omitted. */
+	stage: z.string().trim().min(1).optional(),
 });
 
 const UpdateProjectSchema = z.object({
@@ -77,7 +99,10 @@ export const GET = withAuth({ mode: "user" })(
 				slug,
 				OR: [
 					{ authorId: currentUser.id },
-					{ team: { members: { some: { userId: currentUser.id } } } },
+					// An applicant or someone who left is not inside the project.
+					{
+						team: { members: { some: currentMemberOf(currentUser.id).where } },
+					},
 				],
 			},
 			include: {
@@ -91,17 +116,51 @@ export const GET = withAuth({ mode: "user" })(
 );
 
 export const POST = withAuth({ mode: "user" })(
-	withValidation(CreateProjectSchema)(async (_req, _ctx, { user, body }) => {
+	withValidation(CreateProjectSchema)(async (req, _ctx, { user, body }) => {
 		const currentUser = user as SessionUser | undefined;
 		if (!currentUser) return apiError.unauthorized();
-		const { name, description, agree, understandsNotAi } =
-			body as CreateProjectBody;
+		const {
+			name,
+			description,
+			genre,
+			stage = DEFAULT_PROJECT_STAGE,
+			legal,
+			understandsNotAi,
+		} = body as CreateProjectBody;
 
-		if (!agree) return apiError.badRequest("Should accept requirements");
+		let acceptances: Prisma.LegalAcceptanceCreateManyInput[];
+		try {
+			acceptances = resolveLegal(legal, ["ProjectRequirements"], {
+				userId: currentUser.id,
+				context: "ProjectCreate",
+				meta: requestMeta(req),
+			});
+		} catch (error) {
+			if (error instanceof LegalError) return legalErrorResponse(error);
+			throw error;
+		}
 		if (!understandsNotAi)
 			return apiError.badRequest(
 				"Should confirm the game is made by the author, not generated",
 			);
+
+		const stages = await selectableStageNames();
+		if (!stages.some((name) => matchKey(name) === matchKey(stage))) {
+			return apiError.badRequest("Unknown stage", { stages });
+		}
+
+		const userRecord = await prisma.user.findUnique({
+			where: { id: currentUser.id },
+			select: { specialities: { select: { id: true }, take: 1 } },
+		});
+
+		if (!userRecord) return apiError.notFound("User not found");
+		// The founder's team row needs one.
+		const specialityId = userRecord.specialities[0]?.id;
+		if (!specialityId) return apiError.badRequest("Add your speciality first");
+
+		const limited = await limitAiCalls("project-create", currentUser.id);
+		if (limited) return limited;
 
 		// AI checks: no offensive/forbidden content, name looks like a real
 		// project title, and the description (if any) is on-topic.
@@ -124,13 +183,6 @@ export const POST = withAuth({ mode: "user" })(
 			);
 		}
 
-		const userRecord = await prisma.user.findUnique({
-			where: { id: currentUser.id },
-			include: { specialities: true },
-		});
-
-		if (!userRecord) return apiError.notFound("User not found");
-
 		// Two teams may well be making a game called "Dungeon Crawler". The name
 		// is theirs to pick; only the slug has to be unique, so the second one
 		// becomes `dungeon-crawler-2` instead of a rejected request.
@@ -150,9 +202,10 @@ export const POST = withAuth({ mode: "user" })(
 			prisma.project.create({
 				data: {
 					name,
-					agree,
+					agree: true,
 					slug: projectSlug,
 					description,
+					genre,
 					author: { connect: { id: currentUser.id } },
 					status: ProjectStatus.Approved,
 					team: {
@@ -161,8 +214,7 @@ export const POST = withAuth({ mode: "user" })(
 							members: {
 								create: {
 									position: "Founder",
-									// biome-ignore lint/style/noNonNullAssertion: original semantics
-									specialityId: userRecord.specialities[0]!.id,
+									specialityId,
 									startedAt: dayjs().toISOString(),
 									status: TeamMemberStatus.Founder,
 									userId: currentUser.id,
@@ -205,6 +257,17 @@ export const POST = withAuth({ mode: "user" })(
 			);
 		}
 
+		// Not in the creation's transaction: the project extension that copies the
+		// template writes `currentStepId` through its own client, outside any `tx`,
+		// so the workflow has to be committed before it can be moved.
+		const currentStep = await prisma.$transaction((tx) =>
+			placeProjectOnStage(tx, project.id, stage),
+		);
+
+		await prisma.legalAcceptance.createMany({
+			data: acceptances.map((row) => ({ ...row, projectId: project.id })),
+		});
+
 		// Membership is what the space gates read; a project without its owner row
 		// would be unreachable for its own author.
 		await joinSpace({
@@ -221,7 +284,7 @@ export const POST = withAuth({ mode: "user" })(
 		// `UserRole.Author` used to be stamped on the user here. Owning a project
 		// is the `SpaceMember(project, Owner)` row written just above — a fact,
 		// not a label that has to be kept in sync.
-		return json({ ...project, validation });
+		return json({ ...project, stage: currentStep.name, validation });
 	}),
 );
 
@@ -239,14 +302,16 @@ export const PUT = pipe(
 	const id = url.searchParams.get("id");
 	if (!id) return apiError.badRequest("id is required");
 
-	const { authorId, ...data } = body as UpdateProjectBody;
+	const { authorId, status, ...data } = body as UpdateProjectBody;
+	// Status is moderation's and the author is ownership: neither is a project admin's to set.
+	const staff = isStaff(await getSpaceAccess("hub", null, currentUser));
 
 	const project = await prisma.project.update({
 		where: { id },
 		data: {
 			...data,
-			status: data.status as ProjectStatus | undefined,
-			author: authorId ? { connect: { id: authorId } } : undefined,
+			status: staff ? (status as ProjectStatus | undefined) : undefined,
+			author: staff && authorId ? { connect: { id: authorId } } : undefined,
 		},
 		include: {
 			team: { select: { id: true } },

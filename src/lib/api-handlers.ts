@@ -3,7 +3,6 @@
  *
  * Replaces the `next-api-decorators` stack used in `src/pages/api/**`:
  *   @NextAuthGuard(mode, roles?)  → withAuth({ mode, roles })
- *   @ApiProjectTeamGuard()         → withTeamGuard()
  *   @Body(ValidationPipe) Dto      → withValidation(zodSchema, "body")
  *   @Query(ValidationPipe) Dto     → withValidation(zodSchema, "query")
  *
@@ -15,17 +14,12 @@
  *   )(async (req, ctx, { user, body }) => { ... });
  */
 
-import {
-	type Team,
-	type UserRole,
-	withAuditContext,
-} from "@gdhub-io/gdhub-prisma";
+import { type UserRole, withAuditContext } from "@gdhub-io/gdhub-prisma";
 import { type NextRequest, NextResponse } from "next/server";
 import type { ZodSchema, z } from "zod";
 import { auth } from "@/auth";
 import { env } from "@/helpers/env";
 import type { SpaceAccess } from "@/services/access/types";
-import { prisma } from "@/services/prisma";
 
 export type SessionUser = {
 	id: string;
@@ -42,7 +36,6 @@ export type SessionUser = {
 
 export type Locals = {
 	user?: SessionUser;
-	team?: Team;
 	body?: unknown;
 	query?: unknown;
 	/**
@@ -77,6 +70,11 @@ export const apiError = {
 		),
 	notFound: (msg = "Not found") =>
 		NextResponse.json({ error: msg, statusCode: 404 }, { status: 404 }),
+	conflict: (msg = "Conflict", details?: unknown) =>
+		NextResponse.json(
+			{ error: msg, statusCode: 409, ...(details ? { details } : {}) },
+			{ status: 409 },
+		),
 	internal: (msg = "Internal server error") =>
 		NextResponse.json({ error: msg, statusCode: 500 }, { status: 500 }),
 	/** The answer is unknown right now — a dependency is degraded, not the caller. */
@@ -84,13 +82,7 @@ export const apiError = {
 		NextResponse.json({ error: msg, statusCode: 503 }, { status: 503 }),
 };
 
-export type AuthMode =
-	| "user"
-	| "any"
-	| "api"
-	| "public_api"
-	| "vercel_cron"
-	| "gumroad";
+export type AuthMode = "user" | "any" | "api" | "public_api" | "vercel_cron";
 
 export interface AuthOptions {
 	mode?: AuthMode;
@@ -107,6 +99,10 @@ function bearerMatches(req: NextRequest, expected: string) {
 	return header === `Bearer ${expected}`;
 }
 
+/** A server-to-server call carrying `Bearer base64(BACKEND_KEY)`. */
+export const isBackendCall = (req: NextRequest) =>
+	bearerMatches(req, Buffer.from(env("BACKEND_KEY", "")).toString("base64"));
+
 /**
  * What `AuditLog.source` says about a write. The auth mode is how the caller
  * proved itself, which is not the same thing — a signed-in web request and an
@@ -118,7 +114,6 @@ const AUDIT_SOURCE: Record<AuthMode, string> = {
 	api: "backend",
 	public_api: "public_api",
 	vercel_cron: "cron",
-	gumroad: "webhook",
 };
 
 /**
@@ -173,8 +168,7 @@ export function withAuth(opts: AuthOptions = {}) {
 			}
 
 			if (mode === "api") {
-				const token = Buffer.from(env("BACKEND_KEY")).toString("base64");
-				if (bearerMatches(req, token)) {
+				if (isBackendCall(req)) {
 					return audited(req, mode, null, () =>
 						handler(req, ctx, locals as L & { user: SessionUser }),
 					);
@@ -193,23 +187,8 @@ export function withAuth(opts: AuthOptions = {}) {
 			}
 
 			if (mode === "vercel_cron") {
-				const cronSecret = process.env.CRON_SECRET ?? "";
-				const publicToken = Buffer.from(env("NEXT_PUBLIC_API_KEY")).toString(
-					"base64",
-				);
-				if (bearerMatches(req, cronSecret) || bearerMatches(req, publicToken)) {
-					return audited(req, mode, null, () =>
-						handler(req, ctx, locals as L & { user: SessionUser }),
-					);
-				}
-			}
-
-			if (mode === "gumroad") {
-				const body = (await req
-					.clone()
-					.json()
-					.catch(() => ({}))) as { access_token?: string };
-				if (body?.access_token === env("GUMROAD_ACCESS_TOKEN")) {
+				// Only the Vercel secret: the public key ships in the client bundle.
+				if (bearerMatches(req, process.env.CRON_SECRET ?? "")) {
 					return audited(req, mode, null, () =>
 						handler(req, ctx, locals as L & { user: SessionUser }),
 					);
@@ -217,45 +196,6 @@ export function withAuth(opts: AuthOptions = {}) {
 			}
 
 			return apiError.unauthorized();
-		};
-	};
-}
-
-export function withTeamGuard() {
-	return function wrap<L extends Locals>(
-		handler: Handler<L & { team: Team; user: SessionUser }>,
-	): Handler<L> {
-		return async (req, ctx, locals) => {
-			const session = await auth();
-			const userId = session?.user?.id;
-
-			const url = new URL(req.url);
-			let teamId: string | undefined =
-				url.searchParams.get("teamId") ?? undefined;
-
-			if (!teamId) {
-				const body = (await req
-					.clone()
-					.json()
-					.catch(() => ({}))) as { teamId?: string };
-				teamId = body?.teamId;
-			}
-
-			if (!userId || !teamId) return apiError.forbidden();
-
-			const team = await prisma.team.findFirst({
-				where: {
-					id: teamId,
-					members: { some: { userId } },
-				},
-			});
-			if (!team) return apiError.forbidden();
-
-			return handler(req, ctx, {
-				...locals,
-				user: session.user as SessionUser,
-				team,
-			} as L & { team: Team; user: SessionUser });
 		};
 	};
 }
@@ -300,6 +240,15 @@ export function withValidation<S extends ZodSchema>(
 		};
 	};
 }
+
+/** For dev tools: the route does not exist in production at all. */
+export const withDevOnly =
+	() =>
+	(handler: Handler): Handler =>
+	(req, ctx, locals) =>
+		process.env.NODE_ENV === "production"
+			? apiError.notFound()
+			: handler(req, ctx, locals);
 
 /**
  * Compose HOF wrappers right-to-left. The first wrapper in the list runs

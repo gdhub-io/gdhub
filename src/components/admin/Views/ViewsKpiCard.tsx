@@ -3,11 +3,10 @@
 import { IconArrowDownRight, IconArrowUpRight } from "@tabler/icons-react";
 import { useTranslate } from "@tolgee/react";
 import { Tooltip } from "antd";
-import { IconTile } from "@/components/ui";
+import { KpiCard } from "@/components/ui";
 import { formatCount } from "@/helpers/format";
 import type { ViewReportSubject } from "@/types/admin-views";
 import { DASH, deltaPercent, formatDelta } from "./format";
-import styles from "./ViewsKpiCard.module.scss";
 import { viewSubjectMeta } from "./viewSubjects";
 
 type ViewsKpiCardProps = {
@@ -54,36 +53,23 @@ export function ViewsKpiCard({
 				);
 
 	return (
-		<div className={styles.card}>
-			<div className={styles.head}>
-				<IconTile
-					icon={meta.icon}
-					size="sm"
-					tint="var(--gd-neutral-100)"
-					ink="var(--gd-color-text-secondary)"
-				/>
-				<span className={styles.name}>{t(meta.labelKey, meta.label)}</span>
-			</div>
-			{loading ? (
-				<div className={styles.figures}>
-					<span className={styles.skeletonTotal} />
-					<span className={styles.skeletonDelta} />
-				</div>
-			) : (
-				<div className={styles.figures}>
-					<span className={styles.total}>{formatCount(total)}</span>
-					{delta === null ? (
-						<Tooltip title={dashReason}>
-							<span className={styles.delta}>{DASH}</span>
-						</Tooltip>
-					) : (
-						<span className={styles.delta}>
-							{delta !== 0 && <Arrow size={14} stroke={2} />}
-							{formatDelta(delta)}
-						</span>
-					)}
-				</div>
-			)}
-		</div>
+		<KpiCard
+			icon={meta.icon}
+			name={t(meta.labelKey, meta.label)}
+			loading={loading}
+			value={formatCount(total)}
+			note={
+				delta === null ? (
+					<Tooltip title={dashReason}>
+						<span>{DASH}</span>
+					</Tooltip>
+				) : (
+					<>
+						{delta !== 0 && <Arrow size={14} stroke={2} />}
+						{formatDelta(delta)}
+					</>
+				)
+			}
+		/>
 	);
 }

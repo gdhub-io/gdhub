@@ -1,4 +1,4 @@
-import { TeamMemberStatus } from "@gdhub-io/gdhub-prisma";
+import { VacancyApplicationStatus } from "@gdhub-io/gdhub-prisma";
 import { z } from "zod";
 import {
 	apiError,
@@ -9,7 +9,7 @@ import {
 	withValidation,
 } from "@/lib/api-handlers";
 import { withSpaceGuard } from "@/lib/space-guard";
-import { projectOfTeamMember } from "@/lib/space-ids";
+import { projectOfApplication } from "@/lib/space-ids";
 import { closeVacancyChats } from "@/services/chat/vacancy-keys";
 import { NovuService } from "@/services/novu";
 import { prisma } from "@/services/prisma";
@@ -23,10 +23,10 @@ type IdBody = z.infer<typeof IdSchema>;
 export const PUT = pipe(
 	withAuth({ mode: "user" }),
 	// Without this guard any signed-in user could reject anyone's application
-	// by passing a member id.
+	// by passing an application id.
 	withSpaceGuard({
 		permission: "project.vacancies.review",
-		idFrom: projectOfTeamMember,
+		idFrom: projectOfApplication,
 	}),
 	withValidation(IdSchema),
 )(async (_req, _ctx, { user, body }) => {
@@ -34,28 +34,28 @@ export const PUT = pipe(
 	if (!currentUser) return apiError.unauthorized();
 	const { id } = body as IdBody;
 
-	const rejectedCandidate = await prisma.teamMember.update({
-		where: { id, status: TeamMemberStatus.Applicant },
-		data: { status: TeamMemberStatus.Rejected },
-		select: { user: true, vacancy: true, team: true },
+	const rejected = await prisma.vacancyApplication.update({
+		where: { id, status: VacancyApplicationStatus.Submitted },
+		data: { status: VacancyApplicationStatus.Rejected, decidedAt: new Date() },
+		select: {
+			user: true,
+			vacancy: { select: { id: true, title: true, team: true } },
+		},
 	});
-
-	// Close the related vacancy chat so messaging is disabled on both sides.
-	if (rejectedCandidate.vacancy) {
-		try {
-			await closeVacancyChats(
-				rejectedCandidate.vacancy.id,
-				rejectedCandidate.user.id,
-				{
-					notice: {
-						senderUserId: currentUser.id,
-						text: "❌ The application was declined. This chat is now closed.",
-					},
+	const rejectedCandidate = { ...rejected, team: rejected.vacancy.team };
+	try {
+		await closeVacancyChats(
+			rejectedCandidate.vacancy.id,
+			rejectedCandidate.user.id,
+			{
+				notice: {
+					senderUserId: currentUser.id,
+					text: "❌ The application was declined. This chat is now closed.",
 				},
-			);
-		} catch (e) {
-			console.error("[vacancy-chat] close on reject failed", e);
-		}
+			},
+		);
+	} catch (e) {
+		console.error("[vacancy-chat] close on reject failed", e);
 	}
 
 	try {

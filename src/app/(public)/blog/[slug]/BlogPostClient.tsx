@@ -2,12 +2,11 @@
 
 import { useTranslate } from "@tolgee/react";
 import { Card, Flex, Typography } from "antd";
-import Blocks from "editorjs-blocks-react-renderer";
 import { PublicPageHeader } from "@/components/layouts/PublicPageHeader";
 import { PublishedDate } from "@/components/PublishedDate";
 import { AppAvatar } from "@/components/ui/AppAvatar";
+import { SafeBlocks } from "@/components/ui/SafeBlocks";
 import { ViewCount } from "@/components/ViewCount";
-import { editorjsRenderers } from "@/helpers/editorjs-renderers";
 import { useContentPageView } from "@/hooks/useContentViews";
 import styles from "./style.module.scss";
 
@@ -67,12 +66,7 @@ export function BlogPostClient({ post }: { post: BlogPost }) {
 						</Flex>
 
 						<div className={styles.content}>
-							{post.content && (
-								<Blocks
-									data={JSON.parse(post.content)}
-									renderers={editorjsRenderers}
-								/>
-							)}
+							{post.content && <SafeBlocks data={post.content} />}
 						</div>
 					</Card>
 				</div>

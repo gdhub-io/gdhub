@@ -1,0 +1,532 @@
+import { createHmac } from "node:crypto";
+import { beforeEach, describe, expect, it, vi } from "vitest";
+import {
+	CheckpointCuratorKind,
+	CheckpointSessionContentStatus,
+	CheckpointStatus,
+} from "@/config/prisma-enums";
+import {
+	callMissed,
+	callMoveWindow,
+	callState,
+	parseCallRoomName,
+	sessionHeld,
+} from "@/lib/checkpoints/call";
+
+const sessionFindUnique = vi.fn();
+const sessionUpdate = vi.fn();
+const sessionUpdateMany = vi.fn();
+const sessionFindMany = vi.fn();
+const sessionFindUniqueOrThrow = vi.fn();
+const checkpointUpdateMany = vi.fn();
+const planFind = vi.fn(async () => ({
+	curatorId: "curator",
+	goal: "A greybox",
+	goalAgreedAt: null,
+	startedAt: new Date("2026-10-21T00:00:00Z"),
+	project: { authorId: "author" },
+	sessions: [
+		{
+			index: 1,
+			scheduledAt: new Date("2026-10-21T14:00:00Z"),
+			endedAt: null,
+			contentStatus: null,
+		},
+	],
+	items: [],
+}));
+const callRoom = vi.fn(async () => "https://gdhub.daily.co/cp-abc-2");
+const callToken = vi.fn(async () => "token");
+const closeCallRoom = vi.fn(async () => undefined);
+const roomParticipants = vi.fn(async () => ({
+	minutes: 120,
+	userIds: ["curator", "author"],
+}));
+const startTranscriptJob = vi.fn(async () => ({ id: "job" }));
+const transcriptOfJob = vi.fn();
+const roomPresence = vi.fn(async () => ["author"]);
+const membersFind = vi.fn(async () => [
+	{
+		position: null,
+		speciality: null,
+		user: { id: "author", name: "Marta Ilves", image: null },
+	},
+	{
+		position: null,
+		speciality: { name: "Programmer" },
+		user: { id: "oleg", name: "Oleg Kim", image: null },
+	},
+]);
+
+vi.mock("@/services/prisma", () => ({
+	prisma: {
+		checkpointSession: {
+			findUnique: (...a: unknown[]) => sessionFindUnique(...a),
+			update: (...a: unknown[]) => sessionUpdate(...a),
+			updateMany: (...a: unknown[]) => sessionUpdateMany(...a),
+			findMany: (...a: unknown[]) => sessionFindMany(...a),
+			findUniqueOrThrow: (...a: unknown[]) => sessionFindUniqueOrThrow(...a),
+		},
+		teamMember: { findMany: () => membersFind() },
+		projectCheckpoint: {
+			count: vi.fn(async () => 2),
+			findUnique: vi.fn(async () => ({ curatorId: "curator" })),
+			findUniqueOrThrow: () => planFind(),
+			updateMany: (...a: unknown[]) => checkpointUpdateMany(...a),
+		},
+	},
+}));
+
+vi.mock("@/repositories/checkpoints/journal", () => ({
+	getCallBriefs: vi.fn(async () => [
+		{
+			index: 2,
+			notes: { inShort: "Sprint 1." },
+			seen: [],
+			writtenAt: "2026-10-08T01:00:00.000Z",
+		},
+	]),
+}));
+vi.mock("@/services/daily", async (importOriginal) => ({
+	...(await importOriginal<object>()),
+	callRoom: (...a: unknown[]) => callRoom(...(a as [])),
+	callToken: (...a: unknown[]) => callToken(...(a as [])),
+	closeCallRoom: (...a: unknown[]) => closeCallRoom(...(a as [])),
+	roomParticipants: (...a: unknown[]) => roomParticipants(...(a as [])),
+	roomPresence: (...a: unknown[]) => roomPresence(...(a as [])),
+	startTranscriptJob: (...a: unknown[]) => startTranscriptJob(...(a as [])),
+	transcriptOfJob: (...a: unknown[]) => transcriptOfJob(...a),
+}));
+
+const { confirmDirection, getCall, getCallNotes } = await import(
+	"@/repositories/checkpoints/call"
+);
+const {
+	endCall,
+	getCallPresence,
+	joinCall,
+	recordMeetingEnded,
+	saveTranscript,
+	transcribeRecording,
+} = await import("@/services/checkpoints/flows/call");
+
+const scheduledAt = new Date("2026-10-21T14:00:00Z");
+const during = new Date("2026-10-21T14:05:00Z");
+
+const row = (overrides: {
+	status?: string;
+	onTeam?: boolean;
+	curatorJoinedAt?: Date | null;
+	endedAt?: Date | null;
+}) => ({
+	scheduledAt,
+	curatorJoinedAt: overrides.curatorJoinedAt ?? null,
+	endedAt: overrides.endedAt ?? null,
+	checkpoint: {
+		projectId: "p1",
+		createdAt: new Date("2026-10-01T00:00:00Z"),
+		stageName: "Concepting",
+		status: overrides.status ?? CheckpointStatus.Active,
+		curator: { id: "curator", name: "Patrick Novak", image: null },
+		curatorId: "curator",
+		project: {
+			authorId: "author",
+			name: "Tide",
+			slug: "tide",
+			team: { members: overrides.onTeam ? [{ id: "m1" }] : [] },
+		},
+	},
+});
+
+const marta = { id: "marta", name: "Marta Ilves" };
+const patrick = { id: "curator", name: "Patrick Novak" };
+
+beforeEach(() => vi.clearAllMocks());
+
+describe("getCallPresence", () => {
+	it("lists the curator first, names the author, and asks the room only while it is open", async () => {
+		sessionFindUnique.mockResolvedValue(row({ onTeam: true }));
+
+		const open = await getCallPresence("cp", 2, "oleg", during);
+		expect(open?.people).toEqual([
+			{ id: "curator", name: "Patrick Novak", image: null, role: "curator", inCall: false },
+			{ id: "author", name: "Marta Ilves", image: null, role: "author", inCall: true },
+			{ id: "oleg", name: "Oleg Kim", image: null, role: "Programmer", inCall: false },
+		]);
+
+		roomPresence.mockClear();
+		const ahead = await getCallPresence("cp", 2, "oleg", new Date("2026-10-20T10:00:00Z"));
+		expect(roomPresence).not.toHaveBeenCalled();
+		expect(ahead?.people.every((person) => !person.inCall)).toBe(true);
+	});
+
+	it("tells nobody outside the checkpoint", async () => {
+		sessionFindUnique.mockResolvedValue(row({ onTeam: false }));
+		await expect(getCallPresence("cp", 2, "stranger", during)).resolves.toBeNull();
+	});
+});
+
+describe("callMoveWindow", () => {
+	const startedAt = new Date("2026-10-01T00:00:00Z");
+
+	it("is the first three days of the sprint the call opens", () => {
+		expect(callMoveWindow(startedAt, 2)).toEqual({
+			from: new Date("2026-10-08T00:00:00Z"),
+			to: new Date("2026-10-11T00:00:00Z"),
+		});
+	});
+
+	it("keeps the final call within days 29–31", () => {
+		expect(callMoveWindow(startedAt, 5)).toEqual({
+			from: new Date("2026-10-29T00:00:00Z"),
+			to: new Date("2026-11-01T00:00:00Z"),
+		});
+	});
+});
+
+describe("callState", () => {
+	it("opens fifteen minutes early and closes three hours after the start", () => {
+		expect(callState(scheduledAt, null, new Date("2026-10-21T13:44:00Z"))).toBe(
+			"early",
+		);
+		expect(callState(scheduledAt, null, new Date("2026-10-21T13:45:00Z"))).toBe(
+			"open",
+		);
+		expect(callState(scheduledAt, null, new Date("2026-10-21T17:00:00Z"))).toBe(
+			"over",
+		);
+	});
+
+	it("is over once the curator ended it, inside the window too", () => {
+		expect(callState(scheduledAt, during, during)).toBe("over");
+	});
+});
+
+describe("a session behind the checkpoint", () => {
+	const at = scheduledAt.toISOString();
+	const late = new Date("2026-10-21T17:00:00Z");
+
+	it("is a call that is over, ended or not, for a human curator", () => {
+		const call = { scheduledAt: at, endedAt: null, contentStatus: null };
+		expect(sessionHeld(call, CheckpointCuratorKind.Human, during)).toBe(false);
+		expect(sessionHeld(call, CheckpointCuratorKind.Human, late)).toBe(true);
+	});
+
+	it("is a written review for the AI curator, whatever the hour", () => {
+		const review = { scheduledAt: at, endedAt: null, contentStatus: null };
+		expect(sessionHeld(review, CheckpointCuratorKind.AI, late)).toBe(false);
+		expect(
+			sessionHeld(
+				{ ...review, contentStatus: CheckpointSessionContentStatus.Ready },
+				CheckpointCuratorKind.AI,
+				during,
+			),
+		).toBe(true);
+	});
+});
+
+describe("parseCallRoomName", () => {
+	it("reads back a checkpoint call's room and nothing else", () => {
+		expect(parseCallRoomName("cp-clx9abc-3")).toEqual({
+			checkpointId: "clx9abc",
+			index: 3,
+		});
+		expect(parseCallRoomName("reports")).toBeNull();
+	});
+});
+
+describe("who may see the call", () => {
+	it("lets in the curator and the team, nobody else", async () => {
+		sessionFindUnique.mockResolvedValue(row({ onTeam: false }));
+		expect(await getCall("abc", 2, "stranger", during)).toBeNull();
+		expect((await getCall("abc", 2, "curator", during))?.role).toBe("curator");
+
+		sessionFindUnique.mockResolvedValue(row({ onTeam: true }));
+		expect((await getCall("abc", 2, "marta", during))?.role).toBe("team");
+	});
+
+	it("gives the AI's brief to the curator, never to the team", async () => {
+		sessionFindUnique.mockResolvedValue(row({ onTeam: true }));
+		expect((await getCall("abc", 2, "curator", during))?.briefs).toHaveLength(1);
+		expect((await getCall("abc", 2, "marta", during))?.briefs).toEqual([]);
+	});
+
+	it("opens call 1's plan to the curator and the author, not the rest of the team", async () => {
+		sessionFindUnique.mockResolvedValue(row({ onTeam: true }));
+		expect((await getCall("abc", 1, "marta", during))?.plan.edit).toBeNull();
+		expect((await getCall("abc", 1, "author", during))?.plan.edit).toBe(
+			"goalAndTasks",
+		);
+		expect((await getCall("abc", 1, "curator", during))?.plan.edit).toBe(
+			"goalAndTasks",
+		);
+	});
+
+	it("scopes the team lookup to the caller", async () => {
+		sessionFindUnique.mockResolvedValue(row({ onTeam: true }));
+		await getCall("abc", 2, "marta", during);
+		const where =
+			sessionFindUnique.mock.calls[0][0].select.checkpoint.select.project.select
+				.team.select.members.where;
+		expect(where.userId).toBe("marta");
+	});
+
+	it("holds no call for a checkpoint that is not running", async () => {
+		sessionFindUnique.mockResolvedValue(
+			row({ onTeam: true, status: CheckpointStatus.AwaitingCurator }),
+		);
+		expect(await getCall("abc", 2, "curator", during)).toBeNull();
+	});
+});
+
+describe("joinCall", () => {
+	it("keeps the team out until the curator has joined", async () => {
+		sessionFindUnique.mockResolvedValue(row({ onTeam: true }));
+		expect(await joinCall("abc", 2, marta, during)).toEqual({
+			refused: "curatorNotIn",
+		});
+		expect(callToken).not.toHaveBeenCalled();
+	});
+
+	it("lets the team in once the curator is there, as a plain participant", async () => {
+		sessionFindUnique.mockResolvedValue(
+			row({ onTeam: true, curatorJoinedAt: during }),
+		);
+		expect(await joinCall("abc", 2, marta, during)).toEqual({
+			url: "https://gdhub.daily.co/cp-abc-2",
+			token: "token",
+		});
+		expect(callToken).toHaveBeenCalledWith(
+			expect.objectContaining({ room: "cp-abc-2", curator: false }),
+		);
+		expect(sessionUpdate).not.toHaveBeenCalled();
+	});
+
+	it("opens the call with the curator's first token", async () => {
+		sessionFindUnique.mockResolvedValue(row({}));
+		await joinCall("abc", 2, patrick, during);
+		expect(callToken).toHaveBeenCalledWith(
+			expect.objectContaining({ curator: true }),
+		);
+		expect(sessionUpdate).toHaveBeenCalledWith({
+			where: { checkpointId_index: { checkpointId: "abc", index: 2 } },
+			data: { curatorJoinedAt: during },
+		});
+	});
+
+	it("gives no token outside the window", async () => {
+		sessionFindUnique.mockResolvedValue(row({}));
+		expect(
+			await joinCall("abc", 2, patrick, new Date("2026-10-21T13:00:00Z")),
+		).toEqual({ refused: "notOpen" });
+	});
+});
+
+describe("endCall", () => {
+	it("is the curator's alone", async () => {
+		sessionFindUnique.mockResolvedValue(row({ onTeam: true }));
+		expect(await endCall("abc", 2, "marta", during)).toBe(false);
+		expect(closeCallRoom).not.toHaveBeenCalled();
+
+		expect(await endCall("abc", 2, "curator", during)).toBe(true);
+		expect(sessionUpdateMany).toHaveBeenCalledWith({
+			where: { checkpointId: "abc", index: 2, endedAt: null },
+			data: { endedAt: during },
+		});
+		expect(closeCallRoom).toHaveBeenCalledWith("cp-abc-2");
+		expect(checkpointUpdateMany).not.toHaveBeenCalled();
+	});
+
+	it("agrees the goal when call 1 ends", async () => {
+		sessionFindUnique.mockResolvedValue(row({}));
+		await endCall("abc", 1, "curator", during);
+		expect(checkpointUpdateMany).toHaveBeenCalledWith({
+			where: { id: "abc", goalAgreedAt: null },
+			data: { goalAgreedAt: during, goalAgreedById: "curator" },
+		});
+	});
+});
+
+describe("Daily's webhooks", () => {
+	it("keeps the curator's end and counts the room's minutes", async () => {
+		sessionFindUnique.mockResolvedValue({ endedAt: during });
+		await recordMeetingEnded("cp-abc-2", new Date("2026-10-21T15:00:00Z"));
+		expect(sessionUpdate).toHaveBeenCalledWith({
+			where: { checkpointId_index: { checkpointId: "abc", index: 2 } },
+			data: {
+				endedAt: during,
+				participantMinutes: 120,
+				attendeeIds: ["curator", "author"],
+			},
+		});
+	});
+
+	it("ignores rooms that are not checkpoint calls", async () => {
+		await recordMeetingEnded("reports", during);
+		await transcribeRecording("reports", "rec");
+		expect(sessionUpdate).not.toHaveBeenCalled();
+		expect(startTranscriptJob).not.toHaveBeenCalled();
+	});
+
+	it("adds each recording's transcript once, in order", async () => {
+		const first = {
+			recordingId: "r1",
+			startedAt: "2026-10-21T14:00:00.000Z",
+			text: "first",
+		};
+		transcriptOfJob.mockResolvedValue({
+			room: "cp-abc-2",
+			recordingId: "r0",
+			startedAt: "2026-10-21T13:58:00.000Z",
+			text: "earlier",
+		});
+		sessionFindUnique.mockResolvedValue({ transcript: [first] });
+		await saveTranscript("job");
+		expect(sessionUpdate.mock.calls[0][0].data.transcript.map((p: { recordingId: string }) => p.recordingId)).toEqual(["r0", "r1"]);
+
+		sessionUpdate.mockClear();
+		transcriptOfJob.mockResolvedValue({ ...first, room: "cp-abc-2" });
+		await saveTranscript("job");
+		expect(sessionUpdate).not.toHaveBeenCalled();
+	});
+});
+
+describe("the webhook route", () => {
+	const secret = Buffer.from("daily-secret").toString("base64");
+
+	const post = async (
+		body: string,
+		signature?: string,
+		timestamp = String(Math.floor(Date.now() / 1000)),
+	) => {
+		process.env.DAILY_WEBHOOK_SECRET = secret;
+		const signed =
+			signature ??
+			createHmac("sha256", Buffer.from(secret, "base64"))
+				.update(`${timestamp}.${body}`)
+				.digest("base64");
+		const { POST } = await import("@/app/api/daily/webhooks/route");
+		const { NextRequest } = await import("next/server");
+		return POST(
+			new NextRequest("http://localhost/api/daily/webhooks", {
+				method: "POST",
+				body,
+				headers: {
+					"x-webhook-timestamp": timestamp,
+					"x-webhook-signature": signed,
+				},
+			}),
+		);
+	};
+
+	it("refuses an unsigned event", async () => {
+		const response = await post(
+			JSON.stringify({ type: "meeting.ended", payload: {} }),
+			"forged",
+		);
+		expect(response.status).toBe(401);
+		expect(sessionFindUnique).not.toHaveBeenCalled();
+	});
+
+	// A delivery captured once and sent again later is not Daily speaking now.
+	it("refuses a correctly signed event from long ago", async () => {
+		const response = await post(
+			JSON.stringify({ type: "meeting.ended", payload: {} }),
+			undefined,
+			String(Math.floor(Date.now() / 1000) - 3600),
+		);
+		expect(response.status).toBe(401);
+		expect(sessionFindUnique).not.toHaveBeenCalled();
+	});
+
+	it("starts a transcript for a finished recording", async () => {
+		const response = await post(
+			JSON.stringify({
+				type: "recording.ready-to-download",
+				payload: { room_name: "cp-abc-2", recording_id: "rec" },
+			}),
+		);
+		expect(response.status).toBe(200);
+		expect(startTranscriptJob).toHaveBeenCalledWith("rec");
+	});
+});
+
+describe("callMissed", () => {
+	const at = "2026-10-24T10:00:00Z";
+	const later = new Date("2026-10-25T10:00:00Z");
+
+	it("is missed once the window passes with no curator in it", () => {
+		expect(
+			callMissed({ scheduledAt: at, curatorJoinedAt: null, endedAt: null }, later),
+		).toBe(true);
+	});
+
+	it("is not missed while the window is still to come or open", () => {
+		const session = { scheduledAt: at, curatorJoinedAt: null, endedAt: null };
+		expect(callMissed(session, new Date("2026-10-24T09:00:00Z"))).toBe(false);
+		expect(callMissed(session, new Date("2026-10-24T10:05:00Z"))).toBe(false);
+	});
+
+	it("is not missed when the curator came in", () => {
+		expect(
+			callMissed(
+				{ scheduledAt: at, curatorJoinedAt: at, endedAt: null },
+				later,
+			),
+		).toBe(false);
+	});
+});
+
+describe("a sprint's direction after a human call", () => {
+	const direction = {
+		goal: { value: "toward" as const, why: "The jump was shown." },
+		stage: { value: "stalled" as const, why: "No level yet." },
+	};
+	const notes = (confirmedAt: string | null) => ({
+		contentStatus: CheckpointSessionContentStatus.Ready,
+		transcript: null,
+		content: {
+			inShort: "Sprint 1.",
+			discussed: [],
+			notDiscussed: [],
+			outsidePlan: [],
+			agreed: [],
+			questions: [],
+			direction: { ...direction, confirmedAt },
+		},
+	});
+
+	it("shows the team a direction only once the curator confirmed it", async () => {
+		sessionFindUnique.mockResolvedValue(row({ onTeam: true }));
+		sessionFindUniqueOrThrow.mockResolvedValue(notes(null));
+		expect((await getCallNotes("abc", 2, "marta"))?.content?.direction).toBeUndefined();
+		expect((await getCallNotes("abc", 2, "curator"))?.content?.direction).toBeTruthy();
+
+		sessionFindUniqueOrThrow.mockResolvedValue(notes("2026-10-29T10:00:00Z"));
+		expect((await getCallNotes("abc", 2, "marta"))?.content?.direction?.goal.value).toBe("toward");
+	});
+
+	const sessions = (finalAt: Date) => [
+		{ index: 2, scheduledAt, ...notes(null) },
+		{ index: 5, scheduledAt: finalAt, contentStatus: null, content: null },
+	];
+
+	it("lets the curator alone set it, until the final call starts", async () => {
+		sessionFindUnique.mockResolvedValue(row({ onTeam: true }));
+		sessionFindMany.mockResolvedValue(sessions(new Date("2026-11-20T14:00:00Z")));
+
+		expect(await confirmDirection("abc", 2, "marta", direction, during)).toBeNull();
+		expect(sessionUpdate).not.toHaveBeenCalled();
+
+		const confirmed = await confirmDirection("abc", 2, "curator", direction, during);
+		expect(confirmed?.confirmedAt).toBe(during.toISOString());
+		expect(sessionUpdate).toHaveBeenCalledTimes(1);
+	});
+
+	it("refuses a change once the final call has started", async () => {
+		sessionFindUnique.mockResolvedValue(row({ onTeam: true }));
+		sessionFindMany.mockResolvedValue(sessions(new Date("2026-10-21T14:01:00Z")));
+		expect(await confirmDirection("abc", 2, "curator", direction, during)).toBeNull();
+		expect(sessionUpdate).not.toHaveBeenCalled();
+	});
+});

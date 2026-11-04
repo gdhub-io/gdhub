@@ -1,0 +1,64 @@
+vars: {
+  d2-config: {
+    layout-engine: elk
+  }
+}
+
+direction: down
+
+title: "GDHUB-133 — one curator pipeline: the AI writes it, a human says it" {
+  shape: text
+  near: top-center
+  style.font-size: 22
+}
+
+shared: "Shared — the platform, the same for both curators" {
+  direction: down
+  picture: "1. Picture of changes\npicture N−1 → N (day 1 → day 28 for the verdict)\n+ what the artifacts and devlog media show"
+  read: "2. Read through four lenses, weighed by the stage\ndevelopment · team · marketing · project management\n+ direction to the checkpoint goal and to the stage goal:\ntoward · sideways · stalled · idle"
+  propose: "3. Proposals for the next sprint\nfocus, task advice; day 15: the last change to the tasks"
+  verdict: "Verdict = the same read over the whole run\n+ was the goal reached\n+ the four directions in a row"
+  picture -> read -> propose
+  propose -> verdict: "sprint 4"
+}
+
+ai: "AI curator — text" {
+  direction: down
+  review: "Sprint review, the day after a sprint ends\nwritten from steps 1–3"
+  tab: "Author's Review tab"
+  report: "Day 29: proposes the verdict,\nits note and the summary"
+  settle: "Rule: a task without evidence\n→ goal missed"
+  review -> tab
+  report -> settle
+}
+
+human: "Human curator — voice" {
+  direction: down
+  brief: "Brief, the night before a call\nsteps 1–3 as the AI read them"
+  call: "Call with the team\nthe curator says it"
+  notes: "Call notes from the transcript\nin the same shape: lenses, directions, proposals"
+  tab: "Author's Review tab"
+  modal: "Verdict modal\ndifference, directions, evidence;\na warning on each task without evidence"
+  choose: "Chooses the verdict, writes the note\nfree choice, a draft until sent"
+  brief -> call -> notes -> tab
+  modal -> choose
+}
+
+shared.propose -> ai.review
+shared.propose -> human.brief
+shared.verdict -> ai.report
+shared.verdict -> human.modal
+
+closed: "Checkpoint closed\nthe same verdict and note fields, the same page for the author"
+ai.settle -> closed
+human.choose -> closed
+
+critical: "Critical" {
+  a: "Steps 1–3 and the verdict's read are one code path; only the voice differs"
+  b: "The author's Review tab reads the same whoever the curator is"
+  c: "The AI's verdict is bound by the evidence rule; a human's is warned, never blocked"
+  d: "Idle is decided in code from an empty difference; the other three directions by the read"
+  e: "A sprint's picture is written before its review; the sprint 4 review before the verdict"
+  f: "A lens the call did not cover stays empty; the curator confirms the directions after the call"
+  g: "The lab at /dev/ai-curator runs the whole pipeline on the same code: pictures 0–4 → reviews 1–4 → verdict, and call notes from a transcript"
+}

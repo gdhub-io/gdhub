@@ -1,13 +1,17 @@
 import { IconCheck } from "@tabler/icons-react";
 import { useTranslate } from "@tolgee/react";
+import { Tag } from "antd";
 import type React from "react";
 import styles from "./style.module.scss";
 
 export type TaskCardProps = {
 	label: string;
 	description?: string | null;
-	required: boolean;
+	/** Omitted where every task counts the same, as on a checkpoint. */
+	required?: boolean;
 	completed: boolean;
+	/** What sits on the right instead of the Required/Optional chip. */
+	action?: React.ReactNode;
 };
 
 /**
@@ -20,6 +24,7 @@ const WorkflowTaskCard: React.FC<TaskCardProps> = ({
 	description,
 	required,
 	completed,
+	action,
 }) => {
 	const { t } = useTranslate();
 
@@ -37,13 +42,14 @@ const WorkflowTaskCard: React.FC<TaskCardProps> = ({
 				</div>
 				{description && <div className={styles.description}>{description}</div>}
 			</div>
-			<div
-				className={`${styles.pill} ${required ? styles.required : styles.optional}`}
-			>
-				{required
-					? t("workflow.tasks.required", "Required")
-					: t("workflow.tasks.optional", "Optional")}
-			</div>
+			{action}
+			{required !== undefined && (
+				<Tag className={styles.tag}>
+					{required
+						? t("workflow.tasks.required", "Required")
+						: t("workflow.tasks.optional", "Optional")}
+				</Tag>
+			)}
 		</div>
 	);
 };

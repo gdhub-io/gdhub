@@ -1,5 +1,78 @@
 /** @type {import('next').NextConfig} */
 
+const originOf = (url) => {
+	try {
+		return url ? new URL(url).origin : "";
+	} catch {
+		return "";
+	}
+};
+
+const appOrigin = originOf(process.env.NEXT_PUBLIC_APP_URL) || "https://gdhub.io";
+const typesenseOrigin = process.env.NEXT_PUBLIC_TYPESENSE_HOST
+	? `${process.env.NEXT_PUBLIC_TYPESENSE_PROTOCOL || "https"}://${process.env.NEXT_PUBLIC_TYPESENSE_HOST}${process.env.NEXT_PUBLIC_TYPESENSE_PORT ? `:${process.env.NEXT_PUBLIC_TYPESENSE_PORT}` : ""}`
+	: "";
+const matrixOrigin = originOf(process.env.NEXT_PUBLIC_MATRIX_CHAT_BASE_URL);
+
+// What the tag manager loads besides analytics: Google Ads, the Crisp chat, Plerdy, Brevo tracking.
+const tagManagerScripts =
+	"https://*.googleadservices.com https://*.googlesyndication.com https://*.doubleclick.net https://client.crisp.chat https://*.plerdy.com https://*.brevo.com https://*.sibautomation.com";
+const tagManagerConnect =
+	"https://*.google.com https://*.doubleclick.net https://*.googlesyndication.com https://*.adtrafficquality.google https://*.crisp.chat wss://*.relay.crisp.chat https://*.plerdy.com https://*.brevo.com https://*.sibautomation.com";
+// Vercel's feedback toolbar, on preview deployments only.
+const vercelLive = process.env.VERCEL_ENV === "preview" ? " https://vercel.live" : "";
+const tagManagerFrames =
+	"https://*.googlesyndication.com https://*.doubleclick.net https://*.adtrafficquality.google https://*.crisp.chat";
+
+// Report-only for now: violations show in the browser console and block nothing.
+// Enforce it once a release has run clean, with a nonce in place of 'unsafe-inline'.
+const contentSecurityPolicy = [
+	"default-src 'self'",
+	`script-src 'self' 'unsafe-inline'${process.env.NODE_ENV === "development" ? " 'unsafe-eval'" : ""} https://www.googletagmanager.com https://*.google-analytics.com https://cdn.paddle.com https://telegram.org https://*.daily.co https://www.youtube.com https://s.ytimg.com ${tagManagerScripts}${vercelLive}`,
+	"style-src 'self' 'unsafe-inline' https://fonts.googleapis.com https://cdn.paddle.com https://client.crisp.chat",
+	// Avatars, covers and devlog images come from user-supplied hosts.
+	"img-src 'self' data: blob: https:",
+	"media-src 'self' blob: https:",
+	"font-src 'self' data: https://fonts.gstatic.com https://client.crisp.chat",
+	[
+		"connect-src 'self'",
+		typesenseOrigin,
+		matrixOrigin,
+		originOf(process.env.NEXT_PUBLIC_TOLGEE_API_URL),
+		"https://*.novu.co wss://*.novu.co",
+		"https://*.googleapis.com",
+		"https://*.google-analytics.com https://*.analytics.google.com https://www.googletagmanager.com",
+		"https://*.paddle.com",
+		"https://*.daily.co wss://*.daily.co",
+		"https://cdn.sanity.io",
+		tagManagerConnect,
+	]
+		.filter(Boolean)
+		.join(" "),
+	`frame-src 'self' https://*.paddle.com https://*.daily.co https://www.youtube.com https://www.youtube-nocookie.com https://player.vimeo.com https://oauth.telegram.org https://www.googletagmanager.com ${tagManagerFrames}${vercelLive}`,
+	"worker-src 'self' blob:",
+	"object-src 'none'",
+	"base-uri 'self'",
+	"form-action 'self' https://accounts.google.com",
+	// The certificate page frames its own PDF, so 'self' and not 'none'.
+	"frame-ancestors 'self'",
+].join("; ");
+
+const securityHeaders = [
+	{ key: "X-Content-Type-Options", value: "nosniff" },
+	{ key: "Referrer-Policy", value: "strict-origin-when-cross-origin" },
+	{ key: "X-Frame-Options", value: "SAMEORIGIN" },
+	// Daily call rooms need the camera, microphone and screen share.
+	{
+		key: "Permissions-Policy",
+		value:
+			"camera=(self \"https://*.daily.co\"), microphone=(self \"https://*.daily.co\"), display-capture=(self \"https://*.daily.co\"), geolocation=(), payment=(self \"https://*.paddle.com\"), usb=()",
+	},
+	// No includeSubDomains until every *.gdhub.io host is known to answer on HTTPS.
+	{ key: "Strict-Transport-Security", value: "max-age=63072000" },
+	{ key: "Content-Security-Policy-Report-Only", value: contentSecurityPolicy },
+];
+
 const nextConfig = {
 	reactStrictMode: true,
 	// `.next/standalone` is read by the Docker image and by nothing else, so the
@@ -13,12 +86,25 @@ const nextConfig = {
 	// Lets `dev:test` run beside the ordinary dev server: Next refuses a second
 	// instance sharing one build directory.
 	distDir: process.env.NEXT_DIST_DIR || ".next",
+	// The stand opens every page in one session: without dropping what the disk
+	// cache already holds, its dev server grew past 20 GB (GDHUB-130).
+	experimental: process.env.NEXT_DIST_DIR
+		? { turbopackMemoryEviction: "full" }
+		: {},
+	// Legal texts are read from disk at request time; without this they are not
+	// in the serverless bundle and every legal page renders empty in production.
+	outputFileTracingIncludes: {
+		"/**": ["./docs/legal/**/*.md"],
+		// The AI curator samples video frames with this binary in the daily cron.
+		"/api/cron/checkpoints": ["./node_modules/ffmpeg-static/ffmpeg"],
+	},
 	serverExternalPackages: [
 		"discord.js",
 		"matrix-js-sdk",
 		"@gdhub-io/gdhub-prisma",
 		"@prisma/client",
 		"@prisma/adapter-pg",
+		"ffmpeg-static",
 	],
 	images: {
 		remotePatterns: [
@@ -78,6 +164,8 @@ const nextConfig = {
 		return config;
 	},
 	redirects: async () => [
+		// The board moved to /jobs; old links and bookmarks still point at /vacancies.
+		{ source: "/vacancies", destination: "/jobs", permanent: true },
 		// /profile/settings/X → /user/settings/X (settings moved from
 		// protected/profile → (app)/(spaces)/user/settings).
 		{
@@ -130,6 +218,18 @@ const nextConfig = {
 			permanent: true,
 		},
 		// The hub docs viewer was dropped; documentation lives on its own domain.
+		// The legal texts moved from Notion to versioned files under /legal.
+		...[
+			["/terms", "terms-of-use"],
+			["/privacy-policy", "privacy-policy"],
+			["/cookie-policy", "cookie-policy"],
+			["/refund-policy", "refund-policy"],
+			["/project-requirements", "project-requirements"],
+		].map(([source, slug]) => ({
+			source,
+			destination: `/legal/${slug}`,
+			permanent: true,
+		})),
 		{
 			source: "/hub/docs",
 			destination: "https://docs.gdhub.io",
@@ -142,10 +242,18 @@ const nextConfig = {
 		},
 	],
 	headers: async () => [
+		{ source: "/:path*", headers: securityHeaders },
+		// The hero game's models: a week in the browser cache, so a returning
+		// visitor loads none of them; a rebuilt model reaches everyone within it.
+		{
+			source: "/models/hero-game/:path*",
+			headers: [{ key: "Cache-Control", value: "public, max-age=604800" }],
+		},
 		{
 			source: "/api/:path*",
 			headers: [
-				{ key: "Access-Control-Allow-Origin", value: "*" },
+				// No other origin calls this API from a browser; the mobile app is native and has its own backend.
+				{ key: "Access-Control-Allow-Origin", value: appOrigin },
 				{
 					key: "Access-Control-Allow-Methods",
 					value: "GET,OPTIONS,PATCH,DELETE,POST,PUT",

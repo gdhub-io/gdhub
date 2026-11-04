@@ -1,5 +1,9 @@
-import type { WorkflowTaskCondition } from "@/schemas/workflowTaskCondition";
+import {
+	STORE_LINK_PLATFORMS,
+	type WorkflowTaskCondition,
+} from "@/schemas/workflowTaskCondition";
 import { prisma } from "@/services/prisma";
+import type { ProjectLink } from "@/types/project";
 
 export type TaskConditionContext = {
 	projectId: string;
@@ -135,7 +139,13 @@ export async function evaluateTaskCondition(
 				where: { id: projectId },
 				select: { links: true },
 			});
-			return (project?.links?.length ?? 0) >= condition.min;
+			const links = (project?.links ?? []) as ProjectLink[];
+			const counted = condition.kind
+				? links.filter((link) =>
+						(STORE_LINK_PLATFORMS as readonly string[]).includes(link.platform),
+					)
+				: links;
+			return counted.length >= condition.min;
 		}
 	}
 }

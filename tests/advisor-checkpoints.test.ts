@@ -1,0 +1,99 @@
+import { CheckpointStatus } from "@gdhub-io/gdhub-prisma";
+import { beforeEach, describe, expect, it, vi } from "vitest";
+import { listAdvisorCheckpoints } from "@/repositories/checkpoints/advisor";
+import { prisma } from "@/services/prisma";
+
+vi.mock("@/services/prisma", () => ({
+	prisma: { projectCheckpoint: { findMany: vi.fn() } },
+}));
+
+/** The board asks twice: the ones they hold, then the ones they turned down. */
+const answers = (held: unknown[], declined: unknown[] = []) =>
+	vi
+		.mocked(prisma.projectCheckpoint.findMany)
+		.mockResolvedValueOnce(held as never)
+		.mockResolvedValueOnce(declined as never);
+
+const row = (
+	id: string,
+	status: CheckpointStatus,
+	startedAt: Date | null = new Date("2026-09-01T00:00:00.000Z"),
+) => ({
+	id,
+	order: 1,
+	stageName: "Prototyping",
+	status,
+	goal: "A playable slice",
+	startedAt,
+	dueAt: new Date("2026-09-28T00:00:00.000Z"),
+	verdict: null,
+	decidedAt: null,
+	project: { name: "Tide", slug: "tide", coverImage: null },
+});
+
+beforeEach(() => {
+	vi.clearAllMocks();
+	vi.mocked(prisma.projectCheckpoint.findMany).mockResolvedValue([] as never);
+});
+
+describe("an advisor's checkpoints", () => {
+	// A curator is not a member of the projects they curate, so this `where` is
+	// the entire boundary: without it the board would be everybody's.
+	it("asks only for the checkpoints handed to this curator", async () => {
+		await listAdvisorCheckpoints("u1");
+
+		const [args] = vi.mocked(prisma.projectCheckpoint.findMany).mock.calls[0];
+
+		expect((args as Record<string, any>).where.curatorId).toBe("u1");
+	});
+
+	it("splits them into what is asked, running and closed", async () => {
+		answers([
+			row("a", CheckpointStatus.AwaitingCurator, null),
+			row("b", CheckpointStatus.Active),
+			row("c", CheckpointStatus.Review),
+			row("d", CheckpointStatus.Closed),
+		]);
+
+		const board = await listAdvisorCheckpoints("u1");
+
+		expect(board.asked.map((one) => one?.id)).toEqual(["a"]);
+		// Awaiting a verdict is still the curator's to finish, so it sits with
+		// the running ones rather than with the decided.
+		expect(board.running.map((one) => one?.id)).toEqual(["b", "c"]);
+		expect(board.closed.map((one) => one?.id)).toEqual(["d"]);
+	});
+
+	// The date exists from the moment the author picks it, so counting from it
+	// before anyone accepted would put "day 12" on a checkpoint nobody started.
+	it("counts no day for a checkpoint still waiting on its curator", async () => {
+		answers([
+			row("a", CheckpointStatus.AwaitingCurator),
+			row("b", CheckpointStatus.Active),
+		]);
+
+		const board = await listAdvisorCheckpoints("u1");
+
+		expect(board.asked[0]?.day).toBeNull();
+		expect(board.running[0]?.day).not.toBeNull();
+	});
+});
+
+// Declining clears curatorId, so these would drop out of the curator's own
+// history the moment they said no.
+describe("the ones a curator could not take", () => {
+	it("finds them by the decline they are remembered in", async () => {
+		answers([], [row("e", CheckpointStatus.AwaitingCurator)]);
+
+		const board = await listAdvisorCheckpoints("u1");
+
+		expect(board.declined.map((one) => one?.id)).toEqual(["e"]);
+
+		const [args] = vi.mocked(prisma.projectCheckpoint.findMany).mock.calls[1];
+
+		expect((args as Record<string, any>).where).toMatchObject({
+			declinedCuratorIds: { has: "u1" },
+			NOT: { curatorId: "u1" },
+		});
+	});
+});

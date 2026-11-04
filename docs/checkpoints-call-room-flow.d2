@@ -1,0 +1,69 @@
+vars: {
+  d2-config: {
+    layout-engine: elk
+  }
+}
+
+direction: down
+
+title: "GDHUB-70 — the call room" {
+  shape: text
+  near: top-center
+  style.font-size: 22
+}
+
+entry: "Ways in" {
+  team: "Team: the path → Join session\n/user/project/<slug>/workflow/cpN/call/K"
+  curator: "Curator: Calendar or the checkpoint → Join\n/advisor/checkpoints/<id>/call/K"
+}
+
+page: "The room page (same component, two shells)" {
+  open: "Open window?\nfrom scheduledAt − CALL_OPENS_MINUTES (15)\nuntil scheduledAt + CALL_CLOSES_MINUTES (180)" {shape: diamond}
+  early: "Too early / over:\nwhen it opens · the notes link"
+  prejoin: "Pre-join (08.1): camera, mic, speakers,\nlevel meter, test sound,\nThe call is recorded for the notes"
+  open -> early: no
+  open -> prejoin: yes
+}
+entry.team -> page.open
+entry.curator -> page.open
+
+gate: "Curator joined?\n(session.curatorJoinedAt)" {shape: diamond}
+page.prejoin -> gate: "team"
+wait: "Waiting for <curator> (08.1)\npolls the session every 5 s"
+gate -> wait: no
+wait -> gate
+ready: "Curator is in (08.2): Join"
+gate -> ready: yes
+
+token: "POST …/sessions/K/token (server)" {
+  who: "Who may: the checkpoint's curator,\nor a member of the project's team\n(guests and everyone else: 403)"
+  team: "Team: refused until curatorJoinedAt — the gate is on the server, not only in the UI"
+  room: "Daily room cp-<checkpointId>-<K>,\ncreated on first ask (private, expires with the window,\nmax_participants = CALL_MAX_PARTICIPANTS (11),\ncloud recording allowed)"
+  issue: "Meeting token: room only, user name,\ncurator = owner, expires with the window"
+  stamp: "Curator's first token: stamp curatorJoinedAt"
+  who -> team -> room -> issue -> stamp
+}
+page.prejoin -> token: "curator"
+ready -> token
+
+live: "Live (08.3)" {
+  grid: "Video grid, mic / camera / screen, fullscreen"
+  list: "Who is in the call — from Daily's participants"
+  rec: "Curator's client starts an audio-only cloud recording\nbanner: Recording"
+  leave: "Leave (anyone): leaves; the room stays"
+  end: "End call (curator): ends it for everyone,\nstamps endedAt, stops the recording"
+}
+token -> live: "join with the token"
+
+after: "After the call — Daily webhooks (HMAC-checked)" {
+  ended: "meeting.ended: stamps endedAt if not set,\nasks Daily for the participants,\nstores participantMinutes"
+  ready: "recording.ready-to-download:\nstarts a post-call transcript job (batch processor)"
+  done: "batch-processor.job-finished:\nsaves the text to session.transcript"
+  notes: "GDHUB-72 turns the transcript into notes"
+  cost: "Cost = participantMinutes × video rate\n+ call minutes × (recording + transcript rates)\nrates in config; the admin list (GDHUB-40)"
+  ready -> done -> notes
+  ended -> cost
+}
+live.end -> after.ended
+live -> after.ended: "last one leaves / window over"
+live.rec -> after.ready

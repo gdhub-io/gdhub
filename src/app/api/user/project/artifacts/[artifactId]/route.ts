@@ -1,6 +1,8 @@
 import { ProjectArtifactType } from "@gdhub-io/gdhub-prisma";
+import { after } from "next/server";
 import { z } from "zod";
 import { ARTIFACT_DESCRIPTION_MAX } from "@/components/MyProjectArtifacts/artifacts";
+import { ArtifactCheckStatus } from "@/config/prisma-enums";
 import {
 	apiError,
 	json,
@@ -11,6 +13,7 @@ import {
 } from "@/lib/api-handlers";
 import { withSpaceGuard } from "@/lib/space-guard";
 import { projectOfArtifact } from "@/lib/space-ids";
+import { checkAndLook } from "@/services/checkpoints/flows/evidence-seen";
 import { prisma } from "@/services/prisma";
 
 const UpdateArtifactSchema = z.object({
@@ -60,6 +63,12 @@ export const PUT = pipe(
 	const { type, name, description, link } = body as UpdateArtifactBody;
 	const { artifactId } = (await ctx.params) as { artifactId: string };
 
+	const current = await prisma.projectArtifact.findUnique({
+		where: { id: artifactId },
+		select: { link: true },
+	});
+	const relinked = link !== undefined && link !== current?.link;
+
 	const updatedArtifact = await prisma.projectArtifact.update({
 		where: { id: artifactId },
 		data: {
@@ -67,8 +76,12 @@ export const PUT = pipe(
 			name,
 			description,
 			link,
+			...(relinked
+				? { checkStatus: ArtifactCheckStatus.Pending, checkNote: null }
+				: {}),
 		},
 	});
+	if (relinked) after(() => checkAndLook(artifactId));
 
 	return json(updatedArtifact);
 });

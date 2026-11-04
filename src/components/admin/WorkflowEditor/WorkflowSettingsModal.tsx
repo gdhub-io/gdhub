@@ -9,11 +9,13 @@ interface WorkflowSettingsModalProps {
 		title: string;
 		description: string;
 		name: string;
+		goal: string;
 	}) => void;
 	settings: {
 		title: string;
 		description: string;
 		name: string;
+		goal: string;
 	};
 }
 
@@ -31,6 +33,7 @@ export const WorkflowSettingsModal: React.FC<WorkflowSettingsModalProps> = ({
 				title: settings.title || "",
 				description: settings.description || "",
 				name: settings.name || "",
+				goal: settings.goal || "",
 			});
 		}
 	}, [visible, settings, form]);
@@ -99,6 +102,23 @@ export const WorkflowSettingsModal: React.FC<WorkflowSettingsModalProps> = ({
 					<Input.TextArea
 						rows={4}
 						placeholder="A step-by-step path from a raw concept to a published indie game."
+					/>
+				</Form.Item>
+
+				{/* Frame 10.10.1 (`IDVke`): read by the AI curator only (GDHUB-97). */}
+				<Form.Item
+					name="goal"
+					label={
+						<>
+							Workflow goal&nbsp;
+							<span className={styles.optional}>(optional)</span>
+						</>
+					}
+					tooltip="Where every stage leads. Read by the AI curator only."
+				>
+					<Input.TextArea
+						autoSize={{ minRows: 2 }}
+						placeholder="The game is released and people play it."
 					/>
 				</Form.Item>
 			</Form>

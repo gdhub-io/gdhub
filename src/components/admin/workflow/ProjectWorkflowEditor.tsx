@@ -20,6 +20,8 @@ import {
 	Checkbox,
 	Collapse,
 	Flex,
+	Form,
+	Input,
 	Progress,
 	Skeleton,
 	Tag,
@@ -29,10 +31,19 @@ import axios from "axios";
 import dayjs from "dayjs";
 import Link from "next/link";
 import { useEffect, useMemo, useState } from "react";
+import { EditorJsField } from "@/components/admin/EditorJsField";
 import StepEditModal from "@/components/admin/WorkflowEditor/StepEditModal";
 import TaskEditModal from "@/components/admin/WorkflowEditor/TaskEditModal";
+import WorkflowStepContent from "@/components/WorkflowContent/WorkflowStepContent";
+import { templateStepFor } from "@/lib/workflow/matchKey";
 import { describeCondition } from "@/services/workflow/describeCondition";
 import type { LocalChange } from "@/services/workflow/diffFromTemplate";
+import {
+	checkpointLockOf,
+	checkpointLockText,
+	checkpointLockTitle,
+} from "./CheckpointLock";
+import { GOAL_TOOLTIP, InheritedField } from "./InheritedField";
 import { LocalChangeList } from "./LocalChangeList";
 import styles from "./ProjectWorkflowEditor.module.scss";
 import { ResetWorkflowModal } from "./ResetWorkflowModal";
@@ -55,6 +66,9 @@ type StepDraft = {
 	id?: string;
 	name: string;
 	description?: string | null;
+	/** This project's own goal and text (GDHUB-97); null reads the template's. */
+	goal: string | null;
+	content: PrismaJson.EditorJsContent | null;
 	tasks: TaskDraft[];
 };
 
@@ -94,6 +108,8 @@ export function ProjectWorkflowEditor({ id }: { id: string }) {
 			id: step.id,
 			name: step.name,
 			description: step.description,
+			goal: step.goal,
+			content: step.content,
 			tasks: step.tasks.map((task) => ({
 				key: nextKey(),
 				id: task.id,
@@ -118,6 +134,16 @@ export function ProjectWorkflowEditor({ id }: { id: string }) {
 		setDirty(true);
 	};
 
+	const patchStep = (
+		key: string,
+		change: (step: StepDraft) => Partial<StepDraft>,
+	) =>
+		patch(
+			steps.map((step) =>
+				step.key === key ? { ...step, ...change(step) } : step,
+			),
+		);
+
 	const { mutateAsync: save, isPending: isSaving } = useMutation({
 		mutationFn: () =>
 			axios.put(`/api/admin/project-workflow/${id}`, {
@@ -126,6 +152,9 @@ export function ProjectWorkflowEditor({ id }: { id: string }) {
 					id: step.id,
 					name: step.name,
 					description: step.description ?? undefined,
+					// Null clears the project's own value back to the template's.
+					goal: step.goal,
+					content: step.content,
 					tasks: step.tasks.map((task) => ({
 						id: task.id,
 						name: task.name,
@@ -146,7 +175,17 @@ export function ProjectWorkflowEditor({ id }: { id: string }) {
 				queryKey: ["admin", "project-workflows"],
 			});
 		},
-		onError: () => message.error("Could not save the workflow"),
+		onError: (error) => {
+			const lock = checkpointLockOf(error);
+			if (lock) {
+				modal.warning({
+					title: checkpointLockTitle,
+					content: checkpointLockText(lock),
+				});
+				return;
+			}
+			message.error("Could not save the workflow");
+		},
 	});
 
 	const totals = useMemo(() => {
@@ -184,16 +223,9 @@ export function ProjectWorkflowEditor({ id }: { id: string }) {
 	 */
 	const removeTask = (stepKey: string, task: TaskDraft) => {
 		const drop = () =>
-			patch(
-				steps.map((step) =>
-					step.key === stepKey
-						? {
-								...step,
-								tasks: step.tasks.filter((item) => item.key !== task.key),
-							}
-						: step,
-				),
-			);
+			patchStep(stepKey, (step) => ({
+				tasks: step.tasks.filter((item) => item.key !== task.key),
+			}));
 
 		if (!task.done) {
 			drop();
@@ -452,11 +484,20 @@ export function ProjectWorkflowEditor({ id }: { id: string }) {
 						),
 						children: (
 							<Flex vertical gap={4}>
-								{step.description && (
-									<Text type="secondary" className={styles.hint}>
-										{step.description}
-									</Text>
-								)}
+								{/* A `notion::…` path is where the text used to live (GDHUB-97), not a description. */}
+								{step.description &&
+									!step.description.startsWith("notion::") && (
+										<Text type="secondary" className={styles.hint}>
+											{step.description}
+										</Text>
+									)}
+
+								<OwnStageFields
+									step={step}
+									order={index}
+									template={data.template}
+									onChange={(change) => patchStep(step.key, () => change)}
+								/>
 
 								{step.tasks.map((task) => (
 									<Flex
@@ -471,23 +512,13 @@ export function ProjectWorkflowEditor({ id }: { id: string }) {
 											<Checkbox
 												checked={task.done}
 												onChange={(event) =>
-													patch(
-														steps.map((item) =>
-															item.key === step.key
-																? {
-																		...item,
-																		tasks: item.tasks.map((candidate) =>
-																			candidate.key === task.key
-																				? {
-																						...candidate,
-																						done: event.target.checked,
-																					}
-																				: candidate,
-																		),
-																	}
-																: item,
+													patchStep(step.key, (item) => ({
+														tasks: item.tasks.map((candidate) =>
+															candidate.key === task.key
+																? { ...candidate, done: event.target.checked }
+																: candidate,
 														),
-													)
+													}))
 												}
 											/>
 											<Flex vertical gap={2}>
@@ -668,6 +699,8 @@ export function ProjectWorkflowEditor({ id }: { id: string }) {
 							key: nextKey(),
 							name,
 							description: value.description,
+							goal: null,
+							content: null,
 							tasks: [],
 						},
 					]);
@@ -682,28 +715,16 @@ export function ProjectWorkflowEditor({ id }: { id: string }) {
 				onClose={() => setTaskModal(null)}
 				onSave={(value: TaskDraft) => {
 					if (!taskModal) return;
-					patch(
-						steps.map((step) => {
-							if (step.key !== taskModal.stepKey) return step;
-							if (!taskModal.task) {
-								return {
-									...step,
-									tasks: [
-										...step.tasks,
-										{ ...value, key: nextKey(), done: false },
-									],
-								};
-							}
-							return {
-								...step,
-								tasks: step.tasks.map((task) =>
-									task.key === taskModal.task?.key
+					const editing = taskModal.task;
+					patchStep(taskModal.stepKey, (step) => ({
+						tasks: editing
+							? step.tasks.map((task) =>
+									task.key === editing.key
 										? { ...task, ...value, key: task.key }
 										: task,
-								),
-							};
-						}),
-					);
+								)
+							: [...step.tasks, { ...value, key: nextKey(), done: false }],
+					}));
 					setTaskModal(null);
 				}}
 			/>
@@ -756,6 +777,8 @@ type ProjectWorkflowResponse = {
 		id: string;
 		name: string;
 		description: string | null;
+		goal: string | null;
+		content: PrismaJson.EditorJsContent | null;
 		tasks: {
 			id: string;
 			name: string | null;
@@ -767,5 +790,67 @@ type ProjectWorkflowResponse = {
 		}[];
 	}[];
 };
+
+/**
+ * A stage's goal and text, the project's own or its template's (GDHUB-97,
+ * frames 10.09.1 and 10.09.3). Writing its own starts from the template's.
+ */
+function OwnStageFields({
+	step,
+	order,
+	template,
+	onChange,
+}: {
+	step: StepDraft;
+	order: number;
+	template: ProjectWorkflowResponse["template"];
+	onChange: (patch: Partial<StepDraft>) => void;
+}) {
+	if (!template) return null;
+	const templateStep = templateStepFor(template.steps, {
+		order,
+		name: step.name,
+	});
+	return (
+		<Form layout="vertical" className={styles.ownFields}>
+			<InheritedField
+				label="Goal"
+				tooltip={GOAL_TOOLTIP}
+				own={step.goal !== null}
+				inherited={templateStep?.goal}
+				onOwn={() => onChange({ goal: templateStep?.goal ?? "" })}
+				onUseTemplate={() => onChange({ goal: null })}
+				editor={
+					<Input.TextArea
+						value={step.goal ?? ""}
+						autoSize={{ minRows: 2 }}
+						onChange={(event) => onChange({ goal: event.target.value })}
+					/>
+				}
+			/>
+			<InheritedField
+				label="Stage text"
+				own={step.content !== null}
+				inherited={
+					templateStep?.content?.blocks.length ? (
+						<WorkflowStepContent content={templateStep.content} />
+					) : null
+				}
+				onOwn={() =>
+					onChange({ content: templateStep?.content ?? { blocks: [] } })
+				}
+				onUseTemplate={() => onChange({ content: null })}
+				editor={
+					<EditorJsField
+						key={`${step.key}-own`}
+						value={step.content}
+						placeholder="Write the stage text…"
+						onChange={(content) => onChange({ content })}
+					/>
+				}
+			/>
+		</Form>
+	);
+}
 
 export default ProjectWorkflowEditor;

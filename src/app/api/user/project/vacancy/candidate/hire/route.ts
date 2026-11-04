@@ -1,4 +1,7 @@
-import { TeamMemberStatus } from "@gdhub-io/gdhub-prisma";
+import {
+	TeamMemberStatus,
+	VacancyApplicationStatus,
+} from "@gdhub-io/gdhub-prisma";
 import dayjs from "dayjs";
 import { z } from "zod";
 import {
@@ -10,7 +13,11 @@ import {
 	withValidation,
 } from "@/lib/api-handlers";
 import { withSpaceGuard } from "@/lib/space-guard";
-import { projectOfTeamMember } from "@/lib/space-ids";
+import { projectOfApplication } from "@/lib/space-ids";
+import {
+	reconcileCheckpointRooms,
+	syncChat,
+} from "@/services/chat/checkpoint-room";
 import { closeVacancyChats } from "@/services/chat/vacancy-keys";
 import { NovuService } from "@/services/novu";
 import { prisma } from "@/services/prisma";
@@ -24,10 +31,10 @@ type IdBody = z.infer<typeof IdSchema>;
 export const PUT = pipe(
 	withAuth({ mode: "user" }),
 	// Without this guard any signed-in user could hire a candidate into any
-	// team by passing a member id.
+	// team by passing an application id.
 	withSpaceGuard({
 		permission: "project.vacancies.review",
-		idFrom: projectOfTeamMember,
+		idFrom: projectOfApplication,
 	}),
 	withValidation(IdSchema),
 )(async (_req, _ctx, { user, body }) => {
@@ -35,38 +42,50 @@ export const PUT = pipe(
 	if (!currentUser) return apiError.unauthorized();
 	const { id } = body as IdBody;
 
-	const vacancy = await prisma.teamVacancy.findUnique({
-		where: { id },
-		include: {
-			team: {
-				select: {
-					project: {
-						include: {
-							workflow: {
-								select: {
-									currentStepId: true,
+	// `id` is the team member's, so the project's step is read through them.
+	// The member is made from the application and linked to it; the application
+	// itself stays as the record of how they came (GDHUB-127).
+	const member = await prisma.$transaction(async (tx) => {
+		const application = await tx.vacancyApplication.update({
+			where: { id, status: VacancyApplicationStatus.Submitted },
+			data: { status: VacancyApplicationStatus.Hired, decidedAt: new Date() },
+			select: {
+				userId: true,
+				specialityId: true,
+				vacancy: {
+					select: {
+						id: true,
+						title: true,
+						teamId: true,
+						team: {
+							select: {
+								project: {
+									select: { workflow: { select: { currentStepId: true } } },
 								},
 							},
 						},
 					},
 				},
 			},
-		},
+		});
+
+		return tx.teamMember.create({
+			data: {
+				userId: application.userId,
+				teamId: application.vacancy.teamId,
+				specialityId: application.specialityId,
+				vacancyId: application.vacancy.id,
+				applicationId: id,
+				position: application.vacancy.title,
+				status: TeamMemberStatus.Hired,
+				startedAt: dayjs().toISOString(),
+				enteredProjectStepId:
+					application.vacancy.team.project?.workflow?.currentStepId,
+			},
+			select: { id: true, user: true, team: true, vacancy: true },
+		});
 	});
 
-	const member = await prisma.teamMember.update({
-		where: { id, status: TeamMemberStatus.Applicant },
-		data: {
-			status: TeamMemberStatus.Hired,
-			startedAt: dayjs().toISOString(),
-			enteredProjectStepId: vacancy?.team?.project?.workflow?.currentStepId,
-		},
-		select: { id: true, user: true, team: true, vacancy: true },
-	});
-
-	// The vacancy conversation is over — the room stays readable, but further
-	// communication moves to the team (future ProjectGroup chat).
-	// NB: `id` is the TeamMember id — the chat key needs the vacancy id.
 	if (member.vacancy?.id) {
 		try {
 			await closeVacancyChats(member.vacancy.id, member.user.id, {
@@ -78,6 +97,13 @@ export const PUT = pipe(
 		} catch (e) {
 			console.error("[vacancy-chat] close on hire failed", e);
 		}
+	}
+
+	const projectId = member.team.projectId;
+	if (projectId) {
+		await syncChat(`hire ${member.id}`, () =>
+			reconcileCheckpointRooms(projectId, member.user.id),
+		);
 	}
 
 	// If vacancy has a promise, create an equity allocation for the member

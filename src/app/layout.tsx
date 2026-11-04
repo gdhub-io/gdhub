@@ -1,3 +1,5 @@
+import { checkpointPurchaseOpen } from "@/config/checkpoint-pricing";
+import { CheckpointPurchaseProvider } from "@/contexts/CheckpointPurchaseContext";
 import "@/styles/globals.scss";
 import type { Metadata } from "next";
 import type { CSSProperties, ReactNode } from "react";
@@ -58,7 +60,9 @@ export default function RootLayout({ children }: { children: ReactNode }) {
 				)}
 				<GoogleTagManager />
 				<Providers>
-					{children}
+					<CheckpointPurchaseProvider value={checkpointPurchaseOpen()}>
+						{children}
+					</CheckpointPurchaseProvider>
 					<CookieConsent />
 				</Providers>
 			</body>

@@ -156,4 +156,20 @@ describe("evaluateTaskCondition — count sources", () => {
 			evaluateTaskCondition({ source: "links", min: 3 }, ctx),
 		).resolves.toBe(false);
 	});
+
+	it("links: a store page counts any store, never a social or video link", async () => {
+		vi.mocked(prisma.project.findUnique).mockResolvedValue({
+			links: [
+				{ platform: "youtube", link: "y" },
+				{ platform: "discord", link: "d" },
+			],
+		} as never);
+		const store = { source: "links" as const, min: 1, kind: "store" as const };
+		await expect(evaluateTaskCondition(store, ctx)).resolves.toBe(false);
+
+		vi.mocked(prisma.project.findUnique).mockResolvedValue({
+			links: [{ platform: "itch-io", link: "i" }],
+		} as never);
+		await expect(evaluateTaskCondition(store, ctx)).resolves.toBe(true);
+	});
 });

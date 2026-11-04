@@ -328,7 +328,12 @@ export function ConnectedTimeline({
 			actions={actions}
 			readOnly={readOnly}
 			onAtBottomChange={onAtBottomChange}
-			empty={<EmptyConversation name={name} />}
+			empty={
+				<EmptyConversation
+					name={name}
+					group={room.getInvitedAndJoinedMemberCount() > 2}
+				/>
+			}
 		/>
 	);
 }

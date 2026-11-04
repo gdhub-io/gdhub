@@ -12,7 +12,7 @@ import {
 	mapPersonCardProjects,
 	personCardCertificatesSelect,
 	personCardProjectsSelect,
-} from "@/repositories/person-card";
+} from "@/repositories/user/person-card";
 import { getSpaceAccess, isStaff } from "@/services/access";
 import { getRoomMemberIds, matrixIdToUserId } from "@/services/matrix/admin";
 import { prisma } from "@/services/prisma";

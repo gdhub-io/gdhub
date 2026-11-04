@@ -1,0 +1,52 @@
+vars: {
+  d2-config: {
+    layout-engine: elk
+  }
+}
+
+direction: down
+
+title: "GDHUB-110 — the AI curator looks as things arrive, and keeps a journal" {
+  shape: text
+  near: top-center
+  style.font-size: 22
+}
+
+events: "Something arrives during the run" {
+  artifact: "An artifact attached to a task,\nor its link changed"
+  devlog: "A devlog published"
+}
+
+look: "Look at it now, once" {
+  style.fill: "#E8F0FE"
+  evidence: "Artifact: does it show its task?"
+  media: "Devlog images and videos:\nwhat they show"
+}
+events.artifact -> look.evidence
+events.devlog -> look.media
+
+journal: "Curator journal\none entry per look, review and verdict" {
+  shape: cylinder
+}
+look -> journal: "what was read, what was not and why,\nwhat it shows"
+
+moment: "A curator moment comes\n(sprint review · final report)"
+catchup: "Look at anything missed\n(same rules, same budget)"
+moment -> catchup
+catchup -> journal
+
+answer: "Write the review / report\nfrom the journal's short findings"
+journal -> answer
+answer -> journal: "the answer, the proposed\nand the settled verdict"
+
+admin: "Admin reads the journal\n/admin/checkpoints"
+journal -> admin
+
+critical: "Critical" {
+  shape: page
+  a: "One link is looked at once; a new link is looked at again"
+  b: "The video budget stays 10 minutes a sprint"
+  c: "The verdict rule is unchanged; the journal only records it"
+  d: "Text only in the journal, never files or frames"
+  e: "Admins only; the author never sees the journal"
+}

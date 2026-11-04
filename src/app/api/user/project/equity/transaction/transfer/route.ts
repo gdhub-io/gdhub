@@ -6,7 +6,7 @@ import {
 	withAuth,
 	withValidation,
 } from "@/lib/api-handlers";
-import { ProjectEquityRepository } from "@/repositories/project-equity.repository";
+import { ProjectEquityRepository } from "@/repositories/project/equity";
 import { prisma } from "@/services/prisma";
 
 const EquityTransferSchema = z.object({

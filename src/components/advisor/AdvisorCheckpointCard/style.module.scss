@@ -1,0 +1,44 @@
+// A card per checkpoint — frame `F7WRD`. The one waiting on an answer is tinted
+// and outlined in the accent: it is the only group that owes the curator a move.
+.card {
+	padding: var(--gd-space-4);
+	border: 1px solid var(--gd-color-border-strong);
+	border-radius: var(--gd-radius-card);
+	background: var(--gd-color-surface);
+
+	&[data-asked] {
+		border-color: var(--gd-color-accent);
+		background: var(--gd-color-accent-subtle);
+	}
+}
+
+.text {
+	flex: 1;
+	min-width: 0;
+}
+
+.project {
+	font-size: var(--gd-font-size-body-lg);
+	font-weight: 600;
+}
+
+.meta {
+	font-size: var(--gd-font-size-caption);
+	color: var(--gd-color-text-tertiary);
+}
+
+.goal {
+	margin: 0;
+	font-size: var(--gd-font-size-body-sm);
+	line-height: var(--gd-line-height-body);
+	color: var(--gd-color-text-secondary);
+}
+
+.day {
+	font-size: var(--gd-font-size-caption);
+	font-weight: 600;
+}
+
+.actions {
+	flex: none;
+}

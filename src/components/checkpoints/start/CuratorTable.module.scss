@@ -1,0 +1,59 @@
+.people {
+	// One panel with hairlines, the way the frame draws it — the outline belongs
+	// to the list, not to every row of it.
+	border: 1px solid var(--gd-color-border-strong);
+	border-radius: var(--gd-radius-card);
+	overflow: hidden;
+
+	// The list is a white panel on the page's own grey, the way the frame draws it.
+	:global(.ant-table) {
+		background: var(--gd-color-surface);
+	}
+
+	:global(.ant-table-tbody > tr > td) {
+		border-bottom: 1px solid var(--gd-color-border-subtle);
+	}
+
+	:global(.ant-table-tbody > tr:last-child > td) {
+		border-bottom: none;
+	}
+
+	:global(.ant-table-tbody > tr) {
+		cursor: pointer;
+	}
+
+	// The picked row is tinted, hover included: the answer must stay visible
+	// while the pointer wanders over the others.
+	:global(.ant-table-tbody) > tr.chosen > :global(.ant-table-cell) {
+		background: var(--gd-color-accent-subtle);
+	}
+}
+
+.price {
+	font-weight: 600;
+	font-feature-settings: "tnum";
+	white-space: nowrap;
+}
+
+.talent {
+	width: var(--gd-control-height-sm);
+	height: var(--gd-control-height-sm);
+	padding: 0;
+}
+
+// An expert who could not take this checkpoint: still readable, and plainly
+// not an answer to the question. Greyed rather than removed — a row that
+// disappears is one the author tries to pick again.
+.unavailable {
+	> :global(.ant-table-cell) {
+		opacity: 0.55;
+	}
+
+	cursor: default;
+}
+
+.away {
+	font-size: var(--gd-font-size-caption);
+	color: var(--gd-color-text-tertiary);
+	white-space: nowrap;
+}

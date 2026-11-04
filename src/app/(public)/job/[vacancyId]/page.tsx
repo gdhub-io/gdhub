@@ -1,7 +1,7 @@
 import type { Metadata } from "next";
 import { notFound } from "next/navigation";
 import { cache } from "react";
-import { findPublicVacancy } from "@/repositories/vacancy.repository";
+import { findPublicVacancy } from "@/repositories/vacancy/vacancy";
 import { JobPageClient, type JobPageProps } from "./JobPageClient";
 
 type Params = Promise<{ vacancyId: string }>;

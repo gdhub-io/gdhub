@@ -1,3 +1,4 @@
+import { VacancyApplicationStatus } from "@gdhub-io/gdhub-prisma";
 import { z } from "zod";
 import {
 	apiError,
@@ -6,7 +7,7 @@ import {
 	withAuth,
 	withValidation,
 } from "@/lib/api-handlers";
-import { findPublicVacancy } from "@/repositories/vacancy.repository";
+import { findPublicVacancy } from "@/repositories/vacancy/vacancy";
 import { prisma } from "@/services/prisma";
 
 const VacancyQuerySchema = z.object({
@@ -23,11 +24,16 @@ export const GET = withAuth({ mode: "any" })(
 		const { id } = body as VacancyQuery;
 		const currentUser = user as SessionUser | undefined;
 
-		const [data, teamMember] = await Promise.all([
+		const [data, myApplication] = await Promise.all([
 			findPublicVacancy(id),
 			currentUser?.id
-				? prisma.teamMember.findFirst({
-						where: { vacancyId: id, userId: currentUser.id },
+				? prisma.vacancyApplication.findFirst({
+						where: {
+							vacancyId: id,
+							userId: currentUser.id,
+							status: VacancyApplicationStatus.Submitted,
+						},
+						select: { id: true, createdAt: true },
 					})
 				: null,
 		]);
@@ -36,6 +42,6 @@ export const GET = withAuth({ mode: "any" })(
 		// every caller — the job page then rendered instead of returning a 404.
 		if (!data) return apiError.notFound("Vacancy not found");
 
-		return json({ ...data, myTeamMemberId: teamMember?.id });
+		return json({ ...data, myApplication });
 	}),
 );

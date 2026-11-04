@@ -1,0 +1,81 @@
+vars: {
+  d2-config: {
+    layout-engine: elk
+  }
+}
+
+direction: down
+
+title: "GDHUB-81 — the AI curator, a cautious optimist" {
+  shape: text
+  near: top-center
+  style.font-size: 22
+}
+
+task: "Each task of the checkpoint, day 29\n(cut tasks are skipped)"
+
+given: "Evidence attached?" {
+  shape: diamond
+}
+task -> given
+
+missing: "Not delivered\n\"nothing attached\"" {
+  style.fill: "#FDE8E8"
+}
+given -> missing: "no"
+
+opens: "Does the link lead anywhere?" {
+  shape: diamond
+}
+given -> opens: "yes — trust level 1"
+
+dead: "Not delivered\n\"the link is broken — replace it\"" {
+  style.fill: "#FDE8E8"
+}
+opens -> dead: "404, site not answering"
+
+read: "Did the AI understand what is there?" {
+  shape: diamond
+}
+opens -> read: "yes, or behind a login"
+
+trusted: "Delivered on trust\n\"I could not check X — I trust you\"" {
+  style.fill: "#FFF4E0"
+}
+read -> trusted: "no — login, a format it cannot read,\na video it only saw the title of"
+
+match: "Does it match the task and the goal?\n(trust level 2)" {
+  shape: diamond
+}
+read -> match: "yes"
+
+proven: "Delivered" {
+  style.fill: "#E6F4EA"
+}
+match -> proven: "matches"
+match -> proven: "partly — with a caveat in the verdict"
+
+nomatch: "Not delivered\n\"this does not show the task\"" {
+  style.fill: "#FDE8E8"
+}
+match -> nomatch: "does not match"
+
+verdict: "The verdict\n/workflow/cp{N}/review/5"
+missing -> verdict
+dead -> verdict
+nomatch -> verdict
+trusted -> verdict
+proven -> verdict
+
+missed: "Any task not delivered → Goal missed"
+met: "All delivered → Goal met or Ready for the next stage;\nthe note names what was taken on trust and what was partly shown"
+verdict -> missed
+verdict -> met
+
+critical: "Critical" {
+  shape: page
+  a: "Decided in code, not by the model: the model writes the words, the rule decides delivered / not"
+  b: "The note always lists the tasks taken on trust and the partly shown ones — never silent"
+  c: "AI curator only: a human curator judges evidence himself, as today"
+  d: "During the run, sprint reviews already say which evidence does not match, so the author can replace it before day 29"
+}

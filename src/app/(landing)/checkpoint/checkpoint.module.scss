@@ -13,6 +13,16 @@
 	top: 0;
 	z-index: 10;
 	width: 100%;
+	background: var(--gd-color-bg);
+	color: var(--gd-color-text);
+	transition: background-color 0.3s;
+}
+
+// Before the first scroll the hero artwork runs up under the bar (desktop only).
+@media screen and (min-width: 992px) {
+	.atTop {
+		background-color: transparent;
+	}
 }
 
 // `MainHeader` takes whatever box it is given, so the bar shares the sections' gutters.

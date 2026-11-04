@@ -11,7 +11,8 @@ import { ProjectSpace } from "@/components/spaces/ProjectSpace";
 import { ProjectStatus } from "@/config/prisma-enums";
 import { useCurrentProject } from "@/hooks/project";
 import { ArtifactsView } from "./ArtifactsView";
-import type { ArtifactListItem } from "./artifacts";
+import { type ArtifactListItem, isBeingChecked } from "./artifacts";
+import { ReplaceLinkModal } from "./ReplaceLinkModal";
 
 const CreateArtifactModal = dynamic(
 	() => import("@/components/modals/CreateArtifactModal"),
@@ -23,6 +24,7 @@ const MyProjectArtifacts = () => {
 	const { can } = useAccess();
 	const { project } = useCurrentProject();
 	const [adding, setAdding] = useState(false);
+	const [replacing, setReplacing] = useState<ArtifactListItem | null>(null);
 
 	const canManage =
 		can("project.artifacts.manage") &&
@@ -44,6 +46,12 @@ const MyProjectArtifacts = () => {
 			).data,
 		enabled: !!project?.id,
 		refetchOnWindowFocus: false,
+		// The check runs after the save returns; poll while one is on its way.
+		// A check that died is left to the cron, not to this page.
+		refetchInterval: (query) =>
+			query.state.data?.some((artifact) => isBeingChecked(artifact))
+				? 5000
+				: false,
 	});
 
 	const { mutate: deleteArtifact } = useMutation({
@@ -81,6 +89,16 @@ const MyProjectArtifacts = () => {
 				canManage={canManage}
 				onRetry={refetch}
 				onDelete={deleteArtifact}
+				onReplace={setReplacing}
+			/>
+
+			<ReplaceLinkModal
+				artifact={replacing}
+				onClose={() => setReplacing(null)}
+				onReplaced={() => {
+					setReplacing(null);
+					refetch();
+				}}
 			/>
 
 			{canManage && (

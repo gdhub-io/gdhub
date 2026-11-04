@@ -1,0 +1,80 @@
+/* 13.2: three cards, 12 apart, sharing the width. */
+.kpis {
+	display: grid;
+	grid-template-columns: repeat(3, minmax(0, 1fr));
+	gap: var(--gd-space-3);
+
+	@media (max-width: 767px) {
+		grid-template-columns: minmax(0, 1fr);
+	}
+}
+
+.person {
+	min-width: 0;
+}
+
+.stack {
+	gap: 2px;
+	min-width: 0;
+}
+
+.name {
+	font-weight: 500;
+}
+
+.sub {
+	font-size: var(--gd-font-size-body-sm);
+}
+
+/* Indented 16 so the note lines up with the status word, past the dot. */
+.note {
+	min-width: 0;
+	padding-left: var(--gd-space-4);
+}
+
+.noteIcon {
+	flex-shrink: 0;
+	color: var(--gd-color-text-tertiary);
+}
+
+.noteText {
+	flex: 1;
+	min-width: 0;
+	font-size: var(--gd-font-size-body-sm);
+}
+
+.fee {
+	font-weight: 500;
+	font-feature-settings: "tnum";
+}
+
+.payouts {
+	/* A 32 expand button in the 48 column. */
+	:global(.ant-table-row-expand-icon-cell) {
+		padding-inline: var(--gd-space-2);
+	}
+
+	/* The expanded band, indented to the curator column and short of the action one. */
+	:global(.ant-table-tbody > tr.ant-table-expanded-row > td) {
+		height: auto;
+		padding: var(--gd-space-1) calc(var(--gd-space-12) + var(--gd-space-2))
+			var(--gd-space-2) var(--gd-space-16);
+		background: var(--gd-color-surface-sunken);
+		border-bottom: 1px solid var(--gd-color-border-subtle);
+	}
+
+	.feeTable :global(.ant-table-thead > tr > th) {
+		height: 36px;
+		background: transparent;
+		border-bottom: 1px solid var(--gd-color-border-subtle);
+	}
+
+	.feeTable :global(.ant-table-tbody > tr > td) {
+		height: 52px;
+		background: transparent;
+	}
+
+	.feeTable :global(.ant-table-tbody > tr:last-child > td) {
+		border-bottom: none;
+	}
+}

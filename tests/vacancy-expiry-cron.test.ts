@@ -42,7 +42,6 @@ describe("relevant-vacancies cron", () => {
 		vi.useFakeTimers();
 		vi.setSystemTime(NOW);
 		vi.stubEnv("CRON_SECRET", "cron-secret");
-		vi.stubEnv("NEXT_PUBLIC_API_KEY", "public-key");
 		findMany.mockReset();
 		updateMany.mockReset();
 		closeVacancyChats.mockReset();
@@ -84,7 +83,7 @@ describe("relevant-vacancies cron", () => {
 					title: "Artist",
 					publishedAt: new Date("2026-09-02T10:00:00.000Z"),
 					finishedAt: new Date("2026-10-04T10:00:00.000Z"),
-					_count: { applicants: 2 },
+					_count: { applications: 2 },
 					team: {
 						project: { name: "Moonlit", slug: "game", author: { id: "u1", email: "a@b.c" } },
 					},
@@ -128,7 +127,7 @@ describe("relevant-vacancies cron", () => {
 					publishedAt: null,
 					createdAt: new Date("2026-10-01T10:00:00.000Z"),
 					finishedAt: new Date("2026-10-04T10:00:00.000Z"),
-					_count: { applicants: 0 },
+					_count: { applications: 0 },
 				},
 			])
 			.mockResolvedValue([]);
@@ -148,7 +147,7 @@ describe("relevant-vacancies cron", () => {
 				{
 					id: "v1",
 					title: "Artist",
-					_count: { applicants: 3 },
+					_count: { applications: 3 },
 					team: {
 						project: {
 							name: "Moonlit",
@@ -166,9 +165,9 @@ describe("relevant-vacancies cron", () => {
 			status: "Published",
 			finishedAt: { gte: TODAY },
 			id: { notIn: [] },
-			applicants: {
+			applications: {
 				some: {
-					status: "Applicant",
+					status: "Submitted",
 					createdAt: {
 						gte: new Date("2026-09-24T00:00:00.000Z"),
 						lt: new Date("2026-09-25T00:00:00.000Z"),

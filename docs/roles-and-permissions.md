@@ -270,7 +270,7 @@ export const projectSpace = defineSpace({
     workflow:  ["view", "edit"],
     vacancies: ["view", "manage", "review"],
     equity:    ["view", "manage"],
-    devlog:    ["view", "create", "publish"],
+    devlog:    ["view", "create", "publish", "manage"],
   },
   // …
 });
@@ -279,7 +279,7 @@ export const projectSpace = defineSpace({
 | Спейс | Features |
 |---|---|
 | `hub` | `talent_pool`, `projects`, `events`, `courses`, `jobs`, `experts`, `chat`, `live_room` |
-| `project` | `info`, `lifecycle`, `members`, `artifacts`, `workflow`, `vacancies`, `equity`, `devlog` |
+| `project` | `info`, `lifecycle`, `members`, `artifacts`, `checkpoints`, `room`, `workflow`, `vacancies`, `equity`, `devlog` |
 | `event` | `info`, `lifecycle`, `members`, `content`, `schedule`, `certificates` |
 | `course` | `info`, `lifecycle`, `curriculum`, `classroom`, `students`, `groups`, `content`, `certificates` |
 | `admin` | `users`, `posts`, `devlog_posts`, `workflow`, `audit_logs` |
@@ -417,7 +417,7 @@ export const projectSpace = defineSpace({
     workflow:  ["view", "edit"],
     vacancies: ["view", "manage", "review"],
     equity:    ["view", "manage"],
-    devlog:    ["view", "create", "publish"],
+    devlog:    ["view", "create", "publish", "manage"],
   },
   overrides: {
     // гость бывает только по приглашению и только смотрит (§2.2)
@@ -477,7 +477,7 @@ export const adminSpace = defineSpace({
 ### 4.2 Адаптер — доменный код
 
 ```ts
-// src/repositories/project.space.ts
+// src/repositories/project/space.ts
 registerSpaceAdapter("project", {
   /** Роль в спейсе. Пока читает доменные таблицы; после бэкфилла в SpaceMember — удаляется. */
   resolveRole: async (spaceId, user) => { /* prisma: author / TeamMember */ },
@@ -520,7 +520,7 @@ withSpaceGuard({ permission: "project.members.invite", idFrom: "body.projectId" 
 доменное знание (что у проекта есть `slug`, известно только проекту):
 
 ```ts
-// src/repositories/project.space.ts
+// src/repositories/project/space.ts
 registerSpaceAdapter("project", {
   /** slug из роута → Project.id, он же spaceId. Кэшируется на запрос. */
   resolveSpaceId: async (param) =>

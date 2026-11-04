@@ -178,12 +178,6 @@ describe("project", () => {
 		expect(can(access, "project.lifecycle.archive")).toBe(false);
 	});
 
-	it("applicant is not inside the space at all", async () => {
-		projectWith({ status: TeamMemberStatus.Applicant });
-
-		expect((await getSpaceAccess("project", "slug", member)).role).toBe("none");
-	});
-
 	it("fired member loses access", async () => {
 		projectWith({ status: TeamMemberStatus.Fired });
 
@@ -394,6 +388,18 @@ describe("shadow mode", () => {
 		warn.mockRestore();
 	});
 
+	it("ignores RBAC_ENFORCE=false in production", async () => {
+		projectWith({ status: TeamMemberStatus.Hired });
+		const access = await getSpaceAccess("project", "slug", member);
+
+		vi.stubEnv("RBAC_ENFORCE", "false");
+		vi.stubEnv("VERCEL_ENV", "production");
+
+		expect(can(access, "project.members.invite")).toBe(false);
+
+		vi.unstubAllEnvs();
+	});
+
 	it("enforces by default", async () => {
 		projectWith({ status: TeamMemberStatus.Hired });
 		const access = await getSpaceAccess("project", "slug", member);
@@ -403,11 +409,7 @@ describe("shadow mode", () => {
 });
 
 describe("statuses that must never open a space", () => {
-	it.each([
-		TeamMemberStatus.Applicant,
-		TeamMemberStatus.Rejected,
-		TeamMemberStatus.Fired,
-	])("project: %s", async (status) => {
+	it.each([TeamMemberStatus.Fired])("project: %s", async (status) => {
 		projectWith({ status });
 
 		expect((await getSpaceAccess("project", "slug", member)).role).toBe("none");

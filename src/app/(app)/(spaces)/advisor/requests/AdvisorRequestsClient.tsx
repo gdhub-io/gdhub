@@ -17,7 +17,7 @@ import type {
 	AdvisorRequest,
 	RequestCounts,
 	RequestFilter,
-} from "@/repositories/advisor.requests";
+} from "@/repositories/advisor/requests";
 import styles from "./style.module.scss";
 
 /** The modal pulls in antd's Modal and the talent card; most visits never open it. */

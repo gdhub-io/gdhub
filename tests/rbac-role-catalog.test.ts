@@ -31,17 +31,23 @@ describe("catalogOf", () => {
 });
 
 describe("defaultsOf", () => {
-	it("gives owner and admin everything the admin space declares", () => {
+	it("gives the owner everything the admin space declares, and an admin all but payouts and curators", () => {
 		const defaults = defaultsOf("admin");
 		const catalog = permissionCatalog("admin");
-
-		for (const role of [SpaceRole.Owner, SpaceRole.Admin]) {
-			const allowed = catalog.filter(
+		const allowedTo = (role: SpaceRole) =>
+			catalog.filter(
 				(permission) => defaults.get(defaultsKey(role, permission))?.allowed,
 			);
 
-			expect(allowed).toEqual(catalog);
-		}
+		expect(allowedTo(SpaceRole.Owner)).toEqual(catalog);
+		// Money out and who may take it: granted by hand, never by default.
+		expect(allowedTo(SpaceRole.Admin)).toEqual(
+			catalog.filter(
+				(permission) =>
+					!permission.startsWith("admin.payouts.") &&
+					!permission.startsWith("admin.curators."),
+			),
+		);
 	});
 
 	it("gives a member the reads and nothing that manages", () => {

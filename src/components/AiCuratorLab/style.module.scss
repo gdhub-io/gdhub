@@ -1,0 +1,126 @@
+.page {
+	max-width: 1440px;
+	margin: 0 auto;
+	padding: var(--gd-space-8) var(--gd-space-16);
+	background: var(--gd-color-bg);
+	min-height: 100vh;
+}
+
+.title {
+	margin: 0 !important;
+}
+
+.small {
+	font-size: var(--gd-font-size-caption);
+}
+
+.mono {
+	font-family: monospace;
+	font-size: var(--gd-font-size-caption);
+}
+
+.muted {
+	color: var(--gd-color-text-tertiary);
+}
+
+.body {
+	@media (max-width: 1100px) {
+		flex-direction: column;
+	}
+}
+
+
+.menu {
+	border-inline-end: none !important;
+	background: transparent;
+
+	:global(.ant-menu-item) {
+		height: auto;
+		line-height: var(--gd-line-height-ui);
+		padding-block: var(--gd-space-2);
+		white-space: normal;
+	}
+
+	// Long names wrap instead of being cut off.
+	:global(.ant-menu-title-content) {
+		white-space: normal;
+		overflow: visible;
+		text-overflow: clip;
+	}
+}
+
+
+.result {
+	flex: 1;
+	min-width: 0;
+}
+
+
+
+.code {
+	margin: 0 !important;
+	padding: var(--gd-space-3);
+	font-family: monospace;
+	font-size: var(--gd-font-size-caption);
+	white-space: pre-wrap;
+	overflow-wrap: anywhere;
+	background: var(--gd-color-surface-sunken);
+	border: 1px solid var(--gd-color-border);
+	border-radius: var(--gd-radius-control);
+}
+
+
+
+
+.readIn {
+	margin-left: auto;
+}
+
+.persona {
+	width: 280px;
+}
+
+.calls {
+	width: 220px;
+	flex-shrink: 0;
+}
+
+.situations {
+	width: 240px;
+	flex-shrink: 0;
+}
+
+.resultTitle {
+	padding-block: var(--gd-space-3);
+	white-space: normal;
+}
+
+.run {
+	align-self: flex-start;
+	margin-top: var(--gd-space-2);
+}
+
+.divider {
+	align-self: stretch;
+	height: auto;
+	margin: 0;
+
+	@media (max-width: 1100px) {
+		display: none;
+	}
+}
+
+.purpose {
+	font-size: var(--gd-font-size-caption);
+	font-weight: normal;
+}
+
+.pre {
+	white-space: pre-wrap;
+}
+
+// The line as the share card sets it: large, the curator's own words (GDHUB-144).
+.shareLine {
+	font-size: var(--gd-font-size-h3);
+	line-height: var(--gd-line-height-heading);
+}

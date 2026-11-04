@@ -16,7 +16,7 @@ import {
 	withValidation,
 } from "@/lib/api-handlers";
 import { withSpaceGuard } from "@/lib/space-guard";
-import { projectOfVacancy } from "@/lib/space-ids";
+import { projectOfTeam, projectOfVacancy } from "@/lib/space-ids";
 import { closeVacancyChats } from "@/services/chat/vacancy-keys";
 import { prisma } from "@/services/prisma";
 
@@ -27,6 +27,19 @@ function maxFinishedAt(anchor: Date): Date {
 	d.setHours(23, 59, 59, 999);
 	return d;
 }
+
+const UNPAID_FEE =
+	"A position with a price is published once its listing fee is paid";
+
+/** Whether the vacancy's listing fee has been paid. */
+const feePaid = async (vacancyId: string) =>
+	(await prisma.payment.count({
+		where: {
+			payableType: PayableType.VACANCY,
+			payableId: vacancyId,
+			status: PaymentStatus.COMPLETED,
+		},
+	})) > 0;
 
 const IdQuerySchema = z.object({
 	id: z.string(),
@@ -112,10 +125,6 @@ export const GET = withAuth({ mode: "user" })(
 			},
 		});
 
-		const teamMember = await prisma.teamMember.findFirst({
-			where: { vacancyId: id, userId: currentUser.id },
-		});
-
 		// The Payment row is the listing fee (status/receipt). Surface the latest one
 		// so the edit form knows whether the fee is paid.
 		const payment = await prisma.payment.findFirst({
@@ -130,55 +139,66 @@ export const GET = withAuth({ mode: "user" })(
 			...data,
 			// Offered compensation lives on the vacancy; expose it in EUR for the form.
 			offeredAmount: fromCents(data?.offeredAmount),
-			myTeamMemberId: teamMember?.id,
 			payment,
 		});
 	}),
 );
 
-export const POST = withAuth({ mode: "user" })(
-	withValidation(CreateVacancySchema)(async (_req, _ctx, { user, body }) => {
-		const currentUser = user as SessionUser | undefined;
-		if (!currentUser) return apiError.unauthorized();
-		const data = body as CreateVacancyBody;
-		try {
-			const {
-				promisePercentage,
-				promiseStepId,
-				offeredAmount,
-				offeredRateType,
-				...vacancyData
-			} = data;
-			const hasEquityPromise = promisePercentage && promiseStepId;
-
-			// New listing: the window is anchored to now.
-			if (new Date(vacancyData.finishedAt) > maxFinishedAt(new Date())) {
-				return apiError.badRequest(
-					`finishedAt cannot be more than ${LISTING_WINDOW_DAYS} days from now`,
-				);
-			}
-
-			const vacancy = await prisma.teamVacancy.create({
-				data: {
-					...vacancyData,
-					status: vacancyData.status as TeamVacancyStatus,
-					promisePercentage: hasEquityPromise ? promisePercentage : undefined,
-					promiseStepId: hasEquityPromise ? promiseStepId : undefined,
-					offeredAmount: offeredAmount != null ? toCents(offeredAmount) : null,
-					offeredRateType: (offeredRateType as PaymentRateType | null) ?? null,
-				},
-			});
-
-			return json({
-				...vacancy,
-				offeredAmount: fromCents(vacancy.offeredAmount),
-			});
-		} catch (error) {
-			console.error("[project.create]", error);
-			throw error;
-		}
+export const POST = pipe(
+	withAuth({ mode: "user" }),
+	withSpaceGuard({
+		permission: "project.vacancies.manage",
+		idFrom: projectOfTeam,
 	}),
-);
+	withValidation(CreateVacancySchema),
+)(async (_req, _ctx, { user, body }) => {
+	const currentUser = user as SessionUser | undefined;
+	if (!currentUser) return apiError.unauthorized();
+	const data = body as CreateVacancyBody;
+	// A new vacancy has no fee paid yet.
+	if (
+		data.status === TeamVacancyStatus.Published &&
+		data.offeredAmount != null
+	) {
+		return apiError.badRequest(UNPAID_FEE);
+	}
+	try {
+		const {
+			promisePercentage,
+			promiseStepId,
+			offeredAmount,
+			offeredRateType,
+			...vacancyData
+		} = data;
+		const hasEquityPromise = promisePercentage && promiseStepId;
+
+		// New listing: the window is anchored to now.
+		if (new Date(vacancyData.finishedAt) > maxFinishedAt(new Date())) {
+			return apiError.badRequest(
+				`finishedAt cannot be more than ${LISTING_WINDOW_DAYS} days from now`,
+			);
+		}
+
+		const vacancy = await prisma.teamVacancy.create({
+			data: {
+				...vacancyData,
+				status: vacancyData.status as TeamVacancyStatus,
+				promisePercentage: hasEquityPromise ? promisePercentage : undefined,
+				promiseStepId: hasEquityPromise ? promiseStepId : undefined,
+				offeredAmount: offeredAmount != null ? toCents(offeredAmount) : null,
+				offeredRateType: (offeredRateType as PaymentRateType | null) ?? null,
+			},
+		});
+
+		return json({
+			...vacancy,
+			offeredAmount: fromCents(vacancy.offeredAmount),
+		});
+	} catch (error) {
+		console.error("[project.create]", error);
+		throw error;
+	}
+});
 
 export const PUT = pipe(
 	withAuth({ mode: "user" }),
@@ -211,6 +231,7 @@ export const PUT = pipe(
 			createdAt: true,
 			status: true,
 			finishedAt: true,
+			offeredAmount: true,
 			team: { select: { project: { select: { authorId: true } } } },
 		},
 	});
@@ -238,6 +259,16 @@ export const PUT = pipe(
 	// toggling draft/publish can't move the window anchor.
 	const nextStatus = (vacancyData.status ??
 		existing.status) as TeamVacancyStatus;
+	const nextOffered =
+		offeredAmount === undefined ? existing.offeredAmount : offeredAmount;
+	if (
+		nextStatus === TeamVacancyStatus.Published &&
+		nextOffered != null &&
+		!(await feePaid(id))
+	) {
+		return apiError.badRequest(UNPAID_FEE);
+	}
+
 	const publishedAt =
 		existing.publishedAt ??
 		(nextStatus === TeamVacancyStatus.Published ? new Date() : null);

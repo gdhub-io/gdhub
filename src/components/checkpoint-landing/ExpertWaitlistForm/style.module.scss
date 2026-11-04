@@ -1,0 +1,31 @@
+// A soft grey rather than white: it still reads on the dark band without glaring.
+.email.email {
+	width: 320px;
+	max-width: 100%;
+	border-color: var(--gd-neutral-400);
+	background: var(--gd-neutral-300);
+
+	&::placeholder {
+		color: var(--gd-neutral-600);
+	}
+}
+
+.fine {
+	font-size: var(--gd-font-size-body-sm);
+}
+
+.done {
+	color: var(--gd-color-text-secondary);
+	font-size: var(--gd-font-size-body-sm);
+}
+
+// The default button is see-through; on the dark band it needs its own ground.
+.join.join {
+	border-color: var(--gd-neutral-300);
+	background: var(--gd-neutral-200);
+	color: var(--gd-color-text);
+
+	&:hover {
+		background: var(--gd-neutral-100);
+	}
+}

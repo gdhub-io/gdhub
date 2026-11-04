@@ -1,8 +1,0 @@
----
-description: 
-globs: *.ts
-alwaysApply: false
----
-For connecting to database use Prisma
-
-prisma schema there /node_modules/@gdhub-io/gdhub-prisma/prisma/schema.prisma

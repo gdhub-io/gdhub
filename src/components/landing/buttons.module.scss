@@ -1,0 +1,37 @@
+// Landing CTAs other than the brand one, which `[data-gd-landing]` styles in
+// globals.scss. Each sits on a `default` button so that rule never reaches it.
+@mixin filled($fill, $label) {
+	border-color: $fill;
+	background: $fill;
+	color: $label;
+	font-weight: 600;
+	outline: 1px solid transparent;
+	outline-offset: 3px;
+	// As in globals.scss: antd's `transition: all` would animate the ring in
+	// from white, so only the colours transition.
+	transition-property: background-color, color, border-color;
+
+	&:hover,
+	&:focus-visible {
+		border-color: $fill !important;
+		background: $fill !important;
+		color: $label !important;
+		outline-color: $fill;
+	}
+}
+
+.cta:global(.ant-btn) {
+	font-weight: 600;
+}
+
+.amber:global(.ant-btn) {
+	@include filled(var(--gd-color-accent-alt), var(--gd-color-on-accent-alt));
+}
+
+.light:global(.ant-btn) {
+	@include filled(var(--gd-neutral-0), var(--gd-neutral-950));
+}
+
+.ink:global(.ant-btn) {
+	@include filled(var(--gd-neutral-950), var(--gd-neutral-0));
+}

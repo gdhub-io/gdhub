@@ -8,6 +8,14 @@ The rules a curator and an author follow are in
 [docs/checkpoint-standard.md](checkpoint-standard.md). This file is the engineering side
 of the same thing.
 
+**The page this describes has been redesigned (GDHUB-57).** The checkpoint is now one page
+laid out as a path — the purchase, four **sprints**, the checkpoint itself — and the unit
+inside it is a sprint of seven days counted from the day it started, never a calendar week.
+Where this file still says "week", or describes the action card and the thread, the current
+shape is in [docs/design/specs/checkpoints.md](design/specs/checkpoints.md) and that file
+wins. What is stored, and §8 of the design spec on what the schema cannot hold yet, are the
+two places to read before changing data.
+
 ## 1. Vocabulary
 
 - **Checkpoint** — the point at the end of the 28 days where the work is taken or
@@ -59,13 +67,13 @@ model ProjectCheckpoint {
   goal      String
   items     CheckpointItem[]             // inputs and outcomes, each with its evidence
 
-  revisedAt   DateTime?                  // day 14 scope change, if any
+  revisedAt   DateTime?                  // day 15 scope change, if any
   revisedNote String?
 
   startedAt DateTime?
   dueAt     DateTime?
 
-  midNote   String?                      // day 14 note from the curator
+  midNote   String?                      // kept for the human curator; the AI no longer writes it
   summary   String?                      // result card
   verdict   CheckpointVerdict?               // StageClosed | GoalMet | GoalMissed
   verdictNote String?
@@ -74,11 +82,14 @@ model ProjectCheckpoint {
 
   paymentId String?  @unique
 
-  acceptedStandardAt      DateTime?          // the tick before paying
-  acceptedStandardVersion String?            // which version of the standard was ticked
+  // The ticks before paying are LegalAcceptance rows with this checkpointId
+  // (the Purchase Terms, with params.startNow) — see docs/legal/legal-layer.md.
 
   goalAgreedAt   DateTime?                // consultation 1: the card the 28 days are judged against
   goalAgreedById String?                  // null when the AI curator confirmed it
+  planCheckedAt    DateTime?              // AI: its one check of the day-1 tasks
+  scopeConfirmedAt DateTime?              // AI: the author confirmed the day-15 change
+  curatorCharacter String?                // AI: the character it plays, kept for the 28 days
 
   pulses  CheckpointPulse[]
   feedback  CheckpointFeedback?
@@ -98,17 +109,27 @@ model CheckpointItem {
   order        Int
   text         String
 
-  artifactId   String?                    // the evidence, chosen or added on the spot
-  artifact     TeamDocument? @relation(fields: [artifactId], references: [id], onDelete: SetNull)
+  evidence     CheckpointItemEvidence[]   // the artifacts offered for it, up to three
 
-  cut          Boolean  @default(false)   // dropped on day 14; still shown, no longer owed
+  cut          Boolean  @default(false)   // dropped on day 15; still shown, no longer owed
   originalText String?                    // the wording bought, kept from the first rewrite on day 1 or 14
-  addedAt      DateTime?                  // set when the line was added on day 14, not on day 1
+  addedAt      DateTime?                  // set when the line was added on day 15, not on day 1
   note         String?                    // the author's line about what actually landed
   acceptedNote String?                    // a human curator counting an outcome with no artifact
 
   @@unique([checkpointId, kind, order])
-  @@index([artifactId])
+}
+
+model CheckpointItemEvidence {
+  id         String   @id @default(cuid())
+  itemId     String
+  artifactId String
+  match      EvidenceMatch?             // what the AI saw in this artifact against the task
+  matchNote  String?
+  seenLink   String?                    // the link it last looked at; a new link is looked at again
+  createdAt  DateTime @default(now())
+
+  @@unique([itemId, artifactId])
 }
 
 model CheckpointPulse {
@@ -163,8 +184,8 @@ rather than a dangling reference.
 
 | Status | Means | Leaves it by |
 |---|---|---|
-| `Draft` | Goal card being written, not paid | Payment succeeds → `Active`; author cancels → `Cancelled` |
-| `Active` | The 28 days | Day 28 → `Review` |
+| `Draft` | Goal card being written, not paid | Paid → `Active` (AI) or waits for the curator's answer (human); author cancels → `Cancelled` |
+| `Active` | From payment (AI curator) or the curator's yes (human), through day 28 | The 01:00 run on day 29 → `Review` |
 | `Review` | Collection stopped, verdict pending | Verdict written → `Closed` |
 | `Closed` | Result card stored | Terminal |
 | `Cancelled` | Never started | Terminal |
@@ -184,23 +205,23 @@ next 28 days are for.
 
 ## 4. Calendar
 
-Day 1 is `startedAt`. Weeks are days 1–7, 8–14, 15–21, 22–28.
+The day-by-day calendar — what the curator, the platform and the team do on each
+of the days, for both kinds of curator — is in
+[checkpoint-calendar.md](checkpoint-calendar.md). In short:
 
-| Day | What happens | Stored |
-|---|---|---|
-| 1 | **Consultation 1.** The curator goes through the outcome list with the author and cuts it to what 28 days actually hold. The card is agreed, and only then fixed. | `goal`, `CheckpointItem` rows, `goalAgreedAt` |
-| 4, 11, 18, 25 | Devlog reminder, only if that week has no devlog | — |
-| 6, 13, 20, 27 | Pulse request, only to members not already confirmed that week | `CheckpointPulse` rows |
-| the day after a devlog | The AI curator's feedback on it arrives, with a notification | feedback on `ProjectReport` |
-| 7, 21 | A human curator answers the week's devlog on the call | comment on `ProjectReport` |
-| 14 | Scope moment. See §7. | `midNote`, and `revisedAt` if the author changes the outcomes |
-| 26 | Evidence reminder, naming the outcomes with an empty slot; none if every one is covered | — |
-| 28 | Checkpoint moves to `Review`, report assembled | `summary` |
-| 28–30 | Verdict written | `verdict`, `decidedAt`, `decidedById` |
-
-After day 1 the author may change the outcomes only on day 14. An outcome that
-comes off is `cut`, not deleted, and the reason is stored as `revisedNote` beside
-the original list — never over it.
+- Day 1 is `startedAt`, a UTC midnight: the payment day with the AI curator, the
+  day of call 1 with a human one, whose checkpoint opens at the curator's yes —
+  the wait until call 1 is day 0.
+- Four sprints of seven days; each sprint's last day (7, 14, 21, 28) is when its
+  devlog, build and artifacts are due, with a reminder and the pulse that morning.
+- Five sessions on days 1, 8, 15, 22 and 29: calls with a human curator, written
+  reviews with the AI one.
+- The tasks change twice: on day 1 until the plan is approved, and once more around
+  session 3 on day 15 (§7). An outcome that comes off is `cut`, not deleted, and
+  the reason is stored as `revisedNote` beside the original list.
+- Day 26: the tasks still without evidence are named to the author.
+- Day 29: the checkpoint moves to `Review`; the AI curator writes the verdict that
+  day, a human one has until the end of day 31.
 
 ## 5. Weekly pulse
 
@@ -223,9 +244,12 @@ mail and one on the page.
 The same action sits on the in-app notification, where the session already
 identifies the user and no token is needed.
 
-**Work already done counts as the pulse.** Anyone who authored a devlog that
-week is confirmed for that week automatically, `source: "devlog"`; so is anyone
-who attached an artifact, `source: "artifact"`. They are never asked. Nobody is
+**Work already done counts as the pulse.** Anyone who authored a devlog in the
+sprint is confirmed for it automatically, `source: "devlog"`; so is anyone who
+added an artifact, `source: "artifact"`; so is anyone who changed anything else of
+the project — ticked a task, posted a vacancy, sent an invitation, edited the
+plan — `source: "activity"`, read from the audit log through what the write
+touched. The author is a member like the rest. They are never asked. Nobody is
 made to press a button to say they did the thing they visibly just did.
 
 That is why the request goes out at the end of the week rather than the start:
@@ -253,47 +277,56 @@ falling apart when it was growing.
 
 **What the author buys is a draft.** Someone with no shipped project writes "a
 finished game" into the outcome list, pays, and would otherwise spend 28 days
-failing at something that was never 28 days of work. Consultation 1 exists to
-stop that: the curator reads the list with them and says plainly what will not
-fit, and the two of them cut it down to something reachable — a vertical slice
-instead of a game, one level instead of five, a playable loop instead of a
-release. The card is **agreed**, then fixed.
+failing at something that was never 28 days of work. Day 1 exists to stop that:
+the curator reads the list and says plainly what will not fit, and the list comes
+down to something reachable — a vertical slice instead of a game, one level
+instead of five, a playable loop instead of a release. The card is **agreed**,
+then fixed (`goalAgreedAt`).
 
-Until `goalAgreedAt` is set the outcome list is fully editable — cut, reword,
-add, in the same modal day 14 uses — and both the author and the curator can
-edit it. After it is set, only day 14 can change it. The first wording survives
-in `originalText`, so what the author came in wanting is still readable at the
-end beside what was actually agreed; a first checkpoint that started as "ship the
-game" and became "a playable ten minutes" is the product working, and the record
-should say so rather than hide it.
+**With a human curator** the author drafts the tasks from the curator's yes until
+call 1 (`planEdit` = `plan`), and may ask the AI for advice on the draft. Call 1
+agrees the plan; goal and tasks stay open on the call and for a while after it
+(`PRO_PLAN_AFTER_CALL_HOURS` after it ends), then are fixed.
+
+**With the AI curator** day 1 has three steps, each a letter on the plan page:
+
+1. **At payment** the AI picks the character it will play for the author
+   (`curatorCharacter`) and writes the first letter: a word on the goal and the
+   tasks it would start from, each with why.
+2. **When the author sends the tasks**, one check of them — advice under each task
+   and a word on the goal. One check only (`planCheckedAt`); a second is refused.
+3. **The author approves the plan**, or it approves itself `AI_APPROVE_HOURS` after
+   the check. Until it is approved the goal and tasks stay open, with no deadline:
+   a plan that waits for its tasks waits, and the author is reminded after 24 and
+   72 hours.
 
 **A human curator says the cut out loud; the AI curator cannot.** It reports what
-does not fit — this outcome has no input to build on, this one is four
-outcomes' worth of work — and offers the author a smaller version of each to
-accept or ignore. It never rewrites the list on its own, and no copy may suggest
-it decided. That line is the same one it holds on day 14, and it is the honest
-difference between the two kinds of curator: judgement of what a beginner can do
-in a month is exactly what a person is being paid for.
+does not fit and offers a smaller version of a task to take or leave. It never
+rewrites the list on its own, and no copy may suggest it decided. That is the
+honest difference between the two: judgement of what a beginner can do in a month
+is exactly what a person is being paid for.
 
-The 28 days start at payment either way. Agreement does not move day 1 — a card
-still unagreed on day 3 is the curator's problem, and it shows on their list.
+The first wording of a task survives in `originalText`, so what the author came
+in wanting is still readable at the end beside what was actually agreed.
 
-## 7. The scope moment, day 14
+## 7. The scope moment, day 15
 
-The AI curator compares the outcomes against the devlogs written so far and
-whatever evidence is already attached, then writes `midNote`. The note:
+Session 3 opens sprint 3 and is the last change to the tasks (`SCOPE_SESSION`).
 
-- lists the outcomes with an empty slot and nothing claimed against them,
-- says how much of the calendar is gone,
-- asks the author to decide what to change.
+- **With the AI curator** the sprint-2 review comes with advice on the tasks: which
+  to keep, reword, cut or add, against what the devlogs and the evidence show. The
+  change is open from the session until `SCOPE_ANSWER_HOURS` after the review is
+  written; the author is reminded `SCOPE_REMIND_BEFORE_HOURS` before it closes, and
+  **Confirm the tasks** closes it early (`scopeConfirmedAt`).
+- **With a human curator** the change is made on call 3 and for a day after it.
 
-**It never names the cut.** That judgement belongs to a human curator, and saying
-otherwise would sell the AI curator as something it is not. The author changes
-the outcome list themselves, or leaves it.
+**The AI never names the cut.** It advises; the author changes the list or leaves
+it. `midNote`, the written day-14 note of the first design, is no longer written —
+the review's advice took its place; the field stays for the human curator.
 
-### Day 14 is a scope change, not only a cut
+### Day 15 is a scope change, not only a cut
 
-Three things can happen to the list, all on that one day and all in one modal:
+Three things can happen to the list, all in that one window:
 
 | Move | What it is for | Stored |
 |---|---|---|
@@ -318,7 +351,7 @@ reconstructing it from memory:
 
 1. **What was planned** — the day-1 list: `originalText` where a line was
    reworded, `text` where it was not, minus the lines with `addedAt`.
-2. **What changed** — the day-14 move on each line, and `revisedNote` for why.
+2. **What changed** — the day-15 move on each line, and `revisedNote` for why.
 3. **What came of it** — the artifact on each line, the author's `note` beside
    it, and, where a curator counted a line no artifact covers, `acceptedNote`.
 
@@ -329,56 +362,47 @@ against it in any devlog. A quiet week on its own is not the signal.
 
 ## 8. The AI curator
 
-Five model calls per checkpoint, through `src/services/openai`, following the shape
-of `src/services/ai-validation` (typed input, typed result, prompts in their own
-folder, no free-text parsing):
+The model calls of one AI checkpoint, through `src/services/checkpoints/ai-curator` and
+`src/services/checkpoints/ai-review` (typed input, typed result, prompts in their own
+folder, no free-text parsing). Models and what each costs are in
+[ai-costs.md](ai-costs.md).
 
-| When | Input | Output |
+| When | Call | Output |
 |---|---|---|
-| Day 1 | Goal card, project stage and its template requirements | Is this reachable in 28 days, and what is missing from the outcome list |
-| The day after each devlog | The devlog and the goal card | Feedback: what reads as progress, which outcomes it moves, what is still untouched |
-| Day 14 | The summaries so far, outcomes, artifact | `midNote` per §7 |
-| Day 28 | Everything below | `summary` and `verdict` |
+| Day 1, at payment | Character | The role the curator plays, made the author's own: a name, a world, a road |
+| Day 1, at payment | Goal read | The first letter: a word on the goal, suggested tasks |
+| Day 1, once | Tasks check | Advice under each task, a word on the goal |
+| Days 8, 15, 22 | Sprint review | The review of the sprint first; on day 15 the advice on the tasks, read from it; then the letter and the next sprint's focus from both |
+| When evidence is attached | Evidence | Does the artifact show its task: matches, partly, does not |
+| Day 29 | Report | The report, a proposed verdict, the last letter |
 
-Seven calls per checkpoint, then — one on day 1, four pieces of feedback, the day-14
-note, the day-28 report.
+**One curator, one journal.** Every letter continues the ones before it — the
+checkpoint is told as a road from what the team has today to the goal, and each
+letter knows which leg it is on. The character speaks only in the letter and the
+verdict's note; every other field is plain.
 
-**Feedback arrives the day after the devlog, not the moment it is posted.** It
-runs in the same daily cron as everything else, so there is no second queue path,
-and the author is told: the curator has read your devlog, here is what they said.
-An answer three seconds after publishing reads as a machine reflex and gets
-skimmed; the next morning it reads as something that was looked at, and it brings
-the author back to the checkpoint a day later, which is the point.
+**Reviews answer, they do not grade.** A review says what reads as progress, which
+tasks the sprint moved and which are untouched — all of it checkable against the
+plan. It does not say whether the work is any good.
 
-The fourth devlog is the exception. Its feedback would land on day 28 alongside
-the report, so it is folded into the report instead — one message that day, not
-two saying overlapping things.
+Report input on day 29, facts only:
 
-**Feedback answers, it does not grade.** It says what reads as progress, which
-outcomes the post moves, and which are still untouched — all of it checkable
-against the goal card. It does not say whether the work is any good. That is the
-same line as the day-14 note: the AI curator reports what it can see, a human
-curator judges.
-
-It never replaces what the author wrote. It sits under the devlog, the post stays
-whole above it, and the author can ignore it.
-
-Report input on day 28, facts only:
-
-- goal card, and the day-14 revision if there was one,
-- every outcome with the artifact attached to it, or the fact that none is,
-- every devlog of the checkpoint with dates,
-- pulse matrix: member by week,
-- each artifact: link, screenshots, the author's description,
+- the goal and the tasks, and the day-15 change if there was one,
+- every task with the evidence attached to it, or the fact that none is,
+- every devlog of the checkpoint with dates, and the letters already sent,
+- the pulse matrix: member by sprint,
 - the stage and what the workflow template says it requires.
 
 The model never sees anything the platform cannot show the author.
 
-**Guardrails.** It reads screenshots, text at a public URL, and the author's
-description. It does not run builds and no copy may imply it does. It cannot
-write `StageClosed` or `GoalMet` while an outcome that was not cut has no
-readable artifact — that is `GoalMissed` regardless of what the model returns,
-and the AI curator has no way to waive it.
+**Guardrails.** It reads screenshots, video frames, text at a public URL and the
+author's description. It does not run builds and no copy may imply it does. It
+cannot write `StageClosed` or `GoalMet` while a task that was not cut has no
+readable evidence — that is `GoalMissed` regardless of what the model returns.
+
+**With a human curator** the AI only prepares: a brief of the sprint before calls
+2–5 and its read of the evidence for the verdict, both for the curator's eyes, and
+the notes of each call from its transcript.
 
 ## 9. Verdict and the workflow
 
@@ -386,12 +410,21 @@ Three values, and every one of them ends the checkpoint:
 
 | Verdict | Means | Next |
 |---|---|---|
-| `StageClosed` | Outcomes delivered and the stage's requirements met | The stage can be left |
-| `GoalMet` | Outcomes delivered, stage needs more | New checkpoint on the same stage |
-| `GoalMissed` | Outcomes not delivered | New checkpoint, inputs recomputed from what exists |
+| `StageClosed` ("Ready for the next stage") | The goal shown, outcomes delivered and the stage's requirements met | Next unlocks; the author moves on when ready |
+| `GoalMet` | The goal shown and outcomes delivered, stage needs more | New checkpoint on the same stage |
+| `GoalMissed` | An outcome not delivered — or all delivered without showing the goal | New checkpoint, inputs recomputed from what exists |
 
-"Delivered" is not a judgement call: every outcome that was not cut on day 14
+"Delivered" is not a judgement call: every outcome that was not cut on day 15
 carries a readable artifact. Missing one, the verdict is `GoalMissed`.
+
+**The plan done is not the goal reached** (GDHUB-122). A checkpoint is judged
+from the outside in: the stage's expectation (Ideation: an idea found; a demo
+stage: the demo), the goal inside it, the plan inside the goal — and ahead,
+whether the project is ready for the next stage. Every outcome delivered still
+leaves the goal to the curator's judgement. Where the AI curator advised a
+change, the team went its own way and the goal is not shown, the goal is
+missed, and the note says what was advised and that the next checkpoint can
+make it up. The team's own route that does show the goal is met.
 
 **A human curator may count an outcome the artifact does not cover, and has to
 say why.** Playtest notes on paper, a conversation with a publisher, a fix only
@@ -404,6 +437,10 @@ for. The AI curator has no such tick: it can only see what it can open.
 The next checkpoint's inputs are pre-filled from the outcomes that were proven,
 carrying their artifacts across — the demo that proved day 28 is what exists on
 day 1 of the next one, already attached.
+
+The verdict is a green light, not a move. The curator says the stage can be
+closed; the project stays on it until the author presses Next, because the team
+may still want to finish something inside the stage first.
 
 The stage is not opened by a button. A new condition source joins the eleven in
 `src/schemas/workflowTaskCondition.ts`:
@@ -432,10 +469,12 @@ and shows either the AI curator or the person's name.
 
 ## 10. Artifacts
 
-### One artifact per item, and that is what "done" means
+### Artifacts per item, and that is what "done" means
 
 An artifact is evidence that one item exists, and it hangs on that item rather
-than on the checkpoint as a whole. A concept is proven by the concept document; a
+than on the checkpoint as a whole. An item holds up to three
+(`CHECKPOINT_MAX_EVIDENCE_PER_ITEM`): a pitch can be both the PDF and the video
+of it being given. A concept is proven by the concept document; a
 demo, by the video of it running. Both sides of the goal card carry the same
 slot:
 
@@ -455,7 +494,12 @@ or add a new one, which lands in the Artifacts tab like any other. One artifact
 may prove several items — a build video that is both "the demo runs" and "the
 level is finished" is one upload, chosen twice.
 
-An item cut on day 14 keeps its text, is struck through, and is never counted as
+Adding an artifact never takes another away; each one is let go on its own, from
+the sprint's Evidence tab. The AI looks at each artifact separately and the item
+counts by the best of them: one that shows the task is enough, and a second link
+that does not open takes nothing away from it (GDHUB-115).
+
+An item cut on day 15 keeps its text, is struck through, and is never counted as
 missing evidence.
 
 ### Kinds, and what the AI curator can do with each
@@ -560,6 +604,18 @@ admin removing it from a template silently ungates every project on that
 template, so the template editor marks it and asks for a second confirmation
 before it goes.
 
+**The curator journal** (GDHUB-120, frames 12.11.10–10i) reads one checkpoint's
+28 days as a conversation: the curator and the platform on the left, the author
+and the team on the right, oldest at the top, opened at the newest. Beside it,
+the same checkpoint by subject — Inputs, Plan, Artifacts, Devlogs.
+`CheckpointJournalEntry` keeps what the AI looked at and wrote (`Evidence`,
+`DevlogMedia`, `Artifact`, `Review`, `Verdict`, `Letter` for the day-1 letters
+and the tasks checks) and every letter the platform sent about the checkpoint
+(`Platform`, written by `notify`). The team's side is read from its own rows:
+artifacts, devlogs, answered pulses and the plan's dates. Nothing older than
+the release is backfilled. `bun run checkpoint:simulate <projectSlug>` walks a
+fresh AI checkpoint through its 29 days on a local database to see a whole one.
+
 ## 12. Money
 
 `PayableType.CHECKPOINT`, `payableId` = checkpoint id, the existing Paddle flow. The
@@ -571,8 +627,8 @@ checkpoint stays `Draft` until the payment webhook lands, then becomes `Active` 
 The last step states what the money buys and what it does not, and the author
 ticks a box before the pay button does anything:
 
-- **Bought:** five consultations, an answer to every devlog, and a verdict
-  written by day 30.
+- **Bought:** five consultations and a verdict written by day 31, after the
+  final call on day 29.
 - **Not bought:** the game. The team builds it; the curator holds the 28 days to
   the goal and cannot reach it for them.
 - **Not promised:** that the goal is met. A checkpoint where the work did not
@@ -582,21 +638,22 @@ This protects both sides of the same sentence. An author who paid does not get t
 treat the curator as a contractor who owes them a finished demo; a curator whose
 team went quiet does not carry the blame for a verdict that says so.
 
-`POST /api/checkpoint/[id]/pay` refuses with `apiError.badRequest` unless
-`acceptedStandardAt` is set, so a client that hides the checkbox still cannot
-start a checkout. The version ticked is stored beside the timestamp: the standard
-will be edited, and a dispute a year later is about the text that was on screen
-that day, not today's.
+`POST /api/checkpoint/[id]/pay` takes the two ticks with the click — the
+Checkpoint Purchase Terms and the request to start at once (`startNow`, their 5.2) — and refuses without them
+(400 `legal.required`, 409 `legal.outdated`), so a client that hides a checkbox
+still cannot start a checkout. Both are recorded as one `LegalAcceptance` — the
+request as `params.startNow` — with the version, the text's checksum and the `checkpointId`: a dispute a year later is
+about the text that was on screen that day, not today's.
 
 **The three lines on that screen are product copy, not the agreement.** What the
 checkbox has to point at is a real document — the terms of a paid checkpoint,
-sitting beside [docs/legal/terms-of-use.md](legal/terms-of-use.md) and covering
+sitting beside [docs/legal/terms-of-use/v1.md](legal/terms-of-use/v1.md) and covering
 who owes what, what a refund is, what happens when a curator disappears and who
-holds the rights to what the team makes. Writing it is **its own issue**, not
-part of this one; until it exists the checkbox links to
-[the checkpoint standard](checkpoint-standard.md), and `acceptedStandardVersion`
-already stores which version was accepted, so the same field carries the legal
-document's version when it arrives.
+holds the rights to what the team makes: the
+[Checkpoint Purchase Terms](legal/checkpoint-purchase-terms/v1.md); the request to start
+before the withdrawal period ends is their 5.2, ticked as its own box. A curator takes a
+checkpoint on under the [Advisor Agreement](legal/advisor-agreement/v1.md) they
+accepted when they switched the Advisor space on.
 
 The AI curator has one price in config for now. The human curator's price is
 computed from their hourly rate and lands with that issue.
@@ -654,11 +711,11 @@ Three things, in this order:
    in 3 days` — and carries the button that does it, so anything that can be done
    early can be done early. Three faces: **due today**, **due later** (button
    live), and **not open yet** (button disabled, the date it opens on the card) —
-   the day-14 scope change is the only task of the third kind.
+   the day-15 scope change is the only task of the third kind.
 3. **The thread — the road already travelled, collapsed.** Every event in time,
    **one line each**: the day, the date and the title, with the body behind a
    chevron. It is a record, not a working surface; the work is on the card above
-   it. Devlogs open to show the post and the curator's answer under it, the rest
+   it. Devlogs open to show the post, the rest
    are usually read as a list and never opened.
 
 **Money is shown once, before it is spent, and never again.** The price belongs
@@ -677,7 +734,7 @@ rated from the verdict entry.
 |---|---|---|
 | Any week | Write the devlog | Modal |
 | Weekly | I am working on this | No modal — one press |
-| Day 14 | Change the scope | Modal: the outcome list — tick what comes off, reword a line, add one |
+| Day 15 | Change the scope | Modal: the outcome list — tick what comes off, reword a line, add one |
 | Any day, from the outcome | Attach the evidence | Modal: pick an artifact the project has, or add one — kind, link or upload, description |
 | Human curator | Join the call | Button with the link, live around the time |
 | After the verdict | Rate the assessment | Modal: stars and a comment |
@@ -789,21 +846,18 @@ find.
 
 ## 15. Notifications
 
-New Novu workflows beside the existing ones:
+Every letter goes through Novu (`src/services/checkpoints/notifications.ts`); what
+goes out on which day is in [checkpoint-calendar.md](checkpoint-calendar.md). Two
+cron routes, both behind `withAuth({ mode: "vercel_cron" })`:
 
-| Key | To | When |
-|---|---|---|
-| `checkpoint-pulse-request` | Each member | Days 3, 10, 17, 24 |
-| `checkpoint-devlog-reminder` | Author and publishers | Days 6, 13, 20, 27, if the week has no devlog |
-| `checkpoint-devlog-feedback` | Author | The day after a devlog, when the curator's answer lands |
-| `checkpoint-mid-note` | Author | Day 14 |
-| `checkpoint-evidence-reminder` | Author | Day 26, only if an outcome has an empty slot |
-| `checkpoint-closed` | Author and members | When the verdict is written |
+- `api/cron/checkpoints`, daily at 01:00 UTC — moves finished checkpoints to
+  `Review`, sends the devlog, evidence and verdict reminders and the pulse
+  requests, checks artifacts, writes the AI reviews and verdicts, and the briefs
+  for human curators.
+- `api/cron/checkpoint-calls`, hourly — call reminders, call notes, plans that
+  approve themselves, the reminders for unsent tasks and for the day-15 change.
 
-One cron route, `api/cron/checkpoints`, daily, behind `withAuth({ mode: "vercel_cron" })`
-and wrapped in `runWithCronLog`. It walks `Active` checkpoints, computes the day
-number from `startedAt`, and dispatches. Heavy work — the day-14 note and the
-day-28 report — goes onto a BullMQ queue, not into the request.
+The transaction id of each letter is what keeps a second run from sending it twice.
 
 ## 16. Tests
 
@@ -820,8 +874,8 @@ feature that ships on manual checks.
 - `checkpoint_verdict` condition: a `GoalMet` verdict must not open the stage.
 - The guardrail: an outcome that was not cut and has no readable artifact cannot
   produce `StageClosed` or `GoalMet`, whatever the model returned.
-- A cut outcome is not counted as missing evidence, and a `GoalMissed` checkpoint
-  where every remaining outcome is proven cannot happen.
+- A cut outcome is not counted as missing evidence; a `GoalMissed` proposed
+  with every remaining outcome proven stands — the goal is the curator's call.
 - Deleting an artifact from the Artifacts tab leaves its items unproven rather
   than pointing at a row that is gone.
 - One artifact attached to two outcomes proves both, and is counted once in the
@@ -829,16 +883,16 @@ feature that ships on manual checks.
 - A human curator's `acceptedNote` counts an outcome with no artifact; the AI
   curator has no such path.
 - A reworded outcome keeps `originalText`, and rewording it twice does not
-  overwrite the day-1 wording with the day-14 one.
-- An outcome added on day 14 is owed evidence like any other; a cut one is not.
+  overwrite the day-1 wording with the day-15 one.
+- An outcome added on day 15 is owed evidence like any other; a cut one is not.
 - The scope modal refuses on any day but 14 once `goalAgreedAt` is set, and
-  refuses a second change on day 14.
+  refuses a second change on day 15.
 - Before `goalAgreedAt`, both the author and the curator can edit the outcome
-  list; after it, neither can until day 14.
-- The first wording survives an edit on day 1 and a rewording on day 14 — one
+  list; after it, neither can until day 15.
+- The first wording survives an edit on day 1 and a rewording on day 15 — one
   `originalText`, written once.
-- Paying is refused while `acceptedStandardAt` is null, even when the request
-  comes straight to the API.
+- Paying is refused without the Purchase Terms and the request to start at once in
+  the request, even when it comes straight to the API.
 - The artifact check: a login page answering `200` is `unreachable`, not
   `readable`; a content type that contradicts the chosen kind is refused.
 - The fetcher refuses loopback, link-local and private addresses, and refuses a

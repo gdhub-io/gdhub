@@ -9,6 +9,11 @@ const userUpdate = vi.fn();
 const ensureMatrixUser = vi.fn();
 const store = new Map<string, unknown>();
 
+// Which legal documents are pending is its own concern, tested in legal-pending.test.ts.
+vi.mock("@/repositories/legal/legal", () => ({
+	pendingLegalCodes: async () => [],
+}));
+
 vi.mock("next-auth", () => ({
 	default: () => ({ handlers: {}, auth: vi.fn(), signIn: vi.fn(), signOut: vi.fn() }),
 }));
@@ -140,5 +145,23 @@ describe("jwt callback: user resync", () => {
 
 		expect(userUpdate).not.toHaveBeenCalled();
 		expect(result.id).toBe("u1");
+	});
+
+	it("refuses a stale token whose user no longer exists", async () => {
+		findUnique.mockResolvedValue(null);
+
+		expect(await jwt({ email: EMAIL, syncedAt: NOW - SIX_MINUTES })).toBeNull();
+	});
+
+	it("refuses the token of an erased user", async () => {
+		findUnique.mockResolvedValue({
+			id: "u1",
+			email: EMAIL,
+			matrixUserId: "@u1:gdhub",
+			personalDataDeletedAt: new Date(NOW - 1000),
+			profile: null,
+		});
+
+		expect(await jwt({ email: EMAIL }, "update")).toBeNull();
 	});
 });

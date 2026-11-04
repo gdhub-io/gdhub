@@ -1,0 +1,703 @@
+// Frames 08.1 (Jatya), 08.2 (A7aLy) and 08.3 (Ay58j) of platform-design.pen.
+// Off-scale numbers in the frames (6, 10, 20, 44) are rounded to the scale.
+
+.page {
+	display: flex;
+	flex-direction: column;
+	gap: var(--gd-space-6);
+}
+
+// Header `DjZqC`
+.header {
+	display: flex;
+	align-items: center;
+	justify-content: space-between;
+	gap: var(--gd-space-4);
+	flex-wrap: wrap;
+}
+
+.headerLead {
+	display: flex;
+	align-items: center;
+	gap: var(--gd-space-3);
+	min-width: 0;
+}
+
+.titles {
+	display: flex;
+	flex-direction: column;
+	gap: var(--gd-space-1);
+	min-width: 0;
+}
+
+.titleRow {
+	display: flex;
+	align-items: center;
+	gap: var(--gd-space-3);
+	flex-wrap: wrap;
+}
+
+.title.title {
+	margin: 0;
+}
+
+.subtitle {
+	font-size: var(--gd-font-size-body-sm);
+	color: var(--gd-color-text-tertiary);
+}
+
+// Split `Fy7LJ`: the stage and the 320 sidebar `bh9qG`.
+.split {
+	display: grid;
+	grid-template-columns: minmax(0, 1fr) 320px;
+	gap: var(--gd-space-12);
+	align-items: start;
+
+	@media (max-width: 991px) {
+		grid-template-columns: minmax(0, 1fr);
+	}
+}
+
+.main {
+	display: flex;
+	flex-direction: column;
+	gap: var(--gd-space-6);
+	min-width: 0;
+}
+
+// The video stage is dark in both themes: an InverseBand re-declares the roles.
+.stage {
+	border-radius: var(--gd-radius-panel);
+	overflow: hidden;
+}
+
+.stageInner {
+	background: var(--gd-color-bg);
+	color: var(--gd-color-text);
+}
+
+// 08.1 / 08.2: self preview beside the ready column.
+.prejoin {
+	display: flex;
+	gap: var(--gd-space-8);
+	padding: var(--gd-space-8);
+	min-height: 524px;
+
+	@media (max-width: 767px) {
+		flex-direction: column;
+		padding: var(--gd-space-4);
+	}
+}
+
+.preview {
+	position: relative;
+	flex: 1;
+	min-width: 0;
+	min-height: 300px;
+	display: flex;
+	flex-direction: column;
+	justify-content: space-between;
+	padding: var(--gd-space-4);
+	border-radius: var(--gd-radius-card);
+	background: var(--gd-color-surface);
+	overflow: hidden;
+}
+
+.video {
+	position: absolute;
+	inset: 0;
+	width: 100%;
+	height: 100%;
+}
+
+.centre {
+	position: absolute;
+	inset: 0;
+	display: flex;
+	align-items: center;
+	justify-content: center;
+}
+
+.overlay {
+	position: relative;
+	display: flex;
+}
+
+.toggles {
+	position: relative;
+	display: flex;
+	justify-content: center;
+	gap: var(--gd-space-3);
+}
+
+.nameTag {
+	display: inline-flex;
+	align-items: center;
+	gap: var(--gd-space-2);
+	padding: var(--gd-space-1) var(--gd-space-2);
+	border-radius: var(--gd-radius-chip);
+	background: color-mix(in srgb, var(--gd-neutral-950) 70%, transparent);
+	color: var(--gd-color-text);
+	font-size: var(--gd-font-size-body-sm);
+	font-weight: 500;
+	max-width: 100%;
+	white-space: nowrap;
+	overflow: hidden;
+	text-overflow: ellipsis;
+}
+
+.muted {
+	color: var(--gd-danger-solid);
+	flex: none;
+}
+
+.ready {
+	display: flex;
+	flex-direction: column;
+	gap: var(--gd-space-4);
+	width: 300px;
+	flex: none;
+
+	@media (max-width: 767px) {
+		width: 100%;
+	}
+}
+
+.waitingHead {
+	display: flex;
+	align-items: center;
+	gap: var(--gd-space-4);
+	padding: var(--gd-space-4);
+	border-radius: var(--gd-radius-card);
+	background: var(--gd-color-surface);
+}
+
+.ring {
+	display: flex;
+	align-items: center;
+	justify-content: center;
+	flex: none;
+	width: 56px;
+	height: 56px;
+	border: 2px solid var(--gd-warning-solid);
+	border-radius: 50%;
+	corner-shape: round;
+}
+
+.headText {
+	display: flex;
+	flex-direction: column;
+	gap: var(--gd-space-1);
+	min-width: 0;
+}
+
+.headTitle {
+	font-size: var(--gd-font-size-h4);
+	font-weight: 600;
+	line-height: var(--gd-line-height-heading);
+}
+
+.small {
+	font-size: var(--gd-font-size-body-sm);
+	line-height: var(--gd-line-height-ui);
+}
+
+.whoIsIn {
+	display: flex;
+	align-items: center;
+	gap: var(--gd-space-2);
+}
+
+.field {
+	display: flex;
+	flex-direction: column;
+	gap: var(--gd-space-2);
+}
+
+.testSound.testSound {
+	align-self: flex-start;
+	padding-inline: 0;
+	color: var(--gd-color-text-secondary);
+	font-size: var(--gd-font-size-body-sm);
+}
+
+// 08.3: the grid of tiles and the control bar under it.
+.live {
+	display: flex;
+	flex-direction: column;
+	gap: var(--gd-space-3);
+	padding: var(--gd-space-3);
+	height: 100%;
+}
+
+.grid {
+	display: grid;
+	grid-template-columns: repeat(var(--call-columns, 2), minmax(0, 1fr));
+	gap: var(--gd-space-2);
+}
+
+.screen {
+	grid-column: 1 / -1;
+}
+
+.tile {
+	position: relative;
+	aspect-ratio: 16 / 9;
+	display: flex;
+	flex-direction: column;
+	justify-content: flex-end;
+	padding: var(--gd-space-3);
+	border-radius: var(--gd-radius-card);
+	background: var(--gd-color-surface);
+	overflow: hidden;
+
+	// Inner, so the video under it does not cover the ring.
+	&::after {
+		content: "";
+		position: absolute;
+		inset: 0;
+		border: 2px solid transparent;
+		border-radius: inherit;
+		pointer-events: none;
+	}
+
+	&[data-speaking="true"]::after {
+		border-color: var(--gd-success-solid);
+	}
+}
+
+.initials.initials {
+	background: var(--gd-brand-100);
+	color: var(--gd-neutral-900);
+	font-size: var(--gd-font-size-h3);
+	font-weight: 600;
+}
+
+.controls {
+	display: grid;
+	grid-template-columns: 1fr auto 1fr;
+	align-items: center;
+	gap: var(--gd-space-3);
+	padding: var(--gd-space-1);
+}
+
+.recording.recording {
+	color: var(--gd-color-text-secondary);
+}
+
+.buttons {
+	display: flex;
+	gap: var(--gd-space-3);
+}
+
+.end {
+	justify-self: end;
+}
+
+// Sidebar `zatOL`: outlined, like every panel.
+.team {
+	display: flex;
+	flex-direction: column;
+	gap: var(--gd-space-3);
+	padding: var(--gd-space-6);
+	border: 1px solid var(--gd-color-border);
+	border-radius: var(--gd-radius-panel);
+}
+
+.teamHead {
+	display: flex;
+	align-items: center;
+	justify-content: space-between;
+}
+
+.teamTitle {
+	font-size: var(--gd-font-size-h4);
+	font-weight: 600;
+}
+
+.member {
+	display: flex;
+	align-items: center;
+	gap: var(--gd-space-3);
+}
+
+.memberText {
+	display: flex;
+	flex-direction: column;
+	flex: 1;
+	min-width: 0;
+}
+
+.memberName {
+	font-weight: 500;
+}
+
+// Goal card `tMANJ` / `I3JHtO`.
+.goal {
+	display: flex;
+	align-items: flex-start;
+	gap: var(--gd-space-3);
+	padding: var(--gd-space-4) var(--gd-space-6);
+	border: 1px solid var(--gd-color-border-strong);
+	border-radius: var(--gd-radius-panel);
+	background: var(--gd-color-surface);
+	min-width: 0;
+}
+
+.goalText {
+	display: flex;
+	flex-direction: column;
+	gap: var(--gd-space-1);
+	flex: 1;
+	min-width: 0;
+}
+
+.goalValue.goalValue {
+	font-size: var(--gd-font-size-body-lg);
+	font-weight: 600;
+	line-height: var(--gd-line-height-ui);
+}
+
+// Call panel `gP5gH` / `Ovz5i`: the tabs on the left, the call switcher on the right.
+.panel {
+	padding: var(--gd-space-2) var(--gd-space-6) var(--gd-space-6);
+	border: 1px solid var(--gd-color-border-strong);
+	border-radius: var(--gd-radius-panel);
+	background: var(--gd-color-surface);
+	min-width: 0;
+}
+
+.panelTabs {
+	:global(.ant-tabs-nav) {
+		margin-bottom: var(--gd-space-6);
+	}
+
+	:global(.ant-tabs-extra-content) {
+		min-width: 0;
+		padding-bottom: var(--gd-space-2);
+	}
+}
+
+
+.tabBody {
+	display: flex;
+	flex-direction: column;
+	gap: var(--gd-space-6);
+}
+
+.planField {
+	display: flex;
+	flex-direction: column;
+	gap: var(--gd-space-2);
+}
+
+.fieldLabel {
+	display: flex;
+	align-items: baseline;
+	gap: var(--gd-space-2);
+}
+
+.planList {
+	display: flex;
+	flex-direction: column;
+	margin-top: var(--gd-space-2);
+}
+
+// Rows run edge to edge of the panel, so the hover is not cut at the text, and
+// the last one sits on the panel's bottom edge.
+.taskLine {
+	display: flex;
+	align-items: center;
+	gap: var(--gd-space-2);
+	min-height: 44px;
+	margin: 0 calc(-1 * var(--gd-space-6));
+	padding: var(--gd-space-2) var(--gd-space-6);
+	border-top: 1px solid var(--gd-color-border);
+
+	&:hover {
+		background: var(--gd-fill-subtle);
+	}
+
+	&:last-child {
+		margin-bottom: calc(-1 * var(--gd-space-6));
+		border-radius: 0 0 var(--gd-radius-panel) var(--gd-radius-panel);
+	}
+}
+
+.lockedRow {
+	display: flex;
+	align-items: center;
+	gap: var(--gd-space-2);
+	min-height: var(--gd-control-height);
+	padding: var(--gd-space-2) var(--gd-space-3);
+	border-radius: var(--gd-radius-control);
+	background: var(--gd-fill-base);
+	color: var(--gd-color-text-secondary);
+}
+
+.grow {
+	flex: 1;
+	min-width: 0;
+}
+
+.success {
+	flex: none;
+	color: var(--gd-success-solid);
+}
+
+.secondary.secondary {
+	color: var(--gd-color-text-secondary);
+}
+
+.tertiary.tertiary {
+	flex: none;
+	color: var(--gd-color-text-tertiary);
+}
+
+.listActions {
+	display: flex;
+	align-items: center;
+	gap: var(--gd-space-2);
+	flex-wrap: wrap;
+}
+
+// The AI's action wears its colour, like its advice.
+.suggestTasks.suggestTasks {
+	color: var(--gd-direction-game-design-ink);
+}
+
+.addTask.addTask {
+	align-self: flex-start;
+	color: var(--gd-color-text-secondary);
+}
+
+.planFooter {
+	display: flex;
+	align-items: center;
+	gap: var(--gd-space-2);
+	padding-top: var(--gd-space-4);
+	border-top: 1px solid var(--gd-color-border-subtle);
+}
+
+.transcript.transcript {
+	margin: 0;
+	white-space: pre-wrap;
+}
+
+.notes {
+	display: flex;
+	flex-direction: column;
+	gap: var(--gd-space-6);
+}
+
+.lens {
+	display: flex;
+	flex-direction: column;
+	gap: var(--gd-space-4);
+	padding: var(--gd-space-4);
+	border: 1px solid var(--gd-color-border);
+	border-radius: var(--gd-radius-panel);
+}
+
+.lensTitle {
+	display: flex;
+	align-items: center;
+	gap: var(--gd-space-2);
+	color: var(--gd-color-text-secondary);
+}
+
+.notesGroup {
+	display: flex;
+	flex-direction: column;
+	gap: var(--gd-space-2);
+}
+
+.notesLabel.notesLabel {
+	font-size: var(--gd-font-size-body-sm);
+	font-weight: 500;
+}
+
+.inShort {
+	display: flex;
+	flex-direction: column;
+	gap: var(--gd-space-2);
+	padding: var(--gd-space-4) var(--gd-space-6);
+	border-radius: var(--gd-radius-card);
+	background: var(--gd-color-surface-sunken);
+}
+
+.lead.lead {
+	font-size: var(--gd-font-size-body-lg);
+	line-height: var(--gd-line-height-body);
+}
+
+.discussed {
+	display: flex;
+	flex-direction: column;
+	gap: var(--gd-space-2);
+	padding-block: var(--gd-space-3);
+	border-bottom: 1px solid var(--gd-color-border);
+
+	&:first-child {
+		padding-top: 0;
+	}
+
+	&:last-child {
+		padding-bottom: 0;
+		border-bottom: none;
+	}
+}
+
+.discussedHead {
+	display: flex;
+	align-items: center;
+	gap: var(--gd-space-2);
+}
+
+.discussedTitle.discussedTitle {
+	font-size: var(--gd-font-size-body-lg);
+	font-weight: 600;
+}
+
+// Under the title, past its 16px icon and the 8px gap.
+.retelling.retelling {
+	padding-left: var(--gd-space-6);
+}
+
+.notDiscussed {
+	display: flex;
+	align-items: center;
+	gap: var(--gd-space-2);
+	color: var(--gd-color-text-tertiary);
+}
+
+// A table inside a panel keeps its hairlines and the outline the frame draws, not a fill.
+.agreed {
+	border: 1px solid var(--gd-color-border);
+	border-radius: var(--gd-radius-card);
+	overflow: hidden;
+
+	:global(.ant-table) {
+		background: transparent;
+	}
+
+	:global(.ant-table-tbody > tr > td) {
+		border-bottom: 1px solid var(--gd-color-border-subtle);
+	}
+
+	:global(.ant-table-tbody > tr:last-child > td) {
+		border-bottom: none;
+	}
+}
+
+.agreedTarget {
+	display: inline-flex;
+	align-items: center;
+	gap: var(--gd-space-1);
+	font-size: var(--gd-font-size-body-sm);
+	color: var(--gd-color-text-tertiary);
+}
+
+.question {
+	display: flex;
+	align-items: flex-start;
+	gap: var(--gd-space-2);
+}
+
+// Optical: centres the icon on the first line of a wrapping question.
+.questionIcon {
+	flex: none;
+	margin-top: var(--gd-space-1);
+	color: var(--gd-warning-solid);
+}
+
+// 10.1b / 10.5: a task and the AI curator's line under it, without an icon so
+// the line never reads as another task.
+.advisedTask {
+	display: flex;
+	flex-direction: column;
+	gap: var(--gd-space-2);
+}
+
+// Frames 08.7 / 10.5: the editable list breathes; the read-only one is ruled rows.
+.planForm {
+	gap: var(--gd-space-3);
+}
+
+// The AI's colour: the game-design direction's ink, the purple the AI tag wears.
+.goalAdvice {
+	margin-top: var(--gd-space-2);
+}
+
+.why {
+	padding-inline: var(--gd-space-3);
+	font-size: var(--gd-font-size-caption);
+}
+
+.advice {
+	display: flex;
+	align-items: flex-start;
+	gap: var(--gd-space-2);
+	padding-inline: var(--gd-space-3);
+	color: var(--gd-direction-game-design-ink);
+}
+
+// Optical: centres the icon on the first line.
+.adviceIcon {
+	flex: none;
+	margin-top: calc(var(--gd-space-1) - 1px);
+}
+
+.adviceText.adviceText {
+	color: inherit;
+	font-size: var(--gd-font-size-body-sm);
+}
+
+.brief {
+	padding-top: var(--gd-space-4);
+	min-width: 0;
+}
+
+.briefTask {
+	padding-top: var(--gd-space-2);
+	border-top: 1px solid var(--gd-color-border-subtle);
+}
+
+.briefRaise {
+	padding: var(--gd-space-3) var(--gd-space-4);
+	border-radius: var(--gd-radius-control);
+	background: var(--gd-color-surface-sunken);
+}
+
+.briefEmpty {
+	display: block;
+	padding-top: var(--gd-space-4);
+}
+
+// Frame mSnxr: the arrows on the panel's own ground, the session in a filled chip.
+.sessionSwitcher {
+	display: inline-flex;
+	align-items: center;
+	gap: var(--gd-space-1);
+}
+
+.sessionCurrent {
+	display: inline-flex;
+	align-items: baseline;
+	padding: var(--gd-space-1) var(--gd-space-3);
+	border-radius: var(--gd-radius-chip);
+	background: var(--gd-color-surface-sunken);
+	white-space: nowrap;
+}
+
+// Frames 12.08.12–13: an open request to move the call, inside the curator's card.
+.moveNotice {
+	padding: var(--gd-space-3) var(--gd-space-4);
+	border-radius: var(--gd-radius-control);
+	background: var(--gd-fill-subtle);
+}
+
+.moveNoticeIcon {
+	flex: none;
+	color: var(--gd-color-text-secondary);
+}

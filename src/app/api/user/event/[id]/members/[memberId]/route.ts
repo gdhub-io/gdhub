@@ -8,6 +8,7 @@ import {
 	withValidation,
 } from "@/lib/api-handlers";
 import { withSpaceGuard } from "@/lib/space-guard";
+import { CONFIRMED_STATUS } from "@/repositories/project/team";
 import { revokeSpaceMember } from "@/services/access/membership";
 import { prisma } from "@/services/prisma";
 
@@ -53,10 +54,13 @@ export const PUT = pipe(
 	let teamMemberId: string | null = null;
 	if (data.projectId) {
 		const teamMembership = await prisma.teamMember.findFirst({
+			// Any real participation, past ones too, as the project picker lists them.
 			where: {
+				...CONFIRMED_STATUS,
 				userId: member.userId,
 				team: { projectId: data.projectId },
 			},
+			orderBy: { startedAt: "desc" },
 			select: { id: true },
 		});
 

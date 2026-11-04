@@ -1,0 +1,73 @@
+vars: {
+  d2-config: {
+    layout-engine: elk
+  }
+}
+
+direction: down
+
+title: "GDHUB-117 — the AI curator lab" {
+  shape: text
+  near: top-center
+  style.font-size: 22
+}
+
+open: "Dmitry opens /dev/ai-curator\n(not in production)"
+
+pick: "Picks a call and a situation\ngoal check · lines · plan advice · sprint review · evidence · report"
+open -> pick
+
+input: "The situation's input, as JSON\n(he may edit it, or copy it to the chat)"
+pick -> input
+
+run: "Run"
+input -> run
+
+valid: "Is the input the shape this call takes?" {
+  shape: diamond
+}
+run -> valid
+
+bad: "Says which field is wrong\nno model call" {
+  style.fill: "#FDE8E8"
+}
+valid -> bad: "no"
+
+same: "The production call: same prompt, model, schema"
+valid -> same: "yes"
+
+media: "Sprint review: the devlogs' images and video\nare described first, as on a review day"
+same -> media: "sprint review"
+
+evidence: "Evidence check: the artifact's content\nand the checkpoint's devlogs"
+same -> evidence: "evidence"
+
+model: "The model answers"
+same -> model: "the other calls"
+media -> model
+evidence -> model
+
+answered: "A usable answer?" {
+  shape: diamond
+}
+model -> answered
+
+none: "\"No usable answer\"\nwhat came back is in Raw" {
+  style.fill: "#FDE8E8"
+}
+answered -> none: "no"
+
+settle: "What the platform makes of it\nreport: proposed → written, each task's standing\nevidence: the task delivered / on trust / not"
+answered -> settle: "yes"
+
+shown: "Shown: messages, answer, settled result,\ntokens, cost, time"
+settle -> shown
+none -> shown
+
+critical: "Critical" {
+  shape: page
+  a: "Never in production: the page and its API answer 404"
+  b: "Nothing is written: no checkpoint, no usage row, no journal — the cost is only shown"
+  c: "One prompt: the lab calls the same builders as production, never its own copy"
+  d: "A devlog never closes a task alone and never turns \"not about the task\" into delivered"
+}

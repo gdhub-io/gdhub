@@ -1,9 +1,13 @@
 "use client";
 
-import type { PayableType, PaymentStatus } from "@gdhub-io/gdhub-prisma";
+import type {
+	PayableType,
+	PaymentProvider,
+	PaymentStatus,
+} from "@gdhub-io/gdhub-prisma";
 import { useQuery } from "@tanstack/react-query";
 import { useTranslate } from "@tolgee/react";
-import { Button, Table, type TableProps, Typography } from "antd";
+import { App, Button, Table, type TableProps, Typography } from "antd";
 import axios from "axios";
 import dayjs from "dayjs";
 import { useState } from "react";
@@ -16,11 +20,13 @@ type UserPayment = {
 	amount: number;
 	currency: string;
 	status: PaymentStatus;
+	provider: PaymentProvider;
 	payableType: PayableType;
 	payableId: string;
 	createdAt: string;
 	completedAt: string | null;
 	hasInvoice: boolean;
+	number: number | null;
 	title: string | null;
 	projectName: string | null;
 };
@@ -49,6 +55,7 @@ function formatAmount(amountMinor: number, currency: string) {
 
 export default function PaymentsList() {
 	const { t } = useTranslate();
+	const { message } = App.useApp();
 	const [invoiceLoadingId, setInvoiceLoadingId] = useState<string>();
 
 	const { data, isLoading } = useQuery({
@@ -57,18 +64,92 @@ export default function PaymentsList() {
 		refetchOnWindowFocus: false,
 	});
 
+	// Two providers, two receipts. Paddle's hangs off the vacancy that was paid
+	// for; Stripe's off the payment row itself, and both are fetched when asked
+	// rather than stored — the document is theirs, not ours.
 	const openInvoice = async (payment: UserPayment) => {
-		if (payment.payableType !== "VACANCY") return;
 		setInvoiceLoadingId(payment.id);
 		try {
-			const res = await axios.get<{ url: string }>(
-				"/api/user/project/vacancy/payment/invoice",
-				{ params: { vacancyId: payment.payableId } },
-			);
+			const res =
+				payment.provider === "PADDLE"
+					? await axios.get<{ url: string }>(
+							"/api/user/project/vacancy/payment/invoice",
+							{ params: { vacancyId: payment.payableId } },
+						)
+					: await axios.get<{ url: string }>("/api/user/payment/receipt", {
+							params: { paymentId: payment.id },
+						});
+
 			if (res.data?.url) window.open(res.data.url, "_blank", "noopener");
+		} catch {
+			message.error(
+				t("settings.payments.receiptFailed", "The receipt could not be opened"),
+			);
 		} finally {
 			setInvoiceLoadingId(undefined);
 		}
+	};
+
+	// What was bought, in words. Without this a checkpoint reads as the enum
+	// value itself — `CHECKPOINT` — in the middle of a receipts table.
+	const described = (payable: PayableType) => {
+		if (payable === "VACANCY")
+			return t("settings.payments.vacancyFee", "Vacancy listing");
+		if (payable === "CHECKPOINT")
+			return t("settings.payments.checkpoint", "Checkpoint");
+
+		return payable;
+	};
+
+	// A Stripe hold reads as a reservation, and a cancelled row — a checkout left
+	// unfinished or a hold let go, which the row cannot tell apart — as what both
+	// mean to the payer: nothing was taken.
+	const statusLabel = (payment: UserPayment) => {
+		if (payment.status === "CANCELED")
+			return t("settings.payments.status.notCharged", "Not charged");
+		if (payment.provider === "STRIPE" && payment.status === "PROCESSING")
+			return t("settings.payments.status.reserved", "Reserved");
+
+		return t(`vacancy.payment.status.${payment.status}`, payment.status);
+	};
+
+	// What happened to the money before its current status, from the two dates
+	// the row keeps. A refund's own date is not on the row, so it goes undated.
+	const history = (payment: UserPayment) => {
+		const reserved = dayjs(payment.createdAt);
+		const charged = payment.completedAt ? dayjs(payment.completedAt) : null;
+
+		if (payment.provider === "STRIPE" && payment.status === "PROCESSING") {
+			return t(
+				"settings.payments.history.reserved",
+				"Reserved {date} · not charged yet",
+				{ date: reserved.format("ll") },
+			);
+		}
+
+		if (payment.status === "COMPLETED" && charged) {
+			return payment.provider === "STRIPE" && !charged.isSame(reserved, "day")
+				? t(
+						"settings.payments.history.reservedCharged",
+						"Reserved {reserved} → charged {charged}",
+						{ reserved: reserved.format("ll"), charged: charged.format("ll") },
+					)
+				: null;
+		}
+
+		if (
+			(payment.status === "REFUNDED" ||
+				payment.status === "PARTIALLY_REFUNDED") &&
+			charged
+		) {
+			return t(
+				"settings.payments.history.chargedRefunded",
+				"Charged {charged} → refunded",
+				{ charged: charged.format("ll") },
+			);
+		}
+
+		return null;
 	};
 
 	const columns: TableProps<UserPayment>["columns"] = [
@@ -83,13 +164,20 @@ export default function PaymentsList() {
 			render: (_v, r) => (
 				<div style={{ display: "flex", flexDirection: "column" }}>
 					<Text>
-						{r.payableType === "VACANCY"
-							? t("settings.payments.vacancyFee", "Vacancy listing")
-							: r.payableType}
+						{r.number
+							? `${described(r.payableType)} ${r.number}`
+							: described(r.payableType)}
 					</Text>
-					{(r.title || r.projectName) && (
+					{r.title || r.projectName ? (
 						<Text type="secondary" style={{ fontSize: 12 }}>
 							{[r.title, r.projectName].filter(Boolean).join(" · ")}
+						</Text>
+					) : (
+						// A cancelled checkpoint is deleted, and its payment outlives it.
+						// An empty line under the label reads as a bug rather than as a
+						// purchase that was undone.
+						<Text type="secondary" style={{ fontSize: 12 }}>
+							{t("settings.payments.gone", "No longer exists")}
 						</Text>
 					)}
 				</div>
@@ -103,12 +191,23 @@ export default function PaymentsList() {
 		{
 			title: t("settings.payments.column.status", "Status"),
 			key: "status",
-			render: (_v, r) => (
-				<StatusDot
-					tone={STATUS_TONES[r.status] ?? "neutral"}
-					label={t(`vacancy.payment.status.${r.status}`, r.status)}
-				/>
-			),
+			render: (_v, r) => {
+				const past = history(r);
+
+				return (
+					<div style={{ display: "flex", flexDirection: "column" }}>
+						<StatusDot
+							tone={STATUS_TONES[r.status] ?? "neutral"}
+							label={statusLabel(r)}
+						/>
+						{past && (
+							<Text type="secondary" style={{ fontSize: 12 }}>
+								{past}
+							</Text>
+						)}
+					</div>
+				);
+			},
 		},
 		{
 			title: t("settings.payments.column.receipt", "Receipt"),

@@ -1,9 +1,9 @@
 import {
 	type Project,
-	TeamMemberStatus,
 	type TeamVacancy,
 	TeamVacancyStatus,
 	type User,
+	VacancyApplicationStatus,
 } from "@gdhub-io/gdhub-prisma";
 import dayjs from "dayjs";
 import {
@@ -37,13 +37,13 @@ const withPendingCandidates = {
 	...vacancyWithAuthor.include,
 	_count: {
 		select: {
-			applicants: { where: { status: TeamMemberStatus.Applicant } },
+			applications: { where: { status: VacancyApplicationStatus.Submitted } },
 		},
 	},
 } as const;
 
 type VacancyWithCandidates = VacancyWithAuthor & {
-	_count: { applicants: number };
+	_count: { applications: number };
 };
 
 async function notifyAuthor(
@@ -103,7 +103,7 @@ export const GET = withAuth({ mode: "vercel_cron" })(async () => {
 				vacancyArchiveWarning(
 					vacancy.title,
 					projectName,
-					vacancy._count.applicants,
+					vacancy._count.applications,
 				),
 			);
 		}
@@ -115,9 +115,9 @@ export const GET = withAuth({ mode: "vercel_cron" })(async () => {
 				status: TeamVacancyStatus.Published,
 				finishedAt: { gte: today.toDate() },
 				id: { notIn: expiringSoon.map((vacancy) => vacancy.id) },
-				applicants: {
+				applications: {
 					some: {
-						status: TeamMemberStatus.Applicant,
+						status: VacancyApplicationStatus.Submitted,
 						createdAt: {
 							gte: today.subtract(CANDIDATE_REMINDER_DAYS + 1, "day").toDate(),
 							lt: today.subtract(CANDIDATE_REMINDER_DAYS, "day").toDate(),
@@ -133,7 +133,7 @@ export const GET = withAuth({ mode: "vercel_cron" })(async () => {
 				candidatesWaiting(
 					vacancy.title,
 					projectName,
-					vacancy._count.applicants,
+					vacancy._count.applications,
 				),
 			);
 		}

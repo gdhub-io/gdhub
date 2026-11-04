@@ -1,4 +1,5 @@
 import { initializePaddle, type Paddle } from "@paddle/paddle-js";
+import { paddleLive } from "./environment";
 
 let paddleInstance: Paddle | null = null;
 
@@ -17,8 +18,7 @@ export async function getPaddleInstance(): Promise<Paddle> {
 
 	const instance = await initializePaddle({
 		token: clientToken,
-		environment:
-			process.env.NODE_ENV === "production" ? "production" : "sandbox",
+		environment: paddleLive() ? "production" : "sandbox",
 	});
 
 	if (!instance) {
@@ -29,42 +29,28 @@ export async function getPaddleInstance(): Promise<Paddle> {
 	return paddleInstance;
 }
 
-export async function openPaddleCheckout(options: {
-	priceId: string;
-	customData?: Record<string, any>;
-	successUrl?: string;
-	customMessage?: string;
+/**
+ * Opens the overlay for a transaction the server already made, so the price and
+ * the `Payment` row it settles are fixed there rather than in the browser.
+ */
+export async function openPaddleTransaction(options: {
+	transactionId: string;
+	successUrl: string;
 	customerEmail?: string;
 }): Promise<void> {
 	const paddle = await getPaddleInstance();
 
-	if (!paddle) {
-		throw new Error("Paddle instance not initialized");
-	}
-
-	// Only prefill the (trusted) account email. We intentionally don't pass the
-	// country: providing it makes Paddle treat the details as complete and skip
-	// the "Your details" step, and the profile country may be inaccurate. Paddle
-	// shows the details step with email prefilled and detects country by IP.
-	const customer = options.customerEmail
-		? { email: options.customerEmail }
-		: undefined;
-
 	paddle.Checkout.open({
-		items: [
-			{
-				priceId: options.priceId,
-				quantity: 1,
-			},
-		],
-		customData: options.customData,
-		customer,
+		transactionId: options.transactionId,
+		customer: options.customerEmail
+			? { email: options.customerEmail }
+			: undefined,
 		settings: {
 			displayMode: "overlay",
 			theme: "light",
-			successUrl: options.successUrl || "/",
+			successUrl: options.successUrl,
 		},
 	});
 }
 
-export default { getPaddleInstance, openPaddleCheckout };
+export default { getPaddleInstance, openPaddleTransaction };

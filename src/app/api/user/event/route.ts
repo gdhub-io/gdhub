@@ -11,8 +11,8 @@ import {
 	withAuth,
 	withValidation,
 } from "@/lib/api-handlers";
-import { hasQualifiedSpeciality } from "@/repositories/speciality.repository";
-import { userSpacesCacheKey } from "@/repositories/user-spaces";
+import { userSpacesCacheKey } from "@/repositories/user/spaces";
+import { hasQualifiedSpeciality } from "@/repositories/user/speciality";
 import { can, getSpaceAccess, isStaff } from "@/services/access";
 import { joinSpace } from "@/services/access/membership";
 import { cacheDelete } from "@/services/cache";

@@ -9,8 +9,10 @@ import Link from "next/link";
 import { useSession } from "next-auth/react";
 import { ChatPanel } from "@/components/Chat/ChatPanel";
 import { ChatButton } from "@/components/ChatButton";
+import { TimeInvestmentButton } from "@/components/TimeInvestment";
 import { AppAvatar } from "@/components/ui/AppAvatar";
 import { AppImage } from "@/components/ui/AppImage";
+import styles from "./style.module.scss";
 
 const NotificationsBell = dynamic(
 	() =>
@@ -66,6 +68,7 @@ export const HeaderActions = ({
 		return (
 			<ChatPanel>
 				<Space align="center" size={8}>
+					<TimeInvestmentButton compact />
 					<NotificationsBell />
 					<ChatButton />
 					<Button
@@ -109,12 +112,14 @@ export const HeaderActions = ({
 						</Button>
 					</Link>
 				)}
+				<TimeInvestmentButton />
 				<ChatButton />
 				<NotificationsBell />
 				<Dropdown menu={{ items: menuItems }} trigger={["click"]}>
 					<Button
 						type="text"
 						shape="circle"
+						className={styles.avatarButton}
 						style={{
 							display: "inline-flex",
 							alignItems: "center",

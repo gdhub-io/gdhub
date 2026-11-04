@@ -1,0 +1,158 @@
+{
+	"name": "moderation",
+	"prompt": "{\"model\":\"omni-moderation-latest\",\"inputs\":[\"Saltmarsh\",\"A cosy fishing game on a tidal marsh where the catch changes with the moon.\"]}",
+	"answer": {
+		"id": "modr-9375",
+		"model": "omni-moderation-latest",
+		"results": [
+			{
+				"flagged": false,
+				"categories": {
+					"harassment": false,
+					"harassment/threatening": false,
+					"sexual": false,
+					"hate": false,
+					"hate/threatening": false,
+					"illicit": false,
+					"illicit/violent": false,
+					"self-harm/intent": false,
+					"self-harm/instructions": false,
+					"self-harm": false,
+					"sexual/minors": false,
+					"violence": false,
+					"violence/graphic": false
+				},
+				"category_scores": {
+					"harassment": 0.000013342001090985438,
+					"harassment/threatening": 0.000003705296977158347,
+					"sexual": 0.00012255674483830522,
+					"hate": 0.000003822911232549001,
+					"hate/threatening": 4.356879983467376e-7,
+					"illicit": 0.000025514139559523358,
+					"illicit/violent": 0.00001609308249869283,
+					"self-harm/intent": 0.0000012805474213228684,
+					"self-harm/instructions": 0.0000013846004563753396,
+					"self-harm": 0.000003944258675190877,
+					"sexual/minors": 0.0000032192334497037803,
+					"violence": 0.000566725899170637,
+					"violence/graphic": 0.000012148175280558357
+				},
+				"category_applied_input_types": {
+					"harassment": [
+						"text"
+					],
+					"harassment/threatening": [
+						"text"
+					],
+					"sexual": [
+						"text"
+					],
+					"hate": [
+						"text"
+					],
+					"hate/threatening": [
+						"text"
+					],
+					"illicit": [
+						"text"
+					],
+					"illicit/violent": [
+						"text"
+					],
+					"self-harm/intent": [
+						"text"
+					],
+					"self-harm/instructions": [
+						"text"
+					],
+					"self-harm": [
+						"text"
+					],
+					"sexual/minors": [
+						"text"
+					],
+					"violence": [
+						"text"
+					],
+					"violence/graphic": [
+						"text"
+					]
+				}
+			},
+			{
+				"flagged": false,
+				"categories": {
+					"harassment": false,
+					"harassment/threatening": false,
+					"sexual": false,
+					"hate": false,
+					"hate/threatening": false,
+					"illicit": false,
+					"illicit/violent": false,
+					"self-harm/intent": false,
+					"self-harm/instructions": false,
+					"self-harm": false,
+					"sexual/minors": false,
+					"violence": false,
+					"violence/graphic": false
+				},
+				"category_scores": {
+					"harassment": 0.0000010129990980873922,
+					"harassment/threatening": 2.4824800371656586e-7,
+					"sexual": 0.0000032192334497037803,
+					"hate": 2.4061023397180247e-7,
+					"hate/threatening": 4.450850519411503e-8,
+					"illicit": 0.0000027535691114583474,
+					"illicit/violent": 0.000001670142184809518,
+					"self-harm/intent": 7.527989669055592e-7,
+					"self-harm/instructions": 2.332074525844782e-7,
+					"self-harm": 0.0000013420013504783412,
+					"sexual/minors": 8.059446204294678e-8,
+					"violence": 0.000010889691002655445,
+					"violence/graphic": 0.000003321419494792514
+				},
+				"category_applied_input_types": {
+					"harassment": [
+						"text"
+					],
+					"harassment/threatening": [
+						"text"
+					],
+					"sexual": [
+						"text"
+					],
+					"hate": [
+						"text"
+					],
+					"hate/threatening": [
+						"text"
+					],
+					"illicit": [
+						"text"
+					],
+					"illicit/violent": [
+						"text"
+					],
+					"self-harm/intent": [
+						"text"
+					],
+					"self-harm/instructions": [
+						"text"
+					],
+					"self-harm": [
+						"text"
+					],
+					"sexual/minors": [
+						"text"
+					],
+					"violence": [
+						"text"
+					],
+					"violence/graphic": [
+						"text"
+					]
+				}
+			}
+		]
+	}
+}

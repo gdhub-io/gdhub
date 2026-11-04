@@ -21,6 +21,7 @@
 
 import { env } from "@/helpers/env";
 import { isValidJSON } from "@/helpers/format";
+import { withCassette } from "@/services/ai/cassette";
 import { FIELD_KINDS } from "./prompts/field-kinds";
 import {
 	buildRelevanceMessages,
@@ -111,10 +112,15 @@ class AiValidationService {
 			// service loadable without a key, and lets a missing key fail open.
 			const { openAI } = await import("@/services/openai");
 			const inputs = fields.map((f) => f.value.replace(/\n/g, " "));
-			const response = await openAI.openai.moderations.create({
-				model: this.moderationModel,
-				input: inputs,
-			});
+			const response = await withCassette(
+				"moderation",
+				{ model: this.moderationModel, inputs },
+				() =>
+					openAI.openai.moderations.create({
+						model: this.moderationModel,
+						input: inputs,
+					}),
+			);
 
 			const issues: FieldIssue[] = [];
 			response.results.forEach((result, index) => {
@@ -152,24 +158,30 @@ class AiValidationService {
 
 		try {
 			const { openAI } = await import("@/services/openai");
-			const completion = await openAI.openai.chat.completions.create({
-				model: this.relevanceModel,
-				messages: buildRelevanceMessages(toCheck, options.locale ?? "en"),
-				tools: [
-					{
-						type: "function",
-						function: {
-							name: RELEVANCE_FUNCTION_NAME,
-							parameters: buildRelevanceSchema(toCheck),
+			const messages = buildRelevanceMessages(toCheck, options.locale ?? "en");
+			const completion = await withCassette(
+				"relevance",
+				{ model: this.relevanceModel, messages },
+				() =>
+					openAI.openai.chat.completions.create({
+						model: this.relevanceModel,
+						messages,
+						tools: [
+							{
+								type: "function",
+								function: {
+									name: RELEVANCE_FUNCTION_NAME,
+									parameters: buildRelevanceSchema(toCheck),
+								},
+							},
+						],
+						tool_choice: {
+							type: "function",
+							function: { name: RELEVANCE_FUNCTION_NAME },
 						},
-					},
-				],
-				tool_choice: {
-					type: "function",
-					function: { name: RELEVANCE_FUNCTION_NAME },
-				},
-				temperature: 0,
-			});
+						temperature: 0,
+					}),
+			);
 
 			const toolCall = completion.choices[0]?.message?.tool_calls?.[0];
 			const args =

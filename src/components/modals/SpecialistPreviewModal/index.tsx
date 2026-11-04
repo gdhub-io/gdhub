@@ -6,39 +6,39 @@ import type {
 } from "@gdhub-io/gdhub-prisma";
 import {
 	IconBriefcase,
-	IconClock,
 	IconCopy,
-	IconExternalLink,
-	IconHistory,
 	IconLock,
-	IconMapPin,
 	IconMessageCircle,
 } from "@tabler/icons-react";
 import { useQuery } from "@tanstack/react-query";
 import { useTranslate } from "@tolgee/react";
-import { Modal, Skeleton, Tag, Tooltip, Typography, theme } from "antd";
+import { Modal, Tag, Tooltip, Typography, theme } from "antd";
 import axios from "axios";
-import Link from "next/link";
 import { useSession } from "next-auth/react";
 import { useState } from "react";
 import { useChat } from "@/components/Chat/useChat";
 import { getWorkDirection } from "@/components/DirectionBadge";
 import OfferPositionModal from "@/components/modals/OfferPositionModal";
 import {
-	CertificateMiniCard,
-	darkenTint,
-	Field,
 	formatDate,
 	type PersonCardCertificate,
 	type PersonCardProject,
 	PROJECTS_LIMIT,
-	ProjectMiniCard,
-	SkillTags,
-	toExternalUrl,
 	toInitials,
 } from "@/components/person-card";
+import {
+	AboutCard,
+	CertificatesRail,
+	PERSON_CARD_MODAL_STYLES,
+	PersonCardFooter,
+	PersonCardHeader,
+	PersonCardSkeleton,
+	PortfolioLink,
+	PreferencesCard,
+	ProfessionalInfoCard,
+	ProjectsRail,
+} from "@/components/person-card/sections";
 import styles from "@/components/person-card/style.module.scss";
-import { avatarImage } from "@/helpers/image";
 import { useMyOpenPositions } from "@/hooks/useVacancyChat";
 
 const { Paragraph, Text } = Typography;
@@ -72,12 +72,20 @@ const matchColor = (percent: number, token: any) => {
 
 // Keep the rail tidy for prolific members — active projects first, the rest
 // behind a "show more" toggle.
-const SpecialistPreviewModal = ({ specialistId, open, onCancel }: any) => {
+const SpecialistPreviewModal = ({
+	specialistId,
+	open,
+	onCancel,
+	// Off where the card is opened to weigh somebody up for something else — the
+	// curator picker is considering them for the 28 days, not for a seat on the
+	// team, and a hiring CTA there is an offer nobody meant to make.
+	withOffer = true,
+}: any) => {
 	const { t } = useTranslate();
 	const session: any = useSession();
 	const { setSelectedRoomId, setOpenChatModal } = useChat();
 	const [offerOpen, setOfferOpen] = useState(false);
-	const [showAllProjects, setShowAllProjects] = useState(false);
+	const [showAllProjects, _setShowAllProjects] = useState(false);
 
 	const { data: specialist, isLoading } = useQuery({
 		queryKey: ["specialist", specialistId],
@@ -97,13 +105,13 @@ const SpecialistPreviewModal = ({ specialistId, open, onCancel }: any) => {
 	// their own card). Once the specialist accepted an offer, the CTA becomes
 	// "Go to chat" instead.
 	const { data: myPositions = [] } = useMyOpenPositions(
-		open && !!session?.data,
+		open && withOffer && !!session?.data,
 	);
 
 	const data = specialist;
 	const isSelf = data?.user.id === session?.data?.user?.id;
 	const acceptedRoomId = data?.chat?.roomId ?? null;
-	const canOffer = myPositions.length > 0 && !!data && !isSelf;
+	const canOffer = withOffer && myPositions.length > 0 && !!data && !isSelf;
 	const emailRevealed = !!data?.user.email;
 
 	const goToChat = () => {
@@ -116,9 +124,9 @@ const SpecialistPreviewModal = ({ specialistId, open, onCancel }: any) => {
 	const direction = data?.direction?.name
 		? getWorkDirection(data.direction.name)
 		: null;
-	const DirIcon = direction?.icon;
+	const _DirIcon = direction?.icon;
 
-	const initials = toInitials(data?.user.name || data?.name);
+	const _initials = toInitials(data?.user.name || data?.name);
 
 	const timeForWork = data?.user.profile?.timeForWork;
 
@@ -129,9 +137,9 @@ const SpecialistPreviewModal = ({ specialistId, open, onCancel }: any) => {
 	const visibleProjects = showAllProjects
 		? sortedProjects
 		: sortedProjects.slice(0, PROJECTS_LIMIT);
-	const hiddenProjectsCount = sortedProjects.length - visibleProjects.length;
+	const _hiddenProjectsCount = sortedProjects.length - visibleProjects.length;
 
-	const renderPreference = (items?: { name: string }[], tone?: "pref") =>
+	const _renderPreference = (items?: { name: string }[], tone?: "pref") =>
 		(items ?? []).map((item, index) => (
 			<Tag
 				key={`pref-${index.toString()}`}
@@ -147,103 +155,30 @@ const SpecialistPreviewModal = ({ specialistId, open, onCancel }: any) => {
 			title={null}
 			width={900}
 			destroyOnHidden
-			styles={{
-				container: {
-					padding: 0,
-					border: "none",
-					overflow: "hidden",
-					borderRadius: "var(--gd-radius-panel)",
-				},
-				body: { padding: 0 },
-			}}
+			styles={PERSON_CARD_MODAL_STYLES}
 			mask={{ closable: false }}
 			open={open}
 			onCancel={onCancel}
 			footer={null}
 		>
 			{isLoading && !data ? (
-				<TalentCardSkeleton />
+				<PersonCardSkeleton />
 			) : (
 				!!data && (
 					<div className={styles.card}>
-						{/* ---------- Header ---------- */}
-						<div
-							className={styles.header}
-							style={{
-								background:
-									direction?.color || "var(--gd-color-surface-sunken)",
-							}}
-						>
-							<div
-								className={styles.eyebrow}
-								style={
-									direction ? { color: darkenTint(direction.color) } : undefined
-								}
-							>
-								{t("specialist.preview.cardType", "Talent card")}
-							</div>
-
-							<div className={styles.identity}>
-								<div className={styles.avatar}>
-									{data.user.image ? (
-										// biome-ignore lint/performance/noImgElement: external avatar url
-										<img
-											src={avatarImage(data.user.image, 76)}
-											alt={data.user.name || ""}
-											className={styles.avatarImg}
-										/>
-									) : (
-										<span>{initials}</span>
-									)}
-								</div>
-
-								<div className={styles.identityText}>
-									<div className={styles.nameRow}>
-										<span className={styles.name}>
-											{data.user.name || data.name}
-										</span>
-										{!!data.level && (
-											<span className={styles.levelBadge}>{data.level}</span>
-										)}
-									</div>
-									<div className={styles.roleRow}>
-										{DirIcon && (
-											<span className={styles.dirChip}>
-												<DirIcon size={14} stroke={2} color={direction?.ink} />
-											</span>
-										)}
-										<span className={styles.role}>{data.name}</span>
-										{data.direction?.name && (
-											<span className={styles.roleMuted}>
-												· {data.direction.name}
-											</span>
-										)}
-									</div>
-								</div>
-							</div>
-
-							<div className={styles.metaRow}>
-								<div className={styles.metaLeft}>
-									{!!data.user.profile?.country && (
-										<span className={styles.pill}>
-											<IconMapPin size={14} className={styles.pillIcon} />
-											{[data.user.profile.country, data.user.profile.city]
-												.filter(Boolean)
-												.join(", ")}
-										</span>
-									)}
-									{Array.isArray(timeForWork) && (
-										<span className={styles.pill}>
-											<IconClock size={14} className={styles.pillIcon} />
-											{t("fromTo", "from {fromDate} to {toDate} hours a week", {
-												fromDate: timeForWork[0],
-												toDate: timeForWork[1],
-											})}
-										</span>
-									)}
-								</div>
-
-								{acceptedRoomId ? (
+						<PersonCardHeader
+							eyebrow={t("specialist.preview.cardType", "Talent card")}
+							image={data.user.image}
+							name={data.user.name || data.name}
+							level={data.level}
+							role={data.name}
+							directionName={data.direction?.name}
+							location={[data.user.profile?.country, data.user.profile?.city]
+								.filter(Boolean)
+								.join(", ")}
+							timeForWork={timeForWork}
+							action={
+								acceptedRoomId ? (
 									<button
 										type="button"
 										className={styles.offerBtn}
@@ -266,9 +201,9 @@ const SpecialistPreviewModal = ({ specialistId, open, onCancel }: any) => {
 											)}
 										</button>
 									)
-								)}
-							</div>
-						</div>
+								)
+							}
+						/>
 
 						{/* ---------- Body ---------- */}
 						<div className={styles.body}>
@@ -319,178 +254,20 @@ const SpecialistPreviewModal = ({ specialistId, open, onCancel }: any) => {
 									)}
 								</div>
 
-								{!!data.portfolioUrl && (
-									<>
-										<div className={styles.railLabel}>
-											{t("specialist.preview.links", "Links")}
-										</div>
-										<Link
-											href={toExternalUrl(data.portfolioUrl)}
-											target="_blank"
-											rel="noopener noreferrer"
-											className={styles.portfolioBtn}
-										>
-											<IconExternalLink size={15} />
-											{t(
-												"specialist.preview.summaryPortfolio",
-												"Summary / Portfolio",
-											)}
-										</Link>
-									</>
-								)}
-
-								{sortedProjects.length > 0 && (
-									<>
-										<div className={styles.railLabel}>
-											{t("specialist.preview.projects", "Projects")}
-										</div>
-										{visibleProjects.map((project) => (
-											<ProjectMiniCard
-												key={project.id}
-												project={project}
-												t={t}
-											/>
-										))}
-										{hiddenProjectsCount > 0 && (
-											<button
-												type="button"
-												className={styles.moreBtn}
-												onClick={() => setShowAllProjects(true)}
-											>
-												{t("specialist.preview.showMore", "Show {count} more", {
-													count: hiddenProjectsCount,
-												})}
-											</button>
-										)}
-									</>
-								)}
-
-								{data.certificates.length > 0 && (
-									<>
-										<div className={styles.railLabel}>
-											{t("specialist.preview.certificates", "Certificates")}
-										</div>
-										{data.certificates.map((cert) => (
-											<CertificateMiniCard
-												key={cert.number}
-												cert={cert}
-												t={t}
-											/>
-										))}
-									</>
-								)}
+								<PortfolioLink url={data.portfolioUrl} />
+								<ProjectsRail projects={data.projects} />
+								<CertificatesRail certificates={data.certificates} />
 							</div>
 
 							{/* Right content */}
 							<div className={styles.rightContent}>
-								{!!data.user.profile?.about && (
-									<div className={styles.contentCard}>
-										<div className={styles.cardTitle}>
-											{t("specialist.preview.aboutMe", "About")}
-										</div>
-										<Paragraph className={styles.para}>
-											{data.user.profile.about}
-										</Paragraph>
-									</div>
-								)}
-
-								<div className={styles.contentCard}>
-									<div className={styles.cardTitle}>
-										{t(
-											"specialist.preview.professionalInfo",
-											"Professional info",
-										)}
-									</div>
-									<div className={styles.proGrid}>
-										<Field
-											label={t(
-												"specialist.preview.specialization",
-												"Specialization",
-											)}
-											value={data.specialization}
-										/>
-										<Field
-											label={t("specialist.preview.experience", "Experience")}
-											value={data.jobs}
-										/>
-										<Field
-											label={t(
-												"specialist.preview.iUseItInWork",
-												"I use in work",
-											)}
-											value={data.tools}
-										/>
-										<Field
-											label={t(
-												"specialist.preview.whereIReceivedKnowledge",
-												"Education",
-											)}
-											value={data.schools}
-										/>
-									</div>
-									{!!data.skills && (
-										<div className={styles.tagBlock}>
-											<span className={styles.fieldLabel}>
-												{t("specialist.preview.skills", "Skills")}
-											</span>
-											<div className={styles.tagRow}>
-												<SkillTags value={data.skills} />
-											</div>
-										</div>
-									)}
-								</div>
-
-								{(data.user.profile?.preferredGenres?.length > 0 ||
-									data.user.profile?.preferredSettings?.length > 0 ||
-									data.user.profile?.preferredLevels?.length > 0) && (
-									<div className={styles.contentCard}>
-										<div className={styles.cardTitle}>
-											{t(
-												"specialist.preview.preferencesInGames",
-												"Preferences in games",
-											)}
-										</div>
-										{data.user.profile.preferredGenres?.length > 0 && (
-											<PrefGroup
-												label={t(
-													"specialist.preview.iPreferGenres",
-													"Favorite genres",
-												)}
-											>
-												{renderPreference(
-													data.user.profile.preferredGenres,
-													"pref",
-												)}
-											</PrefGroup>
-										)}
-										{data.user.profile.preferredSettings?.length > 0 && (
-											<PrefGroup
-												label={t(
-													"specialist.preview.iPreferGameSettings",
-													"Settings",
-												)}
-											>
-												{renderPreference(
-													data.user.profile.preferredSettings,
-													"pref",
-												)}
-											</PrefGroup>
-										)}
-										{data.user.profile.preferredLevels?.length > 0 && (
-											<PrefGroup
-												label={t(
-													"specialist.preview.iPreferGamesOfTheFollowingComplexity",
-													"Complexity",
-												)}
-											>
-												{renderPreference(
-													data.user.profile.preferredLevels,
-													"pref",
-												)}
-											</PrefGroup>
-										)}
-									</div>
-								)}
+								<AboutCard about={data.user.profile?.about} />
+								<ProfessionalInfoCard info={data} />
+								<PreferencesCard
+									genres={data.user.profile?.preferredGenres}
+									settings={data.user.profile?.preferredSettings}
+									levels={data.user.profile?.preferredLevels}
+								/>
 
 								{data.availableProjects?.map((record) => (
 									<MatchCard key={record.id} record={record} t={t} />
@@ -498,14 +275,10 @@ const SpecialistPreviewModal = ({ specialistId, open, onCancel }: any) => {
 							</div>
 						</div>
 
-						{/* ---------- Footer ---------- */}
-						<div className={styles.footer}>
-							<span className={styles.footerNote}>
-								<IconHistory size={14} />
-								{t("specialist.preview.lastUpdated", "Last updated")}{" "}
-								{formatDate(data.user.updatedAt)}
-							</span>
-						</div>
+						<PersonCardFooter>
+							{t("specialist.preview.lastUpdated", "Last updated")}{" "}
+							{formatDate(data.user.updatedAt)}
+						</PersonCardFooter>
 					</div>
 				)
 			)}
@@ -520,100 +293,6 @@ const SpecialistPreviewModal = ({ specialistId, open, onCancel }: any) => {
 };
 
 /* ---------- subcomponents ---------- */
-
-// Loading placeholder mirroring the talent-card layout (header + rail + cards).
-const skInput = (width: number, height: number, block?: boolean) => (
-	<Skeleton.Input
-		active
-		size="small"
-		block={block}
-		style={
-			block
-				? { height, borderRadius: 8 }
-				: {
-						width,
-						minWidth: width,
-						height,
-						borderRadius: "var(--gd-radius-chip)",
-					}
-		}
-	/>
-);
-
-const TalentCardSkeleton = () => (
-	<div className={styles.card}>
-		<div
-			className={styles.header}
-			style={{ background: "var(--gd-color-surface-sunken)" }}
-		>
-			{skInput(90, 12)}
-			<div className={styles.identity}>
-				<Skeleton.Avatar
-					active
-					shape="square"
-					size={76}
-					style={{ borderRadius: 18 }}
-				/>
-				<div className={styles.identityText}>
-					{skInput(220, 26)}
-					{skInput(160, 16)}
-				</div>
-			</div>
-			<div className={styles.metaRow}>
-				<div className={styles.metaLeft}>
-					<Skeleton.Button active size="small" style={{ width: 150 }} />
-					<Skeleton.Button active size="small" style={{ width: 130 }} />
-				</div>
-				<Skeleton.Button active style={{ width: 150 }} />
-			</div>
-		</div>
-
-		<div className={styles.body}>
-			<div className={styles.leftRail}>
-				{skInput(70, 12)}
-				{skInput(0, 40, true)}
-				{skInput(70, 12)}
-				{[0, 1, 2].map((i) => (
-					<div key={`sk-mini-${i}`} className={styles.skMiniCard}>
-						<Skeleton.Avatar
-							active
-							shape="square"
-							size={40}
-							style={{ borderRadius: 8 }}
-						/>
-						<div className={styles.miniText}>
-							{skInput(120, 13)}
-							{skInput(80, 12)}
-						</div>
-					</div>
-				))}
-			</div>
-
-			<div className={styles.rightContent}>
-				{[0, 1].map((i) => (
-					<div key={`sk-card-${i}`} className={styles.contentCard}>
-						<Skeleton active title={{ width: 140 }} paragraph={{ rows: 3 }} />
-					</div>
-				))}
-			</div>
-		</div>
-
-		<div className={styles.footer}>{skInput(160, 12)}</div>
-	</div>
-);
-
-const PrefGroup = ({
-	label,
-	children,
-}: {
-	label: string;
-	children: React.ReactNode;
-}) => (
-	<div className={styles.prefGroup}>
-		<span className={styles.fieldLabel}>{label}</span>
-		<div className={styles.tagRow}>{children}</div>
-	</div>
-);
 
 const MatchCard = ({ record, t }: { record: any; t: any }) => {
 	const { token } = theme.useToken();

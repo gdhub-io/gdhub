@@ -1,0 +1,20 @@
+// The card's own proportions, so the box does not jump while it is drawn.
+.image {
+	display: block;
+	width: 100%;
+	aspect-ratio: 1200 / 630;
+	border: 1px solid var(--gd-color-border);
+	border-radius: var(--gd-radius-card);
+	background: var(--gd-neutral-100);
+	object-fit: cover;
+}
+
+.imageSkeleton.imageSkeleton {
+	width: 100%;
+
+	:global(.ant-skeleton-node) {
+		width: 100%;
+		height: auto;
+		aspect-ratio: 1200 / 630;
+	}
+}

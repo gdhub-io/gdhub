@@ -8,6 +8,7 @@ import {
 	withValidation,
 } from "@/lib/api-handlers";
 import { withSpaceGuard } from "@/lib/space-guard";
+import { CONFIRMED_STATUS } from "@/repositories/project/team";
 import { prisma } from "@/services/prisma";
 
 const EventMembersCommonProjectsSchema = z.object({
@@ -56,7 +57,7 @@ export const GET = pipe(
 	const userIds = members.map((m) => m.userId);
 
 	const teamMembers = await prisma.teamMember.findMany({
-		where: { userId: { in: userIds } },
+		where: { ...CONFIRMED_STATUS, userId: { in: userIds } },
 		select: {
 			userId: true,
 			position: true,

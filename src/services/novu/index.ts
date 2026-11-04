@@ -5,6 +5,8 @@ export type NovuSendArgs = {
 	to: { subscriberId: string; email?: string };
 	payload: Record<string, any>;
 	template: string;
+	/** Novu drops a second trigger with the same id: a retried run sends once. */
+	transactionId?: string;
 };
 
 const novuClient = new Novu({
@@ -38,7 +40,17 @@ export class NovuService {
 		);
 	}
 
-	static async send({ to, payload, template }: NovuSendArgs) {
+	/** Removes the subscriber with its messages and preferences; an unknown id is not an error. */
+	static async deleteSubscriber(subscriberId: string) {
+		try {
+			await novuClient.subscribers.delete(subscriberId);
+		} catch (error) {
+			if ((error as { statusCode?: number })?.statusCode === 404) return;
+			throw error;
+		}
+	}
+
+	static async send({ to, payload, template, transactionId }: NovuSendArgs) {
 		// Before the E2E guard: dev-signin needs that flag, and the point is to
 		// see in dev what would have gone out.
 		if (sendsLocally()) return sendLocalMail({ to, payload, template });
@@ -51,6 +63,7 @@ export class NovuService {
 				email: to.email,
 			},
 			payload: { app: "main", ...payload },
+			transactionId,
 		});
 		const timeout = new Promise<never>((_, reject) =>
 			setTimeout(() => reject(new Error("Novu send timeout")), 5_000),

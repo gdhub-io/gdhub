@@ -20,11 +20,11 @@ import {
 	skillLevelRank,
 	skillLevelsAtLeast,
 } from "@/helpers/speciality";
-import { hubSpaceAdapter } from "@/repositories/hub.space";
+import { hubSpaceAdapter } from "@/repositories/hub/space";
 import {
 	getQualifiedDirectionIds,
 	hasQualifiedSpeciality,
-} from "@/repositories/speciality.repository";
+} from "@/repositories/user/speciality";
 
 beforeEach(() => {
 	specialityCount.mockReset();

@@ -1,8 +1,4 @@
-import type {
-	PaymentRateType,
-	PaymentStatus,
-	TeamVacancyStatus,
-} from "@gdhub-io/gdhub-prisma";
+import type { PaymentRateType, PaymentStatus } from "@gdhub-io/gdhub-prisma";
 import {
 	IconDotsVertical,
 	IconExternalLink,
@@ -28,15 +24,15 @@ import type { ColumnsType } from "antd/es/table";
 import axios from "axios";
 import dayjs from "dayjs";
 import Link from "next/link";
-import { useParams } from "next/navigation";
+import { useParams, useRouter, useSearchParams } from "next/navigation";
 import { useSession } from "next-auth/react";
-import { useContext, useState } from "react";
-
+import { useContext, useEffect, useRef, useState } from "react";
 import ModernTable from "@/components/ModernTable";
 import tableStyles from "@/components/ModernTable/ModernTable.module.scss";
 import VacancyModal from "@/components/modals/VacancyModal";
+import { TeamVacancyStatus } from "@/config/prisma-enums";
 import { ProjectContext } from "@/contexts/ProjectContext";
-import { usePaddle } from "@/services/paddle/usePaddle";
+import { payListingFee, reconcileListingFee } from "@/hooks/useListingFee";
 import VacancyArchiveModal from "../modals/VacancyArchiveModal";
 
 const { Text } = Typography;
@@ -105,8 +101,29 @@ const MyProjectVacancies = () => {
 			}),
 	});
 
-	const { checkout } = usePaddle();
 	const { data: session } = useSession();
+	const router = useRouter();
+	const searchParams = useSearchParams();
+	const feePaidFor = searchParams.get("feePaid");
+
+	// Back from Paddle: ask whether the fee went through, whatever the webhook did.
+	const reconciled = useRef<string | null>(null);
+	useEffect(() => {
+		// Once per return: the effect reruns before the query string is cleared.
+		if (!feePaidFor || reconciled.current === feePaidFor) return;
+		reconciled.current = feePaidFor;
+		reconcileListingFee(feePaidFor)
+			.then((paid) => {
+				if (paid) {
+					message.success(
+						t("vacancy.fee.paid", "Paid. The position is published."),
+					);
+				}
+				fetchMyProjectVacancies();
+			})
+			.catch(() => undefined)
+			.finally(() => router.replace(window.location.pathname));
+	}, [feePaidFor, fetchMyProjectVacancies, router, t]);
 
 	const vacanciesColumns: ColumnsType<Vacancy> = [
 		{
@@ -259,17 +276,19 @@ const MyProjectVacancies = () => {
 			dataIndex: "id",
 			align: "center",
 			responsive: ["md"],
-			render: (value, record) => (
-				<Tooltip title={t("MyProjectVacancies.link", "Go to the page")}>
-					<Link
-						href={`/job/${value}`}
-						target="_blank"
-						rel="noopener noreferrer"
-					>
-						<Button type="text" icon={<IconExternalLink size={18} />} />
-					</Link>
-				</Tooltip>
-			),
+			// A draft has no public page until it is published.
+			render: (value, record) =>
+				record.status === TeamVacancyStatus.Draft ? null : (
+					<Tooltip title={t("MyProjectVacancies.link", "Go to the page")}>
+						<Link
+							href={`/job/${value}`}
+							target="_blank"
+							rel="noopener noreferrer"
+						>
+							<Button type="text" icon={<IconExternalLink size={18} />} />
+						</Link>
+					</Tooltip>
+				),
 		},
 		{
 			key: "actions",
@@ -344,36 +363,25 @@ const MyProjectVacancies = () => {
 
 		const payment = record.payment;
 		// Paid vacancy whose listing fee isn't settled yet → go through checkout.
-		// The vacancy stays a draft and gets published by the Paddle webhook once paid.
+		// The vacancy stays a draft until the fee is paid: the webhook or the way back
+		// from Paddle (`feePaid`) publishes it.
 		const needsCheckout = !!payment && payment.status !== "COMPLETED";
 
 		try {
-			if (needsCheckout && payment) {
-				const priceId = process.env.NEXT_PUBLIC_PADDLE_VACANCY_PRICE_ID;
-				if (!priceId) {
+			if (needsCheckout && projectSlug) {
+				const opened = await payListingFee({
+					vacancyId: record.id,
+					projectSlug,
+					customerEmail: session?.user?.email ?? undefined,
+				});
+				if (!opened) {
 					message.warning(
 						t(
 							"modal.vacancy.paymentNotConfigured",
 							"Payment is not configured yet. The position was saved as a draft.",
 						),
 					);
-					return;
 				}
-
-				const baseUrl =
-					typeof window !== "undefined"
-						? window.location.origin
-						: (process.env.NEXT_PUBLIC_APP_URL ?? "http://localhost:3000");
-				const successUrl = projectSlug
-					? `${baseUrl}/user/project/${projectSlug}/open-positions?payment_success=true`
-					: `${baseUrl}/user/project`;
-
-				await checkout({
-					priceId,
-					customData: { paymentId: payment.id },
-					successUrl,
-					customerEmail: session?.user?.email,
-				});
 				return;
 			}
 

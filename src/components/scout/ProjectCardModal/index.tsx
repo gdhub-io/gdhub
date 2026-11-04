@@ -19,6 +19,7 @@ import { platformOptions } from "@/helpers/react-content";
 import styles from "./style.module.scss";
 import {
 	ActivitiesTab,
+	CheckpointsTab,
 	FilesTab,
 	OverviewTab,
 	ReviewsTab,
@@ -101,6 +102,11 @@ export function ProjectCardModal({
 									startedAt={project.startedAt}
 								/>
 							),
+						},
+						{
+							key: "checkpoints",
+							label: t("scout.card.tab.checkpoints", "Checkpoints"),
+							children: <CheckpointsTab projectId={project.id} />,
 						},
 						{
 							key: "reviews",
@@ -207,14 +213,14 @@ export function ProjectCardModal({
 							gap={16}
 							className={styles.headerBottom}
 						>
-							<Flex vertical gap={6} className={styles.titleWrap}>
+							<Flex vertical gap={8} className={styles.titleWrap}>
 								<Title level={2} className={styles.title}>
 									{project.name}
 								</Title>
 								<Text className={styles.meta}>{meta}</Text>
 							</Flex>
 
-							<Flex gap={10} align="center">
+							<Flex gap={12} align="center">
 								<Button
 									className={styles.headerAction}
 									icon={<IconMessageCircle size={15} />}
@@ -248,7 +254,7 @@ export function ProjectCardModal({
 					/>
 
 					<footer className={styles.footer}>
-						<Flex align="center" gap={6}>
+						<Flex align="center" gap={8}>
 							<IconClock size={14} />
 							<span>
 								{t("scout.card.updated", "Updated {when}", {

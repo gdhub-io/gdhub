@@ -29,7 +29,7 @@ export const GET = pipe(
 	}
 
 	const externalId = eventCtx.member.certificate.externalId;
-	if (externalId.startsWith("pending:")) {
+	if (!externalId || externalId.startsWith("pending:")) {
 		return apiError.notFound(
 			"Certificate has not been uploaded to Documenso yet",
 		);

@@ -8,6 +8,7 @@ export type CardSection =
 	| "files"
 	| "activities"
 	| "workflow"
+	| "checkpoints"
 	| "reviews"
 	| "investment";
 

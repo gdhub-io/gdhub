@@ -120,6 +120,17 @@ describe("matrix defaults by action class", () => {
 		expect(cell(SpaceRole.Owner, "project.workflow.view")?.allowed).toBe(true);
 	});
 
+	it("the project room is for the team, not for a guest", () => {
+		expect(cell(SpaceRole.Member, "project.room.use")?.allowed).toBe(true);
+		expect(cell(SpaceRole.Guest, "project.room.use")?.allowed).toBe(false);
+	});
+
+	it("nobody on the team can start a call in the project room", () => {
+		for (const role of [SpaceRole.Owner, SpaceRole.Admin, SpaceRole.Member]) {
+			expect(cell(role, "project.room.manage")?.allowed).toBe(false);
+		}
+	});
+
 	it("manage actions stop at admin", () => {
 		expect(cell(SpaceRole.Member, "project.members.invite")?.allowed).toBe(false);
 		expect(cell(SpaceRole.Admin, "project.members.invite")?.allowed).toBe(true);

@@ -8,13 +8,11 @@ import type {
 } from "@gdhub-io/gdhub-prisma";
 import { useTolgee } from "@tolgee/react";
 import { Flex, Typography } from "antd";
-import Blocks from "editorjs-blocks-react-renderer";
 import { useSession } from "next-auth/react";
-import ReactMarkdown from "react-markdown";
-import rehypeRaw from "rehype-raw";
 import remarkGfm from "remark-gfm";
 import { AppImage } from "@/components/ui/AppImage";
-import { editorjsRenderers } from "@/helpers/editorjs-renderers";
+import { SafeBlocks } from "@/components/ui/SafeBlocks";
+import { SafeMarkdown } from "@/components/ui/SafeMarkdown";
 import { hasEventEnded } from "@/helpers/event";
 import { formatEventPeriod } from "@/helpers/format";
 import styles from "./EventConferenceOrGamelabView.module.scss";
@@ -95,20 +93,13 @@ const EventConferenceOrGamelabView = ({
 				<EventPanel title={t("event.about", "About")}>
 					{event.content ? (
 						<div className={styles.content}>
-							<Blocks
-								data={JSON.parse(event.content as string)}
-								renderers={editorjsRenderers}
-							/>
+							<SafeBlocks data={event.content as string} />
 						</div>
 					) : (
 						<div className={styles.description}>
-							<ReactMarkdown
-								rehypePlugins={[rehypeRaw as never]}
-								remarkPlugins={[remarkGfm]}
-								skipHtml={false}
-							>
+							<SafeMarkdown remarkPlugins={[remarkGfm]} skipHtml={false}>
 								{event.description || ""}
-							</ReactMarkdown>
+							</SafeMarkdown>
 						</div>
 					)}
 				</EventPanel>

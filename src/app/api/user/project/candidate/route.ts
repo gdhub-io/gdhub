@@ -1,5 +1,15 @@
 import { z } from "zod";
-import { json, withAuth, withValidation } from "@/lib/api-handlers";
+import {
+	apiError,
+	json,
+	pipe,
+	withAuth,
+	withValidation,
+} from "@/lib/api-handlers";
+import { withSpaceGuard } from "@/lib/space-guard";
+import { projectOfApplication } from "@/lib/space-ids";
+import { seenByTheProject } from "@/lib/vacancy/seen";
+import { getCandidateCard } from "@/repositories/vacancy/candidate-card";
 import { prisma } from "@/services/prisma";
 
 const CandidateQuerySchema = z.object({
@@ -8,41 +18,26 @@ const CandidateQuerySchema = z.object({
 
 type CandidateQuery = z.infer<typeof CandidateQuerySchema>;
 
-export const GET = withAuth({ mode: "user" })(
-	withValidation(
-		CandidateQuerySchema,
-		"query",
-	)(async (_req, _ctx, { body }) => {
-		const { id } = body as CandidateQuery;
-
-		const baseTeamMember = await prisma.teamMember.findUnique({
-			where: { id },
-		});
-
-		const teamMember = await prisma.teamMember.findUnique({
-			where: { id },
-			include: {
-				user: {
-					select: {
-						id: true,
-						name: true,
-						email: baseTeamMember?.allowedContacts.includes("email") === true,
-						image: true,
-						profile: {
-							include: {
-								preferredGenres: true,
-								preferredLevels: true,
-								preferredSettings: true,
-							},
-						},
-					},
-				},
-				team: { select: { project: true } },
-				vacancy: true,
-				speciality: true,
-			},
-		});
-
-		return json(teamMember);
+/** One application, as the project reviewing it reads it. */
+export const GET = pipe(
+	withAuth({ mode: "user" }),
+	withSpaceGuard({
+		permission: "project.vacancies.review",
+		idFrom: projectOfApplication,
 	}),
-);
+	withValidation(CandidateQuerySchema, "query"),
+)(async (_req, _ctx, { body, access }) => {
+	const { id } = body as CandidateQuery;
+
+	const card = await getCandidateCard(id);
+	if (!card) return apiError.notFound("Application not found");
+
+	if (access && seenByTheProject(access)) {
+		await prisma.vacancyApplication.updateMany({
+			where: { id, viewedAt: null },
+			data: { viewedAt: new Date() },
+		});
+	}
+
+	return json(card);
+});

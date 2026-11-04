@@ -1,5 +1,5 @@
 import { beforeEach, describe, expect, it, vi } from "vitest";
-import { recordContentViews } from "../src/repositories/content-view.repository";
+import { recordContentViews } from "../src/repositories/content/views";
 import { prisma } from "../src/services/prisma";
 
 const tx = {

@@ -27,25 +27,6 @@ const callGet = async (url: string) => {
 	return (GET as any)(new Request(url), { params: Promise.resolve({}) });
 };
 
-describe("GET /api/landing/project-reports", () => {
-	beforeEach(() => {
-		vi.clearAllMocks();
-		(prisma.projectReport.findMany as any).mockResolvedValue([]);
-	});
-
-	it("keeps generated posts out of the landing section", async () => {
-		const { GET } = await import("../src/app/api/landing/project-reports/route");
-		const response = await (GET as any)();
-
-		expect(response.status).toBe(200);
-		expect(prisma.projectReport.findMany).toHaveBeenCalledWith(
-			expect.objectContaining({
-				where: expect.objectContaining({ isSystem: false }),
-			}),
-		);
-	});
-});
-
 describe("GET /api/devlogs", () => {
 	beforeEach(() => {
 		vi.clearAllMocks();

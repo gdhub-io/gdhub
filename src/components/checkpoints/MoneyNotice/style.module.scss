@@ -1,0 +1,23 @@
+.line {
+	font-size: var(--gd-font-size-body);
+}
+
+// Under a page of cards: lined up with the text inside them.
+.inset {
+	padding: 0 var(--gd-space-4);
+}
+
+.text {
+	flex: 1;
+	min-width: 0;
+}
+
+// Centred, the line is as wide as what it says and the receipt sits beside it.
+.centered .text {
+	flex: none;
+}
+
+.receipt {
+	height: auto;
+	padding: 0;
+}

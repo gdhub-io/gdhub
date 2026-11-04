@@ -1,0 +1,55 @@
+vars: {
+  d2-config: {
+    layout-engine: elk
+  }
+}
+
+direction: down
+
+title: "GDHUB-124 — the checkpoint's calendar, the subscription and Add to calendar" {
+  shape: text
+  near: top-center
+  style.font-size: 22
+}
+
+dates: "All dates of a checkpoint (one place, on the server)" {
+  from: "From the start day, the calls as booked and the checkpoint's own rules"
+  human: "With a person: calls 1–5 · sprint deadlines (days 7, 14, 21, 28)\n· tasks may change after call 3 · evidence reminder (day 26)\n· the verdict due (day 31) · for the curator: the AI's briefs"
+  ai: "With the AI: the plan check (day 1) · reviews of sprints 1–3 (days 8, 15, 22)\n· tasks may change after review 2 · the final review and verdict (day 29)\n· the same deadlines"
+  viewer: "Shown as the viewer is: the author and the team, or the curator"
+  from -> human
+  from -> ai
+  human -> viewer
+  ai -> viewer
+}
+
+tab: "Calendar tab (12.08.14–15, 12.10.5)" {
+  grid: "Rows are sprints, columns their days; month named where it starts"
+  open: "A call or a review opens on click"
+}
+
+feed: "Subscribe (12.08.16)" {
+  personal: "A personal link: /calendar/<signed token>.ics"
+  apps: "Google · Apple · Outlook subscribe to it; 'Copy the link' for others"
+  fresh: "Built anew on every fetch: a moved call shows on the app's next refresh"
+  personal -> apps -> fresh
+}
+
+one: "Add to calendar on one call (12.08.17)" {
+  menu: "Google · Outlook · an .ics file for Apple or any other app"
+}
+
+ics: "Download .ics — the same dates, once"
+
+dates.viewer -> tab.grid
+dates.viewer -> feed.personal
+dates.viewer -> one.menu
+dates.viewer -> ics
+
+critical: "Critical" {
+  style.stroke: "#C0392B"
+  a: "The link opens without signing in: it carries only dates and titles, no notes or evidence"
+  b: "The link belongs to one person and one checkpoint; a stranger gets nothing without it"
+  c: "Times are instants; deadlines are whole days of the sprint, as the path shows them"
+  d: "Google refreshes subscriptions slowly (hours); the tab is always current"
+}

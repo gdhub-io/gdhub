@@ -1,0 +1,38 @@
+vars: {
+  d2-config: {
+    layout-engine: elk
+  }
+}
+
+direction: down
+
+title: "GDHUB-74 — the buyer rates the assessment, once; only admins read it" {
+  shape: text
+  near: top-center
+  style.font-size: 22
+}
+
+author: "Results modal (07.4, 13.6a–e)" {
+  read: "GET checkpoint results: + feedback {rating, comment, createdAt} | null,\ncanRate = viewer is the buyer && verdict sent && no feedback yet"
+  who: "the buyer = Payment.payerId of the checkpoint's captured payment\n(a free checkpoint given by an admin: its project author at the time)"
+  show: "canRate → 'Was this assessment any use?' + Rate\nfeedback → read-only: stars, date, comment\nanyone else on the team → no block"
+  send: "POST /api/checkpoint/[id]/feedback {rating 1–5, comment ≤ 500}"
+  check: "buyer? verdict sent (Closed with a verdict)?\nno feedback yet?" {shape: diamond}
+  refuse: "403 notBuyer · 400 noVerdict · 409 alreadyRated\n(unique checkpointId: a second send changes nothing)"
+  write: "CheckpointFeedback.create {checkpointId, authorId = buyer, rating, comment}\nno update, no delete — final"
+  who -> read
+  read -> show
+  show -> send: "Send"
+  send -> check
+  check -> refuse: no
+  check -> write: yes
+}
+
+admin: "Admin only — the curator and other authors never see it" {
+  list: "11.5: under the status '★ 4' (+ comment icon); tooltip 13.6f:\nstars, date, comment"
+  curator: "Payouts 13.2 curator cell: '★ 4.6 · 12 ratings', all time\n< 5 ratings → '3 ratings', no average"
+  ai: "AI · person tooltip 13.6g: share of AI verdicts rated 1–2 among rated, n\n< 5 rated → 'too few to say'; follows the list filters"
+}
+author.write -> admin.list
+author.write -> admin.curator
+author.write -> admin.ai

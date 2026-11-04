@@ -2,6 +2,7 @@ import { useTranslate } from "@tolgee/react";
 import Link from "next/link";
 import GdhubLogo from "@/assets/images/gdhub-beta-logo.svg";
 import { InverseBand } from "@/components/ui/InverseBand";
+import { SocialLinks } from "./SocialLinks";
 import styles from "./style.module.scss";
 
 type FooterLink = { href: string; label: string; target?: string };
@@ -19,10 +20,11 @@ export const MainFooter = () => {
 					label: t("mainFooter.gameProjects", "Video games"),
 				},
 				{
-					href: "/vacancies",
+					href: "/jobs",
 					label: t("mainFooter.vacancies", "Open positions"),
 				},
 				{ href: "/events", label: t("mainFooter.events", "Events") },
+				{ href: "/about", label: t("mainFooter.aboutUs", "About us") },
 			],
 		},
 		{
@@ -48,18 +50,25 @@ export const MainFooter = () => {
 			title: t("mainFooter.legal", "Legal"),
 			links: [
 				{
-					href: "/privacy-policy",
+					href: "/legal",
+					label: t("mainFooter.allDocuments", "All documents"),
+				},
+				{
+					href: "/legal/privacy-policy",
 					label: t("mainFooter.privacyPolicy", "Privacy Policy"),
 				},
 				{
-					href: "/cookie-policy",
+					href: "/legal/cookie-policy",
 					label: t("mainFooter.cookiePolicy", "Cookie Policy"),
 				},
 				{
-					href: "/refund-policy",
+					href: "/legal/refund-policy",
 					label: t("mainFooter.refundPolicy", "Refund Policy"),
 				},
-				{ href: "/terms", label: t("mainFooter.termsOfUse", "Terms of use") },
+				{
+					href: "/legal/terms-of-use",
+					label: t("mainFooter.termsOfUse", "Terms of use"),
+				},
 				{
 					href: "/legal-details",
 					label: t("mainFooter.legalDetails", "Legal Details"),
@@ -80,10 +89,11 @@ export const MainFooter = () => {
 							<GdhubLogo className={styles.logo} />
 							<p className={styles.description}>
 								{t(
-									"mainFooter.appShortDescription",
-									"A community of game industry professionals whose members form teams to develop new games. Do you want to get a new experience or develop your own game? Join now!",
+									"mainFooter.description",
+									"A community of game industry professionals who form teams to make new games.",
 								)}
 							</p>
+							<SocialLinks />
 						</div>
 
 						<nav
@@ -117,7 +127,7 @@ export const MainFooter = () => {
 						© {new Date().getFullYear()}{" "}
 						{t(
 							"mainFooter.copyright",
-							"Game Develoeprs Hub. All rights reserved.",
+							"Game Developers Hub. All rights reserved.",
 						)}
 					</p>
 				</div>

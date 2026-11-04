@@ -3,6 +3,7 @@
 import { usePathname, useSearchParams } from "next/navigation";
 import Script from "next/script";
 import { Suspense, useEffect, useState } from "react";
+import { ANALYTICS_HOSTS } from "@/config/analytics-events";
 import { hasGoogleConsent } from "@/helpers/googleConsent";
 import { GTM_ID, pageview } from "@/helpers/gtm";
 
@@ -23,8 +24,8 @@ function PageviewTracker() {
 }
 
 /**
- * Loads the Google Tag Manager container. Only injected in production, when a
- * GTM id is configured and the user has given Google consent. Consent is read
+ * Loads the Google Tag Manager container. Only injected on the production domain,
+ * when a GTM id is configured and the user has given Google consent. Consent is read
  * once on mount — CookieConsent reloads the page after the user accepts, so the
  * script is picked up on the next load.
  */
@@ -33,7 +34,9 @@ export function GoogleTagManager() {
 
 	useEffect(() => {
 		setEnabled(
-			process.env.NODE_ENV === "production" && !!GTM_ID && hasGoogleConsent(),
+			ANALYTICS_HOSTS.includes(window.location.hostname) &&
+				!!GTM_ID &&
+				hasGoogleConsent(),
 		);
 	}, []);
 

@@ -17,6 +17,7 @@ import type React from "react";
 import { useEffect, useMemo, useState } from "react";
 import GdhubLogo from "@/assets/images/gdhub-beta-logo.svg";
 import { signOutWithChat } from "@/components/Chat/session";
+import { useCheckpointPurchaseOpen } from "@/contexts/CheckpointPurchaseContext";
 import styles from "./style.module.scss";
 
 export const MainHeader = ({ className }: { className?: string }) => {
@@ -27,6 +28,7 @@ export const MainHeader = ({ className }: { className?: string }) => {
 	const { t } = useTranslate();
 	const [openMobileMenu, setOpenMobileMenu] = useState(false);
 	const [activeMenuKey, setActiveMenuKey] = useState<string>("");
+	const checkpointOpen = useCheckpointPurchaseOpen();
 
 	// hide mobile menu on resize window
 	useEffect(() => {
@@ -128,45 +130,35 @@ export const MainHeader = ({ className }: { className?: string }) => {
 		}
 	};
 
-	// Home-page anchors, grouped so the bar itself stays about products.
+	// The home page's audiences, grouped so the bar itself stays about products.
 	const platformMenu: MenuProps["items"] = useMemo(
 		() => [
-			{
+			...[
+				{
+					hash: "#authors",
+					label: t("public-menu.for-authors", "For Authors"),
+				},
+				{
+					hash: "#talents",
+					label: t("public-menu.for-talents", "For Talents"),
+				},
+				{ hash: "#scouts", label: t("public-menu.for-scouts", "For Scouts") },
+				{
+					hash: "#experts",
+					label: t("public-menu.for-experts", "For Experts"),
+				},
+			].map(({ hash, label }) => ({
 				label: (
 					<Link
-						href={writeInternalLink("#for-authors")}
-						title={t("public-menu.for-authors", "For Authors")}
-						onClick={(e) => scrollToAnchor(e, "#for-authors")}
+						href={writeInternalLink(hash)}
+						title={label}
+						onClick={(e) => scrollToAnchor(e, hash)}
 					>
-						{t("public-menu.for-authors", "For Authors")}
+						{label}
 					</Link>
 				),
-				key: "#for-authors",
-			},
-			{
-				label: (
-					<Link
-						href={writeInternalLink("#for-specialists")}
-						title={t("public-menu.for-specialists", "For Specialists")}
-						onClick={(e) => scrollToAnchor(e, "#for-specialists")}
-					>
-						{t("public-menu.for-specialists", "For Specialists")}
-					</Link>
-				),
-				key: "#for-specialists",
-			},
-			{
-				label: (
-					<Link
-						href={writeInternalLink("#contacts")}
-						title={t("public-menu.contacts", "Contacts")}
-						onClick={(e) => scrollToAnchor(e, "#contacts")}
-					>
-						{t("public-menu.contacts", "Contacts")}
-					</Link>
-				),
-				key: "#contacts",
-			},
+				key: hash,
+			})),
 		],
 		[screens, session],
 	);
@@ -174,7 +166,7 @@ export const MainHeader = ({ className }: { className?: string }) => {
 	const headerMenu: MenuProps["items"] = useMemo(
 		() => [
 			{
-				// A link, not a bare label: its three anchors all live on the home page.
+				// A link, not a bare label: its anchors live on the home page.
 				label: (
 					<Link
 						href="/"
@@ -188,6 +180,22 @@ export const MainHeader = ({ className }: { className?: string }) => {
 				popupClassName: styles.menuPopup,
 				children: platformMenu,
 			},
+			...(checkpointOpen
+				? [
+						{
+							label: (
+								<Link
+									href="/checkpoint"
+									title={t("public-menu.checkpoint", "Checkpoint")}
+									onClick={(e) => scrollToTopIfHere(e, "/checkpoint")}
+								>
+									{t("public-menu.checkpoint", "Checkpoint")}
+								</Link>
+							),
+							key: "/checkpoint",
+						},
+					]
+				: []),
 			{
 				label: (
 					<Link
@@ -225,7 +233,7 @@ export const MainHeader = ({ className }: { className?: string }) => {
 				key: "/events",
 			},
 		],
-		[screens, session, platformMenu],
+		[screens, session, platformMenu, checkpointOpen],
 	);
 
 	const actionButton = useMemo(() => {

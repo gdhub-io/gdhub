@@ -1,6 +1,6 @@
 import { json, pipe, withAuth } from "@/lib/api-handlers";
 import { withSpaceGuard } from "@/lib/space-guard";
-import { getScoutFacets } from "@/repositories/scout.games";
+import { getScoutFacets } from "@/repositories/scout/games";
 
 /**
  * The filter options, on their own. Both the games table and the Investment

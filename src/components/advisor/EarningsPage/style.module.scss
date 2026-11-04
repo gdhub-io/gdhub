@@ -1,0 +1,39 @@
+.page {
+	display: flex;
+	flex-direction: column;
+	gap: var(--gd-space-6);
+	padding: var(--gd-space-6) var(--gd-space-8) var(--gd-space-8);
+}
+
+.kpis {
+	display: grid;
+	grid-template-columns: repeat(3, minmax(0, 1fr));
+	gap: var(--gd-space-3);
+
+	@media (max-width: 767px) {
+		grid-template-columns: minmax(0, 1fr);
+	}
+}
+
+.account {
+	font-size: var(--gd-font-size-body-sm);
+}
+
+.paidTo {
+	color: var(--gd-color-text-tertiary);
+	font-feature-settings: "tnum";
+}
+
+.change {
+	font-weight: 500;
+	color: var(--gd-color-link);
+}
+
+.sub {
+	font-size: var(--gd-font-size-body-sm);
+}
+
+.date {
+	white-space: nowrap;
+	font-feature-settings: "tnum";
+}

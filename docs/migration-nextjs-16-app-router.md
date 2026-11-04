@@ -323,7 +323,7 @@ type Locals = { user?: SessionUser; team?: Team; body?: unknown };
 type Handler<L extends Locals = Locals> =
   (req: NextRequest, ctx: { params: Promise<Record<string,string>> }, locals: L) => Promise<Response>;
 
-export const withAuth = (opts?: { roles?: UserRole[]; mode?: "user"|"any"|"api"|"public_api"|"vercel_cron"|"gumroad" }) =>
+export const withAuth = (opts?: { roles?: UserRole[]; mode?: "user"|"any"|"api"|"public_api"|"vercel_cron" }) =>
   <L extends Locals>(handler: Handler<L & { user: SessionUser }>): Handler<L> => ...;
 
 export const withTeamGuard = () =>

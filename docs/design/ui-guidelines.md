@@ -25,7 +25,10 @@ heavier weight — a coloured tab on a bar the user reads all day stops meaning
 
 A wall of brand-coloured buttons reads as errors, which is why the split exists.
 Filled brand is allowed on marketing surfaces (`inverse` mode) — there it carries
-an ink label, not a white one.
+a white label (`[data-gd-landing]` in globals.scss).
+A dark panel inside the product (`InverseBand density="product"`: the call
+stage) is not marketing: its committing button is white
+with an ink label, the mirror of the graphite one.
 
 **Marketing has a second accent.** The landing speaks to two audiences and tells
 them apart by colour: authors get the brand, specialists get amber
@@ -94,6 +97,12 @@ belongs to a token.
    because the rule was never written down; anything that does not match the
    theme's Tag is a bug, not a variant.
 
+   The one exception is where the chip stands: the theme's fill is the page
+   background's own colour, so a chip placed straight on the page (a page
+   header, not a card) takes one step darker, `--gd-neutral-100`, through the
+   global `gd-tag-on-page` class. Same look, still neutral — it only stops the
+   chip from disappearing.
+
    **Which of the two you need is a question about the word, not the styling.**
    "Video", "Expert", "Programming", "Week 2" name what a thing *is* and stay
    chips. "Awaiting verdict", "Draft", "Quiet", "Cut on day 14", "Held" say what
@@ -132,7 +141,15 @@ belongs to a token.
    there because `--gd-color-border` repeated down a list reads as a grid. The
    last row carries none. A long list ends with a full-width text `Load more`,
    or antd pagination when there is a real page count — never both.
-   The reference frame is `DS · 11 Tables`.
+
+   **A table is either a card or nothing at all.** Inside a panel it drops the
+   fill and the radius and keeps only its hairlines: a white card on a white
+   panel is a box in a box, and the head's band needs a surface to sit on.
+
+   **Paging sits outside the table**, under it on the page's own ground, aligned
+   right. It is a control over the list rather than a row of it, and a pager
+   boxed inside the card reads as more data. Both surfaces are drawn in
+   `DS · 11 Tables`, which is the reference frame.
 
 ## Spacing and shape
 
@@ -175,10 +192,15 @@ heights, control sizes: all multiples of 4, off the scale above.
   a superellipse squares off a 50% corner, which turns an avatar into an app
   icon and a status dot into a square. The guard test fails on a missing one.
   A whole subtree opts out with `--gd-corner-shape: round`.
+  Controls draw at 1.5× their token radius (`--gd-control-squircle`): a
+  superellipse at the canvas's radius reads squarer than Pencil's quarter circle.
 - **Type** — 13 / 14 / 16 / 20 / 24 / 32, with line heights as ratios. Type is
   sized by reading distance, not by a grid.
 - **Hairlines and icons** — a 1px border is 1px at every density, and icon sizes
-  follow the set (14 / 16 / 20 / 24), not the spacing scale.
+  follow the set (14 / 16 / 20 / 24), not the spacing scale. Icons use Tabler's
+  default stroke 2, with two named exceptions in `src/components/ui`:
+  `BOX_TICK_STROKE` (2.4) for a tick under 16px inside a box, and
+  `META_ICON_STROKE` (1.75) for meta-row glyphs.
 
 Optical beats mathematical where they disagree. An icon centred by its bounding
 box next to text usually sits a fraction low; trust the eye, then write the

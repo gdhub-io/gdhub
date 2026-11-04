@@ -9,6 +9,8 @@ import {
 	withValidation,
 } from "@/lib/api-handlers";
 import { withSpaceGuard } from "@/lib/space-guard";
+import { runningCheckpointLock } from "@/repositories/checkpoints/workflow-lock";
+import { setCurrentStep } from "@/repositories/project/workflow";
 import { WorkflowStepsTemplateSchema } from "@/schemas/workflow";
 import { prisma } from "@/services/prisma";
 import { applyResetPlan } from "@/services/workflow/applyResetPlan";
@@ -46,12 +48,15 @@ export const POST = pipe(
 		where: { id },
 		select: {
 			id: true,
+			projectId: true,
 			workflowSchemaId: true,
 			currentStepId: true,
 			steps: {
 				select: {
 					id: true,
 					name: true,
+					goal: true,
+					content: true,
 					tasks: {
 						select: { id: true, name: true, done: true },
 						orderBy: { order: "asc" },
@@ -63,6 +68,10 @@ export const POST = pipe(
 	});
 
 	if (!workflow) return apiError.notFound("Project workflow not found");
+
+	// The dry run says the same, so the dialog can name it before anyone confirms.
+	const lock = await runningCheckpointLock(workflow.projectId);
+	if (lock) return apiError.conflict("checkpointRunning", lock);
 
 	const schemaId = templateId ?? workflow.workflowSchemaId;
 	if (!schemaId) {
@@ -112,6 +121,13 @@ export const POST = pipe(
 		if (plan.removedStepIds.length) {
 			await tx.projectWorkflowStep.deleteMany({
 				where: { id: { in: plan.removedStepIds } },
+			});
+		}
+
+		// Sent back to the start, the stages it leaves behind lose their dates.
+		if (nextCurrentId && nextCurrentId !== workflow.currentStepId) {
+			await setCurrentStep(tx, id, nextCurrentId, {
+				from: workflow.currentStepId,
 			});
 		}
 	});

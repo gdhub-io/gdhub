@@ -1,0 +1,43 @@
+vars: {
+  d2-config: {
+    layout-engine: elk
+  }
+}
+
+direction: down
+
+title: "GDHUB-76 phase 2 — checkpoint status: every allowed move, one place that makes it (approved 2026-10-29)" {
+  shape: text
+  near: top-center
+  style.font-size: 22
+}
+
+Draft: "Draft\nauthor fills in goal, curator, payment"
+AwaitingCurator: "AwaitingCurator\npaid, waiting for the person asked"
+Active: "Active\nthe 28 days"
+Review: "Review\ndays over, verdict pending"
+Closed: "Closed\nverdict sent" {style.double-border: true}
+Cancelled: "Cancelled\nmoney back" {style.double-border: true}
+
+Draft -> AwaitingCurator: "paid · human curator\n(webhook · admin assigns · author picks a new curator after a decline)"
+Draft -> Active: "paid · AI curator\n(webhook · admin gives it · author switches to AI after a decline)"
+AwaitingCurator -> Active: "curator accepts"
+AwaitingCurator -> Draft: "curator declines · 3 days of silence (cron)"
+Active -> Review: "day 28 passed (cron)"
+Active -> Closed: "verdict: human curator · AI final review"
+Review -> Closed: "verdict: curator · AI · admin when overdue"
+Draft -> Cancelled: "provider refund (full)"
+AwaitingCurator -> Cancelled: "provider refund (full)"
+Active -> Cancelled: "admin refund"
+Review -> Cancelled: "admin refund"
+
+sets: "Named sets, one module (lib/checkpoint-status.ts)" {
+  near: bottom-center
+  s: "current = Draft · AwaitingCurator · Active · Review   (one per project)\nopen = AwaitingCurator · Active · Review   (holds a curator, blocks a second checkpoint)\nrunning = Active · Review   (calls, verdict, admin refund)\nran = Active · Review · Closed   (pages stay readable)\ndaysOver = Review · Closed   (the AI's final review is written)\npending = Draft · AwaitingCurator   (before day one; the author may cancel)\nended = Closed · Cancelled · unnumbered = Draft · Cancelled\nacceptsEvidence = Draft · Active"
+}
+
+critical: "Critical" {
+  near: bottom-right
+  style.stroke: "#e5484d"
+  c: "checkpointMove(from, to) spread into updateMany: the expected status is in the WHERE, so two writers never both win\nno other code writes status · an illegal move is refused, with a test each\nfound today: cron silence vs curator accept can reset an Active run to Draft\nswitching to AI after a decline jumps to Active without sessions or the first letter\nadmin refund can overwrite a just-sent verdict (Closed → Cancelled)"
+}

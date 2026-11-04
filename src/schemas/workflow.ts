@@ -27,10 +27,27 @@ export const WorkflowTaskTemplateSchema = z.object({
 });
 
 /** A step as it is stored inside a template's JSON. */
+/** Editor.js output, as every rich text on GDHub is stored (GDHUB-97). */
+export const EditorJsContentSchema = z.object({
+	time: z.number().optional(),
+	version: z.string().optional(),
+	blocks: z.array(
+		z.object({
+			id: z.string().optional(),
+			type: z.string().min(1),
+			data: z.record(z.string(), z.unknown()),
+		}),
+	),
+});
+
 export const WorkflowStepTemplateSchema = z.object({
 	name: z.string().min(1),
 	title: z.string().optional(),
 	description: z.string().optional(),
+	/** For the AI curator only: the result the stage must leave the project at. */
+	goal: z.string().trim().max(1000).optional(),
+	/** What the author reads on the stage. */
+	content: EditorJsContentSchema.optional(),
 	tasks: z.array(WorkflowTaskTemplateSchema),
 });
 
@@ -65,6 +82,10 @@ export const WorkflowStepInputSchema = z.object({
 	name: z.string().nullish(),
 	title: z.string().nullish(),
 	description: z.string().nullish(),
+	/** GDHUB-97: this project's own stage goal; null or empty reads the template's. */
+	goal: z.string().trim().max(1000).nullish(),
+	/** GDHUB-97: this project's own stage text; null or no blocks reads the template's. */
+	content: EditorJsContentSchema.nullish(),
 	tasks: z.array(WorkflowTaskInputSchema).optional(),
 });
 

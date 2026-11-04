@@ -6,6 +6,7 @@ import {
 } from "@/config/permissions/roles";
 import { SPACES, type SpaceType } from "@/config/spaces";
 import { permissionsOf } from "@/config/spaces/define-space";
+import { onTheStand } from "@/lib/stand";
 import { SPACE_ADAPTERS } from "./adapters";
 import { customRolePermissions } from "./custom-roles";
 import { type PermissionState, permissionsForRole } from "./matrix-source";
@@ -45,7 +46,11 @@ const noAccess = (type: SpaceType, id: string): SpaceAccess => ({
  *
  * Enforcing is the default: forgetting to flip a flag must fail closed.
  */
-export const isEnforcing = (): boolean => process.env.RBAC_ENFORCE !== "false";
+// A production build ignores the flag: one stray env var must not open every gate.
+export const isEnforcing = (): boolean =>
+	process.env.NODE_ENV === "production" ||
+	process.env.VERCEL_ENV === "production" ||
+	process.env.RBAC_ENFORCE !== "false";
 
 /**
  * Where a membership's permissions come from.
@@ -130,7 +135,11 @@ async function resolveSpaceAccess(
 	if (!space || !user) return noAccess(type, fallbackId);
 
 	// The dev space does not exist in production, whoever asks.
-	if (type === "dev" && process.env.NODE_ENV === "production") {
+	if (
+		type === "dev" &&
+		process.env.NODE_ENV === "production" &&
+		!onTheStand()
+	) {
 		return noAccess(type, fallbackId);
 	}
 

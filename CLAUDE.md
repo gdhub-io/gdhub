@@ -53,7 +53,7 @@ default branch, so its updates land on `main` and
 `dev`. Never promote in that direction by hand.
 
 Linear issues here are titles with empty descriptions, so the intent is the only
-written statement of the goal; the detailed spec (`docs/<feature>.md`) grows out of it
+written statement of the goal; the detailed spec (`docs/<feature>/README.md`, beside the feature's diagrams in the same folder) grows out of it
 afterwards, and the UI handoff (`docs/design/specs/`) out of that. A typo, a copy change
 or a one-file bug needs none of this — say so and do the work.
 
@@ -106,68 +106,35 @@ unavailable and the pre-push hook is what actually holds the line.
 
 ## Repository layout
 
+What the product is made of — every space, its features, how spaces feed each other
+and who may do what — is in [docs/spaces.md](docs/spaces.md); start there to find
+what a change touches and what it has to be tested against.
+
+**Read [docs/architecture.md](docs/architecture.md) before creating a file.** It has
+the full directory map, the layer rules and a "where a new file goes" table. In short:
+
 ```
 src/
-  app/            Next.js App Router. Route groups: (auth) (public) (protected) (user),
-                  plus admin/, courses/, my/. API under app/api/**/route.ts.
-  components/     React components, one folder per component (PascalCase).
-  layouts/        Page layouts (Protected, Public, Admin, Landing, ...).
-  services/       External integrations (prisma, paddle, openai, novu, brevo,
-                  typesense, telegram, matrix, langgraph, legal).
-  repositories/   DB access logic grouped by domain (*.repository.ts).
-  lib/            Core utilities (api-handlers.ts, firebase, matrix-client).
-  helpers/        Small pure helpers (env, format, access, file, ...).
-  hooks/          Reusable React hooks.
-  schemas/        Zod schemas.
-  queues/         BullMQ queues & workers.
-  i18n/           Tolgee translation JSON.
-  contexts/       React contexts and providers.
-  config/ types/ templates/ styles/
-docs/             Design docs, migration notes, legal, refund/equity policies.
+  app/            App Router. Groups: (landing) (public) (auth) (app)/(spaces)/<role>.
+                  API under app/api/<domain>/**/route.ts.
+  components/     <domain>/ folders, ui/ primitives, layouts/ shells.
+  hooks/          TanStack Query hooks, one file per domain.
+  repositories/   <domain>/ folders, Prisma only: repositories/project/workflow.ts.
+  services/       <domain>/ orchestration (checkpoints/flows/) and provider clients.
+  lib/            <domain>/ pure logic, plus api-handlers.ts and the access guards.
+  config/         every tunable number, design tokens, permissions.
+  types/          DTOs the API returns.   schemas/  Zod.   helpers/  small helpers.
+docs/             architecture.md, intent/, <feature>.md, *-flow.d2, design/.
 tests/            Vitest unit tests + tests/e2e Playwright specs.
 ```
 
 Path alias: `@/*` → `src/*`.
 
-## API routes — the canonical pattern
+## API routes
 
-API endpoints are **App Router route handlers** (`src/app/api/**/route.ts`) composed from
-higher-order wrappers in [src/lib/api-handlers.ts](src/lib/api-handlers.ts). There are **no
-decorators**. Building blocks:
-
-- `withAuth({ mode, roles? })` — auth gate. `mode`: `"user"` (default), `"any"`, `"api"`,
-  `"public_api"`, `"vercel_cron"`, `"gumroad"`. Injects `user` into the handler's `locals`.
-- `withValidation(zodSchema, "body" | "query")` — validates input, injects parsed `body`.
-- `withTeamGuard()` — verifies the user belongs to the `teamId`, injects `team`.
-- `pipe(...wrappers)(handler)` — compose right-to-left.
-- `json(data, init?)` and `apiError.{unauthorized,forbidden,badRequest,notFound,internal}`
-  for responses.
-
-Handler signature: `(req: NextRequest, ctx: RouteContext, locals) => Response`.
-Note `ctx.params` is a **Promise** (Next 16) — `const { id } = await ctx.params`.
-
-Example (validated, authed GET):
-
-```ts
-import { z } from "zod";
-import { apiError, json, withAuth, withValidation } from "@/lib/api-handlers";
-import { prisma } from "@/services/prisma";
-
-const QuerySchema = z.object({ query: z.string() });
-
-export const GET = withAuth({ mode: "user" })(
-  withValidation(QuerySchema, "query")(async (_req, _ctx, { user, body }) => {
-    if (!user) return apiError.unauthorized();
-    const { query } = body;
-    const rows = await prisma.speciality.findMany({ where: { name: { contains: query } } });
-    return json(rows);
-  }),
-);
-```
-
-Prefer `pipe(...)` when composing 3+ wrappers. A trivial public read can be a plain
-`export async function GET()` returning `json(...)` (see
-[src/app/api/vacancies/route.ts](src/app/api/vacancies/route.ts)).
+Route handlers in `src/app/api/**/route.ts`, composed from the wrappers in
+[src/lib/api-handlers.ts](src/lib/api-handlers.ts) — no decorators. The pattern, the
+wrappers and an example are in the **api-route** skill; load it before touching a route.
 
 ## Conventions
 
@@ -196,15 +163,30 @@ Prefer `pipe(...)` when composing 3+ wrappers. A trivial public read can be a pl
   A longer block is for a file or an exported function whose *why* is genuinely
   not obvious. Delete anything that restates its code, and do a pass over the diff
   before committing.
-- **Simplify before opening a pull request.** Re-read the diff for what can be
+- **Simplify before opening a pull request.** Run `/simplify` (Claude Code's
+  built-in, which reviews the diff with parallel agents) and look for what can be
   deleted: state a library already keeps, helpers used once, options nothing
-  passes, branches nothing reaches, comments that restate their code. Say what
-  came out — or that nothing did.
-- **Markup is antd.** `List`, `Card`, `Tag`, `Flex`, `Segmented`, `Modal`,
-  `Typography` — if antd ships it, use it. Hand-rolled markup needs a bespoke
-  design behind it and a note naming the frame; layout itself is still CSS.
-- **Design files (`*.pen`) are encrypted** — only the Pencil MCP tools can read/edit them.
-  Never `Read`/`Edit`/`Grep` a `.pen` file directly.
+  passes, branches nothing reaches, comments that restate their code. Do not
+  simplify away a comment carrying a *why*, a guard on a boundary (the `where`
+  scoping one user's rows, a transition that must refuse), a test, or a constant
+  or type other code relies on. Say what came out — or that nothing did.
+- **Markup is antd, icons are Tabler.** If antd ships it, use it — `<button>` is
+  `Button`, `<p>`/`<h2>` are `Typography`, `<ul>` is `List`, `<table>` is `Table`,
+  `<img>` is `AppImage`, `<a href>` is next/link, `<hr>` is `Divider`. The **antd
+  MCP server is connected**: `antd_list` finds the component, `antd_doc` and
+  `antd_demo` give its props and a working example — read them instead of guessing
+  the API or falling back to raw HTML. Hand-rolled markup needs a bespoke design
+  behind it and a note naming the frame; layout itself is still CSS.
+  [.claude/hooks/ui-antd-guard.sh](.claude/hooks/ui-antd-guard.sh) reads the lines an
+  edit *adds*, so legacy markup is never re-litigated. It does not forbid HTML — HTML
+  is right for a custom component or a bespoke design antd cannot cover — it forbids
+  reaching for HTML *silently*: keep it and name what antd could not do, with
+  `ui-guard-ignore <reason>` on the line or the line above it, or `ui-guard: off
+  <reason>` once at the top of the file. A bare marker is refused as well; a mute
+  button is how a rule like this stops working.
+- **Design files (`*.pen`) are JSON and may be read directly** — grepping one is often
+  the quickest way to a number or a frame id. **Edit them only through the Pencil MCP
+  tools**: a hand-edited file is how the canvas gets corrupted.
 
 ## Changing the database schema
 

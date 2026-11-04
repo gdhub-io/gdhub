@@ -3,7 +3,7 @@ import { withSpaceGuard } from "@/lib/space-guard";
 import {
 	getViewsReport,
 	resolveViewsRange,
-} from "@/repositories/content-view-report.repository";
+} from "@/repositories/content/view-report";
 import {
 	type ViewsReportQuery,
 	ViewsReportQuerySchema,

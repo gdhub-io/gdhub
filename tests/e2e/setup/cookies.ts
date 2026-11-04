@@ -10,7 +10,7 @@ export async function acceptCookieConsent(page: Page, baseURL?: string) {
 		{
 			name: "cookie_consent_is_true",
 			value: "true",
-			url: baseURL ?? "http://localhost:3000",
+			url: baseURL ?? "http://localhost:3100",
 		},
 	]);
 }

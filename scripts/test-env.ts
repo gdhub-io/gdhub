@@ -18,6 +18,7 @@
  */
 
 import { spawnSync } from "node:child_process";
+import { rmSync } from "node:fs";
 
 const CONTAINER = "gdhub_testdb";
 const PORT = 55432;
@@ -89,6 +90,7 @@ async function up(fresh: boolean) {
 	}
 
 	const state = containerState();
+	const reused = state !== "absent";
 
 	if (state === "absent") {
 		console.log(`Starting ${IMAGE} as ${CONTAINER} on port ${PORT}…`);
@@ -130,14 +132,20 @@ async function up(fresh: boolean) {
 	console.log("\nSeeding the permission matrix…");
 	against("bun", ["run", "scripts/rbac-seed-matrix.ts"]);
 
-	console.log("\nAdding fixtures…");
 	const unapplied: string[] = [];
 
-	for (const group of MOCK_GROUPS) {
-		try {
-			prismaCli(["mock", group]);
-		} catch {
-			unapplied.push(group);
+	// The fixtures are written once, into a new database: run again over their own
+	// rows they collide with what the app has since built on them.
+	if (reused) {
+		console.log("\nFixtures are already in; `up --fresh` rebuilds them from scratch.");
+	} else {
+		console.log("\nAdding fixtures…");
+		for (const group of MOCK_GROUPS) {
+			try {
+				prismaCli(["mock", group]);
+			} catch {
+				unapplied.push(group);
+			}
 		}
 	}
 
@@ -161,13 +169,17 @@ Ready.
 
 Run the app against it, with the test sign-in screen enabled:
 
-  bun run dev:test
+  bun run dev:test                              # to look around
+  bun run stand:build && bun run stand:start    # for the e2e suite
 
-Then open http://localhost:3000/dev-signin and pick who to be.
+Then open http://localhost:3100/dev-signin and pick who to be.
 `);
 }
 
 function down() {
+	// What a stand leaves behind; compiled output is not worth keeping between runs.
+	rmSync(".next-test", { recursive: true, force: true });
+
 	if (containerState() === "absent") {
 		console.log(`${CONTAINER} is not there.`);
 		return;

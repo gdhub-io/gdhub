@@ -6,9 +6,6 @@ const staticPages = [
 	{ path: "/cookie-policy", titleHint: /cookie/i },
 	{ path: "/privacy-policy", titleHint: /privacy/i },
 	{ path: "/events", titleHint: /event/i },
-	// /ui-test and /test-seo used to live at the root. They now sit under
-	// /dev/* inside the (spaces) group, which the proxy matcher gates behind
-	// auth — so an anonymous visitor only ever gets the sign-in page.
 ];
 
 for (const { path, titleHint } of staticPages) {
@@ -24,4 +21,10 @@ test("/non-existent-route renders the 404 page", async ({ page }) => {
 	const response = await page.goto("/this-page-does-not-exist");
 	expect(response?.status()).toBe(404);
 	await expect(page.getByText(/404/)).toBeVisible();
+});
+
+test("/sitemap.xml is served", async ({ request }) => {
+	const response = await request.get("/sitemap.xml");
+	expect(response.ok()).toBeTruthy();
+	expect(await response.text()).toContain("<?xml");
 });

@@ -875,3 +875,26 @@ $btn-black: var(--gd-color-text);
 		grid-template-columns: 1fr;
 	}
 }
+
+/* Frame 04.07: the application, leading a candidate's card. */
+.applicationMeta {
+	font-size: var(--gd-font-size-label);
+	color: var(--gd-color-text-secondary);
+
+	> span {
+		display: inline-flex;
+		align-items: center;
+		gap: var(--gd-space-2);
+	}
+}
+
+.quote {
+	font-style: italic;
+	white-space: pre-line;
+}
+
+.candidateActions {
+	display: flex;
+	flex-wrap: wrap;
+	gap: var(--gd-space-2);
+}

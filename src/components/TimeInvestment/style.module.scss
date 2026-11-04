@@ -1,0 +1,46 @@
+/* Frame 02.25: the time investment button and its popover. */
+.button {
+	height: 32px !important;
+	padding-inline: var(--gd-space-3) !important;
+	border-radius: var(--gd-radius-control) !important;
+	font-size: var(--gd-font-size-label);
+	font-weight: 500;
+}
+
+.unset {
+	color: var(--gd-color-text-secondary) !important;
+}
+
+.open {
+	background: var(--gd-color-surface-sunken) !important;
+}
+
+.popover {
+	width: 336px;
+}
+
+.info {
+	flex-shrink: 0;
+	color: var(--gd-color-text-tertiary);
+	cursor: help;
+}
+
+.title {
+	font-size: var(--gd-font-size-h4);
+}
+
+.hint {
+	font-size: var(--gd-font-size-caption);
+	line-height: 1.4;
+}
+
+.switchRow {
+	padding-top: var(--gd-space-3);
+	border-top: 1px solid var(--gd-color-border);
+}
+
+.tooltipHint {
+	color: inherit !important;
+	opacity: 0.7;
+	font-size: var(--gd-font-size-caption);
+}

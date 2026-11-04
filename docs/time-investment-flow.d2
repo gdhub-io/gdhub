@@ -1,0 +1,54 @@
+vars: {
+  d2-config: {
+    layout-engine: elk
+  }
+}
+
+direction: down
+
+title: "Time investment — the hours a week a person invests, and their history" {
+  shape: text
+  near: top-center
+  style.font-size: 22
+}
+
+where: "Where it is changed" {
+  grid-columns: 3
+  header: "Header popover\n\"Your time investment\""
+  settings: "Profile settings\nResources"
+  onboarding: "Onboarding\nResources step"
+}
+
+save: "Save: hours from–to\nand \"Open to other authors' projects\""
+where -> save
+
+changed: "Anything different from now?" {shape: diamond}
+save -> changed
+
+nothing: "Nothing written"
+changed -> nothing: "no"
+
+profile: "Profile — the current value\nhours from–to · open to others"
+history: "History — one row per change\nfrom · to · open to others · when"
+changed -> profile: "yes"
+changed -> history: "yes, in the same write"
+
+readers: "Who reads the current value" {
+  grid-columns: 3
+  head: "Header\n\"10–15 h/wk\" · \"Set your hours\""
+  pool: "Talent Pool and matching\nonly while open to others"
+  team: "Checkpoints and authors\nthe team's hours"
+}
+profile -> readers
+
+since: "\"Changed N days ago\"\nthe latest history row"
+history -> since
+
+critical: |md
+  **Critical**
+  - All three places write through one rule, so none of them can skip the history.
+  - The hours stay visible when the person is not open to others: they cover their own projects too.
+  - History is erased with the person and is part of their data export.
+| {
+  near: bottom-center
+}

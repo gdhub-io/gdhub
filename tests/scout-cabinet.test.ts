@@ -89,7 +89,7 @@ beforeEach(() => {
 
 describe("createScout", () => {
 	it("writes the cabinet and the membership in one transaction", async () => {
-		const { createScout } = await import("@/repositories/scout");
+		const { createScout } = await import("@/repositories/scout/scout");
 
 		await createScout("u-new", { type: "Angel" });
 
@@ -111,7 +111,7 @@ describe("createScout", () => {
 	});
 
 	it("makes the new scout the owner of their own cabinet", async () => {
-		const { createScout } = await import("@/repositories/scout");
+		const { createScout } = await import("@/repositories/scout/scout");
 
 		await createScout("u-new", { type: "Angel" });
 
@@ -121,7 +121,7 @@ describe("createScout", () => {
 	});
 
 	it("records who granted it", async () => {
-		const { createScout } = await import("@/repositories/scout");
+		const { createScout } = await import("@/repositories/scout/scout");
 
 		await createScout("u-new", { type: "Fund" }, "u-admin");
 
@@ -131,7 +131,7 @@ describe("createScout", () => {
 	});
 
 	it("upserts, so granting twice updates instead of failing", async () => {
-		const { createScout } = await import("@/repositories/scout");
+		const { createScout } = await import("@/repositories/scout/scout");
 
 		await createScout("u-new", { type: "Publisher", isPublic: true });
 
@@ -325,7 +325,7 @@ describe("GET /api/scout/cabinet", () => {
 
 describe("deleteScout", () => {
 	it("removes the cabinet and the access it opened, together", async () => {
-		const { deleteScout } = await import("@/repositories/scout");
+		const { deleteScout } = await import("@/repositories/scout/scout");
 
 		await deleteScout("u-scout");
 
@@ -346,7 +346,7 @@ describe("deleteScout", () => {
 	});
 
 	it("stamps the moment access ended instead of dropping the row", async () => {
-		const { deleteScout } = await import("@/repositories/scout");
+		const { deleteScout } = await import("@/repositories/scout/scout");
 
 		await deleteScout("u-scout");
 

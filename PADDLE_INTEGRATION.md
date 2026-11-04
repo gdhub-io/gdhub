@@ -62,6 +62,28 @@ Creates a payment record for a vacancy listing.
 Handles Paddle webhook events. Automatically updates payment status when:
 - `transaction.completed` - Updates payment status to COMPLETED and stores Paddle transaction ID
 
+## The AI Checkpoint (GDHUB-106)
+
+Checkpoints pay through one provider interface, `src/services/payments`
+(`gatewayFor(provider)`, `checkoutGateway()`), with a Stripe and a Paddle adapter.
+`CHECKPOINT_PAYMENT_PROVIDER` in `src/config/checkpoint.ts` picks the provider for
+new checkouts and promotion codes; a payment already made stays with the provider
+in its `Payment.provider`. Logic: [docs/checkpoints-paddle-payment-flow.d2](docs/checkpoints-paddle-payment-flow.d2).
+
+- **Env:** `PADDLE_AI_CHECKPOINT_PRICE_ID` is the catalog price "AI Checkpoint", $20, one-time.
+  Sandbox and live have their own ids.
+- **Checkout:** `POST /api/checkpoint/[id]/pay` creates the transaction on the
+  server with `@paddle/paddle-node-sdk` (`customData { paymentId, checkpointId }`).
+  The payment step opens it with `openPaddleTransaction` (Paddle.js overlay).
+- **Webhook:** `/api/paddle/webhooks` handles two checkpoint events:
+  - `transaction.completed` → `settleCheckpointCheckout`, which starts the AI curator;
+  - `adjustment.created` / `adjustment.updated` → `recordPaddleAdjustment`, which
+    records refunds. A rejected refund goes to the audit log.
+- **Subscribe in Paddle:** the notification destination needs
+  `adjustment.created` and `adjustment.updated` as well as `transaction.completed`.
+- **Promotion codes:** Paddle discounts restricted to the AI price, managed from
+  Admin → Checkpoints → Promo codes. Paddle cannot limit a code to a first purchase.
+
 ## Database Schema
 
 ### Payment Table (New)

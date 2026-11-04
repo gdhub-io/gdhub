@@ -1,0 +1,64 @@
+vars: {
+  d2-config: {
+    layout-engine: elk
+  }
+}
+
+direction: down
+
+title: "GDHUB-88 — from the checkpoint landing to a purchase (never \"start\": you head for a checkpoint)" {
+  shape: text
+  near: top-center
+  style.font-size: 22
+}
+
+landing: "Checkpoint landing /checkpoint\nCTA → /checkpoint/new" {shape: page}
+
+auth: "Signed in?" {shape: diamond}
+landing -> auth
+
+signin: "/signin?callbackUrl=/checkpoint/new\n(has an account)"
+register: "/registration?intent=checkpoint\nintent kept in the pre-registration cookie (like `for`)\nafter sign-up → /checkpoint/new, not onboarding\n(proxy lets /checkpoint/new through while onboardingDone is false)"
+auth -> signin: "no, has an account"
+auth -> register: "no, new"
+
+hub: "Hub /checkpoint/new — 'Head for your first checkpoint'\nfacts: 28 days · one goal · expert or AI curator · from 19 USD\nitems unlock strictly in order" {shape: page}
+auth -> hub: yes
+signin -> hub
+register -> hub
+
+about: "1 Tell us about yourself (12.1)\nname, avatar, speciality → the existing profile/speciality APIs\nInterest = author, onboardingDone = true\n'Save and go back'"
+hub -> about
+about -> hub: "done ✓"
+
+project: "2 Tell us about your project (12.2)\nProject Select (cover · name · stage) or New project modal\nWhat's done so far: 1–5 items, optional evidence\n'Save and go back'"
+hub -> project: "after 1"
+project -> hub: "done ✓ (a project + ≥1 item)"
+
+newproj: "New project modal (12.2d)\nPOST /api/user/project { name, description (pitch), genre, stage, agree, understandsNotAi }\n→ project + team + Founder + devlog (as today)\n→ ProjectWorkflow from the 'default' WorkflowSchema:\n  stages before the chosen one finished, currentStep = chosen (never Introduction)\nthe same for the hub's Create project"
+project -> newproj
+
+draft: "Saving item 2 → PUT /api/checkpoint/entry/project { projectId, items[≤5] }\n1. the project's draft checkpoint: existing one or createDraftCheckpoint\n   (a project on Introduction is moved to Ideation)\n2. items = CheckpointItem kind Input { text, artifactId? }, replaced as a set\n3. evidence = project artifacts (uploaded / linked via the evidence slot)"
+project -> draft
+
+carry: "First open for a project with a closed checkpoint:\nprefill items from it — delivered outcomes first (readable artifact, not cut),\nthen its inputs; at most 5; artifacts carried"
+draft -> carry
+
+checkpoint: "3 Your checkpoint — 'Set the goal →'\n→ /user/project/[slug]/workflow/cp/new (the draft)"
+hub -> checkpoint: "after 2"
+
+wizard: "Wizard in the same light shell: 1 Goal → 2 Curator → 3 Payment → Stripe" {shape: page}
+checkpoint -> wizard
+
+paid: "Paid screen" {shape: diamond}
+wizard -> paid
+ai: "AI (Active): 'You're on your way' · Day 1 of 28\nGo to the workflow · receipt inline"
+pro: "Pro (AwaitingCurator): 'Payment reserved — charged when the curator accepts'\nwe email when they answer · Go to the workflow · receipt inline\nReplace the curator / Cancel and refund (quiet)"
+paid -> ai
+paid -> pro
+
+fix: "Fixes\n- AI no longer says 'waiting for the curator'\n- reload of ?step=ready on an Active checkpoint → the workflow, not 'no draft'\n- settling polls invalidate the list key too"
+paid -> fix
+
+status: "GET /api/checkpoint/entry → { aboutDone, projects[{id, slug, name, cover, stage, running}],\n  draft: {projectId, itemsCount} | null } — one call drives the hub"
+hub -> status

@@ -1,5 +1,7 @@
 import client from "@sanity/client";
 
+const UPLOAD_SOURCE = "gdhub-user";
+
 export default class SanityService {
 	static initClient() {
 		return new client({
@@ -23,13 +25,15 @@ export default class SanityService {
 	static async uploadImage(
 		newFilename: string,
 		fileBuffer: Buffer,
-		tag?: string,
+		uploaderId: string,
 	) {
 		try {
 			const client = SanityService.initClient();
 
+			// `source.id` records the uploader: removeFile deletes only their own assets.
 			const response = await client.assets.upload("image", fileBuffer, {
 				filename: newFilename,
+				source: { name: UPLOAD_SOURCE, id: uploaderId },
 			});
 
 			return {
@@ -46,20 +50,21 @@ export default class SanityService {
 		}
 	}
 
-	static async removeFile(fileUrl: string) {
-		try {
-			if (!fileUrl) throw new Error("fileUrl is empty");
+	/** Any asset at this URL, whoever uploaded it: server-side only, e.g. erasure. */
+	static async removeAsset(url: string) {
+		await SanityService.initClient().delete({
+			query: `*[_type == "sanity.imageAsset" && url == $url]`,
+			params: { url },
+		});
+	}
 
-			const client = SanityService.initClient();
-			const response = await client.delete({
-				query: `*[_type == "sanity.imageAsset" && url == "${fileUrl}"]`,
-			});
+	static async removeFile(fileUrl: string, uploaderId: string) {
+		if (!fileUrl) throw new Error("fileUrl is empty");
 
-			console.log("[Remove File]", response);
-			return Promise.resolve();
-		} catch (error: any) {
-			console.error(error.message);
-			return Promise.reject();
-		}
+		const client = SanityService.initClient();
+		await client.delete({
+			query: `*[_type == "sanity.imageAsset" && url == $url && source.name == $source && source.id == $uploaderId]`,
+			params: { url: fileUrl, source: UPLOAD_SOURCE, uploaderId },
+		});
 	}
 }

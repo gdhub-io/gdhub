@@ -1,38 +1,23 @@
 .wrapper {
 	display: flex;
 	flex-direction: column;
-	gap: 12px;
+	gap: var(--gd-space-3);
 }
 
+// Outlined, not filled: the checkpoint widget above it is the one white block.
 .panel {
-	background-color: var(--gd-color-surface);
+	background-color: transparent;
 	border: 1px solid var(--gd-color-border-strong);
-	border-radius: var(--gd-radius-control);
+	border-radius: var(--gd-radius-panel);
 	overflow: hidden;
-	box-shadow: 0 4px 16px rgba(0, 0, 0, 0.04);
 }
 
-.header {
-	display: flex;
-	align-items: center;
-	justify-content: space-between;
-	padding: 13px 16px;
-	border-bottom: 1px solid var(--gd-color-border);
-}
-
-.title {
-	font-size: 15px;
-	font-weight: 600;
-	color: var(--gd-color-text);
-}
-
-.progress {
-	font-size: 12px;
-	font-weight: 500;
-	color: var(--gd-color-text-secondary);
+// The rows under the head's rule, as in the checkpoint card above.
+.rows {
+	border-top: 1px solid var(--gd-color-border);
 }
 
 .hint {
-	font-size: 12px;
+	font-size: var(--gd-font-size-body-sm);
 	line-height: 1.5;
 }

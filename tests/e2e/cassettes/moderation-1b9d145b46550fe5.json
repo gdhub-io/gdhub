@@ -1,0 +1,84 @@
+{
+	"name": "moderation",
+	"prompt": "{\"model\":\"omni-moderation-latest\",\"inputs\":[\"Dmitry Petrov\"]}",
+	"answer": {
+		"id": "modr-8802",
+		"model": "omni-moderation-latest",
+		"results": [
+			{
+				"flagged": false,
+				"categories": {
+					"harassment": false,
+					"harassment/threatening": false,
+					"sexual": false,
+					"hate": false,
+					"hate/threatening": false,
+					"illicit": false,
+					"illicit/violent": false,
+					"self-harm/intent": false,
+					"self-harm/instructions": false,
+					"self-harm": false,
+					"sexual/minors": false,
+					"violence": false,
+					"violence/graphic": false
+				},
+				"category_scores": {
+					"harassment": 0.0005931018339467512,
+					"harassment/threatening": 0.00003625900662832244,
+					"sexual": 0.01949970367927649,
+					"hate": 0.000023782205064034188,
+					"hate/threatening": 0.0000020785170435063726,
+					"illicit": 0.0038073128492412647,
+					"illicit/violent": 0.00008360902969426322,
+					"self-harm/intent": 0.000005225226840386988,
+					"self-harm/instructions": 0.00000461127481426412,
+					"self-harm": 0.0004714608092839256,
+					"sexual/minors": 0.000047285443452031076,
+					"violence": 0.01620977524152394,
+					"violence/graphic": 0.00006361912109467577
+				},
+				"category_applied_input_types": {
+					"harassment": [
+						"text"
+					],
+					"harassment/threatening": [
+						"text"
+					],
+					"sexual": [
+						"text"
+					],
+					"hate": [
+						"text"
+					],
+					"hate/threatening": [
+						"text"
+					],
+					"illicit": [
+						"text"
+					],
+					"illicit/violent": [
+						"text"
+					],
+					"self-harm/intent": [
+						"text"
+					],
+					"self-harm/instructions": [
+						"text"
+					],
+					"self-harm": [
+						"text"
+					],
+					"sexual/minors": [
+						"text"
+					],
+					"violence": [
+						"text"
+					],
+					"violence/graphic": [
+						"text"
+					]
+				}
+			}
+		]
+	}
+}

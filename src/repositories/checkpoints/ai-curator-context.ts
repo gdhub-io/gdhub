@@ -1,0 +1,352 @@
+import {
+	CURATOR_ACTIVITY_LIMIT,
+	CURATOR_MARKETING_DEVLOGS,
+	CURATOR_STAGE_BRIEFS,
+	LEAD_IN_DAYS,
+} from "@/config/checkpoint";
+import {
+	TeamMemberStatus,
+	TeamVacancyStatus,
+	VacancyApplicationStatus,
+} from "@/config/prisma-enums";
+import {
+	ACTIVITY_LINE,
+	type ActivityKind,
+	activityLine,
+	activityText,
+} from "@/lib/checkpoints/activity-text";
+import { teamCapacity, weeklyRange } from "@/lib/checkpoints/capacity";
+import { devlogWords } from "@/lib/checkpoints/curator-text";
+import { dueDateFrom, MS_PER_DAY } from "@/lib/checkpoints/days";
+import { firstLine } from "@/lib/checkpoints/journal-text";
+import { lensWeights } from "@/lib/checkpoints/lenses";
+import { dateOfDay } from "@/lib/checkpoints/plan";
+import { stageOf } from "@/lib/workflow/matchKey";
+import { getProjectActivity } from "@/repositories/project/activity";
+import { CONFIRMED_MEMBERS } from "@/repositories/project/team";
+import { prisma } from "@/services/prisma";
+import type {
+	CuratorMarketing,
+	CuratorPersona,
+	CuratorTeam,
+	CuratorWorkflow,
+} from "@/types/checkpoint-curator";
+import type { ProjectLink } from "@/types/project";
+
+const day = (date: Date | string) => new Date(date).toISOString().slice(0, 10);
+
+/**
+ * Where the project stands on its workflow, for the curator: the stage, the
+ * next one, what the stage is for (the curator's brief, not the author's
+ * advice) and its required tasks, done or not. The optional ones are the
+ * author's call and never reach the model (Dmitry, 2026-10-26).
+ */
+export async function stageWorkflow(
+	stepId: string | null,
+	currentStage: string,
+): Promise<CuratorWorkflow> {
+	const step = stepId
+		? await prisma.projectWorkflowStep.findUnique({
+				where: { id: stepId },
+				select: {
+					order: true,
+					name: true,
+					goal: true,
+					projectWorkflowId: true,
+					projectWorkflow: {
+						select: { schema: { select: { goal: true, steps: true } } },
+					},
+					tasks: {
+						where: { required: true },
+						orderBy: { order: "asc" },
+						select: { name: true, done: true },
+					},
+				},
+			})
+		: null;
+	const next = step
+		? await prisma.projectWorkflowStep.findFirst({
+				where: {
+					projectWorkflowId: step.projectWorkflowId,
+					order: { gt: step.order },
+				},
+				orderBy: { order: "asc" },
+				select: { name: true },
+			})
+		: null;
+
+	// The project's own stage goal, else its template step's (GDHUB-97).
+	const schema = step?.projectWorkflow.schema;
+	const stage = step && schema ? stageOf(schema.steps, step) : null;
+
+	return {
+		projectGoal: schema?.goal ?? null,
+		currentStage,
+		nextStage: next?.name ?? null,
+		description: CURATOR_STAGE_BRIEFS[currentStage] ?? null,
+		goal: stage?.goal ?? null,
+		lenses: lensWeights(currentStage),
+		requiredTasks: (step?.tasks ?? []).flatMap((task) =>
+			task.name ? [{ name: task.name, done: task.done }] : [],
+		),
+	};
+}
+
+/** A member's role on the project: what they set, else their speciality. */
+export const memberRole = (
+	member: { position: string | null; speciality: { name: string } | null },
+	fallback = "no role set",
+) => member.position || member.speciality?.name || fallback;
+
+/**
+ * The team as it stands, for every call in one place: each member's role,
+ * level, stated hours and the weeks they confirmed, and the hours summed.
+ */
+export async function curatorTeam(
+	checkpointId: string,
+	projectId: string,
+	/** Who joined after it is told apart; null before the checkpoint starts. */
+	startedAt: Date | null,
+): Promise<CuratorTeam> {
+	const [members, pulses, vacancies] = await Promise.all([
+		prisma.teamMember.findMany({
+			where: { team: { projectId }, ...CONFIRMED_MEMBERS },
+			select: {
+				id: true,
+				startedAt: true,
+				position: true,
+				speciality: { select: { name: true, level: true } },
+				user: {
+					select: { name: true, profile: { select: { timeForWork: true } } },
+				},
+			},
+		}),
+		prisma.checkpointPulse.findMany({
+			where: { checkpointId },
+			select: { teamMemberId: true, week: true, confirmedAt: true },
+		}),
+		prisma.teamVacancy.findMany({
+			where: {
+				team: { projectId },
+				status: TeamVacancyStatus.Published,
+			},
+			orderBy: { publishedAt: "asc" },
+			select: {
+				title: true,
+				publishedAt: true,
+				createdAt: true,
+				_count: {
+					select: {
+						applications: {
+							where: { status: VacancyApplicationStatus.Submitted },
+						},
+					},
+				},
+			},
+		}),
+	]);
+
+	return {
+		...teamCapacity(
+			members.map((member) => ({
+				timeForWork: member.user.profile?.timeForWork,
+			})),
+		),
+		people: members.map((member) => ({
+			name: member.user.name ?? "A member",
+			role: memberRole(member),
+			level: member.speciality?.level ?? null,
+			hoursPerWeek: weeklyRange(member.user.profile?.timeForWork),
+			weeks: pulses
+				.filter((pulse) => pulse.teamMemberId === member.id)
+				.sort((a, b) => a.week - b.week)
+				.map((pulse) => !!pulse.confirmedAt),
+			joinedOn:
+				startedAt && member.startedAt > startedAt
+					? day(member.startedAt)
+					: null,
+		})),
+		openings: vacancies.map((vacancy) => ({
+			role: vacancy.title,
+			postedOn: day(vacancy.publishedAt ?? vacancy.createdAt),
+			applied: vacancy._count.applications,
+		})),
+	};
+}
+
+/**
+ * What happened on the project between two dates, oldest first. Devlogs are
+ * read in full elsewhere, and the stage does not move inside a checkpoint.
+ */
+async function activityLines(
+	projectId: string,
+	from: Date,
+	to: Date,
+	leadIn = false,
+) {
+	const { events: page } = await getProjectActivity(projectId, {
+		before: to,
+		limit: CURATOR_ACTIVITY_LIMIT,
+	});
+	const shown = page
+		.filter((event) => new Date(event.at) >= from)
+		.flatMap((event) => {
+			return event.kind in ACTIVITY_LINE
+				? [
+						activityLine(
+							day(event.at),
+							event.kind as ActivityKind,
+							event.actor ?? "Someone",
+							event.subject ?? "untitled",
+						),
+					]
+				: [];
+		})
+		.reverse();
+	const more =
+		page.length === CURATOR_ACTIVITY_LIMIT &&
+		new Date(page.at(-1)?.at ?? to) >= from
+			? "\n- (earlier events in this period not listed)"
+			: "";
+
+	return activityText(shown, day(from), day(to), leadIn, more);
+}
+
+/**
+ * What happened on the project in one period of the checkpoint, as its
+ * activity feed shows it. The stage is `stageWorkflow`, the team `curatorTeam`.
+ *
+ * Without a period it is the two weeks leading in, said as such: the curator
+ * reads it on day 1 and must not take it for work done in the checkpoint.
+ */
+export async function projectPicture(
+	checkpointId: string,
+	period?: { from: Date; to: Date },
+) {
+	const checkpoint = await prisma.projectCheckpoint.findUniqueOrThrow({
+		where: { id: checkpointId },
+		select: { projectId: true, startedAt: true },
+	});
+	const to = period?.to ?? new Date();
+	const from =
+		period?.from ??
+		new Date(
+			(checkpoint.startedAt ?? to).getTime() - LEAD_IN_DAYS * MS_PER_DAY,
+		);
+
+	return activityLines(checkpoint.projectId, from, to, !period);
+}
+
+/** The period of the whole run, for the final review. */
+export const runPeriod = (startedAt: Date, dueAt: Date | null) => ({
+	from: startedAt,
+	to: dueAt ?? dueDateFrom(startedAt),
+});
+
+/** The project author's favourite genres, settings and kinds of game, as their profile states them. */
+export const curatorPersona = async (
+	projectId: string,
+): Promise<CuratorPersona> => {
+	const profile = await prisma.profile.findFirst({
+		where: { user: { projects: { some: { id: projectId } } } },
+		select: {
+			preferredGenres: { select: { name: true } },
+			preferredSettings: { select: { name: true } },
+			preferredLevels: { select: { name: true } },
+		},
+	});
+	const names = (rows?: { name: string }[]) =>
+		(rows ?? []).map((row) => row.name);
+	return {
+		genres: names(profile?.preferredGenres),
+		settings: names(profile?.preferredSettings),
+		levels: names(profile?.preferredLevels),
+	};
+};
+
+/**
+ * What the audience was told in a period and how it answered (GDHUB-126): the
+ * public devlogs with their applause and views, and where the game can be found.
+ */
+export async function curatorMarketing(
+	projectId: string,
+	period: { from: Date; to: Date },
+): Promise<CuratorMarketing> {
+	const [posts, project] = await Promise.all([
+		prisma.projectReport.findMany({
+			where: {
+				projectId,
+				isSystem: false,
+				// The sprint's own bounds: the day after it counts, as in `sprintEvidence`.
+				publishedAt: { gte: period.from, lt: dateOfDay(period.to, 2) },
+			},
+			orderBy: { publishedAt: "desc" },
+			take: CURATOR_MARKETING_DEVLOGS,
+			select: {
+				id: true,
+				number: true,
+				content: true,
+				contentEditor: true,
+				publishedAt: true,
+				viewsCount: true,
+			},
+		}),
+		prisma.project.findUnique({
+			where: { id: projectId },
+			select: { links: true },
+		}),
+	]);
+	const applause = await prisma.projectReport.getApplauseCounts({
+		projectReportIds: posts.map((post) => post.id),
+	});
+	const links = Array.isArray(project?.links)
+		? (project.links as unknown as ProjectLink[])
+		: [];
+
+	return {
+		devlogs: posts.map((post) => ({
+			title: `Devlog${post.number ? ` #${post.number}` : ""}: ${firstLine(devlogWords(post))}`,
+			publishedAt: day(post.publishedAt),
+			applause: applause.get(post.id) ?? 0,
+			views: post.viewsCount,
+		})),
+		links: links
+			.filter((row) => row.link)
+			.map((row) => `${row.platform}: ${row.link}`),
+	};
+}
+
+/**
+ * Everything every review moment reads about a checkpoint for one period
+ * (GDHUB-126), so the moments cannot drift apart: the stage with its lens
+ * weights, the team, what happened on the project and what the audience saw.
+ * Without a period it is the lead-in, as `projectPicture` reads it.
+ */
+export async function checkpointFacts(
+	checkpoint: {
+		id: string;
+		projectId: string;
+		stepId: string | null;
+		stageName: string;
+		/** Who joined after it is told apart; null before the start. */
+		startedAt: Date | null;
+	},
+	period?: { from: Date; to: Date },
+) {
+	const now = new Date();
+	const marketingPeriod = period ?? {
+		from: new Date(
+			(checkpoint.startedAt ?? now).getTime() - LEAD_IN_DAYS * MS_PER_DAY,
+		),
+		to: now,
+	};
+	const [workflow, team, picture, marketing] = await Promise.all([
+		stageWorkflow(checkpoint.stepId, checkpoint.stageName),
+		curatorTeam(checkpoint.id, checkpoint.projectId, checkpoint.startedAt),
+		projectPicture(checkpoint.id, period),
+		curatorMarketing(checkpoint.projectId, marketingPeriod),
+	]);
+	return { workflow, team, picture, marketing };
+}
+
+export type CheckpointFacts = Awaited<ReturnType<typeof checkpointFacts>>;

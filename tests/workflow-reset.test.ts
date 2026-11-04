@@ -147,3 +147,26 @@ describe("planReset — matching", () => {
 		expect(plan.steps[0].tasks[0]).toMatchObject({ id: "t1", done: true });
 	});
 });
+
+describe("planReset — a project's own goal and text (GDHUB-97)", () => {
+	const owned = existing.map((step, index) =>
+		index === 0 ? { ...step, goal: "Only ours.", content: { blocks: [] } } : step,
+	);
+
+	it("puts them back to the template's on a full or keep reset, and says so", () => {
+		for (const mode of ["full", "keep"] as const) {
+			const plan = planReset(owned, template, mode);
+			expect(plan.summary.ownCleared).toEqual([
+				"“Concept”: own goal → template's",
+				"“Concept”: own stage text → template's",
+			]);
+			expect(plan.steps.every((step) => step.clearOwn)).toBe(true);
+		}
+	});
+
+	it("keeps them on a sync, which never takes away what the project has", () => {
+		const plan = planReset(owned, template, "sync");
+		expect(plan.summary.ownCleared).toEqual([]);
+		expect(plan.steps.some((step) => step.clearOwn)).toBe(false);
+	});
+});

@@ -1,0 +1,13 @@
+Hi everyone, thanks for joining. Let's start with the goal for these four weeks. You want a playable vertical slice: two islands, the tide loop and co-op sailing, tested by five players.
+That's right. We have the tide loop working on one island, and the boat moves, but co-op is not in yet.
+Then I'd keep the second island out of this sprint. Get one island fully playable with two players sailing together first.
+Okay. So the first task is the co-op boat on one island, two players at the same time.
+Yes, and record a short video of it at the end of the sprint so I can see it, not just read about it.
+The second task we had was the trailer storyboard. Is that still worth it now?
+Not this month. A trailer before the slice plays is effort spent on the wrong thing. Cut it, or move it to the next checkpoint.
+Fine, we cut it. The third task is the playtest with five players.
+Plan it for the last week, after the slice is stable, and write down what each player got stuck on. Those notes are the evidence that the goal is met.
+And the build, should we share it?
+Yes, share a build anyone on the team can open, with a link that works without logging in. Attach it to the task when you have it.
+Agreed. So for this sprint: the co-op boat on one island, a video of it, and a shareable build. Playtest in sprint four.
+That's the plan. Next call I'd like to see the boat with two players. Good luck, and post a devlog when the boat works.

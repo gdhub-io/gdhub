@@ -1,33 +1,37 @@
-import { IconMessageCircle } from "@tabler/icons-react";
+import { IconMessageDots } from "@tabler/icons-react";
 import { useTranslate } from "@tolgee/react";
-import { Badge, Button, theme } from "antd";
+import { Button } from "antd";
 import { useChat } from "@/components/Chat/useChat";
+import { UnreadDot } from "@/components/ui";
 import styles from "./style.module.scss";
 
 export const ChatButton = () => {
 	const { t } = useTranslate();
-	const { token } = theme.useToken();
 	const unreadTotal = useChat((s) => s.unreadTotal);
 	const open = useChat((s) => s.openChatModal);
 
 	return (
-		<Badge
-			count={unreadTotal}
-			overflowCount={99}
+		<Button
+			type="text"
+			shape="circle"
 			size="small"
-			color={token.colorPrimary}
-			offset={[-6, 22]}
-		>
-			<Button
-				type="text"
-				shape="circle"
-				data-chat-launcher
-				className={open ? styles.open : undefined}
-				aria-label={t("chat.panel.title", "Messages")}
-				aria-expanded={open}
-				onClick={() => useChat.getState().setOpenChatModal(!open)}
-				icon={<IconMessageCircle size={18} stroke={1.75} />}
-			/>
-		</Badge>
+			data-chat-launcher
+			className={open ? styles.open : undefined}
+			// The dot says only that something is new; the count is read out here.
+			aria-label={
+				unreadTotal
+					? t("chat.panel.titleUnread", "Messages, {count} unread", {
+							count: unreadTotal,
+						})
+					: t("chat.panel.title", "Messages")
+			}
+			aria-expanded={open}
+			onClick={() => useChat.getState().setOpenChatModal(!open)}
+			icon={
+				<UnreadDot unread={unreadTotal > 0}>
+					<IconMessageDots size={20} stroke={1.75} />
+				</UnreadDot>
+			}
+		/>
 	);
 };

@@ -9,13 +9,14 @@ import {
 import { withSpaceGuard } from "@/lib/space-guard";
 import {
 	getProjectCardActivities,
+	getProjectCardCheckpoints,
 	getProjectCardFiles,
 	getProjectCardInvestment,
 	getProjectCardReviews,
 	getProjectCardTeam,
 	getProjectCardWorkflow,
 	visibleProjectId,
-} from "@/repositories/scout.project-card";
+} from "@/repositories/scout/project-card";
 
 /**
  * One section of a project card.
@@ -30,6 +31,7 @@ const SECTIONS = {
 	files: getProjectCardFiles,
 	activities: getProjectCardActivities,
 	workflow: getProjectCardWorkflow,
+	checkpoints: getProjectCardCheckpoints,
 	reviews: getProjectCardReviews,
 	investment: getProjectCardInvestment,
 } satisfies Record<string, (id: string, limit?: number) => Promise<unknown>>;

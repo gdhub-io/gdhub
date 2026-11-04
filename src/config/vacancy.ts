@@ -20,3 +20,6 @@ export const CANDIDATE_REMINDER_DAYS = 7;
 
 /** Fallback listing length used when restoring a vacancy whose window has lapsed. */
 export const DEFAULT_FINISH_DAYS = 90;
+
+/** The listing fee in euros; must match the vacancy price in Paddle, which is what is charged. */
+export const LISTING_FEE_EUR = 9;

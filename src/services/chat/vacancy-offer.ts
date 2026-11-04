@@ -14,7 +14,7 @@ type EnsureVacancyOfferChatArgs = {
 	candidateUserId: string;
 	/** Who starts the chat — must be the candidate or the project author. */
 	initiatorUserId: string;
-	teamMemberId?: string;
+	applicationId?: string;
 	firstMessage?: string;
 	/**
 	 * Talent-pool offer note stored in the room context, so the invitee can read
@@ -46,7 +46,7 @@ export type EnsureVacancyOfferChatResult = EnsureChatRoomResult & {
 export async function ensureVacancyOfferChat(
 	args: EnsureVacancyOfferChatArgs,
 ): Promise<EnsureVacancyOfferChatResult> {
-	const { vacancyId, candidateUserId, initiatorUserId, teamMemberId } = args;
+	const { vacancyId, candidateUserId, initiatorUserId, applicationId } = args;
 
 	const vacancy = await prisma.teamVacancy.findUnique({
 		where: { id: vacancyId },
@@ -88,7 +88,7 @@ export async function ensureVacancyOfferChat(
 		context: {
 			vacancyId,
 			candidateUserId,
-			teamMemberId: teamMemberId ?? null,
+			applicationId: applicationId ?? null,
 			offerMessage: args.offerMessage ?? null,
 		},
 		initiatorUserId,

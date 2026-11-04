@@ -7,8 +7,14 @@ import {
 	IconUserCircle,
 } from "@tabler/icons-react";
 import { Card, Flex, Typography } from "antd";
-import { useEffect, useState } from "react";
+import dayjs from "dayjs";
 import { PublicPageHeader } from "@/components/layouts/PublicPageHeader";
+import {
+	LEGAL_DETAILS,
+	LEGAL_ENTITIES,
+	type LegalEntity,
+	type LegalEntityKey,
+} from "@/config/legal/entities";
 import styles from "./style.module.scss";
 
 const { Title } = Typography;
@@ -16,72 +22,42 @@ const { Title } = Typography;
 type EntityIcon = "user" | "building";
 type ContactType = "email" | "phone";
 
-type FieldRow = { label: string; value: string };
-type Contact = { type: ContactType; value: string };
-
 type Entity = {
 	name: string;
 	icon: EntityIcon;
-	fields: FieldRow[];
-	contacts: Contact[];
+	fields: { label: string; value: string }[];
+	contacts: { type: ContactType; value: string }[];
 };
 
-type Office = {
-	country: string;
-	flag?: string;
-	entity: Entity;
+const toEntity = (key: LegalEntityKey, icon: EntityIcon): Entity => {
+	const e: LegalEntity = LEGAL_ENTITIES[key];
+	return {
+		name: e.name,
+		icon,
+		fields: [
+			{
+				label: "Registration date",
+				value: dayjs(e.registeredAt).format("DD/MM/YYYY"),
+			},
+			{ label: "Legal entity code", value: e.code },
+			{ label: "Administrator", value: e.registry },
+			{ label: "Registered address", value: e.address },
+			...(e.certificate
+				? [{ label: "Certificate", value: e.certificate }]
+				: []),
+		],
+		contacts: [
+			{ type: "email", value: e.email },
+			{ type: "phone", value: e.phone },
+		],
+	};
 };
 
-const founder: Entity = {
-	name: "Individual Entrepreneur DZMITRY DRYNAU",
-	icon: "user",
-	fields: [
-		{ label: "Registration date", value: "27/06/2023" },
-		{ label: "Legal entity code", value: "306422564" },
-		{
-			label: "Administrator",
-			value: "LEPL National Agency of Public Registry",
-		},
-		{
-			label: "Registered address",
-			value: "Georgia, Tbilisi, Samgori District, Police Street I Dead End, N5",
-		},
-		{
-			label: "Certificate",
-			value: "Certificate of state registration of a legal entity (2023)",
-		},
-	],
-	contacts: [
-		{ type: "email", value: "office@gdhub.io" },
-		{ type: "phone", value: "+995 599 157 334" },
-	],
-};
-
-const representativeOffices: Office[] = [
-	{
-		country: "Lithuania",
-		entity: {
-			name: "VšĮ Žaidimų Kūrėjų Hubas",
-			icon: "building",
-			fields: [
-				{ label: "Registration date", value: "11/07/2025" },
-				{ label: "Legal entity code", value: "307277444" },
-				{
-					label: "Registered address",
-					value: "Vilnius, Giedraičių g. 39-R53, LT-09302",
-				},
-				{
-					label: "Administrator",
-					value: "Juridinių asmenų registras",
-				},
-			],
-			contacts: [
-				{ type: "email", value: "office@gdhub.io" },
-				{ type: "phone", value: "+370 67253194" },
-			],
-		},
-	},
-];
+const founder = toEntity(LEGAL_DETAILS.founder, "user");
+const offices = LEGAL_DETAILS.offices.map((o) => ({
+	country: o.country,
+	entity: toEntity(o.entity, "building"),
+}));
 
 const AvatarIcon = ({ icon }: { icon: EntityIcon }) => {
 	if (icon === "user") return <IconUserCircle size={20} stroke={1.75} />;
@@ -149,20 +125,14 @@ export function LegalDetailsClient() {
 						</Title>
 						<EntityCard entity={founder} />
 					</section>
-
 					<section>
 						<Title level={2} className={styles.sectionTitle}>
 							Representative offices
 						</Title>
 						<Flex vertical gap={20}>
-							{representativeOffices.map(({ country, flag, entity }) => (
+							{offices.map(({ country, entity }) => (
 								<div key={country}>
 									<div className={styles.countryRow}>
-										{!!flag && (
-											<span className={styles.countryFlag} aria-hidden>
-												{flag}
-											</span>
-										)}
 										<span className={styles.countryName}>{country}</span>
 									</div>
 									<EntityCard entity={entity} />

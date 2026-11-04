@@ -24,8 +24,8 @@ someone else's implementation and cover it with tests.
    [CLAUDE.md](../../CLAUDE.md). Establish what changed and what behaviour it claims.
 2. Run the cheap checks (see **What you may run** below) to establish a baseline.
 3. Identify the coverage gap and write the missing tests. Prioritise, in order:
-   - **API routes** — auth gate per `mode`/`roles`, Zod rejection of bad input, team access
-     via `withTeamGuard`, the happy path, and the 401/403/400/404 branches.
+   - **API routes** — auth gate per `mode`/`roles`, Zod rejection of bad input, project access
+     via `withSpaceGuard`, the happy path, and the 401/403/400/404 branches.
    - **Domain logic** in `src/repositories/`, `src/services/`, `src/helpers/`.
    - **Permissions/RBAC** — see the existing `tests/rbac-*.test.ts` and
      `tests/permissions-matrix.test.ts` for the established shape.

@@ -2,12 +2,12 @@ import { beforeEach, describe, expect, it, vi } from "vitest";
 import { prisma } from "../src/services/prisma";
 
 vi.mock("@gdhub-io/gdhub-prisma", () => ({
-	TeamMemberStatus: {
-		Applicant: "Applicant",
+	TeamMemberStatus: { Hired: "Hired", Fired: "Fired", Founder: "Founder" },
+	VacancyApplicationStatus: {
+		Submitted: "Submitted",
 		Hired: "Hired",
 		Rejected: "Rejected",
-		Fired: "Fired",
-		Founder: "Founder",
+		Withdrawn: "Withdrawn",
 	},
 	TeamVacancyStatus: { Published: "Published", Closed: "Closed" },
 	UserRole: { Admin: "Admin" },
@@ -27,7 +27,10 @@ vi.mock("../src/services/prisma", () => ({
 		teamVacancy: { findUnique: vi.fn() },
 		// `findUnique` is used by the space guard to find the owning project of a
 		// team member before checking access.
-		teamMember: { findFirst: vi.fn(), findUnique: vi.fn(), update: vi.fn() },
+		teamMember: { findFirst: vi.fn(), findUnique: vi.fn(), create: vi.fn() },
+		// The space guard finds the project an application belongs to.
+		vacancyApplication: { findFirst: vi.fn(), findUnique: vi.fn(), update: vi.fn() },
+		$transaction: vi.fn(),
 		user: { findUnique: vi.fn() },
 		team: { findUnique: vi.fn() },
 		project: { findFirst: vi.fn(), findUnique: vi.fn() },
@@ -108,9 +111,10 @@ beforeEach(() => {
 	// The route is now behind a space guard: take the matrix from the registry
 	// (the database is mocked away) and make the caller own the project.
 	setMatrixSource(codeSource);
-	(prisma.teamMember.findUnique as any).mockResolvedValue({
-		team: { project: { id: "p1" } },
+	(prisma.vacancyApplication.findUnique as any).mockResolvedValue({
+		vacancy: { team: { projectId: "p1" } },
 	});
+	(prisma.$transaction as any).mockImplementation((run: any) => run(prisma));
 	(prisma.project.findFirst as any).mockResolvedValue({
 		id: "p1",
 		authorId: sessionUser.id,
@@ -120,10 +124,15 @@ beforeEach(() => {
 });
 
 describe("PUT /api/user/project/vacancy/candidate/hire", () => {
-	it("closes the chat with the VACANCY id, not the TeamMember id (review regression)", async () => {
-		// The route receives the TeamMember id in `id`.
+	it("closes the chat with the VACANCY id, not the application id (review regression)", async () => {
+		// The route receives the application id in `id`.
 		(prisma.teamVacancy.findUnique as any).mockResolvedValue(null);
-		(prisma.teamMember.update as any).mockResolvedValue({
+		(prisma.vacancyApplication.update as any).mockResolvedValue({
+			userId: "cand1",
+			specialityId: "sp1",
+			vacancy: { id: "vac1", title: "Position", teamId: "t1", team: { project: null } },
+		});
+		(prisma.teamMember.create as any).mockResolvedValue({
 			id: "tm1",
 			user: { id: "cand1", email: "cand@example.com" },
 			team: { id: "t1", name: "Team" },
@@ -143,6 +152,16 @@ describe("PUT /api/user/project/vacancy/candidate/hire", () => {
 		});
 
 		expect(response.status).toBe(200);
+		// The member is made from the application and points back at it (GDHUB-127).
+		expect(prisma.teamMember.create).toHaveBeenCalledWith(
+			expect.objectContaining({
+				data: expect.objectContaining({
+					applicationId: "tm1",
+					userId: "cand1",
+					status: "Hired",
+				}),
+			}),
+		);
 		// Third arg: the farewell system message posted before the room closes.
 		expect(closeVacancyChats).toHaveBeenCalledWith(
 			"vac1",
@@ -185,9 +204,9 @@ describe("POST /api/chat/rooms/vacancy", () => {
 	}
 
 	it("auto-joins an ACTIVE applicant and quotes their greeting", async () => {
-		(prisma.teamMember.findFirst as any).mockResolvedValue({
-			id: "tm1",
-			applicationMessage: "hello there",
+		(prisma.vacancyApplication.findFirst as any).mockResolvedValue({
+			id: "app1",
+			message: "hello there",
 		});
 
 		const response = await post({
@@ -197,9 +216,9 @@ describe("POST /api/chat/rooms/vacancy", () => {
 
 		expect(response.status).toBe(200);
 		// Only an active application counts.
-		expect(prisma.teamMember.findFirst).toHaveBeenCalledWith(
+		expect(prisma.vacancyApplication.findFirst).toHaveBeenCalledWith(
 			expect.objectContaining({
-				where: expect.objectContaining({ status: "Applicant" }),
+				where: expect.objectContaining({ status: "Submitted" }),
 			}),
 		);
 		expect(ensureVacancyOfferChat).toHaveBeenCalledWith(
@@ -213,7 +232,7 @@ describe("POST /api/chat/rooms/vacancy", () => {
 	});
 
 	it("keeps the invite screen for talent-pool outreach (no application)", async () => {
-		(prisma.teamMember.findFirst as any).mockResolvedValue(null);
+		(prisma.vacancyApplication.findFirst as any).mockResolvedValue(null);
 
 		await post({
 			vacancyId: "vac1",
@@ -231,7 +250,7 @@ describe("POST /api/chat/rooms/vacancy", () => {
 	});
 
 	it("delivers the offer message into an EXISTING room and notifies", async () => {
-		(prisma.teamMember.findFirst as any).mockResolvedValue(null);
+		(prisma.vacancyApplication.findFirst as any).mockResolvedValue(null);
 		(ensureVacancyOfferChat as any).mockResolvedValue({
 			chatRoomId: "cr1",
 			roomId: "!room1",
@@ -254,7 +273,7 @@ describe("POST /api/chat/rooms/vacancy", () => {
 	});
 
 	it("a bare re-open neither reopens, messages, nor notifies", async () => {
-		(prisma.teamMember.findFirst as any).mockResolvedValue(null);
+		(prisma.vacancyApplication.findFirst as any).mockResolvedValue(null);
 		(ensureVacancyOfferChat as any).mockResolvedValue({
 			chatRoomId: "cr1",
 			roomId: "!room1",

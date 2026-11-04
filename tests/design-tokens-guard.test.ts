@@ -48,14 +48,11 @@ const ALLOWED: Record<string, string> = {
 	"src/components/profile/SkillCapitalIcon.tsx":
 		"brand gradient inside an illustration",
 	"src/components/GameCard/DefaultCover.tsx": "placeholder cover art gradients",
-	"src/components/landing/LandingFeedbackSection/index.tsx":
-		"generated avatar skin tone",
 	"src/components/VerifyCertificate/VerifyResult.tsx": "avatar placeholder fill",
 	"src/components/layouts/Header/Header.stories.tsx": "avatar fill in a story",
 
 	// A printed document, rendered outside the browser by DocuSeal: it has its
 	// own serif typography and border, and no custom properties to resolve.
-	"src/services/legal/legal-docuseal.ts": "print certificate template",
 };
 
 async function sourceFiles() {

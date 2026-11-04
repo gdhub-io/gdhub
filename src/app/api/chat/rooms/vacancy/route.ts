@@ -1,4 +1,4 @@
-import { TeamMemberStatus } from "@gdhub-io/gdhub-prisma";
+import { VacancyApplicationStatus } from "@gdhub-io/gdhub-prisma";
 import { z } from "zod";
 import {
 	apiError,
@@ -77,15 +77,15 @@ export const POST = pipe(
 	// are awaiting a reply, an accept-invite screen would be a redundant step.
 	// Talent-pool outreach (no application) keeps the invite screen: the
 	// specialist never asked for this conversation, their consent is the point.
-	// Only an ACTIVE application counts — a Rejected/Hired row must not
+	// Only an ACTIVE application counts — a rejected, withdrawn or hired one must not
 	// auto-join the person or replay their old greeting.
-	const application = await prisma.teamMember.findFirst({
+	const application = await prisma.vacancyApplication.findFirst({
 		where: {
 			userId: candidateUserId,
 			vacancyId,
-			status: TeamMemberStatus.Applicant,
+			status: VacancyApplicationStatus.Submitted,
 		},
-		select: { id: true, applicationMessage: true },
+		select: { id: true, message: true },
 	});
 
 	// Open the chat with the candidate's greeting from the apply form (unless
@@ -93,15 +93,15 @@ export const POST = pipe(
 	const candidateName = candidate.profile?.name || candidate.name;
 	const firstMessage =
 		message ||
-		(application?.applicationMessage
-			? `💬 ${candidateName || "The candidate"}: "${application.applicationMessage}"`
+		(application?.message
+			? `💬 ${candidateName || "The candidate"}: "${application.message}"`
 			: undefined);
 
 	const chat = await ensureVacancyOfferChat({
 		vacancyId,
 		candidateUserId,
 		initiatorUserId: currentUser.id,
-		teamMemberId: application?.id,
+		applicationId: application?.id,
 		firstMessage,
 		// Stored in context so the specialist reads it on the invite screen.
 		offerMessage: !application ? message : undefined,

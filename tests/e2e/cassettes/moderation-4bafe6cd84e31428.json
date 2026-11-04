@@ -1,0 +1,158 @@
+{
+	"name": "moderation",
+	"prompt": "{\"model\":\"omni-moderation-latest\",\"inputs\":[\"E2E Test Game\",\"A gnome saves Christmas: collect candies, stomp the villain's minions and get the Snow Maiden back. A classic 2D platformer.\"]}",
+	"answer": {
+		"id": "modr-945",
+		"model": "omni-moderation-latest",
+		"results": [
+			{
+				"flagged": false,
+				"categories": {
+					"harassment": false,
+					"harassment/threatening": false,
+					"sexual": false,
+					"hate": false,
+					"hate/threatening": false,
+					"illicit": false,
+					"illicit/violent": false,
+					"self-harm/intent": false,
+					"self-harm/instructions": false,
+					"self-harm": false,
+					"sexual/minors": false,
+					"violence": false,
+					"violence/graphic": false
+				},
+				"category_scores": {
+					"harassment": 0.000026119031909571944,
+					"harassment/threatening": 0.000011061159714638084,
+					"sexual": 0.0009118021484241878,
+					"hate": 0.000005391084403253366,
+					"hate/threatening": 5.422218970016178e-7,
+					"illicit": 0.005289672281962749,
+					"illicit/violent": 0.000034062932773341,
+					"self-harm/intent": 0.000003373722476473661,
+					"self-harm/instructions": 0.000002355261854303796,
+					"self-harm": 0.000007602479448313689,
+					"sexual/minors": 0.000026947915555885546,
+					"violence": 0.000565024317150732,
+					"violence/graphic": 0.000020662982488383408
+				},
+				"category_applied_input_types": {
+					"harassment": [
+						"text"
+					],
+					"harassment/threatening": [
+						"text"
+					],
+					"sexual": [
+						"text"
+					],
+					"hate": [
+						"text"
+					],
+					"hate/threatening": [
+						"text"
+					],
+					"illicit": [
+						"text"
+					],
+					"illicit/violent": [
+						"text"
+					],
+					"self-harm/intent": [
+						"text"
+					],
+					"self-harm/instructions": [
+						"text"
+					],
+					"self-harm": [
+						"text"
+					],
+					"sexual/minors": [
+						"text"
+					],
+					"violence": [
+						"text"
+					],
+					"violence/graphic": [
+						"text"
+					]
+				}
+			},
+			{
+				"flagged": false,
+				"categories": {
+					"harassment": false,
+					"harassment/threatening": false,
+					"sexual": false,
+					"hate": false,
+					"hate/threatening": false,
+					"illicit": false,
+					"illicit/violent": false,
+					"self-harm/intent": false,
+					"self-harm/instructions": false,
+					"self-harm": false,
+					"sexual/minors": false,
+					"violence": false,
+					"violence/graphic": false
+				},
+				"category_scores": {
+					"harassment": 0.0007178082510429669,
+					"harassment/threatening": 0.0008861067611233937,
+					"sexual": 0.000017674513810355872,
+					"hate": 0.000026119031909571944,
+					"hate/threatening": 0.000009028039015031105,
+					"illicit": 0.00752693582047863,
+					"illicit/violent": 0.00005527786369235996,
+					"self-harm/intent": 0.0000027535691114583474,
+					"self-harm/instructions": 0.0000014285517650093407,
+					"self-harm": 0.000004006369222920725,
+					"sexual/minors": 0.00000201456908529364,
+					"violence": 0.07092850096971459,
+					"violence/graphic": 0.000048785712278226595
+				},
+				"category_applied_input_types": {
+					"harassment": [
+						"text"
+					],
+					"harassment/threatening": [
+						"text"
+					],
+					"sexual": [
+						"text"
+					],
+					"hate": [
+						"text"
+					],
+					"hate/threatening": [
+						"text"
+					],
+					"illicit": [
+						"text"
+					],
+					"illicit/violent": [
+						"text"
+					],
+					"self-harm/intent": [
+						"text"
+					],
+					"self-harm/instructions": [
+						"text"
+					],
+					"self-harm": [
+						"text"
+					],
+					"sexual/minors": [
+						"text"
+					],
+					"violence": [
+						"text"
+					],
+					"violence/graphic": [
+						"text"
+					]
+				}
+			}
+		]
+	}
+}

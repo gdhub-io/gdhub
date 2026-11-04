@@ -1,5 +1,6 @@
 import { InvitationStatus, TeamMemberStatus } from "@gdhub-io/gdhub-prisma";
 import { z } from "zod";
+import { RATE_LIMITS } from "@/config/rate-limits";
 import {
 	apiError,
 	json,
@@ -8,8 +9,10 @@ import {
 	withAuth,
 	withValidation,
 } from "@/lib/api-handlers";
+import { limitRequests } from "@/lib/rate-limit";
 import { withSpaceGuard } from "@/lib/space-guard";
 import { projectOfTeam } from "@/lib/space-ids";
+import { currentMembership } from "@/repositories/project/team";
 import { NovuService } from "@/services/novu";
 import { prisma } from "@/services/prisma";
 
@@ -34,6 +37,13 @@ export const POST = pipe(
 	const currentUser = user as SessionUser | undefined;
 	if (!currentUser) return apiError.unauthorized();
 	const data = body as InviteMemberBody;
+
+	const limited = await limitRequests(
+		"team-invite",
+		currentUser.id,
+		RATE_LIMITS.teamInvite,
+	);
+	if (limited) return limited;
 
 	try {
 		const team = await prisma.team.findUnique({
@@ -99,14 +109,8 @@ export const POST = pipe(
 			return json({ success: true, message: "Invitation sent" });
 		}
 
-		const existingMember = await prisma.teamMember.findFirst({
-			where: {
-				teamId: data.teamId,
-				userId: userRecord.id,
-				status: {
-					in: [TeamMemberStatus.Hired, TeamMemberStatus.Founder],
-				},
-			},
+		const existingMember = await currentMembership(userRecord.id, {
+			teamId: data.teamId,
 		});
 
 		if (existingMember) {
@@ -156,8 +160,6 @@ export const POST = pipe(
 		});
 	} catch (error) {
 		console.error("[team.invite]", error);
-		return apiError.internal(
-			error instanceof Error ? error.message : "Unknown error",
-		);
+		return apiError.internal();
 	}
 });

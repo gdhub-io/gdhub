@@ -1,0 +1,96 @@
+vars: {
+  d2-config: {
+    layout-engine: elk
+  }
+}
+
+direction: down
+
+title: "GDHUB-96 — the purchase path: one straight line, one picture for the curator" {
+  shape: text
+  near: top-center
+  style.font-size: 22
+}
+
+entry: "Ways in" {
+  landing: "/checkpoint (landing CTAs)\n→ /checkpoint/new"
+  offer: "Workflow offer · after a verdict · AI review\n→ /checkpoint/new?project=<slug>"
+  signedOut: "Signed out?" {shape: diamond}
+  reg: "/registration?intent=checkpoint&project=<slug>\nafterSignUp → /checkpoint/new?project=<slug>\n(today ?project is lost — keep it)"
+  landing -> signedOut
+  offer -> signedOut
+  signedOut -> reg: yes
+}
+
+hub: "/checkpoint/new — the hub (12.0)" {
+  status: "GET /api/checkpoint/entry\naboutDone · projects · draft"
+  fresh: "aboutDone?" {shape: diamond}
+  show: "Hub: the return screen\nabout you ✓ · your project · your checkpoint\n(a profile or a project exists, or left half-way)"
+  status -> fresh
+  fresh -> show: yes
+}
+entry.signedOut -> hub.status: no
+entry.reg -> hub.status
+hub.fresh -> about.form: "no → straight to About you\n(?project kept)"
+
+about: "About you — 12.1 `TV9y5`" {
+  form: "Name (one field, prefilled from the session: Google / registration name)\nYear of birth (select, as onboarding)\nTime zone (prefilled: Intl…resolvedOptions().timeZone; editable)\nWork direction · Speciality · Skill level (select)\nBriefly about your experience (optional, ≤500)\nTerms of Use clickwrap — only if not yet accepted"
+  api: "POST /api/checkpoint/entry/about"
+  age: "currentYear − yearOfBirth < 18?" {shape: diamond}
+  underage: "400 underage\n'You need to be 18 or over to head for a checkpoint'"
+  legal: "Terms of Use needed and missing?" {shape: diamond}
+  refuse: "400 legal.required / 409 legal.outdated"
+  ai: "AI check: name, speciality, experience\n(rate-limited)"
+  write: "one transaction:\nProfile {name, yearOfBirth, timezone}\nSpeciality {name, level, workDirectionId,\n  specialization = experience}\nUser.name · onboardingDone\nLegalAcceptance (SignUp) if ticked"
+  form -> api -> age
+  age -> underage: yes
+  age -> legal: no
+  legal -> refuse: yes
+  legal -> ai: no
+  ai -> write
+}
+
+project: "Your project — 12.2 `u7wrRw`" {
+  pick: "pick the project, or create one in the modal\n(pitch · genre · stage; ?project preselected)"
+  done: "What's done so far — 1–5 lines, evidence optional\nafter a closed checkpoint: its proven tasks + evidence carried over"
+  save: "PUT /api/checkpoint/entry/project\nfounder · no open checkpoint · purchase open\n→ Draft + Input items"
+  pick -> done -> save
+}
+about.write -> project.pick: "Save and continue\n(from the hub: back to the hub)"
+
+goal: "Checkout · Goal — 12.3 `mfAfN` (unchanged)" {
+  hours: "Work resource: the author's own hours → Profile.timeForWork\nTeam = current members (finishedAt null), each with their own hours\n(one roster for the author, the curator and the AI — today they differ)"
+  text: "the goal (≤500) → AI goal check, with the brief"
+  hours -> text
+}
+project.save -> goal.hours: "Save and continue"
+
+rest: "Curator → Payment → paid" {
+  curator: "Curator step (unchanged)"
+  pay: "Payment\nPOST /api/checkpoint/[id]/pay"
+  payAge: "the author under 18 by yearOfBirth?" {shape: diamond}
+  payRefuse: "400 underage"
+  payTeam: "current members > CHECKPOINT_MAX_TEAM (10)?" {shape: diamond}
+  payTeamRefuse: "400 teamTooLarge\n'A team over 10 gets its own offer — write to info@gdhub.io'\n(one price for 1–10; the goal step already says so and disables Next)"
+  stripe: "legal ticks · Stripe Checkout (hold)"
+  paid: "Paid (12.6 / 12.7)\n'Invite your team to the project' → project team page;\ninvited members state their own hours"
+  curator -> pay -> payAge
+  payAge -> payRefuse: yes
+  payAge -> payTeam: no
+  payTeam -> payTeamRefuse: yes
+  payTeam -> stripe: no
+  stripe -> paid
+}
+goal.text -> rest.curator
+
+brief: "repositories/checkpoint-brief.ts — item 5, no names" {
+  who: "with whom: the author's work direction, speciality, level, experience,\ntime zone; team size and hours (current members)"
+  what: "with what: project pitch, genre, stage, what's done so far + evidence,\nthe goal, the last verdict and its note"
+  who -- what
+}
+brief -> goal.text: "AI goal check"
+cardModal: "Curator's CheckpointCardModal\n(tabs read the same brief)"
+brief -> cardModal
+
+reminders: "Call reminder, an hour before\nteam: at HH:mm in each person's Profile.timezone (UTC if none)\ncurator: their availability time zone (as today)" {style.stroke-dash: 3}
+about.write -> reminders: "timezone"

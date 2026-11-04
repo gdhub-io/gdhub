@@ -6,7 +6,18 @@ import {
 	withAuth,
 	withValidation,
 } from "@/lib/api-handlers";
-import { userSpacesCacheKey } from "@/repositories/user-spaces";
+import {
+	acceptLegal,
+	LegalAcceptancesSchema,
+	LegalError,
+} from "@/lib/legal/accept";
+import { legalErrorResponse, requestMeta } from "@/lib/legal/http";
+import { versionInEffect } from "@/lib/legal/versions";
+import {
+	hasAcceptedCurrent,
+	latestAcceptance,
+} from "@/repositories/legal/legal";
+import { userSpacesCacheKey } from "@/repositories/user/spaces";
 import { syncUserAvailabilityToBrevo } from "@/services/brevo/sync";
 import { cacheDelete } from "@/services/cache";
 import { prisma } from "@/services/prisma";
@@ -30,6 +41,8 @@ const MentorshipSchema = z.object({
 	// in a response time could not turn mentorship on at all.
 	timeForMentoring: z.string().nullish(),
 	openForQuestions: z.array(z.string()).nullish(),
+	/** The Advisor Agreement tick; needed only until the version in effect is accepted. */
+	legal: LegalAcceptancesSchema.optional(),
 });
 
 type MentorshipBody = z.infer<typeof MentorshipSchema>;
@@ -45,19 +58,30 @@ export const GET = withAuth({ mode: "user" })(async (_req, _ctx, { user }) => {
 	const currentUser = user as SessionUser | undefined;
 	if (!currentUser) return apiError.unauthorized();
 
-	const open = await prisma.speciality.count({
-		where: { userId: currentUser.id, isOpenForMentoring: true },
-	});
+	const [open, agreementAccepted, agreement] = await Promise.all([
+		prisma.speciality.count({
+			where: { userId: currentUser.id, isOpenForMentoring: true },
+		}),
+		hasAcceptedCurrent(currentUser.id, "AdvisorAgreement"),
+		latestAcceptance(currentUser.id, "AdvisorAgreement"),
+	]);
 
-	return json({ enabled: open > 0 });
+	return json({
+		enabled: open > 0,
+		// Unpublished, there is nothing to accept: the space opens without it.
+		agreementPublished: !!versionInEffect("AdvisorAgreement"),
+		agreementAccepted:
+			agreementAccepted || !versionInEffect("AdvisorAgreement"),
+		agreement,
+	});
 });
 
 export const PUT = withAuth({ mode: "user" })(
-	withValidation(MentorshipSchema)(async (_req, _ctx, { user, body }) => {
+	withValidation(MentorshipSchema)(async (req, _ctx, { user, body }) => {
 		const currentUser = user as SessionUser | undefined;
 		if (!currentUser) return apiError.unauthorized();
 
-		const { enabled, specialityId, timeForMentoring, openForQuestions } =
+		const { enabled, specialityId, timeForMentoring, openForQuestions, legal } =
 			body as MentorshipBody;
 
 		if (!enabled) {
@@ -85,18 +109,40 @@ export const PUT = withAuth({ mode: "user" })(
 			);
 		}
 
-		// Scoped by `userId` as well as by id: without it this endpoint would let
-		// anyone flip the mentorship flag on somebody else's speciality.
-		const updated = await prisma.speciality.updateMany({
-			where: { id: specialityId, userId: currentUser.id },
-			data: {
-				isOpenForMentoring: true,
-				timeForMentoring: timeForMentoring || null,
-				...(openForQuestions
-					? { openForQuestions: { set: openForQuestions } }
-					: {}),
-			},
-		});
+		// Switching on is concluding the Advisor Agreement: without it accepted,
+		// the space does not open.
+		const mustAccept =
+			!!versionInEffect("AdvisorAgreement") &&
+			!(await hasAcceptedCurrent(currentUser.id, "AdvisorAgreement"));
+
+		let updated: { count: number };
+		try {
+			updated = await prisma.$transaction(async (tx) => {
+				// Scoped by `userId` as well as by id: without it this endpoint would let
+				// anyone flip the mentorship flag on somebody else's speciality.
+				const result = await tx.speciality.updateMany({
+					where: { id: specialityId, userId: currentUser.id },
+					data: {
+						isOpenForMentoring: true,
+						timeForMentoring: timeForMentoring || null,
+						...(openForQuestions
+							? { openForQuestions: { set: openForQuestions } }
+							: {}),
+					},
+				});
+				if (result.count > 0 && mustAccept) {
+					await acceptLegal(tx, legal, ["AdvisorAgreement"], {
+						userId: currentUser.id,
+						context: "AdvisorJoin",
+						meta: requestMeta(req),
+					});
+				}
+				return result;
+			});
+		} catch (error) {
+			if (error instanceof LegalError) return legalErrorResponse(error);
+			throw error;
+		}
 
 		if (updated.count === 0) return apiError.notFound("Speciality not found");
 

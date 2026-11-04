@@ -20,6 +20,7 @@ import axios from "axios";
 import { useEffect, useState } from "react";
 import type { LocalChange } from "@/services/workflow/diffFromTemplate";
 import type { ResetMode, ResetPlan } from "@/services/workflow/planReset";
+import { CheckpointLockAlert, checkpointLockOf } from "./CheckpointLock";
 import { LocalChangeList } from "./LocalChangeList";
 import { useWorkflowTemplates } from "./queries";
 import styles from "./ResetWorkflowModal.module.scss";
@@ -98,7 +99,11 @@ export function ResetWorkflowModal({
 
 	// Every project diffs against the template differently, so a preview only
 	// means something for one of them. In bulk the mode is the whole promise.
-	const { data: preview, isFetching: previewing } = useQuery({
+	const {
+		data: preview,
+		isFetching: previewing,
+		error: previewError,
+	} = useQuery({
 		queryKey: ["admin", "workflow-reset-preview", single?.id, mode, templateId],
 		queryFn: () =>
 			axios
@@ -109,6 +114,8 @@ export function ResetWorkflowModal({
 				})
 				.then((res) => res.data as { summary: Summary }),
 		enabled: Boolean(single),
+		// A running checkpoint is an answer, not a failure: no point asking again.
+		retry: (count, error) => !checkpointLockOf(error) && count < 3,
 	});
 
 	const { mutateAsync: reset, isPending } = useMutation({
@@ -155,7 +162,8 @@ export function ResetWorkflowModal({
 	const summary = preview?.summary;
 	const isFull = mode === "full";
 	const clearing = isFull ? (summary?.completedTotal ?? 0) : 0;
-	const blocked = isFull && !acknowledged;
+	const lock = checkpointLockOf(previewError);
+	const blocked = (isFull && !acknowledged) || !!lock;
 
 	return (
 		<Modal
@@ -294,6 +302,8 @@ export function ResetWorkflowModal({
 								template on its own, so the exact changes differ per project.
 								Open one to see its plan before committing to all of them.
 							</Text>
+						) : lock ? (
+							<CheckpointLockAlert lock={lock} />
 						) : !summary || previewing ? (
 							<Skeleton active paragraph={{ rows: 3 }} title={false} />
 						) : (
@@ -357,6 +367,10 @@ function ChangeList({ summary }: { summary: Summary }) {
 			kind: "added",
 			text: `Step added \u2014 \u201c${name}\u201d`,
 		});
+	}
+	// Frame 10.12: a project's own goal or text, back to the template's (GDHUB-97).
+	for (const text of summary.ownCleared) {
+		changes.push({ kind: "own", text });
 	}
 	for (const name of summary.stepsRemoved) {
 		changes.push({

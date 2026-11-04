@@ -1,45 +1,34 @@
 import { expect, test } from "@playwright/test";
+import { GAME } from "./checkpoints/support/game";
+import { createProjectInHub } from "./setup/project";
+import {
+	grantUser,
+	removeRun,
+	type StandUser,
+	signInPage,
+} from "./setup/users";
 
-const ts = () => Date.now().toString(36);
+
+let author: StandUser;
+
+test.beforeAll(async () => {
+	author = await grantUser("crud");
+});
+test.afterAll(removeRun);
 
 test("create → edit in settings/general → delete via danger zone", async ({
 	page,
 }) => {
-	// Creation alone runs AI validation and can take ~25s on a dev server, so the
-	// default 30s test budget leaves nothing for the edit and delete steps.
-	test.setTimeout(120_000);
-	const initialName = `E2E Project ${ts()}`;
+	await signInPage(page, author);
+	// A fixed name: the AI check of a new project then replays from a recording.
+	const initialName = GAME.name;
 	const renamedName = `${initialName} Renamed`;
-	const description = "Created by the project-crud e2e test.";
+	const description = GAME.description;
 
-	// --- 1. Open hub and launch the create-project modal ---
-	await page.goto("/hub");
-	await expect(page).toHaveURL(/\/hub(\/|$)/);
+	// --- 1. Create it from the hub ---
+	const slug = await createProjectInHub(page, initialName, description);
 
-	await page.getByRole("button", { name: /new project/i }).first().click();
-
-	const modal = page.getByRole("dialog");
-	await expect(modal).toBeVisible();
-
-	// --- 2. Fill in the form, accept the requirements, submit ---
-	await modal.getByLabel(/title/i).fill(initialName);
-	await modal.getByLabel(/short description/i).fill(description);
-	await modal
-		.getByRole("checkbox", { name: /requirements for game projects/i })
-		.check();
-
-	await Promise.all([
-		// Same generous window as paid-vacancy: creation runs AI validation and,
-		// on a cold dev server, compiles the route on first hit. 15s was not enough.
-		page.waitForURL(/\/user\/project\/[^/]+(\/|$)/, { timeout: 60_000 }),
-		modal.getByRole("button", { name: /^create$/i }).click(),
-	]);
-
-	const projectUrl = new URL(page.url());
-	const slug = projectUrl.pathname.split("/").filter(Boolean).at(-1);
-	expect(slug, "project slug in URL").toBeTruthy();
-
-	// --- 3. Edit the project in settings/general ---
+	// --- 2. Edit the project in settings/general ---
 	await page.goto(`/user/project/${slug}/settings/general`);
 	await expect(
 		page.getByRole("menuitem", { name: /general/i }),
@@ -76,7 +65,7 @@ test("create → edit in settings/general → delete via danger zone", async ({
 	expect(putRes.status()).toBeLessThan(400);
 	await expect(nameInput).toHaveValue(renamedName);
 
-	// --- 4. Delete via danger zone ---
+	// --- 3. Delete via danger zone ---
 	await page.goto(`/user/project/${slug}/settings/danger`);
 	await page.getByRole("button", { name: /^delete$/i }).click();
 

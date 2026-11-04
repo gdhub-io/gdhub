@@ -67,3 +67,23 @@ export const normalizeWorkflowSteps = (
 		})),
 	}));
 };
+
+type EquityPromise = {
+	id: string;
+	percentage: number;
+	allocation: {
+		owner: {
+			name: string;
+		};
+		percentage: number;
+	};
+};
+
+/** What `/api/user/project/workflow` returns: the steps and the current one in full. */
+export type ProjectWorkflowWithSteps = ProjectWorkflow & {
+	steps: ProjectWorkflowStep[];
+	currentStep: ProjectWorkflowStep & {
+		tasks: ProjectWorkflowTask[];
+		equityPromises?: EquityPromise[];
+	};
+};

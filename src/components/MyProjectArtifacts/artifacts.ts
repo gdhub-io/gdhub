@@ -1,5 +1,5 @@
 import {
-	type ArtifactCheckStatus,
+	ArtifactCheckStatus,
 	ProjectArtifactType,
 } from "@/config/prisma-enums";
 
@@ -54,9 +54,13 @@ export type ArtifactListItem = {
 	name: string | null;
 	link: string;
 	createdAt: string;
+	updatedAt?: string;
 	checkStatus: ArtifactCheckStatus | null;
+	checkNote: string | null;
 	createdByUser: { name: string | null; image: string | null };
 	step: { id: string; name: string; order: number } | null;
+	/** The checkpoint tasks it was picked to prove; the checkpoints say so, not the artifact. */
+	evidence: { checkpointNumber: number; tasks: string[] }[];
 };
 
 /** Stage in workflow order, then date; artifacts with no stage go last. */
@@ -73,7 +77,8 @@ const stageKey = (artifact: ArtifactListItem) =>
 
 export type ArtifactRow =
 	| { key: string; row: "stage"; name: string | null; count: number }
-	| { key: string; row: "artifact"; artifact: ArtifactListItem };
+	| { key: string; row: "artifact"; artifact: ArtifactListItem }
+	| { key: string; row: "fix"; artifact: ArtifactListItem };
 
 /**
  * One page of sorted artifacts with a band above each stage. The band counts
@@ -106,7 +111,16 @@ export const toRows = (
 		}
 
 		rows.push({ key: artifact.id, row: "artifact", artifact });
+		// Frame A01: what went wrong and how to fix it, under the row itself.
+		if (artifact.checkStatus === ArtifactCheckStatus.Unreachable) {
+			rows.push({ key: `${artifact.id}-fix`, row: "fix", artifact });
+		}
 	}
 
 	return rows;
 };
+
+/** A check still on its way: started within the last couple of minutes. */
+export const isBeingChecked = (artifact: ArtifactListItem, now = Date.now()) =>
+	artifact.checkStatus === ArtifactCheckStatus.Pending &&
+	now - Date.parse(artifact.updatedAt ?? artifact.createdAt) < 2 * 60 * 1000;

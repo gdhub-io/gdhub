@@ -31,6 +31,7 @@ import type { Permission } from "@/config/spaces";
 import { useTelegram } from "@/helpers/useTelegram";
 import { useUserSpaces } from "@/hooks/useUserSpaces";
 import styles from "./style.module.scss";
+import { useSwitchAccountMenuItems } from "./useSwitchAccountMenu";
 
 const { Content } = Layout;
 const { Text } = Typography;
@@ -54,6 +55,7 @@ export function ProtectedShell({ children }: { children: ReactNode }) {
 	const { data: session } = useSession();
 	const spaceHeader = useSpaceHeader();
 	const { can } = useAccess();
+	const switchAccountMenuItems = useSwitchAccountMenuItems();
 	const contentRef = useRef<HTMLElement>(null);
 	const shellRef = useRef<HTMLElement>(null);
 
@@ -163,7 +165,7 @@ export function ProtectedShell({ children }: { children: ReactNode }) {
 	}, [getLanguage]);
 
 	const dropdownMenuItems: MenuProps["items"] = useMemo(() => {
-		let menu: MenuProps["items"] = [];
+		let menu: MenuProps["items"] = [...switchAccountMenuItems];
 
 		if (showAdministration) {
 			menu.push({
@@ -256,6 +258,7 @@ export function ProtectedShell({ children }: { children: ReactNode }) {
 		t,
 		inlineMenuItems,
 		linkToChat,
+		switchAccountMenuItems,
 	]);
 
 	/**
@@ -355,19 +358,23 @@ export function ProtectedShell({ children }: { children: ReactNode }) {
 							</Space>
 						}
 						actions={
-							<HeaderActions
-								dropdownMenuItems={dropdownMenuItems}
-								onOpenMobileMenu={() => setOpenMobileMenu(true)}
-								avatarSeed={session?.user.email ?? undefined}
-							/>
+							spaceHeader?.exit ?? (
+								<HeaderActions
+									dropdownMenuItems={dropdownMenuItems}
+									onOpenMobileMenu={() => setOpenMobileMenu(true)}
+									avatarSeed={session?.user.email ?? undefined}
+								/>
+							)
 						}
 						menu={
-							<Menu
-								items={spaceHeader?.menuItems ?? menuItems}
-								mode="horizontal"
-								selectedKeys={spaceHeader?.menuSelectedKeys ?? [pathname]}
-								className={styles.appMenu}
-							/>
+							spaceHeader?.exit ? null : (
+								<Menu
+									items={spaceHeader?.menuItems ?? menuItems}
+									mode="horizontal"
+									selectedKeys={spaceHeader?.menuSelectedKeys ?? [pathname]}
+									className={styles.appMenu}
+								/>
+							)
 						}
 					/>
 					<Content ref={contentRef} className={styles.contentContainer}>

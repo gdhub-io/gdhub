@@ -1,0 +1,48 @@
+vars: {
+  d2-config: {
+    layout-engine: elk
+  }
+}
+
+direction: down
+
+title: "GDHUB-72 C — call notes from the transcript" {
+  shape: text
+  near: top-center
+  style.font-size: 22
+}
+
+webhook: "Daily batch-processor.job-finished (GDHUB-70)\n→ transcript part saved on the session"
+
+cron: "Hourly cron /api/cron/checkpoint-calls (exists)\nsessions with a transcript, endedAt more than\nCALL_NOTES_DELAY_MINUTES (30) ago, contentStatus not Ready\n(the delay lets every recording part of the call arrive)"
+webhook -> cron: "picked up within the hour"
+
+claim: "Claim: contentStatus null → Pending (updateMany),\nso two runs never write the same notes"
+cron -> claim
+
+input: "What the model reads" {
+  t: "The transcript parts, in order (Speaker 0/1…, no names)"
+  plan: "The plan: goal; tasks with id, wording, done (artifact type + name), cut, reworded"
+  call: "Which call: 1 sets the plan, 2–4 open sprint N, 5 is the final"
+  devlog: "The previous sprint's devlog text"
+  artifacts: "The previous sprint's artifacts: name + type"
+  prev: "The previous call's notes: 'agreed for the next call'"
+}
+claim -> input
+
+model: "checkpointCurator.writeCallNotes — OpenAI, one forced tool call,\nJSON schema = CallNotes; neutral retelling, nobody named,\nonly what was said on the call; task ids from the plan only"
+input -> model
+
+check: "Usable answer?" {shape: diamond}
+model -> check
+
+ready: "content = CallNotes (unknown task ids dropped),\ncontentStatus = Ready"
+retry: "contentStatus back to null;\nthe next hourly run tries again"
+check -> ready: "yes"
+check -> retry: "no / model failed"
+
+letter: "Letter to the curator + team (bell + email, transactionId per session + user):\n'Notes from call K on <project> are ready' → the call room"
+ready -> letter
+
+ui: "Call room, Call notes (GDHUB-83): the summary shows for everyone"
+ready -> ui

@@ -3,7 +3,7 @@ import {
 	getTopSubjects,
 	getViewsReport,
 	resolveViewsRange,
-} from "../src/repositories/content-view-report.repository";
+} from "../src/repositories/content/view-report";
 import {
 	ViewsReportQuerySchema,
 	ViewsTopQuerySchema,

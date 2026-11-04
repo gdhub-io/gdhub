@@ -1,6 +1,7 @@
 import dayjs from "dayjs";
 import type { ReactNode } from "react";
 import { StatusDot } from "@/components/ui";
+import { TalentName } from "./TalentName";
 
 type Translate = (
 	key: string,
@@ -57,6 +58,17 @@ type VacancyData = {
 	appliedAt?: string | null;
 	vacancy?: { id?: string; title?: string | null } | null;
 	project?: { name?: string | null } | null;
+};
+
+type CheckpointData = {
+	number?: number;
+	status?: string;
+	startedAt?: string | null;
+	dueAt?: string | null;
+	sprint?: { number: number; from: string; to: string } | null;
+	curator?: { name?: string | null; specialityId?: string | null } | null;
+	author?: { name?: string | null; specialityId?: string | null } | null;
+	project?: { name?: string | null; slug?: string | null } | null;
 };
 
 type SlotOptions = {
@@ -194,12 +206,83 @@ function vacancySlot(
 	};
 }
 
+const span = (from?: string | null, to?: string | null) =>
+	from && to ? `${dayjs(from).format("D MMM")} – ${day(to)}` : "—";
+
+function checkpointSlot(
+	context: RoomContext,
+	{ t }: SlotOptions,
+): ChatContextSlot {
+	const data = (context.data ?? {}) as CheckpointData;
+	const dates = span(data.startedAt, data.dueAt);
+	const closed = data.status === "Closed" || data.status === "Cancelled";
+
+	// The project is the chat's own name, so the line says which checkpoint and when.
+	return {
+		tag: t("chat.kind.checkpoint", "Checkpoint"),
+		summary: `#${data.number ?? 1} · ${dates}`,
+		closed,
+		fields: [
+			{
+				label: t("chat.context.checkpoint.dates", "Dates"),
+				value: dates,
+			},
+			{
+				label: t("chat.context.checkpoint.sprint", "Current sprint"),
+				value: data.sprint
+					? t(
+							"chat.context.checkpoint.sprintValue",
+							"Sprint {number} · {dates}",
+							{
+								number: String(data.sprint.number),
+								dates: span(data.sprint.from, data.sprint.to),
+							},
+						)
+					: "—",
+			},
+			{
+				label: t("chat.context.checkpoint.author", "Author"),
+				value: (
+					<TalentName
+						name={dash(data.author?.name)}
+						specialityId={data.author?.specialityId}
+					/>
+				),
+				span: "half",
+			},
+			{
+				label: t("chat.context.checkpoint.curator", "Curator"),
+				value: (
+					<TalentName
+						name={dash(data.curator?.name)}
+						specialityId={data.curator?.specialityId}
+					/>
+				),
+				span: "half",
+			},
+		],
+		actions: data.project?.slug
+			? [
+					{
+						key: "project",
+						label: t(
+							"chat.context.checkpoint.openProject",
+							"Open project page",
+						),
+						href: `/project/${data.project.slug}`,
+					},
+				]
+			: [],
+	};
+}
+
 const KINDS: Record<
 	string,
 	(context: RoomContext, options: SlotOptions) => ChatContextSlot
 > = {
 	"advice-request": adviceSlot,
 	"vacancy-application": vacancySlot,
+	checkpoint: checkpointSlot,
 };
 
 /** `null` for kinds without a context line — direct chats. */

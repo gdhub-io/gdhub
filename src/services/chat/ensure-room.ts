@@ -181,38 +181,8 @@ export async function ensureChatRoom(
 	});
 
 	if (autoJoinInvitees) {
-		const baseUrl = env("MATRIX_CHAT_BASE_URL");
 		await Promise.all(
-			inviteeUserIds.map(async (inviteeId) => {
-				try {
-					// Backend device, separate from the invitee's browser session.
-					const invitee = await getMatrixUserToken(inviteeId, "svc_autojoin");
-					const resp = await fetch(
-						`${baseUrl}/_matrix/client/v3/rooms/${encodeURIComponent(roomId)}/join`,
-						{
-							method: "POST",
-							headers: {
-								"Content-Type": "application/json",
-								Authorization: `Bearer ${invitee.accessToken}`,
-							},
-							body: "{}",
-						},
-					);
-					if (!resp.ok) {
-						throw new Error(`${resp.status} ${await resp.text()}`);
-					}
-					await markRoomRead(baseUrl, roomId, invitee.accessToken).catch(
-						(error) =>
-							console.error(
-								`[chat] read receipt failed for ${inviteeId}`,
-								error,
-							),
-					);
-				} catch (error) {
-					// The invite still stands — the user can accept manually.
-					console.error(`[chat] auto-join failed for ${inviteeId}`, error);
-				}
-			}),
+			inviteeUserIds.map((inviteeId) => autoJoinRoom(roomId, inviteeId)),
 		);
 	}
 
@@ -243,6 +213,38 @@ export async function ensureChatRoom(
 	}
 
 	return { chatRoomId: row.id, roomId, created: true };
+}
+
+/**
+ * Accepts an invite on the user's behalf, for rooms they asked to be in by
+ * joining something else (a team, a checkpoint). Best-effort: on failure the
+ * invite still stands and the user can accept it by hand.
+ */
+export async function autoJoinRoom(roomId: string, userId: string) {
+	const baseUrl = env("MATRIX_CHAT_BASE_URL");
+	try {
+		// Backend device, separate from the invitee's browser session.
+		const invitee = await getMatrixUserToken(userId, "svc_autojoin");
+		const resp = await fetch(
+			`${baseUrl}/_matrix/client/v3/rooms/${encodeURIComponent(roomId)}/join`,
+			{
+				method: "POST",
+				headers: {
+					"Content-Type": "application/json",
+					Authorization: `Bearer ${invitee.accessToken}`,
+				},
+				body: "{}",
+			},
+		);
+		if (!resp.ok) {
+			throw new Error(`${resp.status} ${await resp.text()}`);
+		}
+		await markRoomRead(baseUrl, roomId, invitee.accessToken).catch((error) =>
+			console.error(`[chat] read receipt failed for ${userId}`, error),
+		);
+	} catch (error) {
+		console.error(`[chat] auto-join failed for ${userId}`, error);
+	}
 }
 
 // A backend join leaves the invite unread: ten minutes later Synapse emails

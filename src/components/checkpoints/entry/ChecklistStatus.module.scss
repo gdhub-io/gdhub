@@ -1,0 +1,27 @@
+.status {
+	display: inline-flex;
+	flex: none;
+	align-items: center;
+	justify-content: center;
+	width: var(--gd-space-6);
+	height: var(--gd-space-6);
+	border: 1px solid var(--gd-color-text);
+	border-radius: var(--gd-radius-pill);
+	corner-shape: round;
+	color: var(--gd-color-text);
+	font-size: var(--gd-font-size-body-sm);
+	font-weight: 600;
+	font-feature-settings: "tnum";
+	line-height: 1;
+
+	&[data-state="done"] {
+		border-color: var(--gd-success-tint);
+		background: var(--gd-success-tint);
+		color: var(--gd-success-on-tint);
+	}
+
+	&[data-state="locked"] {
+		border-color: var(--gd-color-border-strong);
+		color: var(--gd-color-text-tertiary);
+	}
+}

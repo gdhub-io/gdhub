@@ -3,6 +3,10 @@ import { isAllowedByDefault } from "@/config/permissions/defaults";
 import { SpaceRole } from "@/config/permissions/roles";
 import { advisorSpace } from "@/config/spaces/advisor";
 import { permissionsOf } from "@/config/spaces/define-space";
+import { publishForTest } from "./helpers/legal";
+
+// Unpublished until paid advising has a seller (GDHUB-108); its rules still hold.
+publishForTest("AdvisorAgreement");
 
 const authMock = vi.fn();
 const specialityCount = vi.fn();
@@ -14,6 +18,8 @@ const requestGroupBy = vi.fn();
 const requestUpdate = vi.fn();
 const memberFindMany = vi.fn();
 const specialityUpdateMany = vi.fn();
+const acceptanceFindFirst = vi.fn();
+const acceptanceCreateMany = vi.fn();
 
 vi.mock("@/auth", () => ({ auth: () => authMock() }));
 
@@ -38,6 +44,19 @@ vi.mock("@/services/prisma", () => ({
 			update: (...a: unknown[]) => requestUpdate(...a),
 		},
 		teamMember: { findMany: (...a: unknown[]) => memberFindMany(...a) },
+		legalAcceptance: {
+			findFirst: (...a: unknown[]) => acceptanceFindFirst(...a),
+			createMany: (...a: unknown[]) => acceptanceCreateMany(...a),
+		},
+		$transaction: (run: (tx: unknown) => unknown) =>
+			run({
+				speciality: {
+					updateMany: (...a: unknown[]) => specialityUpdateMany(...a),
+				},
+				legalAcceptance: {
+					createMany: (...a: unknown[]) => acceptanceCreateMany(...a),
+				},
+			}),
 	},
 }));
 
@@ -53,13 +72,14 @@ beforeEach(() => {
 });
 
 describe("advisor space definition", () => {
-	it("declares the three sections the space is made of", () => {
+	it("declares the sections the space is made of", () => {
 		expect(permissionsOf(advisorSpace)).toEqual(
 			expect.arrayContaining([
 				"advisor.requests.view",
 				"advisor.requests.manage",
-				"advisor.reviews.create",
-				"advisor.reviews.delete",
+				"advisor.checkpoints.view",
+				"advisor.checkpoints.manage",
+				"advisor.calendar.view",
 				"advisor.settings.manage",
 			]),
 		);
@@ -80,7 +100,7 @@ describe("advisor space definition", () => {
 
 describe("advisor space adapter", () => {
 	const resolve = async () => {
-		const { advisorSpaceAdapter } = await import("@/repositories/advisor.space");
+		const { advisorSpaceAdapter } = await import("@/repositories/advisor/space");
 		return advisorSpaceAdapter.resolve?.("", advisor);
 	};
 
@@ -100,7 +120,7 @@ describe("advisor space adapter", () => {
 
 describe("inbox filters", () => {
 	it("keeps declined and withdrawn questions out of every working filter", async () => {
-		const { REQUEST_FILTERS } = await import("@/repositories/advisor.requests");
+		const { REQUEST_FILTERS } = await import("@/repositories/advisor/requests");
 
 		for (const filter of ["new", "inProgress", "answered"] as const) {
 			expect(REQUEST_FILTERS[filter]).not.toContain("Rejected");
@@ -109,7 +129,7 @@ describe("inbox filters", () => {
 	});
 
 	it("answers only for the status that means the advisor finished", async () => {
-		const { REQUEST_FILTERS } = await import("@/repositories/advisor.requests");
+		const { REQUEST_FILTERS } = await import("@/repositories/advisor/requests");
 
 		expect(REQUEST_FILTERS.answered).toEqual(["Executed"]);
 		// `all` filters on nothing, which is what shows the history.
@@ -118,7 +138,7 @@ describe("inbox filters", () => {
 
 	it("counts the inbox and not the search", async () => {
 		const { countAdvisorRequests } = await import(
-			"@/repositories/advisor.requests"
+			"@/repositories/advisor/requests"
 		);
 
 		requestGroupBy.mockResolvedValue([
@@ -138,10 +158,10 @@ describe("inbox filters", () => {
 
 describe("listing the inbox", () => {
 	const list = async (args: Parameters<
-		typeof import("@/repositories/advisor.requests").listAdvisorRequests
+		typeof import("@/repositories/advisor/requests").listAdvisorRequests
 	>[1]) => {
 		const { listAdvisorRequests } = await import(
-			"@/repositories/advisor.requests"
+			"@/repositories/advisor/requests"
 		);
 		await listAdvisorRequests("u-advisor", args);
 		return requestFindMany.mock.calls.at(-1)?.[0] as {
@@ -189,7 +209,7 @@ describe("listing the inbox", () => {
 describe("the speciality a question was asked in", () => {
 	const askedIn = async () => {
 		const { askedInSpeciality } = await import(
-			"@/repositories/advisor.requests"
+			"@/repositories/advisor/requests"
 		);
 		return askedInSpeciality("u-advisor");
 	};
@@ -276,6 +296,44 @@ describe("turning mentorship on", () => {
 
 	beforeEach(() => {
 		specialityUpdateMany.mockResolvedValue({ count: 1 });
+		// The Advisor Agreement in effect is already accepted unless a test says otherwise.
+		acceptanceFindFirst.mockResolvedValue({ id: "acc-1" });
+	});
+
+	it("refuses without the Advisor Agreement, and writes nothing it would keep", async () => {
+		acceptanceFindFirst.mockResolvedValue(null);
+
+		const response = await save({ enabled: true, specialityId: "spec-1" });
+
+		expect(response.status).toBe(400);
+		expect(await response.json()).toMatchObject({
+			details: { reason: "legal.required", code: "AdvisorAgreement" },
+		});
+		expect(acceptanceCreateMany).not.toHaveBeenCalled();
+	});
+
+	it("records the agreement when it is sent with the switch", async () => {
+		acceptanceFindFirst.mockResolvedValue(null);
+
+		const response = await save({
+			enabled: true,
+			specialityId: "spec-1",
+			legal: [{ code: "AdvisorAgreement", version: 1 }],
+		});
+
+		expect(response.status).toBe(200);
+		expect(acceptanceCreateMany.mock.calls[0][0].data[0]).toMatchObject({
+			userId: "u-advisor",
+			code: "AdvisorAgreement",
+			context: "AdvisorJoin",
+		});
+	});
+
+	it("does not ask again once the version in effect is accepted", async () => {
+		const response = await save({ enabled: true, specialityId: "spec-1" });
+
+		expect(response.status).toBe(200);
+		expect(acceptanceCreateMany).not.toHaveBeenCalled();
 	});
 
 	/**

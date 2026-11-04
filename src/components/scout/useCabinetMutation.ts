@@ -2,7 +2,7 @@ import { useMutation, useQueryClient } from "@tanstack/react-query";
 import { useTranslate } from "@tolgee/react";
 import { App } from "antd";
 import axios from "axios";
-import type { CabinetUpdate, ScoutCabinet } from "@/repositories/scout";
+import type { CabinetUpdate, ScoutCabinet } from "@/repositories/scout/scout";
 
 /** Saves a slice of the cabinet and refreshes the copy the screens read. */
 export function useCabinetMutation() {

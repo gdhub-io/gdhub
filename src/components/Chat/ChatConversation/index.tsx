@@ -225,7 +225,14 @@ export function ChatInvite({
 }
 
 /** A conversation with no messages yet. Frame `u8M7E`. */
-export function EmptyConversation({ name }: { name: string }) {
+export function EmptyConversation({
+	name,
+	group = false,
+}: {
+	name: string;
+	/** More than two people in the room: the privacy line names everyone. */
+	group?: boolean;
+}) {
 	const { t } = useTranslate();
 	return (
 		<div className={styles.center}>
@@ -233,10 +240,17 @@ export function EmptyConversation({ name }: { name: string }) {
 				size="compact"
 				icon={IconMoodSmile}
 				title={t("chat.emptyRoom.title", "Say hello to {name}", { name })}
-				description={t(
-					"chat.emptyRoom.description",
-					"Only the two of you can see this conversation.",
-				)}
+				description={
+					group
+						? t(
+								"chat.emptyRoom.groupDescription",
+								"Only the people in this chat can see it.",
+							)
+						: t(
+								"chat.emptyRoom.description",
+								"Only the two of you can see this conversation.",
+							)
+				}
 			/>
 		</div>
 	);

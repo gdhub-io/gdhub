@@ -6,6 +6,7 @@ import {
 	withAuth,
 	withValidation,
 } from "@/lib/api-handlers";
+import { CONFIRMED_MEMBERS } from "@/repositories/project/team";
 import { NovuService } from "@/services/novu";
 import { prisma } from "@/services/prisma";
 
@@ -25,6 +26,24 @@ export const POST = withAuth({ mode: "user" })(
 			if (!currentUser) return apiError.unauthorized();
 			const { topic, projectId, toUserId, comment } =
 				body as CreateAdviceRequestBody;
+
+			// Advice is asked for one's own project: authored, or a team one is on today.
+			const ownProject = await prisma.project.count({
+				where: {
+					id: projectId,
+					OR: [
+						{ authorId: currentUser.id },
+						{
+							team: {
+								members: {
+									some: { ...CONFIRMED_MEMBERS, userId: currentUser.id },
+								},
+							},
+						},
+					],
+				},
+			});
+			if (!ownProject) return apiError.notFound("Project not found");
 
 			const adviceRequest = await prisma.adviceRequest.create({
 				data: {

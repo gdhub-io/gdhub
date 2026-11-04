@@ -13,19 +13,15 @@ import {
 	Flex,
 	Typography,
 } from "antd";
-import Blocks from "editorjs-blocks-react-renderer";
 import dynamic from "next/dynamic";
-import type { ComponentProps } from "react";
 import { useEffect, useState } from "react";
-import ReactMarkdown from "react-markdown";
-import rehypeRaw from "rehype-raw";
-import rehypeSanitize from "rehype-sanitize";
 import { ApplauseButton } from "@/components/ApplauseButton";
 import { PublicPageHeader } from "@/components/layouts/PublicPageHeader";
 import { PublishedDate } from "@/components/PublishedDate";
+import { SafeBlocks } from "@/components/ui/SafeBlocks";
+import { SafeMarkdown } from "@/components/ui/SafeMarkdown";
 import { ViewCount } from "@/components/ViewCount";
 import { getCleanTextContent } from "@/helpers/content";
-import { editorjsRenderers } from "@/helpers/editorjs-renderers";
 import { imageSrcSet, optimizedImage } from "@/helpers/image";
 import { useContentPageView } from "@/hooks/useContentViews";
 import { useDevlogName } from "@/hooks/useDevlogName";
@@ -44,12 +40,6 @@ interface EditorJsData {
 	time?: OutputData["time"];
 	blocks?: EditorJsBlock[];
 	version?: OutputData["version"];
-}
-
-interface PreparedEditorJsData {
-	time: number;
-	blocks: OutputBlockData[];
-	version: string;
 }
 
 export interface Post {
@@ -166,43 +156,9 @@ export function DevlogPostClient({ post }: PageProps) {
 
 	useContentPageView("ProjectReport", post.id);
 
-	const prepareEditorjsData = (
-		data: EditorJsData | undefined,
-	): PreparedEditorJsData => {
-		if (!data?.blocks || !Array.isArray(data.blocks)) {
-			return { time: Date.now(), blocks: [], version: "2.31.0" };
-		}
-
-		// Filter out invalid blocks
-		const validBlocks = data.blocks.filter((block) => {
-			return !!block?.type && block.data !== undefined;
-		});
-
-		return {
-			time: data.time || Date.now(),
-			blocks: validBlocks,
-			version: data.version || "2.31.0",
-		};
-	};
-
 	if (!post) {
 		return null;
 	}
-
-	const markdownRehypePlugins = [
-		rehypeRaw,
-		[
-			rehypeSanitize,
-			{
-				tagNames: ["img", "u", "strong", "em", "a", "p", "br", "div", "span"],
-				attributes: {
-					img: ["src", "alt", "width", "height", "style"],
-					a: ["href", "target", "rel"],
-					"*": ["style", "className"],
-				},
-			},
-		],
-	] as unknown as ComponentProps<typeof ReactMarkdown>["rehypePlugins"];
 
 	return (
 		<>
@@ -267,13 +223,9 @@ export function DevlogPostClient({ post }: PageProps) {
 							)}
 
 							{post.contentEditor ? (
-								<Blocks
-									data={prepareEditorjsData(post.contentEditor)}
-									renderers={editorjsRenderers}
-								/>
+								<SafeBlocks data={post.contentEditor} />
 							) : (
-								<ReactMarkdown
-									rehypePlugins={markdownRehypePlugins}
+								<SafeMarkdown
 									components={{
 										img: ({ node, ...props }) => {
 											// Check whether there are spaces before and after the img tag
@@ -340,7 +292,7 @@ export function DevlogPostClient({ post }: PageProps) {
 									}}
 								>
 									{post?.content || ""}
-								</ReactMarkdown>
+								</SafeMarkdown>
 							)}
 						</div>
 					</Card>

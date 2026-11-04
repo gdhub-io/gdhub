@@ -2,6 +2,8 @@
 // this into client components.
 
 import crypto from "node:crypto";
+import { Environment, Paddle } from "@paddle/paddle-node-sdk";
+import { paddleLive } from "./environment";
 
 /**
  * Verifies a Paddle webhook against the `Paddle-Signature` header
@@ -24,12 +26,8 @@ export function verifyPaddleWebhook(
 ): { ok: boolean; reason?: string } {
 	const secret = process.env.PADDLE_WEBHOOK_SECRET;
 
-	if (!secret) {
-		if (process.env.NODE_ENV === "production") {
-			return { ok: false, reason: "PADDLE_WEBHOOK_SECRET is not set" };
-		}
-		return { ok: true, reason: "skipped (no secret outside production)" };
-	}
+	// No secret means no way to tell Paddle from anyone else, in the sandbox too.
+	if (!secret) return { ok: false, reason: "PADDLE_WEBHOOK_SECRET is not set" };
 
 	if (!signatureHeader)
 		return { ok: false, reason: "missing Paddle-Signature" };
@@ -56,10 +54,31 @@ export function verifyPaddleWebhook(
 	return { ok: true };
 }
 
-const PADDLE_API_BASE =
-	process.env.NODE_ENV === "production"
-		? "https://api.paddle.com"
-		: "https://sandbox-api.paddle.com";
+const PADDLE_API_BASE = paddleLive()
+	? "https://api.paddle.com"
+	: "https://sandbox-api.paddle.com";
+
+let client: Paddle | null = null;
+
+/** The Paddle SDK client, built on first use so a build without the key still loads. */
+export const paddleClient = () => {
+	const key = process.env.PADDLE_API_KEY;
+	if (!key)
+		throw new Error("PADDLE_API_KEY is not set in environment variables");
+
+	client ??= new Paddle(key, {
+		environment: paddleLive() ? Environment.production : Environment.sandbox,
+	});
+
+	return client;
+};
+
+/** A Paddle amount (minor units as a string) as a number, or null when absent. */
+export const paddleMinor = (value: string | null | undefined) => {
+	const parsed = value == null ? Number.NaN : Number.parseInt(value, 10);
+
+	return Number.isFinite(parsed) ? parsed : null;
+};
 
 /**
  * Returns a temporary URL to the invoice PDF for a completed transaction.

@@ -1,0 +1,63 @@
+.grid {
+	display: grid;
+	/* Six money cards share the width; the split bar keeps room for its legend. */
+	grid-template-columns: repeat(6, minmax(0, 1fr)) 200px;
+	gap: var(--gd-space-3);
+
+	@media (max-width: 1279px) {
+		grid-template-columns: repeat(4, minmax(0, 1fr));
+	}
+
+	@media (max-width: 991px) {
+		grid-template-columns: repeat(2, minmax(0, 1fr));
+	}
+}
+
+/* Running cost: a caption-sized legend in place of the note; exact sums in its tooltip. */
+.costs {
+	display: flex;
+	gap: var(--gd-space-3);
+	color: var(--gd-color-text-secondary);
+	font-size: var(--gd-font-size-caption);
+	font-weight: 500;
+	cursor: default;
+}
+
+.key {
+	display: inline-flex;
+	align-items: center;
+	gap: var(--gd-space-1);
+
+	i {
+		display: block;
+		flex: 0 0 8px;
+		width: 8px;
+		height: 8px;
+		border-radius: 50%;
+		corner-shape: round;
+	}
+
+	b {
+		color: var(--gd-color-text);
+		font-weight: 600;
+		font-feature-settings: "tnum";
+	}
+}
+
+.ai {
+	background: var(--gd-chart-series-1);
+}
+
+.calls {
+	background: var(--gd-chart-series-3);
+}
+
+.tip {
+	display: flex;
+	flex-direction: column;
+	gap: var(--gd-space-1);
+}
+
+.health {
+	font-weight: 500;
+}

@@ -1,0 +1,64 @@
+vars: {
+  d2-config: {
+    layout-engine: elk
+  }
+}
+
+direction: down
+
+title: "Checkpoint history in the scout's project modal" {
+  shape: text
+  near: top-center
+  style.font-size: 22
+}
+
+open: "A scout opens a project\n/scout/games → Checkpoints tab"
+
+visible: "Is the project visible to scouts?" {shape: diamond}
+not_found: "404 — the same as every other tab"
+
+open -> visible
+visible -> not_found: "no"
+
+each: "Every checkpoint of the project, newest first — the running one on top"
+visible -> each: "yes"
+
+status: "Its status?" {shape: diamond}
+each -> status
+
+skip: "Not listed\ndraft · awaiting a curator · cancelled"
+running: "In progress\ngoal · number · stage · dates · curator\nnot expandable: no verdict yet"
+closed: "Closed — any verdict\nstage closed · goal met · goal missed"
+
+status -> skip: "not started or cancelled"
+status -> running: "active or in review"
+status -> closed: "closed"
+
+row: "The row\ngoal · verdict\nnumber · stage · dates\ncurator: person (avatar, name, speciality · level) or AI (robot)"
+closed -> row
+
+open_row: "Opened row — the verdict's details\nthe curator's verdict text\ndirection by sprint, to the checkpoint goal and to the stage goal"
+row -> open_row: "opened"
+
+dirs: "Directions present?" {shape: diamond}
+open_row -> dirs
+dirs -> heading: "yes"
+dirs -> no_dirs: "no — closed before directions existed"
+heading: "One mark per sprint, each on its own\n→ toward · ↑ sideways · ⟳ standing still · ○ idle\nhover: the word and the curator's reason"
+no_dirs: "Verdict text only\nno empty rows"
+
+card: "Talent card\nthe curator's speciality, opened as the curator picker opens it, no hiring offer"
+row -> card: "a person's name clicked"
+
+empty: "No checkpoint listed → \"No checkpoints yet.\""
+each -> empty: "none"
+
+critical: |md
+  **Critical**
+  - The scout never receives the author's rating of the assessment, call notes, the curator's journal, the plan brief, prices or payments.
+  - The checkpoint's tasks and expected outcomes are not shown — only its goal, verdict and directions.
+  - Directions are read as stored by the sprint reviews, never recomputed.
+  - Visibility is the scout card's own rule; this tab adds no wider one.
+| {
+  near: bottom-center
+}

@@ -1,0 +1,62 @@
+vars: {
+  d2-config: {
+    layout-engine: elk
+  }
+}
+
+direction: down
+
+title: "GDHUB-56 — every artifact is checked before it counts" {
+  shape: text
+  near: top-center
+  style.font-size: 22
+}
+
+when: "When an artifact is checked" {
+  add: "Author adds an artifact\nor changes its link"
+  backup: "Check got stuck\nor was never done\n(running checkpoints only)"
+  close: "Checkpoint closes\n(day 29, before the verdict)"
+}
+
+check: "Can the curator open it?" {
+  safe: "Is the link safe to open?\n(no internal addresses)" {
+    shape: diamond
+  }
+  open: "Does it open?\n(a login page does not count)" {
+    shape: diamond
+  }
+  safe -> open: "yes"
+}
+
+result: "Result on the artifact" {
+  ready: "Ready" {style.fill: "#E8F5E9"}
+  failed: "Cannot be opened\n+ the reason" {style.fill: "#FDECEA"}
+}
+
+when.add -> check.safe: "status: Checking…"
+when.backup -> check.safe
+when.close -> check.safe
+
+check.safe -> result.failed: "no"
+check.open -> result.failed: "no"
+check.open -> result.ready: "yes"
+
+author: "The author sees it while there is time to fix it\n/user/project/[slug]/artifacts and the goal card" {
+  replace: "Cannot be opened → Replace the link"
+}
+result -> author
+
+verdict: "Verdict" {
+  rule: "An outcome counts only if its artifact is Ready"
+  report: "Report tells apart:\nnothing attached · attached, could not be opened"
+  rule -> report
+}
+result -> verdict
+
+critical: "Critical" {
+  shape: page
+  a: "Never fetch internal or private addresses"
+  b: "A login page is not the artifact"
+  c: "A build is never downloaded or run"
+  d: "Closed checkpoints are not re-checked"
+}

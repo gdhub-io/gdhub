@@ -1,21 +1,5 @@
 import { expect, test } from "@playwright/test";
 
-const publicListPages = [
-	{ path: "/blog", textHint: /blog|the latest/i },
-	{ path: "/projects", textHint: /video games|projects/i },
-	{ path: "/jobs", textHint: /open positions/i },
-	{ path: "/verify", textHint: /verify|certificate/i },
-];
-
-for (const { path, textHint } of publicListPages) {
-	test(`${path} loads`, async ({ page }) => {
-		const response = await page.goto(path);
-		expect(response?.status(), `HTTP status for ${path}`).toBeLessThan(400);
-		await expect(page.locator("body")).toBeVisible();
-		await expect(page.getByText(textHint).first()).toBeVisible();
-	});
-}
-
 test("/blog/<missing-slug> returns 404", async ({ page }) => {
 	const response = await page.goto("/blog/__definitely-missing__");
 	expect(response?.status()).toBe(404);

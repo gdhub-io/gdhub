@@ -10,6 +10,7 @@ import { Button, Card, Col, Flex, Row, Space, Typography } from "antd";
 import dayjs from "dayjs";
 import Link from "next/link";
 import type { VerifyCertificateResponse } from "@/app/api/verify/_helpers";
+import { VerdictChip } from "@/components/checkpoints/VerdictChip";
 import { AppAvatar } from "@/components/ui/AppAvatar";
 import styles from "./style.module.scss";
 
@@ -74,13 +75,44 @@ export const VerifyResult = ({ data }: VerifyResultProps) => {
 	const { t } = useTranslate();
 
 	const fileName = `${data.number}.pdf`;
+	const sourceLabel = {
+		Event: t("verify.result.event", "Event"),
+		Course: t("verify.result.course", "Course"),
+		Checkpoint: t("verify.result.checkpoint", "Checkpoint"),
+	}[data.source];
+	const issuerLabel = {
+		Event: t("verify.result.organizer", "Organizer"),
+		Course: t("verify.result.teacher", "Teacher"),
+		Checkpoint: t("verify.result.issuedBy", "Issued by"),
+	}[data.source];
+	const mentorLabel =
+		data.source === "Checkpoint"
+			? t("verify.result.curator", "Curator")
+			: t("verify.result.mentor", "Lead mentor");
+	// A checkpoint's certificate is the project's; the founder is named on it.
+	const recipient =
+		data.source === "Checkpoint" && data.project
+			? {
+					label: t("verify.result.issuedTo", "Issued to"),
+					name: data.project.name,
+					image: data.project.coverImage,
+					line: t("verify.result.founder", "Founder: {name}", {
+						name: data.participant.name,
+					}),
+				}
+			: {
+					label: t("verify.result.recipient", "Recipient"),
+					name: data.participant.name,
+					image: data.participant.image,
+					line: data.participant.specialty,
+				};
 	const pdfUrl = `/api/verify/${encodeURIComponent(data.number)}/pdf#view=FitH&pagemode=none&zoom=page-width`;
 
 	const cardBody = { padding: 24 } as const;
 
 	return (
 		<Row gutter={[20, 20]} style={{ width: "100%" }}>
-			<Col xs={24} lg={10}>
+			<Col xs={24} lg={data.signed ? 10 : 24}>
 				<Flex vertical gap={16}>
 					<Card styles={{ body: cardBody }}>
 						<Flex vertical gap={16}>
@@ -89,27 +121,27 @@ export const VerifyResult = ({ data }: VerifyResultProps) => {
 									<IconUser size={14} color="var(--gd-color-text-tertiary)" />
 								}
 							>
-								{t("verify.result.recipient", "Recipient")}
+								{recipient.label}
 							</SectionLabel>
 							<Flex gap={14} align="center">
 								<AppAvatar
 									size={56}
-									src={data.participant.image ?? undefined}
+									src={recipient.image ?? undefined}
 									style={{
 										flex: "0 0 56px",
-										background: data.participant.image ? undefined : "#d4a574",
+										background: recipient.image ? undefined : "#d4a574",
 										fontSize: 22,
 										fontWeight: 700,
 									}}
 								>
-									{initials(data.participant.name)}
+									{initials(recipient.name)}
 								</AppAvatar>
 								<Flex vertical gap={4} style={{ flex: 1, minWidth: 0 }}>
 									<Title level={4} style={{ margin: 0, fontWeight: 700 }}>
-										{data.participant.name}
+										{recipient.name}
 									</Title>
-									{data.participant.specialty && (
-										<Text type="secondary">{data.participant.specialty}</Text>
+									{recipient.line && (
+										<Text type="secondary">{recipient.line}</Text>
 									)}
 								</Flex>
 							</Flex>
@@ -176,7 +208,7 @@ export const VerifyResult = ({ data }: VerifyResultProps) => {
 									href={`/project/${data.project.slug}`}
 									target="_blank"
 									icon={<IconExternalLink size={16} />}
-									iconPosition="end"
+									iconPlacement="end"
 								>
 									{t("verify.result.viewProject", "View project")}
 								</Button>
@@ -194,7 +226,7 @@ export const VerifyResult = ({ data }: VerifyResultProps) => {
 									/>
 								}
 							>
-								{t("verify.result.event", "Event")}
+								{sourceLabel}
 							</SectionLabel>
 							<Flex gap={14} align="center">
 								<Flex
@@ -212,119 +244,140 @@ export const VerifyResult = ({ data }: VerifyResultProps) => {
 									<IconCalendarEvent size={24} />
 								</Flex>
 								<Flex vertical gap={4} style={{ flex: 1, minWidth: 0 }}>
-									{data.event.slug ? (
-										<Link
-											href={`/event/${data.event.slug}`}
-											style={{ color: "inherit" }}
-										>
+									{data.subject.href ? (
+										<Link href={data.subject.href} style={{ color: "inherit" }}>
 											<Title level={5} style={{ margin: 0, fontWeight: 600 }}>
-												{data.event.title}
+												{data.subject.title}
 											</Title>
 										</Link>
 									) : (
 										<Title level={5} style={{ margin: 0, fontWeight: 600 }}>
-											{data.event.title}
+											{data.subject.title}
 										</Title>
 									)}
-									<Text type="secondary" style={{ fontSize: 13 }}>
-										{data.event.type}
-									</Text>
+									{data.subject.kind && (
+										<Text type="secondary" style={{ fontSize: 13 }}>
+											{data.subject.kind}
+										</Text>
+									)}
 								</Flex>
 							</Flex>
 							<Flex vertical gap={14}>
 								<Space size={48} wrap>
 									<MetaItem
 										label={t("verify.result.startDate", "Start date")}
-										value={formatDate(data.event.startDate)}
+										value={formatDate(data.subject.startDate)}
 									/>
 									<MetaItem
 										label={t("verify.result.endDate", "End date")}
-										value={formatDate(data.event.endDate)}
+										value={formatDate(data.subject.endDate)}
 									/>
 								</Space>
-								{data.event.organizerName && (
+								{data.subject.issuerName && (
 									<MetaItem
-										label={t("verify.result.organizer", "Organizer")}
+										label={issuerLabel}
 										value={
-											data.event.organizerName +
-											(data.event.organizerTitle
-												? ` · ${data.event.organizerTitle}`
+											data.subject.issuerName +
+											(data.subject.issuerTitle
+												? ` · ${data.subject.issuerTitle}`
 												: "")
 										}
 									/>
 								)}
-								{data.event.mentorName && (
+								{data.subject.mentorName && (
 									<MetaItem
-										label={t("verify.result.mentor", "Lead mentor")}
+										label={mentorLabel}
 										value={
-											data.event.mentorName +
-											(data.event.mentorSpecialty
-												? ` · ${data.event.mentorSpecialty}`
+											data.subject.mentorName +
+											(data.subject.mentorSpecialty
+												? ` · ${data.subject.mentorSpecialty}`
 												: "")
 										}
 									/>
 								)}
 
-								<Button
-									type="text"
-									href={`/event/${data.event.slug}`}
-									target="_blank"
-									icon={<IconExternalLink size={16} />}
-									iconPosition="end"
-								>
-									{t("verify.result.viewEvent", "View event")}
-								</Button>
+								{data.outcome?.verdict && (
+									<MetaItem
+										label={t("verify.result.result", "Result")}
+										value={<VerdictChip verdict={data.outcome.verdict} />}
+									/>
+								)}
+								{data.outcome?.goal && (
+									<MetaItem
+										label={t("verify.result.goal", "Goal")}
+										value={data.outcome.goal}
+									/>
+								)}
+
+								{data.subject.href && (
+									<Button
+										type="text"
+										href={data.subject.href}
+										target="_blank"
+										icon={<IconExternalLink size={16} />}
+										iconPlacement="end"
+									>
+										{t("verify.result.view", "View {source}", {
+											source: sourceLabel.toLowerCase(),
+										})}
+									</Button>
+								)}
 							</Flex>
 						</Flex>
 					</Card>
 				</Flex>
 			</Col>
 
-			<Col xs={24} lg={14}>
-				<Card style={{ overflow: "hidden" }} styles={{ body: { padding: 0 } }}>
-					<Flex
-						justify="space-between"
-						align="center"
-						wrap="wrap"
-						gap={8}
-						style={{
-							padding: "14px 16px",
-						}}
+			{data.signed && (
+				<Col xs={24} lg={14}>
+					<Card
+						style={{ overflow: "hidden" }}
+						styles={{ body: { padding: 0 } }}
 					>
-						<Flex gap={10} align="center" style={{ minWidth: 0 }}>
-							<Flex
-								justify="center"
-								align="center"
-								style={{
-									flex: "0 0 32px",
-									width: 32,
-									height: 32,
-									borderRadius: 8,
-									background: "var(--gd-danger-tint)",
-									color: "var(--gd-danger-solid)",
-								}}
-							>
-								<IconFileText size={16} />
-							</Flex>
-							<Flex vertical gap={2} style={{ minWidth: 0 }}>
-								<Text
-									strong
-									style={{ fontSize: 13 }}
-									ellipsis={{ tooltip: fileName }}
+						<Flex
+							justify="space-between"
+							align="center"
+							wrap="wrap"
+							gap={8}
+							style={{
+								padding: "14px 16px",
+							}}
+						>
+							<Flex gap={10} align="center" style={{ minWidth: 0 }}>
+								<Flex
+									justify="center"
+									align="center"
+									style={{
+										flex: "0 0 32px",
+										width: 32,
+										height: 32,
+										borderRadius: 8,
+										background: "var(--gd-danger-tint)",
+										color: "var(--gd-danger-solid)",
+									}}
 								>
-									Certificate preview
-								</Text>
-								<Text type="secondary" style={{ fontSize: 12 }}>
-									{t("verify.result.signedPdf", "Signed PDF")}
-								</Text>
+									<IconFileText size={16} />
+								</Flex>
+								<Flex vertical gap={2} style={{ minWidth: 0 }}>
+									<Text
+										strong
+										style={{ fontSize: 13 }}
+										ellipsis={{ tooltip: fileName }}
+									>
+										Certificate preview
+									</Text>
+									<Text type="secondary" style={{ fontSize: 12 }}>
+										{t("verify.result.signedPdf", "Signed PDF")}
+									</Text>
+								</Flex>
 							</Flex>
 						</Flex>
-					</Flex>
-					<div className={styles.pdfViewer}>
-						<iframe src={pdfUrl} title={fileName} />
-					</div>
-				</Card>
-			</Col>
+						<div className={styles.pdfViewer}>
+							<iframe src={pdfUrl} title={fileName} />
+						</div>
+					</Card>
+				</Col>
+			)}
 		</Row>
 	);
 };

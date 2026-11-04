@@ -1,12 +1,21 @@
 import type {
 	AdviceRequestStatus as AdviceRequestStatusType,
+	AdvisorAvailabilityStatus as AdvisorAvailabilityStatusType,
 	AIThreadStatus as AIThreadStatusType,
 	ApplauseActivityType as ApplauseActivityTypeType,
 	ArtifactCheckStatus as ArtifactCheckStatusType,
 	AuditAction as AuditActionType,
 	BlogPostStatus as BlogPostStatusType,
+	CertificateSource as CertificateSourceType,
 	ChatRoomKind as ChatRoomKindType,
 	ChatRoomStatus as ChatRoomStatusType,
+	CheckpointCuratorKind as CheckpointCuratorKindType,
+	CheckpointFeeReason as CheckpointFeeReasonType,
+	CheckpointItemKind as CheckpointItemKindType,
+	CheckpointJournalKind as CheckpointJournalKindType,
+	CheckpointSessionContentStatus as CheckpointSessionContentStatusType,
+	CheckpointStatus as CheckpointStatusType,
+	CheckpointVerdict as CheckpointVerdictType,
 	ContentViewSubject as ContentViewSubjectType,
 	CourseGroupStatus as CourseGroupStatusType,
 	CourseInvoiceStatus as CourseInvoiceStatusType,
@@ -19,20 +28,16 @@ import type {
 	EventMemberStatus as EventMemberStatusType,
 	EventStatus as EventStatusType,
 	EventType as EventTypeType,
+	EvidenceMatch as EvidenceMatchType,
+	ExpertInvoicing as ExpertInvoicingType,
 	InvitationStatus as InvitationStatusType,
 	Language as LanguageType,
-	LegalAcceptanceContext as LegalAcceptanceContextType,
-	LegalActorRole as LegalActorRoleType,
-	LegalDocumentCode as LegalDocumentCodeType,
-	LegalTemplateStatus as LegalTemplateStatusType,
 	PayableType as PayableTypeType,
 	PaymentProvider as PaymentProviderType,
 	PaymentRateType as PaymentRateTypeType,
 	PaymentStatus as PaymentStatusType,
 	PrimaryInterest as PrimaryInterestType,
 	ProjectArtifactType as ProjectArtifactTypeType,
-	ProjectLegalEventType as ProjectLegalEventTypeType,
-	ProjectLegalSnapshotStatus as ProjectLegalSnapshotStatusType,
 	ProjectStatus as ProjectStatusType,
 	QueueJobStatus as QueueJobStatusType,
 	QueueJobType as QueueJobTypeType,
@@ -43,6 +48,8 @@ import type {
 	TeamMemberStatus as TeamMemberStatusType,
 	TeamVacancyStatus as TeamVacancyStatusType,
 	UserRole as UserRoleType,
+	VacancyApplicationStatus as VacancyApplicationStatusType,
+	WaitlistFeature as WaitlistFeatureType,
 } from "@gdhub-io/gdhub-prisma";
 
 /**
@@ -116,14 +123,111 @@ export const ChatRoomKind = {
 	ProjectGroup: "ProjectGroup",
 	EventGroup: "EventGroup",
 	CourseGroup: "CourseGroup",
+	Checkpoint: "Checkpoint",
 } as const satisfies Record<ChatRoomKindType, ChatRoomKindType>;
 export type ChatRoomKind = ChatRoomKindType;
+
+export const CertificateSource = {
+	Event: "Event",
+	Course: "Course",
+	Checkpoint: "Checkpoint",
+} as const satisfies Record<CertificateSourceType, CertificateSourceType>;
+export type CertificateSource = CertificateSourceType;
 
 export const ChatRoomStatus = {
 	Open: "Open",
 	Closed: "Closed",
 } as const satisfies Record<ChatRoomStatusType, ChatRoomStatusType>;
 export type ChatRoomStatus = ChatRoomStatusType;
+
+export const ArtifactCheckStatus = {
+	Pending: "Pending",
+	Readable: "Readable",
+	Unreachable: "Unreachable",
+	Unsupported: "Unsupported",
+} as const satisfies Record<ArtifactCheckStatusType, ArtifactCheckStatusType>;
+export type ArtifactCheckStatus = ArtifactCheckStatusType;
+
+export const EvidenceMatch = {
+	Matches: "Matches",
+	Partly: "Partly",
+	DoesNotMatch: "DoesNotMatch",
+	CannotTell: "CannotTell",
+} as const satisfies Record<EvidenceMatchType, EvidenceMatchType>;
+export type EvidenceMatch = EvidenceMatchType;
+
+export const CheckpointJournalKind = {
+	Evidence: "Evidence",
+	DevlogMedia: "DevlogMedia",
+	Artifact: "Artifact",
+	Review: "Review",
+	Verdict: "Verdict",
+	Letter: "Letter",
+	Platform: "Platform",
+	Snapshot: "Snapshot",
+} as const satisfies Record<
+	CheckpointJournalKindType,
+	CheckpointJournalKindType
+>;
+export type CheckpointJournalKind = CheckpointJournalKindType;
+
+export const CheckpointCuratorKind = {
+	AI: "AI",
+	Human: "Human",
+} as const satisfies Record<
+	CheckpointCuratorKindType,
+	CheckpointCuratorKindType
+>;
+export type CheckpointCuratorKind = CheckpointCuratorKindType;
+
+export const CheckpointFeeReason = {
+	Full: "Full",
+	RefundReduced: "RefundReduced",
+	Replacement: "Replacement",
+} as const satisfies Record<CheckpointFeeReasonType, CheckpointFeeReasonType>;
+export type CheckpointFeeReason = CheckpointFeeReasonType;
+
+export const CheckpointItemKind = {
+	Input: "Input",
+	Outcome: "Outcome",
+} as const satisfies Record<CheckpointItemKindType, CheckpointItemKindType>;
+export type CheckpointItemKind = CheckpointItemKindType;
+
+export const CheckpointStatus = {
+	Draft: "Draft",
+	AwaitingCurator: "AwaitingCurator",
+	Active: "Active",
+	Review: "Review",
+	Closed: "Closed",
+	Cancelled: "Cancelled",
+} as const satisfies Record<CheckpointStatusType, CheckpointStatusType>;
+export type CheckpointStatus = CheckpointStatusType;
+
+export const CheckpointVerdict = {
+	StageClosed: "StageClosed",
+	GoalMet: "GoalMet",
+	GoalMissed: "GoalMissed",
+} as const satisfies Record<CheckpointVerdictType, CheckpointVerdictType>;
+export type CheckpointVerdict = CheckpointVerdictType;
+
+export const AdvisorAvailabilityStatus = {
+	Open: "Open",
+	ConsultationsOnly: "ConsultationsOnly",
+	Away: "Away",
+} as const satisfies Record<
+	AdvisorAvailabilityStatusType,
+	AdvisorAvailabilityStatusType
+>;
+export type AdvisorAvailabilityStatus = AdvisorAvailabilityStatusType;
+
+export const CheckpointSessionContentStatus = {
+	Pending: "Pending",
+	Ready: "Ready",
+} as const satisfies Record<
+	CheckpointSessionContentStatusType,
+	CheckpointSessionContentStatusType
+>;
+export type CheckpointSessionContentStatus = CheckpointSessionContentStatusType;
 
 export const ContentViewSubject = {
 	ProjectReport: "ProjectReport",
@@ -226,6 +330,13 @@ export const EventType = {
 } as const satisfies Record<EventTypeType, EventTypeType>;
 export type EventType = EventTypeType;
 
+export const ExpertInvoicing = {
+	SelfEmployed: "SelfEmployed",
+	Company: "Company",
+	SelfBilling: "SelfBilling",
+} as const satisfies Record<ExpertInvoicingType, ExpertInvoicingType>;
+export type ExpertInvoicing = ExpertInvoicingType;
+
 export const InvitationStatus = {
 	Pending: "Pending",
 	Accepted: "Accepted",
@@ -239,40 +350,6 @@ export const Language = {
 	en: "en",
 } as const satisfies Record<LanguageType, LanguageType>;
 export type Language = LanguageType;
-
-export const LegalAcceptanceContext = {
-	ProjectCreate: "ProjectCreate",
-	InviteJoin: "InviteJoin",
-	VacancyHire: "VacancyHire",
-	MentorJoin: "MentorJoin",
-	ShareChange: "ShareChange",
-	MemberExclusion: "MemberExclusion",
-} as const satisfies Record<
-	LegalAcceptanceContextType,
-	LegalAcceptanceContextType
->;
-export type LegalAcceptanceContext = LegalAcceptanceContextType;
-
-export const LegalActorRole = {
-	Author: "Author",
-	Member: "Member",
-	Mentor: "Mentor",
-	Platform: "Platform",
-} as const satisfies Record<LegalActorRoleType, LegalActorRoleType>;
-export type LegalActorRole = LegalActorRoleType;
-
-export const LegalDocumentCode = {
-	CoDevelopmentAgreement: "CoDevelopmentAgreement",
-	CheckpointTerms: "CheckpointTerms",
-} as const satisfies Record<LegalDocumentCodeType, LegalDocumentCodeType>;
-export type LegalDocumentCode = LegalDocumentCodeType;
-
-export const LegalTemplateStatus = {
-	Draft: "Draft",
-	Published: "Published",
-	Archived: "Archived",
-} as const satisfies Record<LegalTemplateStatusType, LegalTemplateStatusType>;
-export type LegalTemplateStatus = LegalTemplateStatusType;
 
 export const PayableType = {
 	VACANCY: "VACANCY",
@@ -314,31 +391,6 @@ export const PrimaryInterest = {
 	Scout: "Scout",
 } as const satisfies Record<PrimaryInterestType, PrimaryInterestType>;
 export type PrimaryInterest = PrimaryInterestType;
-
-export const ProjectLegalEventType = {
-	ProjectCreated: "ProjectCreated",
-	AgreementAccepted: "AgreementAccepted",
-	MemberJoined: "MemberJoined",
-	MentorJoined: "MentorJoined",
-	ShareChanged: "ShareChanged",
-	MemberExcluded: "MemberExcluded",
-	MemberLeft: "MemberLeft",
-	AgreementUpdated: "AgreementUpdated",
-} as const satisfies Record<
-	ProjectLegalEventTypeType,
-	ProjectLegalEventTypeType
->;
-export type ProjectLegalEventType = ProjectLegalEventTypeType;
-
-export const ProjectLegalSnapshotStatus = {
-	Active: "Active",
-	Superseded: "Superseded",
-	Void: "Void",
-} as const satisfies Record<
-	ProjectLegalSnapshotStatusType,
-	ProjectLegalSnapshotStatusType
->;
-export type ProjectLegalSnapshotStatus = ProjectLegalSnapshotStatusType;
 
 export const ProjectStatus = {
 	Registered: "Registered",
@@ -396,14 +448,6 @@ export const SubscriptionStatus = {
 } as const satisfies Record<SubscriptionStatusType, SubscriptionStatusType>;
 export type SubscriptionStatus = SubscriptionStatusType;
 
-export const ArtifactCheckStatus = {
-	Pending: "Pending",
-	Readable: "Readable",
-	Unreachable: "Unreachable",
-	Unsupported: "Unsupported",
-} as const satisfies Record<ArtifactCheckStatusType, ArtifactCheckStatusType>;
-export type ArtifactCheckStatus = ArtifactCheckStatusType;
-
 export const ProjectArtifactType = {
 	JDA: "JDA",
 	Concept: "Concept",
@@ -418,13 +462,22 @@ export const ProjectArtifactType = {
 export type ProjectArtifactType = ProjectArtifactTypeType;
 
 export const TeamMemberStatus = {
-	Applicant: "Applicant",
 	Hired: "Hired",
-	Rejected: "Rejected",
 	Fired: "Fired",
 	Founder: "Founder",
 } as const satisfies Record<TeamMemberStatusType, TeamMemberStatusType>;
 export type TeamMemberStatus = TeamMemberStatusType;
+
+export const VacancyApplicationStatus = {
+	Submitted: "Submitted",
+	Hired: "Hired",
+	Rejected: "Rejected",
+	Withdrawn: "Withdrawn",
+} as const satisfies Record<
+	VacancyApplicationStatusType,
+	VacancyApplicationStatusType
+>;
+export type VacancyApplicationStatus = VacancyApplicationStatusType;
 
 export const TeamVacancyStatus = {
 	Draft: "Draft",
@@ -441,3 +494,9 @@ export const UserRole = {
 	Admin: "Admin",
 } as const satisfies Record<UserRoleType, UserRoleType>;
 export type UserRole = UserRoleType;
+
+export const WaitlistFeature = {
+	ExpertCheckpoint: "ExpertCheckpoint",
+	ScoutSpace: "ScoutSpace",
+} as const satisfies Record<WaitlistFeatureType, WaitlistFeatureType>;
+export type WaitlistFeature = WaitlistFeatureType;

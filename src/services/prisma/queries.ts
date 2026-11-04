@@ -1,4 +1,4 @@
-import { getProjectCardFacts } from "@/repositories/project-card.repository";
+import { getProjectCardFacts } from "@/repositories/project/card";
 import type { ProjectActivityRow, ProjectLink } from "@/types/project";
 import { prisma } from ".";
 
@@ -107,8 +107,11 @@ export const getWorkedProjects = async ({
 
 export const getPublishedStoreProjects = async ({
 	limit,
+	platform,
 }: {
 	limit?: number;
+	/** Only projects with a link to this storefront. */
+	platform?: string;
 } = {}) => {
 	const projects = await prisma.project.getProjectsOrderedByActivity({
 		order: "desc",
@@ -145,6 +148,12 @@ export const getPublishedStoreProjects = async ({
 			const workflow = workflowByProjectId.get(project.id);
 
 			if (!isProjectAvailableOnStores({ links: project.links, workflow })) {
+				return [];
+			}
+			if (
+				platform &&
+				!getStoreLinks(project.links).some((link) => link.platform === platform)
+			) {
 				return [];
 			}
 

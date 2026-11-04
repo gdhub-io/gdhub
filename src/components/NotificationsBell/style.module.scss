@@ -4,12 +4,11 @@
   }
 
   .bellIcon {
-    width: 18px;
-    height: 18px;
+    width: 20px;
+    height: 20px;
     display: block;
-    color: var(--gd-color-text);
-    position: relative;
-    top: 1px;
+    // antd's text colour, as the chat icon beside it: the dot alone is solid graphite.
+    color: var(--ant-color-text);
   }
 
   .popoverTrigger {
@@ -22,10 +21,16 @@
     height: 32px;
     padding: 0;
 
+    // As antd's text button behind the chat icon: one hover for both header buttons.
     &:hover {
-      background-color: var(--gd-fill-base);
+      background-color: var(--gd-fill-strong);
     }
   }
+}
+
+// Open, as the chat button is (07.02): Novu marks only its popover, never the trigger.
+:global(body):has(.popoverContent[data-open="true"]) .component .popoverTrigger {
+  background-color: var(--gd-fill-strong);
 }
 
 .popoverContent {

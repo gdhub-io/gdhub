@@ -43,13 +43,13 @@ export function VerifyNumberClient({
 								"Issued to {name} on {issuedAt}.",
 								{
 									name: data.participant.name,
-									event: data.event.title,
+									subject: data.subject.title,
 									issuedAt: dayjs(data.issuedAt).format("DD MMMM YYYY"),
 								},
 							)
 						: t(
 								"page.verify.notFound.subtitle",
-								"We couldn't find a signed certificate with this number.",
+								"We couldn't find a certificate with this number.",
 							)
 				}
 				subLine={
@@ -69,20 +69,22 @@ export function VerifyNumberClient({
 							{t("verify.result.copy", "Copy link")}
 						</Button>
 
-						<Tooltip title={t("verify.result.download", "Download PDF")}>
-							<Button
-								key="download-pdf"
-								type="text"
-								className={styles.projectLink}
-								icon={<IconDownload size={16} />}
-								onClick={() => {
-									window.open(
-										`/api/verify/${encodeURIComponent(number)}/download`,
-										"_blank",
-									);
-								}}
-							/>
-						</Tooltip>
+						{data?.signed && (
+							<Tooltip title={t("verify.result.download", "Download PDF")}>
+								<Button
+									key="download-pdf"
+									type="text"
+									className={styles.projectLink}
+									icon={<IconDownload size={16} />}
+									onClick={() => {
+										window.open(
+											`/api/verify/${encodeURIComponent(number)}/download`,
+											"_blank",
+										);
+									}}
+								/>
+							</Tooltip>
+						)}
 					</Space>
 				}
 				backgroundImage={VerifyCertGdhubCover.src}

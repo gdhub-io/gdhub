@@ -9,9 +9,11 @@ import { AccessProvider } from "@/components/access/AccessProvider";
 import { ChatProvider } from "@/components/Chat/ChatProvider";
 import { ProtectedShell } from "@/components/layouts/ProtectedShell";
 import { SpaceHeaderProvider } from "@/components/layouts/SpaceHeader";
+import { LegalUpdateModal } from "@/components/legal/LegalUpdateModal";
 import { requireSession } from "@/helpers/require-session";
 import { USER_SPACES_QUERY_KEY } from "@/hooks/useUserSpaces";
-import { getCachedUserSpaces } from "@/repositories/user-spaces";
+import { pendingDocuments } from "@/lib/legal/pending";
+import { getCachedUserSpaces } from "@/repositories/user/spaces";
 import { getSpaceAccess, type MaybeAccessUser } from "@/services/access";
 import { toSnapshot } from "@/services/access/snapshot";
 
@@ -32,7 +34,7 @@ export default async function AppLayout({ children }: { children: ReactNode }) {
 
 	// The header's space switcher would otherwise ask for this after hydration.
 	const queryClient = new QueryClient();
-	const [hub, admin] = await Promise.all([
+	const [hub, admin, , legalPending] = await Promise.all([
 		getSpaceAccess("hub", null, user),
 		getSpaceAccess("admin", null, user),
 		user &&
@@ -40,6 +42,9 @@ export default async function AppLayout({ children }: { children: ReactNode }) {
 				queryKey: USER_SPACES_QUERY_KEY,
 				queryFn: () => getCachedUserSpaces(user.id),
 			}),
+		// The session flag is cheap and refreshed every few minutes; the texts are
+		// read only for someone it says has something to accept.
+		user && session?.user.legalPending ? pendingDocuments(user.id) : [],
 	]);
 
 	// Handing over the session read here lets every query gated on the user
@@ -53,6 +58,9 @@ export default async function AppLayout({ children }: { children: ReactNode }) {
 					>
 						<SpaceHeaderProvider>
 							<ProtectedShell>{children}</ProtectedShell>
+							{legalPending.length > 0 && (
+								<LegalUpdateModal documents={legalPending} />
+							)}
 						</SpaceHeaderProvider>
 					</AccessProvider>
 				</ChatProvider>

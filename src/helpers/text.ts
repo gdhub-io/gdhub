@@ -32,3 +32,15 @@ export const getRelevantText = (value: unknown): string | null => {
 
 	return normalized;
 };
+
+const HTML_ESCAPES: Record<string, string> = {
+	"&": "&amp;",
+	"<": "&lt;",
+	">": "&gt;",
+	'"': "&quot;",
+	"'": "&#39;",
+};
+
+/** User text made safe to drop into an email's HTML. */
+export const escapeHtml = (text: string) =>
+	text.replace(/[&<>"']/g, (char) => HTML_ESCAPES[char]);

@@ -1,5 +1,6 @@
 import { createHmac, randomBytes } from "node:crypto";
 import type { NextRequest } from "next/server";
+import { clientIp } from "@/helpers/request";
 import { cacheClaim } from "@/services/cache";
 
 /**
@@ -39,16 +40,6 @@ const dailySalt = async (day: string) => {
 
 	return salt;
 };
-
-/**
- * Behind a proxy the socket address is the proxy's, so the forwarded headers are
- * the only signal. Empty when neither is set — locally, that collapses every
- * visitor into one, which undercounts rather than inflates.
- */
-const clientIp = (req: NextRequest) =>
-	req.headers.get("x-forwarded-for")?.split(",")[0]?.trim() ||
-	req.headers.get("x-real-ip")?.trim() ||
-	"";
 
 /**
  * The day's opaque key for this viewer, or `undefined` when Redis is down and
