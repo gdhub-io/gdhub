@@ -47,7 +47,7 @@ export const LEGAL_DOCUMENTS = {
 			},
 			{
 				version: 2,
-				effectiveAt: "2026-11-18",
+				effectiveAt: "2026-11-04",
 				entity: "founder",
 				materialChange: true,
 				checksum:
@@ -76,7 +76,7 @@ export const LEGAL_DOCUMENTS = {
 			},
 			{
 				version: 2,
-				effectiveAt: "2026-11-18",
+				effectiveAt: "2026-11-04",
 				entity: "founder",
 				materialChange: false,
 				checksum:
@@ -100,7 +100,7 @@ export const LEGAL_DOCUMENTS = {
 			},
 			{
 				version: 2,
-				effectiveAt: "2026-11-18",
+				effectiveAt: "2026-11-04",
 				entity: "founder",
 				materialChange: false,
 				checksum:
