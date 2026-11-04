@@ -53,7 +53,13 @@
 }
 
 .lock {
+	flex: none;
 	color: var(--gd-color-text-tertiary);
+}
+
+.lockedReason {
+	max-width: 240px;
+	text-align: right;
 }
 
 // The way in is closed for now: a quiet line, not an alert — items 1 and 2 still work.
@@ -69,14 +75,6 @@
 	color: var(--gd-color-text-tertiary);
 }
 
-.srOnly {
-	position: absolute;
-	width: 1px;
-	height: 1px;
-	overflow: hidden;
-	clip-path: inset(50%);
-	white-space: nowrap;
-}
 
 .projectLine {
 	display: flex;

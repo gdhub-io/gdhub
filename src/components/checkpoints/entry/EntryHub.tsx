@@ -102,9 +102,13 @@ export function EntryHub({
 		"checkpointEntry.closed",
 		"Checkpoints open soon — we'll email you when you can head for one.",
 	);
-	const lockedReason = t(
-		"checkpointEntry.lockedReason",
-		"Locked until the step above is done",
+	const lockedUntilAbout = t(
+		"checkpointEntry.lockedUntilAbout",
+		"Opens once you tell us about yourself",
+	);
+	const lockedUntilProject = t(
+		"checkpointEntry.lockedUntilProject",
+		"Opens once your project is filled in",
 	);
 
 	const fillIn = (href: string) => (
@@ -191,7 +195,7 @@ export function EntryHub({
 		{
 			key: "project",
 			state: !aboutDone ? "locked" : projectDone ? "done" : "active",
-			lockedReason,
+			lockedReason: lockedUntilAbout,
 			title: t("checkpointEntry.project.title", "Tell us about your project"),
 			line: projectLine(),
 			action: !aboutDone
@@ -203,7 +207,7 @@ export function EntryHub({
 		{
 			key: "checkpoint",
 			state: projectDone && purchaseOpen ? "active" : "locked",
-			lockedReason: projectDone ? closedNotice : lockedReason,
+			lockedReason: projectDone ? closedNotice : lockedUntilProject,
 			title: t("checkpointEntry.checkpoint.title", "Your checkpoint"),
 			line: t(
 				"checkpointEntry.checkpoint.lineGoal",
@@ -259,12 +263,15 @@ export function EntryHub({
 						</div>
 						<div className={styles.action}>
 							{item.state === "locked" ? (
-								<>
+								<Flex align="center" gap={8}>
+									<Typography.Text
+										type="secondary"
+										className={styles.lockedReason}
+									>
+										{item.lockedReason}
+									</Typography.Text>
 									<IconLock size={16} className={styles.lock} aria-hidden />
-									<span className={styles.srOnly}>
-										{item.lockedReason ?? lockedReason}
-									</span>
-								</>
+								</Flex>
 							) : (
 								item.action
 							)}
