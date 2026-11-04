@@ -14,11 +14,11 @@ const typesenseOrigin = process.env.NEXT_PUBLIC_TYPESENSE_HOST
 	: "";
 const matrixOrigin = originOf(process.env.NEXT_PUBLIC_MATRIX_CHAT_BASE_URL);
 
-// What the tag manager loads besides analytics: Google Ads, the Crisp chat, Plerdy, Brevo tracking.
+// What the tag manager loads besides analytics: Google Ads (its conversions also go to googlesyndication.com), the Crisp chat, Plerdy, Brevo tracking.
 const tagManagerScripts =
-	"https://*.googleadservices.com https://*.doubleclick.net https://client.crisp.chat https://*.plerdy.com https://*.brevo.com https://*.sibautomation.com";
+	"https://*.googleadservices.com https://*.googlesyndication.com https://*.doubleclick.net https://client.crisp.chat https://*.plerdy.com https://*.brevo.com https://*.sibautomation.com";
 const tagManagerConnect =
-	"https://*.google.com https://*.doubleclick.net https://*.crisp.chat wss://*.relay.crisp.chat https://*.plerdy.com https://*.brevo.com https://*.sibautomation.com";
+	"https://*.google.com https://*.doubleclick.net https://*.googlesyndication.com https://*.crisp.chat wss://*.relay.crisp.chat https://*.plerdy.com https://*.brevo.com https://*.sibautomation.com";
 // Vercel's feedback toolbar, on preview deployments only.
 const vercelLive = process.env.VERCEL_ENV === "preview" ? " https://vercel.live" : "";
 const tagManagerFrames =
