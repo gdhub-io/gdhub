@@ -13,6 +13,7 @@ import {
 	marketingViewport,
 	neutral,
 	radius,
+	scrim,
 	semantic,
 	shape,
 	space,
@@ -54,6 +55,9 @@ export function designCssVariables(
 		mode === "inverse" ? fillInverse : fill,
 	)) {
 		vars[`--gd-fill-${name}`] = value;
+	}
+	for (const [name, value] of Object.entries(scrim)) {
+		vars[`--gd-scrim-${kebab(name)}`] = value;
 	}
 	for (const [step, value] of Object.entries(neutral)) {
 		vars[`--gd-neutral-${step}`] = value;

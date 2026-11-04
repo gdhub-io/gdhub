@@ -7,38 +7,39 @@ import {
 } from "@tabler/icons-react";
 import { T } from "@tolgee/react";
 import { Button, Switch } from "antd";
-import Cookies from "js-cookie";
 import Link from "next/link";
 import { useEffect, useState } from "react";
 import { IconTile } from "@/components/ui";
+import {
+	consentDecided,
+	hasGoogleConsent,
+	hasMarketingConsent,
+	saveConsent,
+} from "@/helpers/googleConsent";
 import { GTM_ID } from "@/helpers/gtm";
 import styles from "./style.module.scss";
-
-const USER_CONSENT_COOKIE_KEY = "cookie_consent_is_true";
-const GOOGLE_CONSENT_COOKIE_KEY = "google_consent_is_true";
-const USER_CONSENT_COOKIE_EXPIRE_DATE = 365;
 
 export const CookieConsent = () => {
 	// Starts as "already consented" so the banner never flashes before the cookie
 	// is read on mount.
 	const [cookieConsentIsTrue, setCookieConsentIsTrue] = useState(true);
 	const [showPreferences, setShowPreferences] = useState(false);
-	const [googleConsent, setGoogleConsent] = useState(true);
+	// Off until the visitor turns them on: a pre-ticked switch is not consent.
+	const [analytics, setAnalytics] = useState(false);
+	const [marketing, setMarketing] = useState(false);
+	const tracking = analytics || marketing;
 
 	useEffect(() => {
-		setCookieConsentIsTrue(Cookies.get(USER_CONSENT_COOKIE_KEY) === "true");
-
-		const storedGoogleConsent = Cookies.get(GOOGLE_CONSENT_COOKIE_KEY);
-		setGoogleConsent(
-			storedGoogleConsent === undefined ? true : storedGoogleConsent === "true",
-		);
+		setCookieConsentIsTrue(consentDecided());
+		setAnalytics(hasGoogleConsent());
+		setMarketing(hasMarketingConsent());
 	}, []);
 
 	useEffect(() => {
 		// Update GTM iframe in noscript container
 		if (typeof document !== "undefined" && typeof window !== "undefined") {
 			const container = document.getElementById("gtm-noscript-container");
-			if (container && googleConsent && process.env.NODE_ENV === "production") {
+			if (container && tracking && process.env.NODE_ENV === "production") {
 				container.innerHTML = `
 					<iframe
 						src="https://www.googletagmanager.com/ns.html?id=${GTM_ID}"
@@ -51,21 +52,18 @@ export const CookieConsent = () => {
 				container.innerHTML = "";
 			}
 		}
-	}, [googleConsent]);
+	}, [tracking]);
 
-	const persist = (analytics: boolean) => {
-		Cookies.set(USER_CONSENT_COOKIE_KEY, "true", {
-			expires: USER_CONSENT_COOKIE_EXPIRE_DATE,
-		});
-		Cookies.set(GOOGLE_CONSENT_COOKIE_KEY, analytics ? "true" : "false", {
-			expires: USER_CONSENT_COOKIE_EXPIRE_DATE,
-		});
-		setGoogleConsent(analytics);
+	const persist = (choice: { analytics: boolean; marketing: boolean }) => {
+		saveConsent(choice);
 		setCookieConsentIsTrue(true);
 
 		// Only a granted consent needs a reload — it is what lets the Google Tag
 		// Manager script load for the current page.
-		if (analytics && typeof window !== "undefined") {
+		if (
+			(choice.analytics || choice.marketing) &&
+			typeof window !== "undefined"
+		) {
 			window.location.reload();
 		}
 	};
@@ -102,9 +100,10 @@ export const CookieConsent = () => {
 								later from the Cookie policy page.
 							</T>
 						) : (
-							<T keyName="popup.cookie.description">
-								We use cookies to keep you signed in and to understand how the
-								platform is used. Analytics stay off until you allow them.
+							<T keyName="popup.cookie.description2">
+								We use cookies to keep you signed in, to understand how the
+								platform is used and to measure our ads. Analytics and marketing
+								stay off until you allow them.
 							</T>
 						)}
 					</p>
@@ -136,13 +135,27 @@ export const CookieConsent = () => {
 								<T keyName="popup.cookie.analytics">Analytics</T>
 							</p>
 							<p className={styles.categoryDescription}>
-								<T keyName="popup.cookie.analyticsText">
-									Google Tag Manager — helps us see which parts of GDHub get
-									used.
+								<T keyName="popup.cookie.analyticsText2">
+									Google Analytics and Plerdy — help us see which parts of GDHub
+									get used.
 								</T>
 							</p>
 						</div>
-						<Switch checked={googleConsent} onChange={setGoogleConsent} />
+						<Switch checked={analytics} onChange={setAnalytics} />
+					</div>
+					<div className={styles.category}>
+						<div className={styles.text}>
+							<p className={styles.categoryTitle}>
+								<T keyName="popup.cookie.marketing">Marketing</T>
+							</p>
+							<p className={styles.categoryDescription}>
+								<T keyName="popup.cookie.marketingText">
+									Google Ads, Google AdSense, Meta Pixel and Brevo — measure and
+									show ads, including to people who visited GDHub.
+								</T>
+							</p>
+						</div>
+						<Switch checked={marketing} onChange={setMarketing} />
 					</div>
 				</div>
 			)}
@@ -151,15 +164,20 @@ export const CookieConsent = () => {
 			    pattern, and consent given that way is not consent. */}
 			<div className={styles.actions}>
 				{showPreferences ? (
-					<Button onClick={() => persist(googleConsent)}>
+					<Button onClick={() => persist({ analytics, marketing })}>
 						<T keyName="popup.cookie.save">Save selection</T>
 					</Button>
 				) : (
-					<Button onClick={() => persist(false)}>
+					<Button
+						onClick={() => persist({ analytics: false, marketing: false })}
+					>
 						<T keyName="popup.cookie.essentialOnly">Essential only</T>
 					</Button>
 				)}
-				<Button type="primary" onClick={() => persist(true)}>
+				<Button
+					type="primary"
+					onClick={() => persist({ analytics: true, marketing: true })}
+				>
 					<T keyName="popup.cookie.acceptAll">Accept all</T>
 				</Button>
 			</div>

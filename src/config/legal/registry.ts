@@ -47,7 +47,7 @@ export const LEGAL_DOCUMENTS = {
 			},
 			{
 				version: 2,
-				effectiveAt: "2026-11-18",
+				effectiveAt: "2026-11-04",
 				entity: "founder",
 				materialChange: true,
 				checksum:
@@ -76,11 +76,11 @@ export const LEGAL_DOCUMENTS = {
 			},
 			{
 				version: 2,
-				effectiveAt: "2026-11-18",
+				effectiveAt: "2026-11-04",
 				entity: "founder",
 				materialChange: false,
 				checksum:
-					"27f8a2cb1d35de3be9bfba655ab68f6688d3c0f526f570910ec4bc2b70a0521f",
+					"a92dae749f9e9749d25a71b9968e2eae993de81d9c7cfbb65e646f199ad72ebf",
 			},
 		],
 	},
@@ -100,11 +100,11 @@ export const LEGAL_DOCUMENTS = {
 			},
 			{
 				version: 2,
-				effectiveAt: "2026-11-18",
+				effectiveAt: "2026-11-04",
 				entity: "founder",
 				materialChange: false,
 				checksum:
-					"1f3119d5af71d433970384d4a86904bfb391aa4fd963fa9fda3dcd6c0da6a538",
+					"f1ba3407b25eeee9096b23a1b718bba279ec85b322f4791afc2f423cbb9a4805",
 			},
 		],
 	},

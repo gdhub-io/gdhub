@@ -49,9 +49,10 @@ export function ContactModal({
 	});
 
 	return (
-		// A light dialog at the product's density, over the dark landing.
+		// A light dialog at the product's density, over the dark landing. Not
+		// inherited: opened from the dark footer, it took the inverse white primary.
 		<ConfigProvider
-			theme={productTheme}
+			theme={{ ...productTheme, inherit: false }}
 			input={{ variant: "filled" }}
 			textArea={{ variant: "filled" }}
 		>

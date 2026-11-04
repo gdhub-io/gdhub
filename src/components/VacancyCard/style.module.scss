@@ -68,3 +68,17 @@
 		}
 	}
 }
+
+// The dark landing: the pastel tint under white type is unreadable, so the panel goes
+// neutral and the direction moves to the icon tile (GDHUB-152, frame zmXDm).
+.jobCard[data-surface="inverse"] {
+	border-color: var(--gd-color-border);
+
+	.jobCardContent {
+		background: var(--gd-color-surface-sunken);
+	}
+
+	.jobCardDate {
+		color: var(--gd-color-text-secondary);
+	}
+}

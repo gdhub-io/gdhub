@@ -1,6 +1,7 @@
 import type { Prisma } from "@gdhub-io/gdhub-prisma";
 import { isSpaceRole, type SpaceRole } from "@/config/permissions/roles";
 import { isSpaceType, type SpaceType } from "@/config/spaces";
+import { landingExpertWhere } from "@/repositories/content/landing";
 import { getMatrix } from "@/services/access/matrix-source";
 import { prisma } from "@/services/prisma";
 
@@ -25,21 +26,31 @@ export type AdminUsersFilters = {
 	role?: SpaceRole;
 	/** Memberships that grant the requested permission; empty means "nobody". */
 	permissionGrants?: PermissionGrant[];
+	/** Landing experts only, or only those an admin put in "Top experts". */
+	experts?: ExpertFilter;
 };
+
+export const EXPERT_FILTERS = ["experts", "featured"] as const;
+export type ExpertFilter = (typeof EXPERT_FILTERS)[number];
+const isExpertFilter = (value: string): value is ExpertFilter =>
+	(EXPERT_FILTERS as readonly string[]).includes(value);
 
 /** Normalizes the raw query values the admin users list accepts. */
 export const parseAdminUsersFilters = ({
 	search,
 	spaceType,
 	role,
+	experts,
 }: {
 	search?: string;
 	spaceType?: string;
 	role?: string;
+	experts?: string;
 }): Omit<AdminUsersFilters, "permissionGrants"> => ({
 	search: search?.trim() || undefined,
 	spaceType: spaceType && isSpaceType(spaceType) ? spaceType : undefined,
 	role: role && isSpaceRole(role) ? role : undefined,
+	experts: experts && isExpertFilter(experts) ? experts : undefined,
 });
 
 /**
@@ -98,8 +109,19 @@ const grantToMembershipWhere = (
 export const buildAdminUsersWhere = (
 	filters: AdminUsersFilters,
 ): Prisma.UserWhereInput => {
-	const { search, spaceType, role, permissionGrants } = filters;
+	const { search, spaceType, role, permissionGrants, experts } = filters;
 	const where: Prisma.UserWhereInput[] = [];
+
+	if (experts) {
+		where.push({
+			specialities: {
+				some: {
+					...landingExpertWhere,
+					...(experts === "featured" ? { isFeatured: true } : {}),
+				},
+			},
+		});
+	}
 
 	if (search) {
 		where.push({

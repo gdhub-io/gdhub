@@ -1,3 +1,4 @@
+import type { SkillLevel } from "@gdhub-io/gdhub-prisma";
 import {
 	AdviceRequestStatus,
 	type Prisma,
@@ -27,6 +28,7 @@ import {
 	parseAdminUsersFilters,
 	resolvePermissionGrants,
 } from "@/repositories/admin/users";
+import { isLandingExpert } from "@/repositories/content/landing";
 import { getBrevoContactEmails } from "@/services/brevo/sync";
 import { prisma } from "@/services/prisma";
 
@@ -53,6 +55,8 @@ type AdminUserListItem = {
 	lastModifiedAt: Date;
 	/** Id and name per speciality — the id opens that speciality's talent card. */
 	specializations: { id: string; name: string }[];
+	/** In the landing's "Top experts" by an admin's choice; `null` when not an expert open to mentoring. */
+	featuredExpert: boolean | null;
 	skillCapital: SkillCapitalSummary;
 	memberships: MembershipSummary[];
 	onboardingDone: boolean;
@@ -129,6 +133,7 @@ const AdminUsersQuerySchema = z.object({
 	spaceType: z.string().optional(),
 	role: z.string().optional(),
 	permission: z.string().optional(),
+	experts: z.string().optional(),
 });
 
 type AdminUsersQuery = z.infer<typeof AdminUsersQuerySchema>;
@@ -165,7 +170,17 @@ const USER_LIST_SELECT = {
 	updatedAt: true,
 	onboardingDone: true,
 	profile: { select: { name: true, updatedAt: true } },
-	specialities: { select: { id: true, name: true, updatedAt: true } },
+	specialities: {
+		select: {
+			id: true,
+			name: true,
+			updatedAt: true,
+			level: true,
+			isOpenForMentoring: true,
+			openForQuestions: true,
+			isFeatured: true,
+		},
+	},
 } satisfies Prisma.UserSelect;
 
 const toDisplayName = (user: {
@@ -601,7 +616,15 @@ type UserRecord = {
 	updatedAt: Date;
 	onboardingDone: boolean;
 	profile: { name: string; updatedAt: Date | string } | null;
-	specialities: { id: string; name: string; updatedAt: Date | string }[];
+	specialities: {
+		id: string;
+		name: string;
+		updatedAt: Date | string;
+		level: SkillLevel | null;
+		isOpenForMentoring: boolean;
+		openForQuestions: unknown[];
+		isFeatured: boolean;
+	}[];
 };
 
 const toListItem = (
@@ -619,6 +642,10 @@ const toListItem = (
 		id: speciality.id,
 		name: speciality.name,
 	})),
+	featuredExpert: (() => {
+		const expert = user.specialities.filter(isLandingExpert);
+		return expert.length ? expert.some((row) => row.isFeatured) : null;
+	})(),
 	skillCapital: skillCapital.get(user.id) || EMPTY_CAPITAL,
 	memberships: memberships.get(user.id) || [],
 	onboardingDone: user.onboardingDone,
@@ -677,6 +704,7 @@ export const GET = pipe(
 		spaceType: spaceTypeQuery,
 		role: roleQuery,
 		permission: permissionQuery,
+		experts: expertsQuery,
 	} = body as AdminUsersQuery;
 
 	const page = toPositiveInt(pageQuery, 1);
@@ -689,6 +717,7 @@ export const GET = pipe(
 			search: searchQuery,
 			spaceType: spaceTypeQuery,
 			role: roleQuery,
+			experts: expertsQuery,
 		}),
 		permissionGrants: permission
 			? await resolvePermissionGrants(permission)

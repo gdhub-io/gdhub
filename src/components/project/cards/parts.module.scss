@@ -23,8 +23,9 @@
 .stageChip {
 	gap: 6px;
 	padding: 5px 10px;
-	background: rgba(255, 255, 255, 0.8);
-	color: var(--gd-color-text);
+	// A dark plate on artwork: white text reads on light and dark covers alike (GDHUB-152).
+	background: var(--gd-scrim-chip);
+	color: var(--gd-neutral-0);
 	backdrop-filter: blur(4px);
 }
 

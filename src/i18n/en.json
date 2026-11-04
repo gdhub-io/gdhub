@@ -4234,8 +4234,12 @@
 	"popup": {
 		"cookie": {
 			"accept": "I accept",
+			"analyticsText2": "Google Analytics and Plerdy — help us see which parts of GDHub get used.",
+			"description2": "We use cookies to keep you signed in, to understand how the platform is used and to measure our ads. Analytics and marketing stay off until you allow them.",
 			"google": "Google services (Google Tag Manager) - Allow us to analyze website traffic and usage to improve your experience",
 			"manage": "Manage cookies",
+			"marketing": "Marketing",
+			"marketingText": "Google Ads, Google AdSense, Meta Pixel and Brevo — measure and show ads, including to people who visited GDHub.",
 			"more": "Read more",
 			"preferences": "Cookie Preferences",
 			"text": "This website uses cookies to improve the user experience. By using our website you agree to the use of all cookies in accordance with our Cookie policy."

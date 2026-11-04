@@ -1,5 +1,6 @@
 import type { Meta, StoryObj } from "@storybook/nextjs";
 import { WORK_DIRECTIONS } from "@/components/DirectionBadge";
+import { InverseBand } from "@/components/ui/InverseBand";
 import { VacancyCard, type VacancyCardProps } from "./index";
 
 /** Cooperation type drives what the card footer shows. */
@@ -95,4 +96,21 @@ export const ForExperience: Story = {
 		projectName: "Neon Drift",
 		cooperation: "experience",
 	},
+};
+
+/** On the dark landing (GDHUB-152): a neutral panel, the direction in the icon tile. */
+export const OnDarkLanding: Story = {
+	render: ({ cooperation, ...args }) => (
+		<InverseBand style={{ padding: 24 }}>
+			<div style={{ width: 320 }}>
+				<VacancyCard
+					{...args}
+					surface="inverse"
+					finishedAt="2026-09-02"
+					detailsHref="#"
+					{...cooperationProps(cooperation)}
+				/>
+			</div>
+		</InverseBand>
+	),
 };
