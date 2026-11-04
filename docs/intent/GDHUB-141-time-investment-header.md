@@ -24,9 +24,9 @@ The hours live in profile settings, which nobody revisits, so they go stale. Che
 - **Schema change:** it goes through the two-repo loop.
 - **Design:** frame 02.25 (`LzCs8`).
   - The button is text-styled and 32 high.
-  - The popover holds the slider (0–60), two number inputs, the switch, Cancel and Save.
+  - The popover holds two number inputs (0–80), the switch, Cancel and Save.
   - Wording: "Your time investment" and "Open to other authors' projects".
-- **Mobile:** the button is not in the header there. It lives in the avatar menu.
+- **Narrow screens:** the header shows only the clock icon, and the same popover opens from it.
 
 ## Done when
 
@@ -53,4 +53,4 @@ The hours live in profile settings, which nobody revisits, so they go stale. Che
 ## Open questions
 
 - **The first history row.** Assumed: the migration writes one row per existing profile with its current values, dated by the profile's last update, so every person's history has a starting point.
-- **A max of 60 h/wk.** Assumed: the popover's slider stops at 60, and the inputs accept up to 80 as onboarding does today.
+- **A max of 80 h/wk.** Assumed: the inputs accept up to 80, as onboarding does today.

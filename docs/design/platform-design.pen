@@ -516316,6 +516316,819 @@
           ]
         }
       ]
+    },
+    {
+      "type": "frame",
+      "id": "LzCs8",
+      "x": 5620,
+      "y": 60279,
+      "name": "02.25 · Header — my hours (time I invest per week) · states",
+      "width": 1500,
+      "fill": "$page-bg",
+      "layout": "vertical",
+      "gap": 24,
+      "padding": 32,
+      "children": [
+        {
+          "type": "text",
+          "id": "bL5FZ",
+          "name": "Title",
+          "fill": "$text-primary",
+          "content": "Time investment in the header — left of chat and notifications",
+          "fontFamily": "$font",
+          "fontSize": 20,
+          "fontWeight": "700"
+        },
+        {
+          "type": "text",
+          "id": "XLlqi",
+          "name": "Note",
+          "fill": "$text-secondary",
+          "textGrowth": "fixed-width",
+          "width": "fill_container",
+          "content": "A button with the range the person invests per week; click opens a popover to change it. Saved at once, shown to project authors, kept as history for checkpoints.",
+          "fontFamily": "$font",
+          "fontSize": 13,
+          "fontWeight": "normal"
+        },
+        {
+          "type": "frame",
+          "id": "e3dhI7",
+          "name": "States",
+          "gap": 24,
+          "children": [
+            {
+              "type": "frame",
+              "id": "ypT3G",
+              "name": "Cell · Set · 10–15 h/week",
+              "layout": "vertical",
+              "gap": 8,
+              "children": [
+                {
+                  "type": "frame",
+                  "id": "C887T",
+                  "name": "Header right",
+                  "width": 340,
+                  "height": 64,
+                  "fill": "$surface",
+                  "cornerRadius": 12,
+                  "stroke": "$border",
+                  "strokeWidth": 1,
+                  "strokeAlignment": "inner",
+                  "gap": 16,
+                  "padding": [
+                    0,
+                    16
+                  ],
+                  "justifyContent": "end",
+                  "alignItems": "center",
+                  "children": [
+                    {
+                      "type": "frame",
+                      "id": "x4ys3",
+                      "name": "Button text · my hours",
+                      "height": 32,
+                      "fill": "#00000000",
+                      "cornerRadius": 10,
+                      "gap": 6,
+                      "padding": [
+                        0,
+                        10
+                      ],
+                      "alignItems": "center",
+                      "children": [
+                        {
+                          "type": "icon",
+                          "id": "P8GA5",
+                          "name": "Clock",
+                          "width": 18,
+                          "height": 18,
+                          "icon": "clock-3",
+                          "library": "lucide",
+                          "fill": "$text-primary"
+                        },
+                        {
+                          "type": "text",
+                          "id": "N1vKv",
+                          "name": "Label",
+                          "fill": "$text-primary",
+                          "content": "10–15 h/wk",
+                          "fontFamily": "$font",
+                          "fontSize": 13,
+                          "fontWeight": "500"
+                        }
+                      ]
+                    },
+                    {
+                      "type": "icon",
+                      "id": "T9txa",
+                      "name": "message-square-more",
+                      "width": 20,
+                      "height": 20,
+                      "icon": "message-square-more",
+                      "library": "lucide",
+                      "fill": "$text-primary"
+                    },
+                    {
+                      "type": "icon",
+                      "id": "k1Auj8",
+                      "name": "inbox",
+                      "width": 20,
+                      "height": 20,
+                      "icon": "inbox",
+                      "library": "lucide",
+                      "fill": "$text-primary"
+                    },
+                    {
+                      "type": "ellipse",
+                      "id": "SwPHi",
+                      "name": "Avatar",
+                      "fill": "#D9A3AA",
+                      "width": 32,
+                      "height": 32,
+                      "stroke": "$text-primary",
+                      "strokeWidth": 1.75
+                    }
+                  ]
+                },
+                {
+                  "type": "text",
+                  "id": "sWWdG",
+                  "name": "Caption",
+                  "fill": "$text-tertiary",
+                  "content": "Set · 10–15 h/week",
+                  "fontFamily": "$font",
+                  "fontSize": 12,
+                  "fontWeight": "normal"
+                }
+              ]
+            },
+            {
+              "type": "frame",
+              "id": "jhLNV",
+              "name": "Cell · Not set yet",
+              "layout": "vertical",
+              "gap": 8,
+              "children": [
+                {
+                  "type": "frame",
+                  "id": "E4cHL",
+                  "name": "Header right",
+                  "width": 340,
+                  "height": 64,
+                  "fill": "$surface",
+                  "cornerRadius": 12,
+                  "stroke": "$border",
+                  "strokeWidth": 1,
+                  "strokeAlignment": "inner",
+                  "gap": 16,
+                  "padding": [
+                    0,
+                    16
+                  ],
+                  "justifyContent": "end",
+                  "alignItems": "center",
+                  "children": [
+                    {
+                      "type": "frame",
+                      "id": "qBHzb",
+                      "name": "Button text · my hours",
+                      "height": 32,
+                      "fill": "#00000000",
+                      "cornerRadius": 10,
+                      "gap": 6,
+                      "padding": [
+                        0,
+                        10
+                      ],
+                      "alignItems": "center",
+                      "children": [
+                        {
+                          "type": "icon",
+                          "id": "UsJjP",
+                          "name": "Clock",
+                          "width": 18,
+                          "height": 18,
+                          "icon": "clock-3",
+                          "library": "lucide",
+                          "fill": "$text-secondary"
+                        },
+                        {
+                          "type": "text",
+                          "id": "HEnix",
+                          "name": "Label",
+                          "fill": "$text-secondary",
+                          "content": "Set your hours",
+                          "fontFamily": "$font",
+                          "fontSize": 13,
+                          "fontWeight": "500"
+                        }
+                      ]
+                    },
+                    {
+                      "type": "icon",
+                      "id": "u0YM6",
+                      "name": "message-square-more",
+                      "width": 20,
+                      "height": 20,
+                      "icon": "message-square-more",
+                      "library": "lucide",
+                      "fill": "$text-primary"
+                    },
+                    {
+                      "type": "icon",
+                      "id": "O1ltz",
+                      "name": "inbox",
+                      "width": 20,
+                      "height": 20,
+                      "icon": "inbox",
+                      "library": "lucide",
+                      "fill": "$text-primary"
+                    },
+                    {
+                      "type": "ellipse",
+                      "id": "iUV9t",
+                      "name": "Avatar",
+                      "fill": "#D9A3AA",
+                      "width": 32,
+                      "height": 32,
+                      "stroke": "$text-primary",
+                      "strokeWidth": 1.75
+                    }
+                  ]
+                },
+                {
+                  "type": "text",
+                  "id": "oJsOn",
+                  "name": "Caption",
+                  "fill": "$text-tertiary",
+                  "content": "Not set yet",
+                  "fontFamily": "$font",
+                  "fontSize": 12,
+                  "fontWeight": "normal"
+                }
+              ]
+            },
+            {
+              "type": "frame",
+              "id": "DxkxX",
+              "name": "Cell · Open · popover below",
+              "layout": "vertical",
+              "gap": 8,
+              "children": [
+                {
+                  "type": "frame",
+                  "id": "t7slt3",
+                  "name": "Header right",
+                  "width": 340,
+                  "height": 64,
+                  "fill": "$surface",
+                  "cornerRadius": 12,
+                  "stroke": "$border",
+                  "strokeWidth": 1,
+                  "strokeAlignment": "inner",
+                  "gap": 16,
+                  "padding": [
+                    0,
+                    16
+                  ],
+                  "justifyContent": "end",
+                  "alignItems": "center",
+                  "children": [
+                    {
+                      "type": "frame",
+                      "id": "r8hdf",
+                      "name": "Button text · my hours",
+                      "height": 32,
+                      "fill": "$bg-subtle",
+                      "cornerRadius": 10,
+                      "gap": 6,
+                      "padding": [
+                        0,
+                        10
+                      ],
+                      "alignItems": "center",
+                      "children": [
+                        {
+                          "type": "icon",
+                          "id": "pts0r",
+                          "name": "Clock",
+                          "width": 18,
+                          "height": 18,
+                          "icon": "clock-3",
+                          "library": "lucide",
+                          "fill": "$text-primary"
+                        },
+                        {
+                          "type": "text",
+                          "id": "IBEyH",
+                          "name": "Label",
+                          "fill": "$text-primary",
+                          "content": "10–15 h/wk",
+                          "fontFamily": "$font",
+                          "fontSize": 13,
+                          "fontWeight": "500"
+                        }
+                      ]
+                    },
+                    {
+                      "type": "icon",
+                      "id": "i6kyZ",
+                      "name": "message-square-more",
+                      "width": 20,
+                      "height": 20,
+                      "icon": "message-square-more",
+                      "library": "lucide",
+                      "fill": "$text-primary"
+                    },
+                    {
+                      "type": "icon",
+                      "id": "EyzP8",
+                      "name": "inbox",
+                      "width": 20,
+                      "height": 20,
+                      "icon": "inbox",
+                      "library": "lucide",
+                      "fill": "$text-primary"
+                    },
+                    {
+                      "type": "ellipse",
+                      "id": "JW5qV",
+                      "name": "Avatar",
+                      "fill": "#D9A3AA",
+                      "width": 32,
+                      "height": 32,
+                      "stroke": "$text-primary",
+                      "strokeWidth": 1.75
+                    }
+                  ]
+                },
+                {
+                  "type": "frame",
+                  "id": "o6wGCk",
+                  "name": "Popover · my hours",
+                  "width": 360,
+                  "fill": "$surface",
+                  "cornerRadius": 16,
+                  "effect": {
+                    "type": "shadow",
+                    "shadowType": "outer",
+                    "color": "#0F0F0E1F",
+                    "offset": {
+                      "x": 0,
+                      "y": 12
+                    },
+                    "blur": 32
+                  },
+                  "layout": "vertical",
+                  "gap": 16,
+                  "padding": 20,
+                  "children": [
+                    {
+                      "type": "frame",
+                      "id": "UPbJx",
+                      "name": "Head + subtitle",
+                      "width": "fill_container",
+                      "layout": "vertical",
+                      "gap": 2,
+                      "children": [
+                        {
+                          "type": "frame",
+                          "id": "jk6le",
+                          "name": "Head",
+                          "width": "fill_container",
+                          "gap": 6,
+                          "alignItems": "center",
+                          "children": [
+                            {
+                              "type": "text",
+                              "id": "aQQ66",
+                              "name": "Title",
+                              "fill": "$text-primary",
+                              "content": "Your time investment",
+                              "fontFamily": "$font",
+                              "fontSize": 16,
+                              "fontWeight": "600"
+                            },
+                            {
+                              "type": "icon",
+                              "id": "coP2X",
+                              "name": "Info · tooltip: Hours a week you're ready to invest in game projects — your own or other authors'. Project authors see it, and checkpoints plan your team around it.",
+                              "width": 16,
+                              "height": 16,
+                              "icon": "info",
+                              "library": "lucide",
+                              "fill": "$text-tertiary"
+                            }
+                          ]
+                        },
+                        {
+                          "type": "text",
+                          "id": "RLbWo",
+                          "name": "Subtitle",
+                          "fill": "$text-secondary",
+                          "content": "For your own and others' projects",
+                          "fontFamily": "$font",
+                          "fontSize": 13,
+                          "fontWeight": "normal"
+                        }
+                      ]
+                    },
+                    {
+                      "type": "frame",
+                      "id": "ly05g",
+                      "name": "Inputs",
+                      "width": "fill_container",
+                      "gap": 8,
+                      "alignItems": "center",
+                      "children": [
+                        {
+                          "type": "frame",
+                          "id": "xep1f",
+                          "name": "InputNumber",
+                          "width": 72,
+                          "height": 32,
+                          "fill": "$bg-subtle",
+                          "cornerRadius": 10,
+                          "padding": [
+                            0,
+                            10
+                          ],
+                          "alignItems": "center",
+                          "children": [
+                            {
+                              "type": "text",
+                              "id": "sRO6q",
+                              "name": "v",
+                              "fill": "$text-primary",
+                              "content": "10",
+                              "fontFamily": "$font",
+                              "fontSize": 14,
+                              "fontWeight": "normal"
+                            }
+                          ]
+                        },
+                        {
+                          "type": "text",
+                          "id": "sgzh0",
+                          "name": "dash",
+                          "fill": "$text-tertiary",
+                          "content": "–",
+                          "fontFamily": "$font",
+                          "fontSize": 14,
+                          "fontWeight": "normal"
+                        },
+                        {
+                          "type": "frame",
+                          "id": "J7DY2p",
+                          "name": "InputNumber",
+                          "width": 72,
+                          "height": 32,
+                          "fill": "$bg-subtle",
+                          "cornerRadius": 10,
+                          "padding": [
+                            0,
+                            10
+                          ],
+                          "alignItems": "center",
+                          "children": [
+                            {
+                              "type": "text",
+                              "id": "m6uL3",
+                              "name": "v",
+                              "fill": "$text-primary",
+                              "content": "15",
+                              "fontFamily": "$font",
+                              "fontSize": 14,
+                              "fontWeight": "normal"
+                            }
+                          ]
+                        },
+                        {
+                          "type": "text",
+                          "id": "F78gH5",
+                          "name": "unit",
+                          "fill": "$text-secondary",
+                          "content": "hours a week",
+                          "fontFamily": "$font",
+                          "fontSize": 13,
+                          "fontWeight": "normal"
+                        }
+                      ]
+                    },
+                    {
+                      "type": "frame",
+                      "id": "oFMOB",
+                      "name": "Switch row · Profile.isActive",
+                      "width": "fill_container",
+                      "stroke": "$border",
+                      "strokeWidth": {
+                        "top": 1
+                      },
+                      "strokeAlignment": "inner",
+                      "gap": 12,
+                      "padding": [
+                        12,
+                        0,
+                        0,
+                        0
+                      ],
+                      "alignItems": "center",
+                      "children": [
+                        {
+                          "type": "frame",
+                          "id": "xGAIl",
+                          "name": "Text",
+                          "width": "fill_container",
+                          "layout": "vertical",
+                          "gap": 2,
+                          "children": [
+                            {
+                              "type": "text",
+                              "id": "HWFri",
+                              "name": "Label",
+                              "fill": "$text-primary",
+                              "content": "Open to other authors' projects",
+                              "fontFamily": "$font",
+                              "fontSize": 14,
+                              "fontWeight": "500"
+                            },
+                            {
+                              "type": "text",
+                              "id": "qwVar",
+                              "name": "Hint",
+                              "fill": "$text-secondary",
+                              "textGrowth": "fixed-width",
+                              "width": "fill_container",
+                              "content": "Authors can invite you.",
+                              "fontFamily": "$font",
+                              "fontSize": 12,
+                              "fontWeight": "normal"
+                            }
+                          ]
+                        },
+                        {
+                          "type": "frame",
+                          "id": "bd571",
+                          "name": "Switch · on",
+                          "width": 36,
+                          "height": 20,
+                          "fill": "$btn-black",
+                          "cornerRadius": 999,
+                          "layout": "none",
+                          "children": [
+                            {
+                              "type": "ellipse",
+                              "id": "NZfvH",
+                              "x": 18,
+                              "y": 2,
+                              "name": "Knob",
+                              "fill": "#FFFFFF",
+                              "width": 16,
+                              "height": 16
+                            }
+                          ]
+                        }
+                      ]
+                    },
+                    {
+                      "type": "frame",
+                      "id": "wat1L",
+                      "name": "Footer",
+                      "width": "fill_container",
+                      "justifyContent": "space_between",
+                      "alignItems": "center",
+                      "children": [
+                        {
+                          "type": "text",
+                          "id": "ZpNLX",
+                          "name": "Changed",
+                          "fill": "$text-tertiary",
+                          "content": "Changed 3 days ago",
+                          "fontFamily": "$font",
+                          "fontSize": 12,
+                          "fontWeight": "normal"
+                        },
+                        {
+                          "type": "frame",
+                          "id": "x9GMOD",
+                          "name": "Buttons",
+                          "gap": 8,
+                          "children": [
+                            {
+                              "type": "frame",
+                              "id": "YILV2",
+                              "name": "Button default · Cancel",
+                              "height": 32,
+                              "cornerRadius": 10,
+                              "stroke": "$border",
+                              "strokeWidth": 1,
+                              "strokeAlignment": "inner",
+                              "padding": [
+                                0,
+                                14
+                              ],
+                              "alignItems": "center",
+                              "children": [
+                                {
+                                  "type": "text",
+                                  "id": "mpRfg",
+                                  "name": "L",
+                                  "fill": "$text-primary",
+                                  "content": "Cancel",
+                                  "fontFamily": "$font",
+                                  "fontSize": 14,
+                                  "fontWeight": "normal"
+                                }
+                              ]
+                            },
+                            {
+                              "type": "frame",
+                              "id": "jWTZh",
+                              "name": "Button primary · Save",
+                              "height": 32,
+                              "fill": "$btn-black",
+                              "cornerRadius": 10,
+                              "padding": [
+                                0,
+                                14
+                              ],
+                              "alignItems": "center",
+                              "children": [
+                                {
+                                  "type": "text",
+                                  "id": "F21TV",
+                                  "name": "L",
+                                  "fill": "#FFFFFF",
+                                  "content": "Save",
+                                  "fontFamily": "$font",
+                                  "fontSize": 14,
+                                  "fontWeight": "500"
+                                }
+                              ]
+                            }
+                          ]
+                        }
+                      ]
+                    }
+                  ]
+                },
+                {
+                  "type": "text",
+                  "id": "hIh2F",
+                  "name": "Caption",
+                  "fill": "$text-tertiary",
+                  "content": "Open · popover below",
+                  "fontFamily": "$font",
+                  "fontSize": 12,
+                  "fontWeight": "normal"
+                }
+              ]
+            },
+            {
+              "type": "frame",
+              "id": "HKRkM",
+              "name": "Cell · Hover · tooltip",
+              "layout": "vertical",
+              "gap": 8,
+              "children": [
+                {
+                  "type": "frame",
+                  "id": "Q1gYAz",
+                  "name": "Header right · hover",
+                  "width": 340,
+                  "height": 64,
+                  "fill": "$surface",
+                  "cornerRadius": 12,
+                  "stroke": "$border",
+                  "strokeWidth": 1,
+                  "strokeAlignment": "inner",
+                  "gap": 16,
+                  "padding": [
+                    0,
+                    16
+                  ],
+                  "justifyContent": "end",
+                  "alignItems": "center",
+                  "children": [
+                    {
+                      "type": "frame",
+                      "id": "ry0iY",
+                      "name": "Button text · my hours",
+                      "height": 32,
+                      "fill": "$bg-subtle",
+                      "cornerRadius": 10,
+                      "gap": 6,
+                      "padding": [
+                        0,
+                        10
+                      ],
+                      "alignItems": "center",
+                      "children": [
+                        {
+                          "type": "icon",
+                          "id": "GPYvd",
+                          "name": "Clock",
+                          "width": 18,
+                          "height": 18,
+                          "icon": "clock-3",
+                          "library": "lucide",
+                          "fill": "$text-primary"
+                        },
+                        {
+                          "type": "text",
+                          "id": "UOJxj",
+                          "name": "Label",
+                          "fill": "$text-primary",
+                          "content": "10–15 h/wk",
+                          "fontFamily": "$font",
+                          "fontSize": 13,
+                          "fontWeight": "500"
+                        }
+                      ]
+                    },
+                    {
+                      "type": "icon",
+                      "id": "Zv1UJ",
+                      "name": "message-square-more",
+                      "width": 20,
+                      "height": 20,
+                      "icon": "message-square-more",
+                      "library": "lucide",
+                      "fill": "$text-primary"
+                    },
+                    {
+                      "type": "icon",
+                      "id": "FplIO",
+                      "name": "inbox",
+                      "width": 20,
+                      "height": 20,
+                      "icon": "inbox",
+                      "library": "lucide",
+                      "fill": "$text-primary"
+                    },
+                    {
+                      "type": "ellipse",
+                      "id": "vOwmI",
+                      "name": "Avatar",
+                      "fill": "#D9A3AA",
+                      "width": 32,
+                      "height": 32,
+                      "stroke": "$text-primary",
+                      "strokeWidth": 1.75
+                    }
+                  ]
+                },
+                {
+                  "type": "frame",
+                  "id": "rKK9i",
+                  "name": "Tooltip",
+                  "fill": "$ink",
+                  "cornerRadius": 8,
+                  "layout": "vertical",
+                  "gap": 2,
+                  "padding": [
+                    6,
+                    10
+                  ],
+                  "children": [
+                    {
+                      "type": "text",
+                      "id": "l2Lql",
+                      "name": "T",
+                      "fill": "#FFFFFF",
+                      "content": "Time you invest each week",
+                      "fontFamily": "$font",
+                      "fontSize": 12,
+                      "fontWeight": "600"
+                    },
+                    {
+                      "type": "text",
+                      "id": "MwTYd",
+                      "name": "S",
+                      "fill": "#FFFFFFB3",
+                      "content": "Click to change it",
+                      "fontFamily": "$font",
+                      "fontSize": 12,
+                      "fontWeight": "normal"
+                    }
+                  ]
+                },
+                {
+                  "type": "text",
+                  "id": "jGBxu",
+                  "name": "Caption",
+                  "fill": "$text-tertiary",
+                  "content": "Hover · tooltip",
+                  "fontFamily": "$font",
+                  "fontSize": 12,
+                  "fontWeight": "normal"
+                }
+              ]
+            }
+          ]
+        }
+      ]
     }
   ],
   "variables": {

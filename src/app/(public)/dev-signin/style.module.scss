@@ -1,0 +1,18 @@
+.list {
+	border: 1px solid var(--gd-color-border);
+	border-radius: var(--gd-radius-card);
+	background: var(--gd-color-surface);
+	overflow: hidden;
+}
+
+.row {
+	padding: var(--gd-space-4);
+
+	& + & {
+		border-top: 1px solid var(--gd-color-border);
+	}
+}
+
+.min0 {
+	min-width: 0;
+}

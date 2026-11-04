@@ -7,6 +7,7 @@ import {
 	withAuth,
 	withValidation,
 } from "@/lib/api-handlers";
+import { saveAvailability } from "@/repositories/user/availability";
 import { joinSpace } from "@/services/access/membership";
 import { syncUserToBrevo } from "@/services/brevo/sync";
 import { prisma } from "@/services/prisma";
@@ -47,11 +48,13 @@ export const PUT = withAuth({ mode: "user" })(
 		await prisma.profile.update({
 			where: { userId: currentUser.id },
 			data: {
-				timeForWork: timeForWork ?? undefined,
 				otherResources: otherResources ?? undefined,
-				isActive: isActive ?? undefined,
 				user: { update: { onboardingDone: true } },
 			},
+		});
+		await saveAvailability(currentUser.id, {
+			timeForWork: timeForWork ?? undefined,
+			isActive: isActive ?? undefined,
 		});
 
 		// Finishing onboarding is what turns a hub guest into a hub member. Until
