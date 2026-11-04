@@ -2,8 +2,8 @@ import { PaymentProvider } from "@gdhub-io/gdhub-prisma";
 import { type NextRequest, NextResponse } from "next/server";
 import type Stripe from "stripe";
 import {
+	oncePerEvent,
 	paymentOf,
-	recordPaymentEvent,
 	recordProviderRefund,
 } from "@/repositories/payments/records";
 import { settleCheckpointCheckout } from "@/services/checkpoints/flows/payment";
@@ -100,26 +100,26 @@ export async function POST(request: NextRequest) {
 		: await paymentOfSession(event.data.object);
 
 	// Saying "received" to a duplicate stops Stripe retrying it.
-	const fresh = await recordPaymentEvent(
+	await oncePerEvent(
 		PaymentProvider.STRIPE,
 		{ id: event.id, type: event.type, payload: JSON.parse(raw) },
 		payment?.id ?? null,
+		async () => {
+			if (!payment) {
+				console.warn(
+					"[stripe.webhook] event for an unknown payment:",
+					event.id,
+				);
+				return;
+			}
+			if (refunding) await recordRefund(payment, event.data.object);
+			else
+				await settleCheckpointCheckout(
+					payment,
+					paidOfSession(event.data.object),
+				);
+		},
 	);
-	if (!fresh) return NextResponse.json({ received: true });
-
-	if (!payment) {
-		console.warn("[stripe.webhook] event for an unknown payment:", event.id);
-
-		return NextResponse.json({ received: true });
-	}
-
-	if (refunding) {
-		await recordRefund(payment, event.data.object);
-
-		return NextResponse.json({ received: true });
-	}
-
-	await settleCheckpointCheckout(payment, paidOfSession(event.data.object));
 
 	return NextResponse.json({ received: true });
 }

@@ -1,13 +1,6 @@
 import { NextResponse } from "next/server";
+import { RATE_LIMITS, type RateWindow } from "@/config/rate-limits";
 import { cacheIncrement } from "@/services/cache";
-
-type RateWindow = { limit: number; seconds: number };
-
-/** Per user, for endpoints that spend a model call on every request. */
-export const AI_RATE_LIMITS: RateWindow[] = [
-	{ limit: 10, seconds: 60 },
-	{ limit: 60, seconds: 60 * 60 },
-];
 
 /**
  * Fixed-window limits over Redis. Returns the seconds until the tightest
@@ -18,9 +11,10 @@ export const AI_RATE_LIMITS: RateWindow[] = [
 export const rateLimit = async (
 	bucket: string,
 	subject: string,
+	windows: RateWindow[],
 ): Promise<number | null> => {
 	const hits = await Promise.all(
-		AI_RATE_LIMITS.map((window) =>
+		windows.map((window) =>
 			cacheIncrement(
 				`rate:${bucket}:${window.seconds}:${subject}`,
 				window.seconds,
@@ -35,13 +29,21 @@ export const rateLimit = async (
 	return waits.length ? Math.max(...waits) : null;
 };
 
-/** The 429 to return, or null when the user is within the limits. */
-export const limitAiCalls = async (bucket: string, userId: string) => {
-	const retryAfter = await rateLimit(bucket, userId);
-	if (retryAfter === null) return null;
-
-	return NextResponse.json(
+const tooManyRequests = (retryAfter: number) =>
+	NextResponse.json(
 		{ error: "rateLimited", statusCode: 429, retryAfter },
 		{ status: 429, headers: { "Retry-After": String(retryAfter) } },
 	);
+
+/** The 429 to return, or null when the subject is within the limits. */
+export const limitRequests = async (
+	bucket: string,
+	subject: string,
+	windows: RateWindow[],
+) => {
+	const retryAfter = await rateLimit(bucket, subject, windows);
+	return retryAfter === null ? null : tooManyRequests(retryAfter);
 };
+
+export const limitAiCalls = (bucket: string, userId: string) =>
+	limitRequests(bucket, userId, RATE_LIMITS.ai);

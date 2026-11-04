@@ -1,5 +1,67 @@
 /** @type {import('next').NextConfig} */
 
+const originOf = (url) => {
+	try {
+		return url ? new URL(url).origin : "";
+	} catch {
+		return "";
+	}
+};
+
+const appOrigin = originOf(process.env.NEXT_PUBLIC_APP_URL) || "https://gdhub.io";
+const typesenseOrigin = process.env.NEXT_PUBLIC_TYPESENSE_HOST
+	? `${process.env.NEXT_PUBLIC_TYPESENSE_PROTOCOL || "https"}://${process.env.NEXT_PUBLIC_TYPESENSE_HOST}${process.env.NEXT_PUBLIC_TYPESENSE_PORT ? `:${process.env.NEXT_PUBLIC_TYPESENSE_PORT}` : ""}`
+	: "";
+const matrixOrigin = originOf(process.env.NEXT_PUBLIC_MATRIX_CHAT_BASE_URL);
+
+// Report-only for now: violations show in the browser console and block nothing.
+// Enforce it once a release has run clean, with a nonce in place of 'unsafe-inline'.
+const contentSecurityPolicy = [
+	"default-src 'self'",
+	`script-src 'self' 'unsafe-inline'${process.env.NODE_ENV === "development" ? " 'unsafe-eval'" : ""} https://www.googletagmanager.com https://*.google-analytics.com https://cdn.paddle.com https://telegram.org https://*.daily.co https://www.youtube.com https://s.ytimg.com`,
+	"style-src 'self' 'unsafe-inline' https://fonts.googleapis.com https://cdn.paddle.com",
+	// Avatars, covers and devlog images come from user-supplied hosts.
+	"img-src 'self' data: blob: https:",
+	"media-src 'self' blob: https:",
+	"font-src 'self' data: https://fonts.gstatic.com",
+	[
+		"connect-src 'self'",
+		typesenseOrigin,
+		matrixOrigin,
+		originOf(process.env.NEXT_PUBLIC_TOLGEE_API_URL),
+		"https://*.novu.co wss://*.novu.co",
+		"https://*.googleapis.com",
+		"https://*.google-analytics.com https://*.analytics.google.com https://www.googletagmanager.com",
+		"https://*.paddle.com",
+		"https://*.daily.co wss://*.daily.co",
+		"https://cdn.sanity.io",
+	]
+		.filter(Boolean)
+		.join(" "),
+	"frame-src 'self' https://*.paddle.com https://*.daily.co https://www.youtube.com https://www.youtube-nocookie.com https://player.vimeo.com https://oauth.telegram.org https://www.googletagmanager.com",
+	"worker-src 'self' blob:",
+	"object-src 'none'",
+	"base-uri 'self'",
+	"form-action 'self' https://accounts.google.com",
+	// The certificate page frames its own PDF, so 'self' and not 'none'.
+	"frame-ancestors 'self'",
+].join("; ");
+
+const securityHeaders = [
+	{ key: "X-Content-Type-Options", value: "nosniff" },
+	{ key: "Referrer-Policy", value: "strict-origin-when-cross-origin" },
+	{ key: "X-Frame-Options", value: "SAMEORIGIN" },
+	// Daily call rooms need the camera, microphone and screen share.
+	{
+		key: "Permissions-Policy",
+		value:
+			"camera=(self \"https://*.daily.co\"), microphone=(self \"https://*.daily.co\"), display-capture=(self \"https://*.daily.co\"), geolocation=(), payment=(self \"https://*.paddle.com\"), usb=()",
+	},
+	// No includeSubDomains until every *.gdhub.io host is known to answer on HTTPS.
+	{ key: "Strict-Transport-Security", value: "max-age=63072000" },
+	{ key: "Content-Security-Policy-Report-Only", value: contentSecurityPolicy },
+];
+
 const nextConfig = {
 	reactStrictMode: true,
 	// `.next/standalone` is read by the Docker image and by nothing else, so the
@@ -167,6 +229,7 @@ const nextConfig = {
 		},
 	],
 	headers: async () => [
+		{ source: "/:path*", headers: securityHeaders },
 		// The hero game's models: a week in the browser cache, so a returning
 		// visitor loads none of them; a rebuilt model reaches everyone within it.
 		{
@@ -176,7 +239,8 @@ const nextConfig = {
 		{
 			source: "/api/:path*",
 			headers: [
-				{ key: "Access-Control-Allow-Origin", value: "*" },
+				// No other origin calls this API from a browser; the mobile app is native and has its own backend.
+				{ key: "Access-Control-Allow-Origin", value: appOrigin },
 				{
 					key: "Access-Control-Allow-Methods",
 					value: "GET,OPTIONS,PATCH,DELETE,POST,PUT",

@@ -2,22 +2,9 @@
 /* eslint-disable @next/next/no-img-element */
 import { ImageResponse } from "next/og";
 import type { NextRequest } from "next/server";
-import { optimizedImage } from "@/helpers/image";
+import { ogCover } from "@/helpers/og-cover";
 import { loadOgFont, safeDecodeURIComponent } from "@/helpers/og-font";
 import { ogPalette } from "@/helpers/og-palette";
-
-/**
- * Satori fetches the cover itself and cannot negotiate a modern format, so the
- * upload is asked for pre-cropped to the card frame as JPEG rather than at
- * whatever resolution it was uploaded at.
- */
-const OG_COVER = {
-	width: 1200,
-	height: 630,
-	fit: "crop",
-	quality: 70,
-	format: "jpg",
-} as const;
 
 export const runtime = "edge";
 
@@ -31,7 +18,7 @@ export async function GET(request: NextRequest) {
 
 		// ?img=<imageId>
 		// https://cdn.sanity.io/images/3ao2jrg0/prod/6819158b4ecfd87ff4aac88b84dbb433d863d76d-616x353.jpg
-		const coverImage = searchParams.get("img");
+		const coverImage = ogCover(searchParams.get("img"));
 		const title = searchParams.get("t");
 		const subTitle = searchParams.get("st");
 		const eventType = searchParams.get("type");
@@ -301,7 +288,7 @@ export async function GET(request: NextRequest) {
 				>
 					<img
 						aria-label="OG Image"
-						src={optimizedImage(coverImage, OG_COVER)}
+						src={coverImage}
 						width={Math.round(630 * 0.8)}
 						height={630}
 						style={{

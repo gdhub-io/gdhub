@@ -30,10 +30,12 @@ vi.mock("@/services/prisma", () => ({
 			findUnique: vi.fn().mockResolvedValue({
 				id: "vac1",
 				teamId: "team1",
+				status: "Published",
 				title: "Level designer",
 				team: { project: { authorId: "author", author: { email: "a@x" }, slug: "p" } },
 			}),
 		},
+		speciality: { count: vi.fn().mockResolvedValue(1) },
 		profile: { update: vi.fn() },
 		auditLog: { create: vi.fn() },
 	},

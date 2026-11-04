@@ -1,8 +1,4 @@
-import type {
-	PaymentRateType,
-	PaymentStatus,
-	TeamVacancyStatus,
-} from "@gdhub-io/gdhub-prisma";
+import type { PaymentRateType, PaymentStatus } from "@gdhub-io/gdhub-prisma";
 import {
 	IconDotsVertical,
 	IconExternalLink,
@@ -31,10 +27,10 @@ import Link from "next/link";
 import { useParams, useRouter, useSearchParams } from "next/navigation";
 import { useSession } from "next-auth/react";
 import { useContext, useEffect, useRef, useState } from "react";
-
 import ModernTable from "@/components/ModernTable";
 import tableStyles from "@/components/ModernTable/ModernTable.module.scss";
 import VacancyModal from "@/components/modals/VacancyModal";
+import { TeamVacancyStatus } from "@/config/prisma-enums";
 import { ProjectContext } from "@/contexts/ProjectContext";
 import { payListingFee, reconcileListingFee } from "@/hooks/useListingFee";
 import VacancyArchiveModal from "../modals/VacancyArchiveModal";
@@ -280,17 +276,19 @@ const MyProjectVacancies = () => {
 			dataIndex: "id",
 			align: "center",
 			responsive: ["md"],
-			render: (value, record) => (
-				<Tooltip title={t("MyProjectVacancies.link", "Go to the page")}>
-					<Link
-						href={`/job/${value}`}
-						target="_blank"
-						rel="noopener noreferrer"
-					>
-						<Button type="text" icon={<IconExternalLink size={18} />} />
-					</Link>
-				</Tooltip>
-			),
+			// A draft has no public page until it is published.
+			render: (value, record) =>
+				record.status === TeamVacancyStatus.Draft ? null : (
+					<Tooltip title={t("MyProjectVacancies.link", "Go to the page")}>
+						<Link
+							href={`/job/${value}`}
+							target="_blank"
+							rel="noopener noreferrer"
+						>
+							<Button type="text" icon={<IconExternalLink size={18} />} />
+						</Link>
+					</Tooltip>
+				),
 		},
 		{
 			key: "actions",

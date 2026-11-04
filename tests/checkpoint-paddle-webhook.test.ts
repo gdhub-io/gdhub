@@ -1,3 +1,4 @@
+import crypto from "node:crypto";
 import {
 	AuditAction,
 	CheckpointStatus,
@@ -15,11 +16,11 @@ import { prisma } from "@/services/prisma";
 vi.mock("@/services/prisma", () => ({
 	prisma: {
 		payment: { findUnique: vi.fn(), update: vi.fn(), updateMany: vi.fn() },
-		paymentEvent: { create: vi.fn() },
+		paymentEvent: { create: vi.fn(), deleteMany: vi.fn(async () => ({})) },
 		refund: { upsert: vi.fn(), findMany: vi.fn() },
 		auditLog: { create: vi.fn() },
 		projectCheckpoint: { updateMany: vi.fn() },
-		teamVacancy: { update: vi.fn() },
+		teamVacancy: { update: vi.fn(), updateMany: vi.fn() },
 	},
 }));
 
@@ -33,13 +34,31 @@ vi.mock("@/services/checkpoints/flows/payment", async (importOriginal) => ({
 
 vi.mock("@/services/novu", () => ({ NovuService: { send: vi.fn() } }));
 
-const post = (body: unknown) =>
-	POST(
+const SECRET = "whsec_test";
+
+const signed = (raw: string) => {
+	const ts = "1700000000";
+	const h1 = crypto
+		.createHmac("sha256", SECRET)
+		.update(`${ts}:${raw}`)
+		.digest("hex");
+	return `ts=${ts};h1=${h1}`;
+};
+
+const post = (body: unknown, signature?: string | null) => {
+	const raw = JSON.stringify(body);
+	const headers: Record<string, string> = {};
+	const value = signature === undefined ? signed(raw) : signature;
+	if (value) headers["paddle-signature"] = value;
+
+	return POST(
 		new Request("https://gdhub.io/api/paddle/webhooks", {
 			method: "POST",
-			body: JSON.stringify(body),
+			body: raw,
+			headers,
 		}) as unknown as NextRequest,
 	);
+};
 
 const checkpointPayment = {
 	id: "pay_1",
@@ -60,6 +79,7 @@ const completed = (over: Record<string, unknown> = {}) => ({
 		invoice_id: "inv_1",
 		currency_code: "USD",
 		custom_data: { paymentId: "pay_1", checkpointId: "cp1" },
+		items: [{ price: { id: "pri_ai" }, quantity: 1 }],
 		details: { totals: { grand_total: "1500" } },
 		...over,
 	},
@@ -84,8 +104,9 @@ const adjustment = (
 
 beforeEach(() => {
 	vi.clearAllMocks();
-	// Verification is skipped outside production when no secret is set.
-	vi.stubEnv("PADDLE_WEBHOOK_SECRET", "");
+	vi.stubEnv("PADDLE_WEBHOOK_SECRET", SECRET);
+	vi.stubEnv("PADDLE_AI_CHECKPOINT_PRICE_ID", "pri_ai");
+	vi.stubEnv("NEXT_PUBLIC_PADDLE_VACANCY_PRICE_ID", "pri_vac");
 	vi.mocked(prisma.payment.findUnique).mockResolvedValue(
 		checkpointPayment as never,
 	);
@@ -100,12 +121,41 @@ afterEach(() => {
 });
 
 describe("the Paddle webhook, for a checkpoint", () => {
-	it("refuses an unsigned event in production", async () => {
-		vi.stubEnv("NODE_ENV", "production");
-
-		const response = await post(completed());
+	it("refuses an unsigned event", async () => {
+		const response = await post(completed(), null);
 
 		expect(response.status).toBe(401);
+		expect(settleCheckpointCheckout).not.toHaveBeenCalled();
+	});
+
+	it("refuses a forged signature", async () => {
+		const response = await post(completed(), "ts=1700000000;h1=00ff");
+
+		expect(response.status).toBe(401);
+		expect(settleCheckpointCheckout).not.toHaveBeenCalled();
+	});
+
+	// Without a secret nobody can be told from Paddle, sandbox or not.
+	it("refuses every event when no secret is set", async () => {
+		vi.stubEnv("PADDLE_WEBHOOK_SECRET", "");
+
+		expect((await post(completed())).status).toBe(401);
+		expect(settleCheckpointCheckout).not.toHaveBeenCalled();
+	});
+
+	// A checkout opened in the browser with our custom data and the vacancy's cheaper price.
+	it.each([
+		["another price", [{ price: { id: "pri_vac" }, quantity: 1 }]],
+		["more than one", [{ price: { id: "pri_ai" }, quantity: 2 }]],
+		["extra items", [
+			{ price: { id: "pri_ai" }, quantity: 1 },
+			{ price: { id: "pri_x" }, quantity: 1 },
+		]],
+		["no items", undefined],
+	])("settles nothing for a transaction at %s", async (_label, items) => {
+		const response = await post(completed({ items }));
+
+		expect(response.status).toBe(200);
 		expect(settleCheckpointCheckout).not.toHaveBeenCalled();
 	});
 
@@ -153,6 +203,28 @@ describe("the Paddle webhook, for a checkpoint", () => {
 		expect(response.status).toBe(200);
 		expect(settleCheckpointCheckout).not.toHaveBeenCalled();
 		expect(prisma.payment.updateMany).not.toHaveBeenCalled();
+	});
+
+	// Paddle retries a 500; the retry must not read as a duplicate of the failed delivery.
+	it("forgets a delivery whose work failed, so the retry runs", async () => {
+		vi.mocked(settleCheckpointCheckout).mockRejectedValueOnce(new Error("db"));
+		vi.spyOn(console, "error").mockImplementation(() => {});
+
+		const response = await post(completed());
+
+		expect(response.status).toBe(500);
+		expect(prisma.paymentEvent.deleteMany).toHaveBeenCalledWith({
+			where: { provider: PaymentProvider.PADDLE, eventId: "evt_1" },
+		});
+	});
+
+	// A redelivery of a settled event failing before it is written must not erase the first delivery's row.
+	it("keeps an earlier delivery's row when the work fails before this one is written", async () => {
+		vi.mocked(prisma.payment.findUnique).mockRejectedValueOnce(new Error("db"));
+		vi.spyOn(console, "error").mockImplementation(() => {});
+
+		expect((await post(completed())).status).toBe(500);
+		expect(prisma.paymentEvent.deleteMany).not.toHaveBeenCalled();
 	});
 
 	it("does nothing for a delivery it has already seen", async () => {
@@ -211,7 +283,10 @@ describe("the Paddle webhook, for a vacancy", () => {
 		} as never);
 
 		const response = await post(
-			completed({ custom_data: { paymentId: "pay_1" } }),
+			completed({
+				custom_data: { paymentId: "pay_1", vacancyId: "vac1" },
+				items: [{ price: { id: "pri_vac" }, quantity: 1 }],
+			}),
 		);
 
 		expect(response.status).toBe(200);
@@ -233,6 +308,28 @@ describe("the Paddle webhook, for a vacancy", () => {
 			}),
 		);
 		expect(NovuService.send).toHaveBeenCalled();
+	});
+});
+
+describe("the Paddle webhook, for a vacancy, refuses", () => {
+	beforeEach(() => {
+		vi.mocked(prisma.payment.findUnique).mockResolvedValue({
+			...checkpointPayment,
+			payableType: PayableType.VACANCY,
+			payableId: "vac1",
+		} as never);
+	});
+
+	it.each([
+		["the checkpoint's price", { paymentId: "pay_1", vacancyId: "vac1" }, "pri_ai"],
+		["another vacancy", { paymentId: "pay_1", vacancyId: "vac2" }, "pri_vac"],
+	])("a transaction for %s", async (_label, custom_data, price) => {
+		await post(
+			completed({ custom_data, items: [{ price: { id: price }, quantity: 1 }] }),
+		);
+
+		expect(prisma.payment.updateMany).not.toHaveBeenCalled();
+		expect(prisma.teamVacancy.update).not.toHaveBeenCalled();
 	});
 });
 
@@ -356,8 +453,8 @@ describe("a Paddle refund adjustment", () => {
 		});
 	});
 
-	it("ignores an adjustment that is not a refund", async () => {
-		await post(adjustment("adjustment.created", { action: "chargeback" }));
+	it("ignores an adjustment that is neither a refund nor a chargeback", async () => {
+		await post(adjustment("adjustment.created", { action: "credit" }));
 
 		expect(prisma.paymentEvent.create).not.toHaveBeenCalled();
 		expect(prisma.refund.upsert).not.toHaveBeenCalled();
@@ -372,15 +469,93 @@ describe("a Paddle refund adjustment", () => {
 		expect(prisma.auditLog.create).not.toHaveBeenCalled();
 	});
 
-	it("leaves a vacancy refund to the vacancy flow", async () => {
+	it("marks a checkpoint payment DISPUTED on a chargeback", async () => {
+		vi.spyOn(console, "error").mockImplementation(() => {});
+
+		await post(adjustment("adjustment.created", { action: "chargeback" }));
+
+		expect(prisma.payment.update).toHaveBeenCalledWith({
+			where: { id: "pay_1" },
+			data: { status: PaymentStatus.DISPUTED },
+		});
+		expect(prisma.refund.upsert).not.toHaveBeenCalled();
+	});
+});
+
+describe("a Paddle adjustment on a listing fee", () => {
+	beforeEach(() => {
 		vi.mocked(prisma.payment.findUnique).mockResolvedValue({
 			...checkpointPayment,
 			payableType: PayableType.VACANCY,
+			payableId: "vac1",
+			amount: 900,
+			status: PaymentStatus.COMPLETED,
 		} as never);
+	});
 
-		await post(adjustment("adjustment.created"));
+	it("records an approved full refund and takes the listing down", async () => {
+		await post(adjustment("adjustment.updated", { totals: { total: "900" } }));
+
+		expect(prisma.refund.upsert).toHaveBeenCalledWith(
+			expect.objectContaining({
+				create: expect.objectContaining({ amount: 900, reason: "paddleRefund" }),
+			}),
+		);
+		expect(prisma.payment.update).toHaveBeenCalledWith({
+			where: { id: "pay_1" },
+			data: { status: PaymentStatus.REFUNDED },
+		});
+		expect(prisma.teamVacancy.updateMany).toHaveBeenCalledWith({
+			where: { id: "vac1", status: "Published" },
+			data: { status: "Closed" },
+		});
+		expect(prisma.projectCheckpoint.updateMany).not.toHaveBeenCalled();
+	});
+
+	it("adds up earlier parts to take the listing down", async () => {
+		vi.mocked(prisma.refund.findMany).mockResolvedValue([
+			{ amount: 400 },
+		] as never);
+
+		await post(adjustment("adjustment.updated", { totals: { total: "500" } }));
+
+		expect(prisma.payment.update).toHaveBeenCalledWith({
+			where: { id: "pay_1" },
+			data: { status: PaymentStatus.REFUNDED },
+		});
+		expect(prisma.teamVacancy.updateMany).toHaveBeenCalled();
+	});
+
+	it("leaves a listing up after a part refund", async () => {
+		await post(adjustment("adjustment.updated", { totals: { total: "300" } }));
+
+		expect(prisma.payment.update).toHaveBeenCalledWith({
+			where: { id: "pay_1" },
+			data: { status: PaymentStatus.PARTIALLY_REFUNDED },
+		});
+		expect(prisma.teamVacancy.updateMany).not.toHaveBeenCalled();
+	});
+
+	it("waits for Paddle to approve a refund", async () => {
+		await post(adjustment("adjustment.created", { status: "pending_approval" }));
 
 		expect(prisma.refund.upsert).not.toHaveBeenCalled();
-		expect(prisma.payment.update).not.toHaveBeenCalled();
+		expect(prisma.teamVacancy.updateMany).not.toHaveBeenCalled();
+	});
+
+	it("marks a chargeback DISPUTED and takes the listing down", async () => {
+		await post(
+			adjustment("adjustment.created", {
+				action: "chargeback",
+				status: "pending_approval",
+				totals: { total: "900" },
+			}),
+		);
+
+		expect(prisma.payment.update).toHaveBeenCalledWith({
+			where: { id: "pay_1" },
+			data: { status: PaymentStatus.DISPUTED },
+		});
+		expect(prisma.teamVacancy.updateMany).toHaveBeenCalled();
 	});
 });

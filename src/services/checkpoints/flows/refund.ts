@@ -16,6 +16,10 @@ import {
 } from "@/lib/checkpoints/status";
 import { recordCheckpointFee } from "@/repositories/checkpoints/fee";
 import { refundCaseOf, refundWrites } from "@/repositories/checkpoints/refund";
+import {
+	forgetPaymentEvent,
+	recordPaymentEvent,
+} from "@/repositories/payments/records";
 import { closeCheckpointRoom, syncChat } from "@/services/chat/checkpoint-room";
 import { notifyAuthorOfRefund } from "@/services/checkpoints/notifications";
 import { gatewayFor } from "@/services/payments/gateway";
@@ -64,13 +68,25 @@ export const issueCheckpointRefund = async (
 	const { refund: amount, provided, parts } = refundAmount(refund);
 	if (amount <= 0) return { ok: false as const, error: "nothingOwed" as const };
 
+	// Two admins at once would both pass the check above, and Paddle has no idempotency key.
+	const claim = `refund-claim:${payment.id}`;
+	const claimed = await recordPaymentEvent(
+		payment.provider,
+		{ id: claim, type: "refund.claim", payload: { adminId, reason, amount } },
+		payment.id,
+	);
+	if (!claimed)
+		return { ok: false as const, error: "alreadyRefunded" as const };
+
 	const providerRefund = await sendCheckpointRefund(
 		checkpointId,
 		{ provider: payment.provider, providerTransactionId: sessionId },
 		amount,
 	);
-	if (!providerRefund)
+	if (!providerRefund) {
+		await forgetPaymentEvent(payment.provider, claim);
 		return { ok: false as const, error: "refundFailed" as const };
+	}
 
 	const meta = { reason, amount, provided, parts, paid: payment.amount };
 

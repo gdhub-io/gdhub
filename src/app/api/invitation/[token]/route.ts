@@ -32,8 +32,6 @@ export const GET = withAuth({ mode: "user" })(async (_req, ctx) => {
 		return json(invitation);
 	} catch (error) {
 		console.error("[invitation.get]", error);
-		return apiError.internal(
-			error instanceof Error ? error.message : "Unknown error",
-		);
+		return apiError.internal();
 	}
 });

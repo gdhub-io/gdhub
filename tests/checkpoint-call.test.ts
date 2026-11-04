@@ -394,9 +394,12 @@ describe("Daily's webhooks", () => {
 describe("the webhook route", () => {
 	const secret = Buffer.from("daily-secret").toString("base64");
 
-	const post = async (body: string, signature?: string) => {
+	const post = async (
+		body: string,
+		signature?: string,
+		timestamp = String(Math.floor(Date.now() / 1000)),
+	) => {
 		process.env.DAILY_WEBHOOK_SECRET = secret;
-		const timestamp = "1792000000";
 		const signed =
 			signature ??
 			createHmac("sha256", Buffer.from(secret, "base64"))
@@ -420,6 +423,17 @@ describe("the webhook route", () => {
 		const response = await post(
 			JSON.stringify({ type: "meeting.ended", payload: {} }),
 			"forged",
+		);
+		expect(response.status).toBe(401);
+		expect(sessionFindUnique).not.toHaveBeenCalled();
+	});
+
+	// A delivery captured once and sent again later is not Daily speaking now.
+	it("refuses a correctly signed event from long ago", async () => {
+		const response = await post(
+			JSON.stringify({ type: "meeting.ended", payload: {} }),
+			undefined,
+			String(Math.floor(Date.now() / 1000) - 3600),
 		);
 		expect(response.status).toBe(401);
 		expect(sessionFindUnique).not.toHaveBeenCalled();

@@ -6,6 +6,7 @@ import {
 	withAuth,
 	withValidation,
 } from "@/lib/api-handlers";
+import { limitAiCalls } from "@/lib/rate-limit";
 import { langGraphService } from "@/services/langgraph";
 import { prisma } from "@/services/prisma";
 
@@ -22,6 +23,8 @@ export const POST = withAuth({ mode: "user" })(
 	withValidation(SendMessageSchema)(async (_req, _ctx, { user, body }) => {
 		const currentUser = user as SessionUser | undefined;
 		if (!currentUser) return apiError.unauthorized();
+		const limited = await limitAiCalls("assistant-send", currentUser.id);
+		if (limited) return limited;
 		let { threadId, text, assistantId, route } = body as SendMessageBody;
 
 		if (!threadId) {

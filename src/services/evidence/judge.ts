@@ -3,11 +3,14 @@ import { stripIndents } from "common-tags";
 import { z } from "zod";
 import { AI_MODELS } from "@/config/ai-models";
 import { EvidenceMatch } from "@/config/prisma-enums";
-import { devlogText } from "@/lib/checkpoints/curator-text";
+import { devlogText, fenced } from "@/lib/checkpoints/curator-text";
 import { aiModel } from "@/services/ai/model";
 import { traceGenerated } from "@/services/ai-trace";
 import { type AiMeter, recordAiUsage } from "@/services/ai-usage";
-import { localeLine } from "@/services/checkpoints/ai-curator/prompts/card";
+import {
+	localeLine,
+	PARTICIPANT_DATA,
+} from "@/services/checkpoints/ai-curator/prompts/card";
 import type { EvidenceContent } from "./read";
 
 const HONEST = stripIndents`
@@ -15,6 +18,7 @@ const HONEST = stripIndents`
 	sampled from a video. Say only what is actually there. You did not run or
 	play anything: say what is shown — a level, a mechanic, a menu, a character —
 	never how the game feels to play. Plain English, short.
+	${PARTICIPANT_DATA}
 `;
 
 /** The content as model input: what could not be read, the text, then the images. */
@@ -23,7 +27,12 @@ const contentParts = (content: EvidenceContent) => [
 		type: "text" as const,
 		text: [
 			content.unread && `Not read: ${content.unread}.`,
-			content.text ?? (content.images.length ? null : "(no text)"),
+			// A page or document the team linked is theirs to write, so it is fenced too.
+			content.text != null
+				? fenced(content.text)
+				: content.images.length
+					? null
+					: "(no text)",
 		]
 			.filter(Boolean)
 			.join("\n"),
@@ -88,9 +97,9 @@ export async function judgeEvidence(
 					{
 						type: "text" as const,
 						text: stripIndents`
-							Task: ${evidence.task}
-							Evidence: ${evidence.artifactType}${evidence.artifactName ? ` "${evidence.artifactName}"` : ""}
-							${evidence.description ? `The author says: ${evidence.description}` : ""}
+							Task: ${fenced(evidence.task)}
+							Evidence: ${evidence.artifactType}${evidence.artifactName ? ` ${fenced(evidence.artifactName)}` : ""}
+							${evidence.description ? `The author says: ${fenced(evidence.description)}` : ""}
 							What the evidence contains:
 						`,
 					},
@@ -101,7 +110,7 @@ export async function judgeEvidence(
 						? [
 								{
 									type: "text" as const,
-									text: `Context only, not evidence — the team's devlogs (${evidence.devlogs.length}):\n${evidence.devlogs.map((post, index) => `--- devlog ${index + 1}\n${devlogText(post)}`).join("\n")}`,
+									text: `Context only, not evidence — the team's devlogs (${evidence.devlogs.length}):\n${evidence.devlogs.map((post, index) => `--- devlog ${index + 1}\n${fenced(devlogText(post))}`).join("\n")}`,
 								},
 							]
 						: []),

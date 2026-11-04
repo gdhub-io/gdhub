@@ -13,6 +13,7 @@ import {
 	LegalError,
 } from "@/lib/legal/accept";
 import { legalErrorResponse, requestMeta } from "@/lib/legal/http";
+import { limitAiCalls } from "@/lib/rate-limit";
 import { aiValidation } from "@/services/ai-validation";
 import { prisma } from "@/services/prisma";
 
@@ -63,6 +64,11 @@ export const PUT = withAuth({ mode: "user" })(
 		async (req, _ctx, { user, body }) => {
 			const currentUser = user as SessionUser | undefined;
 			if (!currentUser) return apiError.unauthorized();
+			const limited = await limitAiCalls(
+				"onboarding-validation",
+				currentUser.id,
+			);
+			if (limited) return limited;
 
 			try {
 				const locale = detectLocale(req);

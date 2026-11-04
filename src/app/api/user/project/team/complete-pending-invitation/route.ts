@@ -156,9 +156,7 @@ export const GET = withAuth({ mode: "user" })(
 			});
 		} catch (error) {
 			console.error("[team.complete-pending-invitation]", error);
-			return apiError.internal(
-				error instanceof Error ? error.message : "Unknown error",
-			);
+			return apiError.internal();
 		}
 	}),
 );

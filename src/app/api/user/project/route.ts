@@ -33,6 +33,7 @@ import {
 	selectableStageNames,
 } from "@/repositories/project/workflow";
 import { userSpacesCacheKey } from "@/repositories/user/spaces";
+import { getSpaceAccess, isStaff } from "@/services/access";
 import { deleteSpaceMembership, joinSpace } from "@/services/access/membership";
 import { aiValidation } from "@/services/ai-validation";
 import { cacheDelete } from "@/services/cache";
@@ -301,14 +302,16 @@ export const PUT = pipe(
 	const id = url.searchParams.get("id");
 	if (!id) return apiError.badRequest("id is required");
 
-	const { authorId, ...data } = body as UpdateProjectBody;
+	const { authorId, status, ...data } = body as UpdateProjectBody;
+	// Status is moderation's and the author is ownership: neither is a project admin's to set.
+	const staff = isStaff(await getSpaceAccess("hub", null, currentUser));
 
 	const project = await prisma.project.update({
 		where: { id },
 		data: {
 			...data,
-			status: data.status as ProjectStatus | undefined,
-			author: authorId ? { connect: { id: authorId } } : undefined,
+			status: staff ? (status as ProjectStatus | undefined) : undefined,
+			author: staff && authorId ? { connect: { id: authorId } } : undefined,
 		},
 		include: {
 			team: { select: { id: true } },

@@ -4,9 +4,13 @@ import { z } from "zod";
 import { AI_MODELS } from "@/config/ai-models";
 import { CHECKPOINT_DAYS, DIRECTIONS } from "@/config/checkpoint";
 import type { EvidenceMatch } from "@/config/prisma-enums";
+import { fenced } from "@/lib/checkpoints/curator-text";
 import { aiModel } from "@/services/ai/model";
 import { type AiMeter, recordAiUsage } from "@/services/ai-usage";
-import { DIRECTION_RULES } from "@/services/checkpoints/ai-curator/prompts/card";
+import {
+	DIRECTION_RULES,
+	PARTICIPANT_DATA,
+} from "@/services/checkpoints/ai-curator/prompts/card";
 import type { CallNotes } from "@/types/checkpoints";
 
 /** A plan task as every curator prompt reads it. */
@@ -134,13 +138,13 @@ const callLine = (index: number) => {
 
 export const taskLine = (task: CuratorTask) =>
 	[
-		`- [${task.id}] ${task.text}`,
-		task.firstWording && `(first worded: ${task.firstWording})`,
+		`- [${task.id}] ${fenced(task.text)}`,
+		task.firstWording && `(first worded: ${fenced(task.firstWording)})`,
 		task.evidence.length > 0 &&
 			`— done: ${task.evidence
 				.map(
 					(piece) =>
-						`${piece.type}${piece.name ? ` "${piece.name}"` : ""}${piece.seen ? ` (looked at: ${piece.seen.match}${piece.seen.note ? `, ${piece.seen.note}` : ""})` : ""}`,
+						`${piece.type}${piece.name ? ` ${fenced(piece.name)}` : ""}${piece.seen ? ` (looked at: ${piece.seen.match}${piece.seen.note ? `, ${fenced(piece.seen.note)}` : ""})` : ""}`,
 				)
 				.join("; ")}`,
 		task.cut && "— cut from the plan",
@@ -153,7 +157,7 @@ export const artifactLines = (
 	artifacts: { type: string; name: string | null }[],
 ) =>
 	artifacts.length
-		? `Artifacts added in the sprint:\n${artifacts.map((a) => `- ${a.type}${a.name ? `: ${a.name}` : ""}`).join("\n")}`
+		? `Artifacts added in the sprint:\n${artifacts.map((a) => `- ${a.type}${a.name ? `: ${fenced(a.name)}` : ""}`).join("\n")}`
 		: "";
 
 /**
@@ -185,18 +189,20 @@ export const writeCallNotes = async (
 			to report. Use only task ids from the plan. The transcript is
 			machine-made and has errors: read through them, do not quote them.
 			Plain English, short sentences, no filler.
+
+			${PARTICIPANT_DATA}
 		`,
 		prompt: stripIndents`
 			${callLine(input.callIndex)}
 
-			Goal: ${input.goal}
+			Goal: ${fenced(input.goal)}
 
 			Plan tasks:
 			${input.tasks.map(taskLine).join("\n")}
 
 			${input.agreedLastCall.length ? `Agreed at the previous call:\n${input.agreedLastCall.map((line) => `- ${line}`).join("\n")}` : ""}
 
-			${input.devlog ? `The sprint's devlog:\n${input.devlog}` : "No devlog for the sprint."}
+			${input.devlog ? `The sprint's devlog:\n${fenced(input.devlog)}` : "No devlog for the sprint."}
 
 			${artifactLines(input.artifacts)}
 

@@ -1,6 +1,12 @@
 import { SearchEngineService } from "@gdhub-io/gdhub-typesense";
 import { z } from "zod";
-import { apiError, json, withValidation } from "@/lib/api-handlers";
+import {
+	apiError,
+	json,
+	pipe,
+	withAuth,
+	withValidation,
+} from "@/lib/api-handlers";
 import { drop } from "@/services/typesense/commands/drop";
 import { migrate } from "@/services/typesense/commands/migrate";
 import { search } from "@/services/typesense/commands/search";
@@ -12,9 +18,10 @@ const TypesenseTaskQuerySchema = z.object({
 
 type TypesenseTaskQuery = z.infer<typeof TypesenseTaskQuerySchema>;
 
-export const GET = withValidation(
-	TypesenseTaskQuerySchema,
-	"query",
+// Runs with the admin key, so only a backend caller holding BACKEND_KEY may reach it.
+export const GET = pipe(
+	withAuth({ mode: "api" }),
+	withValidation(TypesenseTaskQuerySchema, "query"),
 )(async (_req, _ctx, { body }) => {
 	const { task, query } = body as TypesenseTaskQuery;
 

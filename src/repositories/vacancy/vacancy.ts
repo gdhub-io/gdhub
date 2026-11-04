@@ -1,3 +1,4 @@
+import { TeamVacancyStatus } from "@gdhub-io/gdhub-prisma";
 import { fromCents } from "@/helpers/format";
 import { prisma } from "@/services/prisma";
 
@@ -7,7 +8,8 @@ import { prisma } from "@/services/prisma";
  */
 export async function findPublicVacancy(id: string) {
 	const data = await prisma.teamVacancy.findFirst({
-		where: { id },
+		// A draft is not public yet: for a paid listing, not before it is paid for.
+		where: { id, status: { not: TeamVacancyStatus.Draft } },
 		include: {
 			promiseStep: true,
 			// Drives the colour and icon of the share card, the same way it drives

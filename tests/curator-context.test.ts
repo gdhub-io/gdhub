@@ -332,7 +332,9 @@ describe("renderWorkflow", () => {
 			lenses: lensWeights("Prototyping"),
 			requiredTasks: [],
 		});
-		expect(text).toContain(`Project goal: ${PROJECT_GOAL}`);
+		expect(text).toContain(
+			`Project goal: <participant_text>${PROJECT_GOAL}</participant_text>`,
+		);
 		expect(text).toContain(STAGE_GOAL);
 	});
 });

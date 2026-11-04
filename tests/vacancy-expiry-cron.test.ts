@@ -42,7 +42,6 @@ describe("relevant-vacancies cron", () => {
 		vi.useFakeTimers();
 		vi.setSystemTime(NOW);
 		vi.stubEnv("CRON_SECRET", "cron-secret");
-		vi.stubEnv("NEXT_PUBLIC_API_KEY", "public-key");
 		findMany.mockReset();
 		updateMany.mockReset();
 		closeVacancyChats.mockReset();

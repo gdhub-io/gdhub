@@ -81,9 +81,7 @@ export const GET = withAuth({ mode: "user" })(
 			return json({ success: true, message: "Invitation declined" });
 		} catch (error) {
 			console.error("[team.decline-invite]", error);
-			return apiError.internal(
-				error instanceof Error ? error.message : "Unknown error",
-			);
+			return apiError.internal();
 		}
 	}),
 );

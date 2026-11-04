@@ -49,6 +49,8 @@ export const CALL_CLOSES_MINUTES = 180;
 export const CALL_MAX_PARTICIPANTS = CHECKPOINT_MAX_TEAM + 1;
 /** How often a team waiting for the curator asks whether they have joined. */
 export const CALL_WAIT_POLL_SECONDS = 5;
+/** A Daily webhook signed longer ago than this is a replay, not a delivery. */
+export const DAILY_WEBHOOK_MAX_AGE_SECONDS = 300;
 /** A call opens its sprint: it may be moved anywhere in the sprint's first days, this many. */
 export const CALL_MOVE_DAYS = 3;
 /** How often an open call's page asks who is in the room. */

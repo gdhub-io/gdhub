@@ -11,6 +11,7 @@ import {
 	withAuth,
 	withValidation,
 } from "@/lib/api-handlers";
+import { invitationAddressedTo } from "@/lib/team-invitation";
 import {
 	reconcileCheckpointRooms,
 	syncChat,
@@ -58,10 +59,7 @@ export const GET = withAuth({ mode: "user" })(
 				return apiError.badRequest("Invitation has already been accepted");
 			}
 
-			if (
-				invitation.email !== currentUser.email &&
-				(!invitation.userId || invitation.userId !== currentUser.id)
-			) {
+			if (!invitationAddressedTo(invitation, currentUser)) {
 				return apiError.forbidden("This invitation is not for you");
 			}
 
@@ -191,9 +189,7 @@ export const GET = withAuth({ mode: "user" })(
 			});
 		} catch (error) {
 			console.error("[team.accept-invite]", error);
-			return apiError.internal(
-				error instanceof Error ? error.message : "Unknown error",
-			);
+			return apiError.internal();
 		}
 	}),
 );

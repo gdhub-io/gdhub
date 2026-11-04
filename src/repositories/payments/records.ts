@@ -50,14 +50,36 @@ export const recordPaymentEvent = async (
 	}
 };
 
+/** Removes a delivery `recordPaymentEvent` wrote, so the provider's retry runs its work again. */
+export const forgetPaymentEvent = (
+	provider: PaymentProvider,
+	eventId: string,
+) => prisma.paymentEvent.deleteMany({ where: { provider, eventId } });
+
 /**
- * A refund the provider reports, ours or one made in its dashboard. Keyed by the
- * provider's id, so the row our own refund wrote is kept and never doubled.
- * Money back in full on a checkpoint that never started closes it; one already
- * running is left to an administrator.
+ * Runs a delivery's work once. A duplicate is skipped; work that throws forgets
+ * this delivery's own row, so the provider's retry is not read as a duplicate.
+ * Returns false for a duplicate.
  */
-export const recordProviderRefund = async (
-	payment: { id: string; payableId: string },
+export const oncePerEvent = async (
+	provider: PaymentProvider,
+	event: { id: string; type: string; payload: unknown },
+	paymentId: string | null,
+	work: () => Promise<unknown>,
+) => {
+	if (!(await recordPaymentEvent(provider, event, paymentId))) return false;
+	try {
+		await work();
+	} catch (error) {
+		await forgetPaymentEvent(provider, event.id);
+		throw error;
+	}
+	return true;
+};
+
+/** The provider's refund row, keyed by its id so our own refund's row is kept and never doubled, and the payment's status. */
+export const writeProviderRefund = async (
+	payment: { id: string },
 	refund: {
 		id: string;
 		amount: number;
@@ -86,7 +108,19 @@ export const recordProviderRefund = async (
 			status: whole ? PaymentStatus.REFUNDED : PaymentStatus.PARTIALLY_REFUNDED,
 		},
 	});
+};
 
+/**
+ * A checkpoint refund the provider reports, ours or one made in its dashboard.
+ * Money back in full on a checkpoint that never started closes it; one already
+ * running is left to an administrator.
+ */
+export const recordProviderRefund = async (
+	payment: { id: string; payableId: string },
+	refund: Parameters<typeof writeProviderRefund>[1],
+	whole: boolean,
+) => {
+	await writeProviderRefund(payment, refund, whole);
 	if (!whole) return;
 
 	const move = checkpointMove(

@@ -146,4 +146,22 @@ describe("jwt callback: user resync", () => {
 		expect(userUpdate).not.toHaveBeenCalled();
 		expect(result.id).toBe("u1");
 	});
+
+	it("refuses a stale token whose user no longer exists", async () => {
+		findUnique.mockResolvedValue(null);
+
+		expect(await jwt({ email: EMAIL, syncedAt: NOW - SIX_MINUTES })).toBeNull();
+	});
+
+	it("refuses the token of an erased user", async () => {
+		findUnique.mockResolvedValue({
+			id: "u1",
+			email: EMAIL,
+			matrixUserId: "@u1:gdhub",
+			personalDataDeletedAt: new Date(NOW - 1000),
+			profile: null,
+		});
+
+		expect(await jwt({ email: EMAIL }, "update")).toBeNull();
+	});
 });

@@ -28,6 +28,7 @@ vi.mock("@/services/prisma", () => ({
 		payment: { findFirst: vi.fn(), update: vi.fn() },
 		refund: { upsert: vi.fn() },
 		auditLog: { create: vi.fn() },
+		paymentEvent: { create: vi.fn(async () => ({})), deleteMany: vi.fn() },
 	},
 }));
 vi.mock("@/services/stripe/server", () => ({ refundCheckout: vi.fn() }));
@@ -278,6 +279,22 @@ describe("issuing a refund", () => {
 		).resolves.toEqual({ ok: false, error: "refundFailed" });
 		expect(prisma.$transaction).not.toHaveBeenCalled();
 		expect(notifyAuthorOfRefund).not.toHaveBeenCalled();
+		// The claim goes, so the admin can try again.
+		expect(prisma.paymentEvent.deleteMany).toHaveBeenCalledWith({
+			where: { provider: PaymentProvider.STRIPE, eventId: "refund-claim:pay1" },
+		});
+	});
+
+	// Two admins clicking at once: the second finds the claim and sends nothing.
+	it("sends nothing while another refund of the payment is in flight", async () => {
+		vi.mocked(prisma.paymentEvent.create).mockRejectedValueOnce({
+			code: "P2002",
+		});
+
+		await expect(
+			issueCheckpointRefund("cp1", "withdrawal", "admin1", NOW),
+		).resolves.toEqual({ ok: false, error: "alreadyRefunded" });
+		expect(refundCheckout).not.toHaveBeenCalled();
 	});
 
 	it("refuses a reason that does not apply before asking Stripe", async () => {

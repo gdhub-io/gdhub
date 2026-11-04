@@ -3,6 +3,9 @@ import {
 	PaymentStatus,
 	TeamVacancyStatus,
 } from "@gdhub-io/gdhub-prisma";
+import { LISTING_FEE_EUR } from "@/config/vacancy";
+import { refundedTotal } from "@/repositories/checkpoints/refund";
+import { writeProviderRefund } from "@/repositories/payments/records";
 import { NovuService } from "@/services/novu";
 import { paddleClient } from "@/services/paddle/server";
 import { paddleGateway } from "@/services/payments/paddle";
@@ -17,9 +20,10 @@ import { prisma } from "@/services/prisma";
  */
 
 // Stored when the PENDING payment is made; the paid transaction's total replaces it.
-const LISTING_FEE_CENTS = 900;
+const LISTING_FEE_CENTS = LISTING_FEE_EUR * 100;
 
-const priceId = () => process.env.NEXT_PUBLIC_PADDLE_VACANCY_PRICE_ID || null;
+export const listingFeePriceId = () =>
+	process.env.NEXT_PUBLIC_PADDLE_VACANCY_PRICE_ID || null;
 
 const latestFee = (vacancyId: string) =>
 	prisma.payment.findFirst({
@@ -34,7 +38,7 @@ export const ensureListingFee = async (vacancyId: string, payerId: string) => {
 	return existing
 		? prisma.payment.update({
 				where: { id: existing.id },
-				data: { payerId, providerPriceId: priceId() },
+				data: { payerId, providerPriceId: listingFeePriceId() },
 			})
 		: prisma.payment.create({
 				data: {
@@ -44,7 +48,7 @@ export const ensureListingFee = async (vacancyId: string, payerId: string) => {
 					payableType: PayableType.VACANCY,
 					payableId: vacancyId,
 					payerId,
-					providerPriceId: priceId(),
+					providerPriceId: listingFeePriceId(),
 				},
 			});
 };
@@ -57,7 +61,7 @@ export const startListingFeeCheckout = async (
 	vacancyId: string,
 	payerId: string,
 ) => {
-	const price = priceId();
+	const price = listingFeePriceId();
 	if (!price) return null;
 
 	const fee = await ensureListingFee(vacancyId, payerId);
@@ -152,4 +156,55 @@ export const reconcileListingFee = async (vacancyId: string) => {
 
 	await settleListingFee(fee, state);
 	return true;
+};
+
+/**
+ * Money back on a listing fee, from a refund or a chargeback made in Paddle: the
+ * payment says so, and a listing paid back in full comes off the board.
+ */
+export const recordListingFeeReversal = async (
+	payment: { id: string; payableId: string; amount: number },
+	reversal: {
+		id: string;
+		kind: "refund" | "chargeback";
+		status: string;
+		amount: number | null;
+		currency: string;
+	},
+) => {
+	const chargeback = reversal.kind === "chargeback";
+	// A chargeback is money gone whatever Paddle's later status says; a refund only once approved.
+	if (!chargeback && reversal.status !== "approved") {
+		if (reversal.status === "rejected" || reversal.status === "reversed") {
+			console.error("[listing-fee] Paddle did not refund", reversal.id);
+		}
+		return;
+	}
+
+	const refund = {
+		id: reversal.id,
+		amount: reversal.amount ?? payment.amount,
+		currency: reversal.currency,
+		reason: chargeback ? "paddleChargeback" : "paddleRefund",
+	};
+	const earlier = await prisma.refund.findMany({
+		where: { paymentId: payment.id, providerRefundId: { not: reversal.id } },
+		select: { amount: true },
+	});
+	const whole = refundedTotal(earlier) + refund.amount >= payment.amount;
+
+	await writeProviderRefund(payment, refund, whole);
+	if (chargeback) {
+		await prisma.payment.update({
+			where: { id: payment.id },
+			data: { status: PaymentStatus.DISPUTED },
+		});
+	}
+
+	if (whole || chargeback) {
+		await prisma.teamVacancy.updateMany({
+			where: { id: payment.payableId, status: TeamVacancyStatus.Published },
+			data: { status: TeamVacancyStatus.Closed },
+		});
+	}
 };

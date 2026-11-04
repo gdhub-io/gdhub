@@ -9,8 +9,7 @@ import { useTolgee } from "@tolgee/react";
 import { Avatar, Button, Flex, Grid, Tooltip } from "antd";
 import dayjs from "dayjs";
 import { useState } from "react";
-import ReactMarkdown from "react-markdown";
-import rehypeRaw from "rehype-raw";
+import { SafeMarkdown } from "@/components/ui/SafeMarkdown";
 import { formatScheduleDay, formatSlotTime } from "@/helpers/event";
 import { SpeakerAvatars } from "../SpeakerAvatars";
 import { SpeakersSheet } from "./SpeakersSheet";
@@ -128,9 +127,7 @@ export function EventSchedule({
 
 									{item.description && (
 										<div className={styles.description}>
-											<ReactMarkdown rehypePlugins={[rehypeRaw as never]}>
-												{item.description}
-											</ReactMarkdown>
+											<SafeMarkdown>{item.description}</SafeMarkdown>
 										</div>
 									)}
 

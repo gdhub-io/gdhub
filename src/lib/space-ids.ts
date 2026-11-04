@@ -26,11 +26,11 @@ const fromBodyOrQuery = async (
 ): Promise<string | null> =>
 	(await fromBody(req, key)) ?? new URL(req.url).searchParams.get(key);
 
-/** `{ id }` in the body is a `TeamMember` id. */
+/** `id` in the body or the query is a `TeamMember` id. */
 export const projectOfTeamMember = async (
 	req: Request,
 ): Promise<string | null> => {
-	const id = await fromBody(req);
+	const id = await fromBodyOrQuery(req, "id");
 	if (!id) return null;
 
 	const member = await prisma.teamMember.findUnique({
@@ -196,4 +196,22 @@ export const projectOfDevlog = async (req: Request): Promise<string | null> => {
 	});
 
 	return report?.projectId ?? null;
+};
+
+/** `id` in the route params is a `TeamInvestor` id. */
+export const projectOfTeamInvestor = async (
+	_req: Request,
+	params: Record<string, string | string[]> | undefined,
+): Promise<string | null> => {
+	const raw = params?.id;
+	const id = Array.isArray(raw) ? raw[0] : raw;
+
+	if (!id) return null;
+
+	const investor = await prisma.teamInvestor.findUnique({
+		where: { id },
+		select: { team: { select: { projectId: true } } },
+	});
+
+	return investor?.team.projectId ?? null;
 };
