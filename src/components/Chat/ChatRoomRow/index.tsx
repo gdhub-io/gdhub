@@ -1,14 +1,23 @@
 import {
 	IconArchive,
+	IconBell,
+	IconBellOff,
 	IconDoorExit,
 	IconDotsVertical,
 	IconMailOpened,
+	IconPin,
 } from "@tabler/icons-react";
 import { useTranslate } from "@tolgee/react";
 import { Badge, Button, Dropdown, type MenuProps, Tag, theme } from "antd";
 import { useState } from "react";
+import { AnnouncementsAvatar } from "../AnnouncementsAvatar";
 import { MatrixAvatar } from "../MatrixAvatar";
-import { canCloseFromList, isUnread, type RoomSummary } from "../model/rooms";
+import {
+	canCloseFromList,
+	isPinned,
+	isUnread,
+	type RoomSummary,
+} from "../model/rooms";
 import { listStamp } from "../model/time";
 import styles from "./style.module.scss";
 
@@ -17,6 +26,7 @@ export type ChatRoomRowActions = {
 	onMarkRead: (roomId: string) => void;
 	onCloseChat: (roomId: string) => void;
 	onLeave: (roomId: string) => void;
+	onToggleMute: (roomId: string, mute: boolean) => void;
 };
 
 type ChatRoomRowProps = ChatRoomRowActions & { room: RoomSummary };
@@ -32,11 +42,16 @@ export function ChatRoomRow({
 	onMarkRead,
 	onCloseChat,
 	onLeave,
+	onToggleMute,
 }: ChatRoomRowProps) {
 	const { t } = useTranslate();
 	const { token } = theme.useToken();
 	const [menuOpen, setMenuOpen] = useState(false);
 	const unread = isUnread(room);
+	const pinned = isPinned(room);
+	const name = pinned
+		? t("chat.announcements.title", "Announcements")
+		: room.name;
 
 	const kindLabel =
 		room.kind === "AdviceRequest"
@@ -53,6 +68,14 @@ export function ChatRoomRow({
 			icon: <IconMailOpened size={16} />,
 			label: t("chat.row.markRead", "Mark as read"),
 			onClick: () => onMarkRead(room.roomId),
+		},
+		room.membership === "join" && {
+			key: "mute",
+			icon: room.muted ? <IconBell size={16} /> : <IconBellOff size={16} />,
+			label: room.muted
+				? t("chat.mute.unmute", "Unmute notifications")
+				: t("chat.mute.mute", "Mute notifications"),
+			onClick: () => onToggleMute(room.roomId, !room.muted),
 		},
 		canCloseFromList(room) && {
 			key: "close",
@@ -72,12 +95,17 @@ export function ChatRoomRow({
 
 	const preview = room.previewDeleted
 		? t("chat.message.deleted", "Message deleted")
-		: room.preview;
+		: pinned && room.preview
+			? t("chat.announcements.preview", "GDHub: {text}", {
+					text: room.preview,
+				})
+			: room.preview;
 
 	return (
 		<div
 			className={styles.row}
 			data-unread={unread || undefined}
+			data-pinned={pinned || undefined}
 			data-menu-open={menuOpen || undefined}
 		>
 			<button
@@ -86,16 +114,34 @@ export function ChatRoomRow({
 				onClick={() => onSelect(room.roomId)}
 			>
 				<span className={styles.avatar}>
-					<MatrixAvatar mxcUrl={room.avatarMxc} size={40}>
-						{room.name.slice(0, 1).toUpperCase()}
-					</MatrixAvatar>
+					{pinned ? (
+						<AnnouncementsAvatar size={40} />
+					) : (
+						<MatrixAvatar mxcUrl={room.avatarMxc} size={40}>
+							{name.slice(0, 1).toUpperCase()}
+						</MatrixAvatar>
+					)}
 					{room.online && <span className={styles.online} />}
 				</span>
 				<span className={styles.body}>
 					<span className={styles.titleLine}>
-						<span className={styles.name}>{room.name}</span>
+						<span className={styles.name}>{name}</span>
 						{kindLabel && <Tag className={styles.kind}>{kindLabel}</Tag>}
 						{room.label && <span className={styles.label}>{room.label}</span>}
+						{pinned && (
+							<IconPin
+								size={14}
+								className={styles.mark}
+								aria-label={t("chat.row.pinned", "Pinned")}
+							/>
+						)}
+						{room.muted && (
+							<IconBellOff
+								size={14}
+								className={styles.mark}
+								aria-label={t("chat.mute.muted", "Muted")}
+							/>
+						)}
 					</span>
 					<span
 						className={styles.preview}
@@ -116,8 +162,12 @@ export function ChatRoomRow({
 						<Badge
 							count={room.unread}
 							overflowCount={99}
-							color={token.colorPrimary}
-							className={styles.count}
+							color={room.muted ? "var(--gd-neutral-100)" : token.colorPrimary}
+							className={
+								room.muted
+									? `${styles.count} ${styles.mutedCount}`
+									: styles.count
+							}
 						/>
 					)}
 				</span>

@@ -18,6 +18,7 @@ const meta: Meta<typeof ChatRoomList> = {
 		onMarkRead: noop,
 		onCloseChat: noop,
 		onLeave: noop,
+		onToggleMute: noop,
 	},
 	// The panel's body: 520 × 720, as in the Chat · Panel frames.
 	decorators: [

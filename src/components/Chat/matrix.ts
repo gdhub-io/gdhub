@@ -21,11 +21,31 @@ function lastMessage(room: Room): MatrixEvent | undefined {
 	return undefined;
 }
 
+/**
+ * Messages from others after the user's read receipt, counted in the browser.
+ * A muted room's push rule stops Synapse counting it, but the row still shows
+ * a (grey) count.
+ */
+function localUnreadCount(room: Room, myId: string | null): number {
+	const readUpTo = myId ? room.getEventReadUpTo(myId) : null;
+	const events = room.getLiveTimeline().getEvents();
+	let count = 0;
+	for (let i = events.length - 1; i >= 0; i--) {
+		const event = events[i];
+		if (event.getId() === readUpTo) break;
+		if (event.getType() !== EventType.RoomMessage) continue;
+		if (event.isRelation("m.replace") || event.isRedacted()) continue;
+		if (event.getSender() !== myId) count++;
+	}
+	return count;
+}
+
 /** Flatten a synced room and its registry meta into one list row. */
 export function summarizeRoom(
 	room: Room,
 	client: MatrixClient,
 	meta: ChatRoomMeta | undefined,
+	muted: boolean,
 ): RoomSummary {
 	const myId = client.getUserId();
 	const last = lastMessage(room);
@@ -47,7 +67,10 @@ export function summarizeRoom(
 		preview: last ? String(last.getContent().body ?? "") : null,
 		previewIsOwn: !!last && last.getSender() === myId,
 		previewDeleted: !!last?.isRedacted(),
-		unread: room.getUnreadNotificationCount(NotificationCountType.Total) || 0,
+		unread: muted
+			? localUnreadCount(room, myId)
+			: room.getUnreadNotificationCount(NotificationCountType.Total) || 0,
+		muted,
 	};
 }
 

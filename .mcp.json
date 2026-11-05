@@ -24,6 +24,11 @@
 				"MCP_TRANSPORT_TYPE": "stdio",
 				"MCP_LOG_LEVEL": "error"
 			}
+		},
+		"next-devtools": {
+			"type": "stdio",
+			"command": "bunx",
+			"args": ["next-devtools-mcp@0.4.0"]
 		}
 	}
 }

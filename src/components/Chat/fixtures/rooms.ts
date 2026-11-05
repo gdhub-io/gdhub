@@ -18,11 +18,36 @@ export const roomFixture = (patch: Partial<RoomSummary>): RoomSummary => ({
 	previewIsOwn: false,
 	previewDeleted: false,
 	unread: 0,
+	muted: false,
 	...patch,
+});
+
+/** The pinned Announcements row, unread, as in 07.03. */
+export const announcementsFixture = roomFixture({
+	roomId: "!announcements",
+	name: "Announcements",
+	kind: "Announcements",
+	preview: "November update — links, images and video in chat",
+	unread: 1,
+	lastTs: ago(2 * DAY),
+});
+
+/** A muted offer chat with an unread message: bell-off mark, grey count. */
+export const mutedFixture = roomFixture({
+	roomId: "!muted",
+	name: "Lena Fischer",
+	kind: "VacancyOffer",
+	label: "Hollow Tide",
+	preview: "I've attached my portfolio link, happy to share more",
+	unread: 1,
+	muted: true,
+	lastTs: ago(2 * 60 * MINUTE),
 });
 
 /** A list with every row variant the design draws. */
 export const roomsFixture: RoomSummary[] = [
+	announcementsFixture,
+	mutedFixture,
 	roomFixture({
 		roomId: "!advice",
 		name: "Anna Volkova",

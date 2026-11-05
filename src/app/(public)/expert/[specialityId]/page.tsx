@@ -17,7 +17,14 @@ const loadExpert = cache(async (specialityId: string) => {
 			lang: true,
 			specialities: {
 				where: { id: specialityId },
-				select: { id: true, name: true, summary: true },
+				select: {
+					id: true,
+					name: true,
+					summary: true,
+					specialization: true,
+					openForQuestions: true,
+					isOpenForMentoring: true,
+				},
 			},
 			profile: { select: { name: true, motivation: true } },
 		},

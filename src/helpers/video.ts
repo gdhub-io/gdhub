@@ -22,7 +22,8 @@ export const toPlayableVideoUrl = (value?: string | null): string => {
 const YOUTUBE_HOST_RE = /(^|\.)youtube(-nocookie)?\.com$/;
 const YOUTUBE_PATH_ID_RE = /\/(?:embed|shorts|live|v|e)\/([a-zA-Z0-9_-]{11})/;
 
-const getYouTubeId = (url: string): string | null => {
+/** The video id of a youtube.com / youtu.be URL (watch, shorts, embed, live), or null. */
+export const youTubeVideoId = (url: string): string | null => {
 	try {
 		const parsed = new URL(/^https?:\/\//i.test(url) ? url : `https://${url}`);
 		const host = parsed.hostname.replace(/^www\./, "").toLowerCase();
@@ -53,6 +54,6 @@ const getYouTubeId = (url: string): string | null => {
  * `undefined` for other services, where react-player's oEmbed lookup works.
  */
 export const getVideoPoster = (value?: string | null): string | undefined => {
-	const id = getYouTubeId(toPlayableVideoUrl(value));
+	const id = youTubeVideoId(toPlayableVideoUrl(value));
 	return id ? `https://img.youtube.com/vi/${id}/hqdefault.jpg` : undefined;
 };

@@ -1,5 +1,6 @@
 import {
 	ClientEvent,
+	EventType,
 	HttpApiEvent,
 	NotificationCountType,
 	RoomEvent,
@@ -8,6 +9,7 @@ import {
 import { describe, expect, it } from "vitest";
 import {
 	MatrixEvents,
+	PUSH_RULES_EVENT,
 	SyncStates,
 	TOTAL_COUNT,
 } from "@/components/Chat/matrix-events";
@@ -20,7 +22,9 @@ describe("matrix event names spelled out for ChatProvider", () => {
 			receipt: RoomEvent.Receipt,
 			timeline: RoomEvent.Timeline,
 			myMembership: RoomEvent.MyMembership,
+			accountData: ClientEvent.AccountData,
 		});
+		expect(PUSH_RULES_EVENT).toBe(EventType.PushRules);
 		expect(SyncStates).toEqual({
 			prepared: SyncState.Prepared,
 			error: SyncState.Error,

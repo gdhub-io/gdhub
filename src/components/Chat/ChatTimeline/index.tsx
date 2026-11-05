@@ -26,6 +26,8 @@ type ChatTimelineProps = {
 	/** Reply-quote jumps are handled here, where the scroll lives. */
 	actions?: Omit<MessageActions, "onJumpTo">;
 	readOnly?: boolean;
+	/** Bubbles span the timeline (Announcements posts). */
+	wide?: boolean;
 	/** Fires when the latest message comes into or leaves view. */
 	onAtBottomChange?: (atBottom: boolean) => void;
 	/** Shown when the room has no messages at all. */
@@ -57,6 +59,7 @@ export function ChatTimeline({
 	onLoadEarlier,
 	actions,
 	readOnly,
+	wide,
 	onAtBottomChange,
 	empty,
 }: ChatTimelineProps) {
@@ -202,6 +205,7 @@ export function ChatTimeline({
 								ts={item.ts}
 								messages={item.messages}
 								readOnly={readOnly}
+								wide={wide}
 								{...actions}
 								onJumpTo={jumpTo}
 							/>

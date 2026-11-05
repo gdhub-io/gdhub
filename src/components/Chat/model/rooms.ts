@@ -18,6 +18,8 @@ export type RoomSummary = {
 	previewIsOwn: boolean;
 	previewDeleted: boolean;
 	unread: number;
+	/** Notifications off through the user's push rule; the row still lists. */
+	muted: boolean;
 };
 
 export function roomsForTab(rooms: RoomSummary[], tab: ChatTab): RoomSummary[] {
@@ -28,7 +30,17 @@ export function roomsForTab(rooms: RoomSummary[], tab: ChatTab): RoomSummary[] {
 			if (closed) return false;
 			return tab === "all" || isUnread(room);
 		})
-		.sort((a, b) => b.lastTs - a.lastTs);
+		.sort(compareRooms);
+}
+
+/** Announcements is pinned to the top; the rest by recency. */
+export function isPinned(room: Pick<RoomSummary, "kind">): boolean {
+	return room.kind === "Announcements";
+}
+
+export function compareRooms(a: RoomSummary, b: RoomSummary): number {
+	const pinned = Number(isPinned(b)) - Number(isPinned(a));
+	return pinned || b.lastTs - a.lastTs;
 }
 
 /** A pending invite is unread until it is answered. */
@@ -39,6 +51,20 @@ export function isUnread(room: RoomSummary): boolean {
 /** The Unread tab counts chats, not messages. */
 export function unreadChatCount(rooms: RoomSummary[]): number {
 	return roomsForTab(rooms, "unread").length;
+}
+
+/**
+ * The header launcher: unread messages, an unanswered invite as one. Muted
+ * rooms stay out, so a muted chat never lights the dot.
+ */
+export function launcherUnreadCount(
+	rooms: { invite: boolean; unread: number; muted: boolean }[],
+): number {
+	return rooms.reduce((total, room) => {
+		if (room.muted) return total;
+		if (room.invite) return total + 1;
+		return total + (Number.isFinite(room.unread) ? room.unread : 0);
+	}, 0);
 }
 
 /** Only rooms whose provider can close them, and only while open. */

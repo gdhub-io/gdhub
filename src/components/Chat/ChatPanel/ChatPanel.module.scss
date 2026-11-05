@@ -2,12 +2,22 @@
   display: inline-flex;
 }
 
-.popover {
-  padding: 0 !important;
+// Same frame as the notifications inbox beside it: hairline, card radius, e3.
+// Scoped under the root so it outranks antd's own container rule without !important.
+.root .popover {
+  padding: 0;
   overflow: hidden;
-  border: 1px solid var(--gd-color-border);
-  border-radius: var(--gd-radius-panel) !important;
-  box-shadow: var(--gd-shadow-e3) !important;
+  border: 1px solid var(--gd-color-border-subtle);
+  border-radius: var(--gd-radius-card);
+  box-shadow: var(--gd-shadow-e3);
+}
+
+// Pinned to the viewport's right edge, as the inbox is, not to the header actions.
+// antd v6 also draws its own drop-shadow filter here, which would double e3.
+.root:global(.ant-popover) {
+  right: var(--gd-space-2) !important;
+  left: auto !important;
+  filter: none;
 }
 
 .body {

@@ -9,18 +9,21 @@ import {
 	Descriptions,
 	Divider,
 	Flex,
-	Form,
-	Input,
-	Modal,
-	Select,
+	Tooltip,
 	Typography,
 } from "antd";
 import axios from "axios";
+import dynamic from "next/dynamic";
 import { useSession } from "next-auth/react";
-import React from "react";
+import { useState } from "react";
 import { PublicPageHeader } from "@/components/layouts/PublicPageHeader";
 import { getCleanTextContent } from "@/helpers/content";
 import { useContentPageView } from "@/hooks/useContentViews";
+
+const ExpertRequestModal = dynamic(
+	() => import("@/components/modals/ExpertRequestModal"),
+	{ ssr: false },
+);
 
 const { Text, Title } = Typography;
 
@@ -40,26 +43,37 @@ export function ExpertPageClient({ expert, seo }: ExpertPageProps) {
 
 	const { t } = useTranslate();
 	const { data: session } = useSession();
-	const [modalOpen, setModalOpen] = React.useState(false);
-	const [selectedProject, setSelectedProject] = React.useState<
-		string | undefined
-	>();
-	const [selectedTopic, setSelectedTopic] = React.useState<
-		string | undefined
-	>();
-	const [comment, setComment] = React.useState("");
+	const [modalOpen, setModalOpen] = useState(false);
 
-	const { data: projectsData, isLoading: projectsLoading } = useQuery({
-		queryKey: ["userProjects"],
-		queryFn: () => axios.get("/api/user/projects"),
+	const { data: projects, isLoading: projectsLoading } = useQuery({
+		queryKey: ["userProjects", session?.user.id],
+		queryFn: () =>
+			axios.get<unknown[]>("/api/user/projects").then((res) => res.data),
 		enabled: !!session,
 	});
 
-	const projects = projectsData?.data || [];
-
 	if (!expert) return null;
 
-	const isActiveRequest = expert.speciality.questions?.length > 0;
+	const questions: string[] = expert.speciality.openForQuestions ?? [];
+	const isActiveRequest =
+		expert.speciality.isOpenForMentoring && questions.length > 0;
+
+	const blockedReason = !isActiveRequest
+		? t(
+				"page.expert.notTakingRequests",
+				"The expert is not taking requests right now.",
+			)
+		: !session
+			? t(
+					"page.expert.signInToRequest",
+					"Sending a request needs a GDHub account.",
+				)
+			: !projectsLoading && !projects?.length
+				? t(
+						"page.expert.membersOnly",
+						"For now, help is available only to members of projects hosted on GDHub.",
+					)
+				: undefined;
 
 	return (
 		<>
@@ -112,23 +126,21 @@ export function ExpertPageClient({ expert, seo }: ExpertPageProps) {
 										listStyle: "none",
 									}}
 								>
-									{expert.speciality.questions?.map(
-										(q: string, idx: number) => (
-											<li
-												key={`question-${idx.toString()}`}
-												style={{
-													padding: "12px 0",
-													borderBottom:
-														idx !== expert.speciality.questions.length - 1
-															? "1px solid var(--gd-color-border)"
-															: "none",
-													fontSize: 18,
-												}}
-											>
-												{q}
-											</li>
-										),
-									)}
+									{questions.map((q: string, idx: number) => (
+										<li
+											key={`question-${idx.toString()}`}
+											style={{
+												padding: "12px 0",
+												borderBottom:
+													idx !== questions.length - 1
+														? "1px solid var(--gd-color-border)"
+														: "none",
+												fontSize: 18,
+											}}
+										>
+											{q}
+										</li>
+									))}
 								</ul>
 							) : (
 								<div style={{ margin: "16px 0 0 0" }}>
@@ -175,103 +187,26 @@ export function ExpertPageClient({ expert, seo }: ExpertPageProps) {
 						</div>
 					</AntCard>
 
-					<Button
-						type="primary"
-						size="large"
-						style={{ width: "100%", marginBottom: 36 }}
-						onClick={() => setModalOpen(true)}
-						disabled={!isActiveRequest}
-					>
-						Request consultation
-					</Button>
-
-					{isActiveRequest && (
-						<Modal
-							title="Consultation request"
-							centered
-							open={modalOpen}
-							onCancel={() => setModalOpen(false)}
-							footer={null}
+					<Tooltip title={blockedReason}>
+						<Button
+							type="primary"
+							size="large"
+							block
+							style={{ marginBottom: 36 }}
+							onClick={() => setModalOpen(true)}
+							disabled={!!blockedReason || projectsLoading}
 						>
-							{!session ? (
-								<div style={{ padding: 24, textAlign: "center" }}>
-									<p>
-										{t(
-											"page.expert.signInToRequest",
-											"Sending a request needs a GDHub account.",
-										)}{" "}
-										<a href="/signin">
-											{t("page.expert.signInLink", "Sign in")}
-										</a>
-									</p>
-								</div>
-							) : projectsLoading ? (
-								<div style={{ padding: 24, textAlign: "center" }}>
-									{t("page.expert.loadingProjects", "Loading projects…")}
-								</div>
-							) : projects.length === 0 ? (
-								<div style={{ padding: 24, textAlign: "center" }}>
-									<p>
-										{t(
-											"page.expert.membersOnly",
-											"For now, help is available only to members of projects hosted on GDHub.",
-										)}
-									</p>
-								</div>
-							) : (
-								<Form>
-									<div style={{ marginBottom: 16 }}>
-										<Form.Item style={{ fontWeight: 500 }}>
-											Select topic
-										</Form.Item>
-										<Select
-											style={{ width: "100%" }}
-											placeholder="Select topic"
-											options={expert.speciality.questions.map((q: string) => ({
-												label: q,
-												value: q,
-											}))}
-											value={selectedTopic}
-											onChange={setSelectedTopic}
-										/>
-									</div>
-									<div style={{ marginBottom: 16 }}>
-										<Form.Item style={{ fontWeight: 500 }}>
-											Select your project
-										</Form.Item>
-										<Select
-											style={{ width: "100%" }}
-											placeholder="Select your project"
-											options={projects.map((p: any) => ({
-												label: p.name,
-												value: p.id,
-											}))}
-											value={selectedProject}
-											onChange={setSelectedProject}
-										/>
-									</div>
-									<div style={{ marginBottom: 16 }}>
-										<Form.Item style={{ fontWeight: 500 }}>
-											Enter your question
-										</Form.Item>
-										<Input.TextArea
-											rows={3}
-											placeholder="Enter your question"
-											value={comment}
-											onChange={(e) => setComment(e.target.value)}
-										/>
-									</div>
-									<Button
-										type="primary"
-										htmlType="submit"
-										style={{ width: "100%" }}
-										disabled={!selectedProject || !selectedTopic}
-									>
-										Send request
-									</Button>
-								</Form>
-							)}
-						</Modal>
+							{t("page.expert.requestConsultation", "Request consultation")}
+						</Button>
+					</Tooltip>
+
+					{modalOpen && (
+						<ExpertRequestModal
+							open
+							expertId={expert.id}
+							onCancel={() => setModalOpen(false)}
+							onUpdate={() => setModalOpen(false)}
+						/>
 					)}
 				</div>
 			</div>

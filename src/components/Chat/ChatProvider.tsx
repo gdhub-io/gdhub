@@ -1,8 +1,8 @@
 "use client";
 
 import { useQuery, useQueryClient } from "@tanstack/react-query";
-import { useTolgee } from "@tolgee/react";
-import { App, Avatar } from "antd";
+import { useTolgee, useTranslate } from "@tolgee/react";
+import { App, Typography } from "antd";
 import axios from "axios";
 import type { MatrixClient, MatrixEvent, Room, SyncState } from "matrix-js-sdk";
 import { useSession } from "next-auth/react";
@@ -15,7 +15,16 @@ import { useFirebaseMessagingToken } from "@/hooks/useFirebaseMessagingToken";
 import { useMatrixDeviceId } from "@/hooks/useMatrixDeviceId";
 import { useMatrixPushRegistration } from "@/hooks/useMatrixPushRegistration";
 import type { MatrixChatSessionResponse } from "@/types/chat";
-import { MatrixEvents, SyncStates, TOTAL_COUNT } from "./matrix-events";
+import { GdhubAvatar } from "./AnnouncementsAvatar";
+import {
+	MatrixEvents,
+	PUSH_RULES_EVENT,
+	SyncStates,
+	TOTAL_COUNT,
+} from "./matrix-events";
+import { isGdhubUserId } from "./model/announcements";
+import { isRoomMuted, mutedRoomIds } from "./model/mute";
+import { launcherUnreadCount } from "./model/rooms";
 import { endChatSession } from "./session";
 import { useChat } from "./useChat";
 
@@ -29,6 +38,7 @@ import { useChat } from "./useChat";
 export function ChatProvider({ children }: { children: ReactNode }) {
 	const { data: session } = useSession();
 	const { getLanguage } = useTolgee();
+	const { t } = useTranslate();
 	const { notification } = App.useApp();
 	const queryClient = useQueryClient();
 	const matrixDeviceId = useMatrixDeviceId();
@@ -96,16 +106,19 @@ export function ChatProvider({ children }: { children: ReactNode }) {
 	const tryComputeUnreadTotal = useCallback(
 		(client: MatrixClient) => {
 			try {
+				const muted = mutedRoomIds(client.pushRules);
 				const rooms = (client.getRooms() || []).filter((r: Room) =>
 					["join", "invite"].includes(r.getMyMembership()),
 				);
-				// An unanswered invite counts as one unread message.
-				const total = rooms.reduce((acc: number, r: Room) => {
-					if (r.getMyMembership() === "invite") return acc + 1;
-					const count = r.getUnreadNotificationCount?.(TOTAL_COUNT) || 0;
-					return acc + (Number.isFinite(count) ? count : 0);
-				}, 0);
-				setUnreadTotal(total);
+				setUnreadTotal(
+					launcherUnreadCount(
+						rooms.map((r) => ({
+							invite: r.getMyMembership() === "invite",
+							unread: r.getUnreadNotificationCount?.(TOTAL_COUNT) || 0,
+							muted: muted.has(r.roomId),
+						})),
+					),
+				);
 			} catch {}
 		},
 		[setUnreadTotal],
@@ -210,6 +223,11 @@ export function ChatProvider({ children }: { children: ReactNode }) {
 		chatClient.on(MatrixEvents.receipt, recompute);
 		chatClient.on(MatrixEvents.timeline, recompute);
 		chatClient.on(MatrixEvents.myMembership, recompute);
+		// Muting or unmuting changes what the launcher counts.
+		const onAccountData = (event: MatrixEvent) => {
+			if (event.getType() === PUSH_RULES_EVENT) recompute();
+		};
+		chatClient.on(MatrixEvents.accountData, onAccountData);
 		document.addEventListener("visibilitychange", recompute);
 
 		const interval = setInterval(recompute, 60_000);
@@ -219,6 +237,7 @@ export function ChatProvider({ children }: { children: ReactNode }) {
 			chatClient.removeListener(MatrixEvents.receipt, recompute);
 			chatClient.removeListener(MatrixEvents.timeline, recompute);
 			chatClient.removeListener(MatrixEvents.myMembership, recompute);
+			chatClient.removeListener(MatrixEvents.accountData, onAccountData);
 			document.removeEventListener("visibilitychange", recompute);
 			clearInterval(interval);
 			clearTimeout(scheduled);
@@ -240,9 +259,9 @@ export function ChatProvider({ children }: { children: ReactNode }) {
 				if (chatClient.getSyncState() !== "SYNCING") return;
 				if (event.getType() !== "m.room.message") return;
 				if (event.getSender() === chatClient.getUserId()) return;
-
 				// skip when the tab is hidden — the push notification covers that
 				if (typeof document !== "undefined" && document.hidden) return;
+				if (isRoomMuted(chatClient.pushRules, room.roomId)) return;
 
 				// skip when the user is already looking at this room
 				const {
@@ -256,6 +275,7 @@ export function ChatProvider({ children }: { children: ReactNode }) {
 				const sender = event.getSender() || "";
 				const member = room.getMember(sender);
 				const senderName = member?.name || room.name || sender;
+				const fromGdhub = isGdhubUserId(sender);
 				const avatarUrl =
 					member?.getAvatarUrl(
 						chatClient.baseUrl,
@@ -270,9 +290,20 @@ export function ChatProvider({ children }: { children: ReactNode }) {
 
 				notification.open({
 					key: room.roomId,
-					message: senderName,
+					message: fromGdhub ? (
+						<>
+							{senderName}{" "}
+							<Typography.Text type="secondary">
+								{t("chat.announcements.title", "Announcements")}
+							</Typography.Text>
+						</>
+					) : (
+						senderName
+					),
 					description: body,
-					icon: (
+					icon: fromGdhub ? (
+						<GdhubAvatar size={32} />
+					) : (
 						<AppAvatar src={avatarUrl}>
 							{senderName?.[0]?.toUpperCase()}
 						</AppAvatar>
@@ -290,7 +321,7 @@ export function ChatProvider({ children }: { children: ReactNode }) {
 		return () => {
 			chatClient.removeListener(MatrixEvents.timeline, onTimeline);
 		};
-	}, [chatClient, notification]);
+	}, [chatClient, notification, t]);
 
 	// in-app toast when a new chat invitation arrives (live only)
 	useEffect(() => {

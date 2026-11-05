@@ -18,6 +18,8 @@ vi.mock("@/services/prisma", () => ({
 }));
 vi.mock("@/services/chat/ensure-room", () => ({
 	ensureChatRoom: (...a: unknown[]) => ensureChatRoom(...a),
+}));
+vi.mock("@/services/chat/auto-join", () => ({
 	autoJoinRoom: vi.fn(),
 }));
 vi.mock("@/services/matrix/admin", () => ({
