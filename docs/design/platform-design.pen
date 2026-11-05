@@ -520536,8 +520536,8 @@
         {
           "type": "rectangle",
           "id": "q8XCs",
-          "x": -104,
-          "y": -88,
+          "x": 310,
+          "y": -40,
           "name": "Hero board",
           "fill": {
             "type": "image",
@@ -520545,8 +520545,70 @@
             "url": "Screenshot%20at%20Nov%2005%2001-43-19.png",
             "mode": "cover"
           },
-          "width": 1507,
-          "height": 1134
+          "width": 1356,
+          "height": 1021
+        },
+        {
+          "type": "frame",
+          "id": "pmEt6",
+          "x": 96,
+          "y": 0,
+          "name": "Copy",
+          "width": 520,
+          "height": 900,
+          "layout": "vertical",
+          "gap": 20,
+          "justifyContent": "center",
+          "children": [
+            {
+              "type": "text",
+              "id": "Dh4NG",
+              "name": "Eyebrow",
+              "fill": "#F57A67",
+              "content": "NOVEMBER 2026",
+              "fontFamily": "Onest",
+              "fontSize": 20,
+              "fontWeight": "600",
+              "letterSpacing": 1.6
+            },
+            {
+              "type": "text",
+              "id": "EqFOx",
+              "name": "Headline",
+              "fill": "#FFFFFF",
+              "textGrowth": "fixed-width",
+              "width": "fill_container",
+              "content": "What's new on GDHub",
+              "lineHeight": 1.02,
+              "fontFamily": "Onest",
+              "fontSize": 72,
+              "fontWeight": "700",
+              "letterSpacing": -2
+            },
+            {
+              "type": "text",
+              "id": "c6Ok39",
+              "name": "Sub",
+              "fill": "#FFFFFFB3",
+              "textGrowth": "fixed-width",
+              "width": "fill_container",
+              "content": "Checkpoints with an AI curator, a new road to release and more.",
+              "lineHeight": 1.4,
+              "fontFamily": "Onest",
+              "fontSize": 24,
+              "fontWeight": "normal"
+            }
+          ]
+        },
+        {
+          "id": "Io2by",
+          "type": "ref",
+          "ref": "S9E11",
+          "name": "Logo",
+          "x": 96,
+          "y": 790,
+          "width": 148,
+          "height": 40
         }
       ]
     }
