@@ -1,0 +1,61 @@
+vars: {
+  d2-config: {
+    layout-engine: elk
+  }
+}
+
+direction: down
+
+title: "Links, images, YouTube and mute in every chat" {
+  shape: text
+  near: top-center
+  style.font-size: 22
+}
+
+compose: "A member writes in any chat\nwhere they may post"
+
+kind: "What is in it?" {shape: diamond}
+compose -> kind
+
+lnk: "A link\nclickable in the text"
+image: "An image\nshrunk in the browser first\n(longest side 2560 px)"
+yt: "A YouTube link"
+kind -> lnk
+kind -> image
+kind -> yt
+
+big: "Over 10 MB?" {shape: diamond}
+image -> big
+tooBig: "Not sent\n\"File too large\" on the chip"
+big -> tooBig: "yes"
+sent: "Sent to the room\nstored on our Matrix server"
+big -> sent: "no"
+
+preview: "A preview card\nfetched by our Matrix server,\nnot by the reader's browser"
+lnk -> preview
+
+cover: "A cover with a play button\nthe cover also comes from our server"
+yt -> cover
+player: "The player loads\nonly after a click\nfrom youtube-nocookie"
+cover -> player: "click"
+
+viewer: "Click → full-size view"
+sent -> viewer
+
+purge: "Files nobody opened for a year\nare deleted by the server;\nprofile avatars are protected"
+sent -> purge
+
+mute: "Mute any chat from its menu" {
+  grid-columns: 2
+  quiet: "Muted: no toast, push or email;\nbell-off mark in the list,\nunread count turns grey"
+  back: "Unmute restores all three"
+}
+
+critical: |md
+  **Critical**
+  - Nothing reaches YouTube or a linked site from the reader's browser before they click.
+  - A muted chat sends neither push nor email: mute is kept on the Matrix server, not only in the app.
+  - The 10 MB limit is the server's; the app only stops a file earlier with a clearer message.
+| {
+  near: bottom-center
+}

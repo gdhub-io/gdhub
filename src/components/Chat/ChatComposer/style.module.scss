@@ -57,6 +57,60 @@
   justify-content: space-between;
 }
 
+.leftTools,
+.sendTools {
+  display: flex;
+  gap: var(--gd-space-1);
+  align-items: center;
+}
+
+.chip {
+  display: flex;
+  gap: var(--gd-space-2);
+  align-items: center;
+  width: 280px;
+  max-width: 100%;
+  padding: var(--gd-space-1);
+  border: 1px solid var(--gd-color-border);
+  border-radius: var(--gd-radius-control);
+
+  &[data-error] {
+    background: var(--gd-danger-tint);
+    border-color: var(--gd-danger-solid);
+  }
+}
+
+.chipThumb {
+  flex-shrink: 0;
+  overflow: hidden;
+  border-radius: var(--gd-radius-chip);
+}
+
+.chipThumbImg {
+  object-fit: cover;
+}
+
+.chipText {
+  display: flex;
+  flex: 1;
+  flex-direction: column;
+  gap: var(--gd-space-1);
+  min-width: 0;
+}
+
+.chipName {
+  font-size: var(--gd-font-size-body-sm);
+}
+
+.chipMeta {
+  font-size: var(--gd-font-size-caption);
+}
+
+.chipProgress {
+  margin: 0 !important;
+  font-size: var(--gd-font-size-caption);
+}
+
 .emojiPopover {
   padding: var(--gd-space-2) !important;
 }

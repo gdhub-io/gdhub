@@ -11,7 +11,8 @@ import {
 	makeRoomReadOnly,
 } from "@/services/matrix/admin";
 import { prisma } from "@/services/prisma";
-import { autoJoinRoom, ensureChatRoom } from "./ensure-room";
+import { autoJoinRoom } from "./auto-join";
+import { ensureChatRoom } from "./ensure-room";
 
 const checkpointRoomKey = (checkpointId: string) =>
 	`checkpoint:${checkpointId}`;

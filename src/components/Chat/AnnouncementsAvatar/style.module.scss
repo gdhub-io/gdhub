@@ -1,0 +1,15 @@
+.room:global(.ant-avatar) {
+  display: inline-flex;
+  flex-shrink: 0;
+  align-items: center;
+  justify-content: center;
+  color: var(--gd-color-text-secondary);
+  background: var(--gd-neutral-100);
+}
+
+.gdhub:global(.ant-avatar) {
+  flex-shrink: 0;
+  color: var(--gd-color-text);
+  background: transparent;
+  border-radius: 0;
+}

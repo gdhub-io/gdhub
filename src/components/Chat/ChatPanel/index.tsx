@@ -15,11 +15,11 @@ const ChatPanelBody = dynamic(() => import("./ChatPanelBody"), {
 // Menus, popovers and confirms opened from inside the panel live in portals of
 // their own; a click there is still a click "in" the chat.
 const PANEL_PORTALS =
-	".ant-popover, .ant-dropdown, .ant-modal-root, .ant-tooltip, .ant-message, .ant-notification, .ant-select-dropdown";
+	".ant-popover, .ant-dropdown, .ant-modal-root, .ant-tooltip, .ant-message, .ant-notification, .ant-select-dropdown, [class*='ant-image-preview']";
 
 /**
- * The chat, hanging from the header actions it wraps (so its right edge meets
- * the avatar's): a floating panel on desktop and a
+ * The chat, opened from the header actions it wraps: a floating panel pinned to
+ * the viewport's right edge on desktop, as the notifications inbox is, and a
  * full-screen sheet below `md`. The open state lives in `useChat`, so deep
  * links, toasts and "Open chat" buttons elsewhere open it too.
  */
@@ -58,7 +58,7 @@ export function ChatPanel({ children }: { children: ReactNode }) {
 		const onKeyDown = (event: KeyboardEvent) => {
 			if (event.key !== "Escape") return;
 			const layers = document.querySelectorAll(
-				".ant-dropdown:not(.ant-dropdown-hidden), .ant-popover:not(.ant-popover-hidden), .ant-modal-wrap:not([style*='display: none']), [data-chat-layer]",
+				".ant-dropdown:not(.ant-dropdown-hidden), .ant-popover:not(.ant-popover-hidden), .ant-modal-wrap:not([style*='display: none']), .ant-image-preview, [data-chat-layer]",
 			);
 			// The panel itself is one open popover.
 			if (layers.length > 1) return;
@@ -96,7 +96,7 @@ export function ChatPanel({ children }: { children: ReactNode }) {
 			trigger={[]}
 			placement="bottomRight"
 			arrow={false}
-			classNames={{ container: styles.popover }}
+			classNames={{ root: styles.root, container: styles.popover }}
 			content={
 				<div ref={panelRef}>
 					<ChatPanelBody />

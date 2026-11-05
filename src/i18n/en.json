@@ -1320,6 +1320,27 @@
 	},
 	"change": "Edit",
 	"chat": {
+		"announcements": {
+			"empty": {
+				"description": "News from the GDHub team will appear here.",
+				"title": "No announcements yet"
+			},
+			"postingAs": "Posting as GDHub",
+			"preview": "GDHub: {text}",
+			"readOnly": "Only GDHub admins post here",
+			"subtitle": "News from GDHub",
+			"title": "Announcements"
+		},
+		"composer": {
+			"cancel": "Cancel",
+			"editing": "Editing message",
+			"emoji": "Emoji",
+			"placeholder": "Write a message…",
+			"replyingTo": "Replying to {name}:",
+			"save": "Save",
+			"send": "Send",
+			"sendFailed": "Couldn't send"
+		},
 		"context": {
 			"checkpoint": {
 				"author": "Author",
@@ -1332,22 +1353,122 @@
 				"title": "Checkpoint {number}"
 			}
 		},
+		"deleteConfirm": {
+			"content": "It will be removed for everyone in the chat. This can't be undone.",
+			"ok": "Delete",
+			"title": "Delete this message?"
+		},
 		"emptyRoom": {
-			"groupDescription": "Only the people in this chat can see it."
+			"description": "Only the two of you can see this conversation.",
+			"groupDescription": "Only the people in this chat can see it.",
+			"title": "Say hello to {name}"
 		},
 		"groups": {
 			"direct": "Direct chats",
 			"experts": "Experts",
 			"offers": "Offers"
 		},
+		"info": {
+			"matrix": "Chat is powered by Matrix.",
+			"security": "Messages travel over a secure connection (TLS) and only the people in this chat can read them."
+		},
+		"invite": {
+			"accept": "Accept",
+			"decline": "Decline",
+			"description": "Accept to read the message and reply.",
+			"error": "Couldn't answer the invite",
+			"title": "{name} invited you to talk about the {position} offer",
+			"titleDirect": "{name} invited you to a chat"
+		},
 		"kind": {
-			"checkpoint": "Checkpoint"
+			"advice": "Advice",
+			"checkpoint": "Checkpoint",
+			"offer": "Offer"
+		},
+		"media": {
+			"attachImage": "Attach image",
+			"cancelUpload": "Cancel upload",
+			"imageUnavailable": "Image unavailable",
+			"play": "Play {title}",
+			"removeImage": "Remove image",
+			"removeToSend": "Remove the image to send",
+			"tooLarge": "File too large (max {mb} MB)",
+			"uploadFailed": "Couldn't upload the image",
+			"uploading": "Uploading…",
+			"waitForUpload": "Wait for the image to upload",
+			"youtubeVideo": "YouTube video"
+		},
+		"message": {
+			"actionFailed": "Couldn't update the message",
+			"addReaction": "Add reaction",
+			"copied": "Copied",
+			"copy": "Copy",
+			"delete": "Delete",
+			"deleted": "Message deleted",
+			"edit": "Edit",
+			"editCaption": "Edit caption",
+			"edited": "edited",
+			"menu": "Message actions",
+			"react": "React with {emoji}",
+			"reactedBy": "{names} reacted with {emoji}",
+			"replaceImage": "Replace image",
+			"reply": "Reply",
+			"replyTo": "Reply to {name}"
+		},
+		"mute": {
+			"error": "Couldn't mute the chat",
+			"mute": "Mute notifications",
+			"muted": "Muted",
+			"unmute": "Unmute notifications",
+			"unmuteError": "Couldn't unmute the chat"
 		},
 		"panel": {
+			"back": "Back to messages",
+			"close": "Close",
+			"info": "About this chat",
 			"titleUnread": "Messages, {count} unread"
+		},
+		"presence": {
+			"invitation": "Invitation",
+			"online": "Online"
+		},
+		"readOnly": {
+			"banner": "This chat is closed. You can read it, but not reply."
+		},
+		"row": {
+			"close": "Close chat…",
+			"leave": "Leave chat",
+			"leaveError": "Couldn't leave the chat",
+			"markRead": "Mark as read",
+			"menu": "More actions",
+			"pinned": "Pinned",
+			"you": "You: {text}"
+		},
+		"status": {
+			"failed": "Not sent",
+			"read": "Read",
+			"retry": "Retry",
+			"sending": "Sending…",
+			"sent": "Sent"
+		},
+		"system": {
+			"invited": "{name} was invited",
+			"joined": "{name} joined",
+			"left": "{name} left",
+			"someone": "Someone"
+		},
+		"timeline": {
+			"jumpToLatest": "Jump to latest",
+			"loadingEarlier": "Loading earlier messages…",
+			"today": "Today",
+			"yesterday": "Yesterday"
 		},
 		"topic": {
 			"openPositionPage": "Open position page"
+		},
+		"unavailable": {
+			"description": "It may have been closed, or you're no longer a member.",
+			"title": "This chat isn't available"
 		}
 	},
 	"checkhealth": {

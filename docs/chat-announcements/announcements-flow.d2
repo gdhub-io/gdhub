@@ -1,0 +1,57 @@
+vars: {
+  d2-config: {
+    layout-engine: elk
+  }
+}
+
+direction: down
+
+title: "Announcements: one channel, every user, posts from GDHub" {
+  shape: text
+  near: top-center
+  style.font-size: 22
+}
+
+setup: "The channel exists once\nopened by the GDHub account,\nnamed Announcements\nonly GDHub may post; everyone may react"
+
+join: "Every user is in it" {
+  grid-columns: 2
+  new: "A new user\njoined on first sign-in,\nno invite screen"
+  old: "Existing users\njoined once by the backfill"
+}
+setup -> join
+
+write: "A founder or hub admin writes a post\ntext, a link, an image, a YouTube link"
+join -> write
+
+check: "Still a founder or hub admin?" {shape: diamond}
+write -> check: "send"
+refused: "Refused\nnothing is posted"
+check -> refused: "no"
+
+post: "The post goes out from GDHub\nunder the GDHub name and logo,\nnever under the admin's own"
+check -> post: "yes"
+
+reach: "Every member who has not muted it" {
+  grid-columns: 3
+  toast: "In-app toast\nif the app is open"
+  push: "Browser push"
+  email: "Missed-messages email\nif still unread after a while"
+}
+post -> reach
+
+react: "A member reads and reacts\nadds or removes their own emoji\nnotifies nobody"
+post -> react
+
+mute: "A member mutes the channel\nno toast, push or email;\nthe channel stays, Leave is not offered"
+react -> mute
+
+critical: |md
+  **Critical**
+  - Only the GDHub account can post; the admin's own account cannot, even by mistake or from another Matrix client.
+  - The role is checked on every post, so a demoted admin loses posting at once.
+  - Nobody can leave the channel; muting is the only way to quiet it.
+  - One post emails every member who missed it: the Brevo monthly budget is shared with all other mail.
+| {
+  near: bottom-center
+}

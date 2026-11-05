@@ -1,4 +1,5 @@
 import dayjs from "dayjs";
+import { type ChatImageRef, imageCaptionOf } from "@/helpers/chat-media";
 
 export type DeliveryStatus = "sending" | "sent" | "read" | "failed";
 
@@ -18,6 +19,17 @@ export type ReplyQuote = {
 	deleted: boolean;
 };
 
+export type TimelineImage = {
+	mxc: string;
+	name: string;
+	/** Matrix 1.10 caption: the text sent with the picture, in the same event. */
+	caption?: string;
+	w?: number;
+	h?: number;
+	size?: number;
+	mimetype?: string;
+};
+
 export type TimelineMessage = {
 	kind: "message";
 	/** Event id, or the transaction id of a local echo. */
@@ -28,8 +40,12 @@ export type TimelineMessage = {
 	own: boolean;
 	ts: number;
 	text: string;
+	/** `m.image`: `text` is then its caption, or empty. */
+	image?: TimelineImage;
 	edited: boolean;
 	deleted: boolean;
+	/** Not own, yet this user may edit and delete it (GDHub posts, for an admin). */
+	manageable?: boolean;
 	/** Own messages only. */
 	status?: DeliveryStatus;
 	replyTo?: ReplyQuote;
@@ -118,4 +134,46 @@ export function stripReplyFallback(body: string): string {
 	if (i === 0) return body;
 	if (lines[i] === "") i++;
 	return lines.slice(i).join("\n");
+}
+
+const positive = (value: unknown) =>
+	typeof value === "number" && Number.isFinite(value) && value > 0
+		? value
+		: undefined;
+
+/** An `m.image` event's content → the image, or undefined for anything else. */
+export function imageOf(
+	content: Record<string, unknown>,
+): TimelineImage | undefined {
+	if (content.msgtype !== "m.image") return undefined;
+	if (typeof content.url !== "string" || !content.url.startsWith("mxc://")) {
+		return undefined;
+	}
+	const info = (content.info ?? {}) as Record<string, unknown>;
+	return {
+		mxc: content.url,
+		name:
+			typeof content.filename === "string"
+				? content.filename
+				: typeof content.body === "string"
+					? content.body
+					: "",
+		caption: imageCaptionOf(content),
+		w: positive(info.w),
+		h: positive(info.h),
+		size: positive(info.size),
+		mimetype: typeof info.mimetype === "string" ? info.mimetype : undefined,
+	};
+}
+
+/** A timeline picture as the composer's image ref, for caption edits and replies. */
+export function imageRefOf(image: TimelineImage): ChatImageRef {
+	return {
+		url: image.mxc,
+		name: image.name,
+		mimetype: image.mimetype ?? "image/png",
+		size: image.size ?? 0,
+		w: image.w ?? 0,
+		h: image.h ?? 0,
+	};
 }

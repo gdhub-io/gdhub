@@ -39,7 +39,7 @@
         "@editorjs/table": "^2.4.5",
         "@firebase/app": "^0.16.2",
         "@firebase/messaging": "^0.13.3",
-        "@gdhub-io/gdhub-prisma": "2.0.0-beta.91",
+        "@gdhub-io/gdhub-prisma": "2.0.0-beta.92",
         "@gdhub-io/gdhub-typesense": "^1.0.6",
         "@hello-pangea/dnd": "^18.0.1",
         "@langchain/langgraph-sdk": "^1.12.1",
@@ -809,7 +809,7 @@
 
     "@floating-ui/utils": ["@floating-ui/utils@0.2.12", "", {}, "sha512-HpCo8tmWzLVad5s2d19EhAz5zqrrQ6s69qd6moPMQvkOuSwDT1YgRfWSVuc4ennqrgv3OHppiOGMQ7oC13yIww=="],
 
-    "@gdhub-io/gdhub-prisma": ["@gdhub-io/gdhub-prisma@2.0.0-beta.91", "https://npm.pkg.github.com/download/@gdhub-io/gdhub-prisma/2.0.0-beta.91/e7c449585a5371b0b2dc63de5fe566aa5901eca4", { "dependencies": { "@gdhub-io/gdhub-typesense": "^1.0.6", "@prisma/adapter-pg": "^7.9.1", "@prisma/client": "^7.9.1", "dayjs": "^1.11.13", "dotenv": "^17.2.3", "pg": "^8.16.3", "prisma": "^7.9.1", "prisma-extension-pagination": "^0.7.6" }, "peerDependencies": { "@faker-js/faker": "^9.2.0" }, "bin": { "gdhub-prisma": "bin/gdhub-prisma.js" } }, "sha512-XdhloJ6lO8/aGjbutdJGiECMj+DWCNUhFLHFCcP85e+6k3a25pFVEwIjH2aFJwBWGOHq9PgPD3CR588LtVsvlA=="],
+    "@gdhub-io/gdhub-prisma": ["@gdhub-io/gdhub-prisma@2.0.0-beta.92", "https://npm.pkg.github.com/download/@gdhub-io/gdhub-prisma/2.0.0-beta.92/3a7e8380a06c65eabf7db2d61e8bd6b10d801f35", { "dependencies": { "@gdhub-io/gdhub-typesense": "^1.0.6", "@prisma/adapter-pg": "^7.9.1", "@prisma/client": "^7.9.1", "dayjs": "^1.11.13", "dotenv": "^17.2.3", "pg": "^8.16.3", "prisma": "^7.9.1", "prisma-extension-pagination": "^0.7.6" }, "peerDependencies": { "@faker-js/faker": "^9.2.0" }, "bin": { "gdhub-prisma": "bin/gdhub-prisma.js" } }, "sha512-/z9L2H/AQjmUiUymBK1Dt0qs8cPfXnlbQZQUUigvUEFZ4LtG4M5WdzLJn9RQNfeU+GuMfWhr3BkvI5vSsI4Y8Q=="],
 
     "@gdhub-io/gdhub-typesense": ["@gdhub-io/gdhub-typesense@1.0.6", "https://npm.pkg.github.com/download/@gdhub-io/gdhub-typesense/1.0.6/2825e41b4b51a61291221e549d82c396059e4ab1", { "dependencies": { "dayjs": "^1.11.13", "typesense": "^1.8.2", "typesense-instantsearch-adapter": "^2.8.0" } }, "sha512-jxhOwbHh0dtcAsemld5XPjODMqcjuipJjJx5nxM2z2qCKa/TGUw95j3Z78oOOlexksj0MSVqSNUluJpp9o+Rug=="],
 
@@ -4798,6 +4798,8 @@
     "@firebase/storage-compat/@firebase/component": ["@firebase/component@0.7.3", "", { "dependencies": { "@firebase/util": "1.15.1", "tslib": "^2.1.0" } }, "sha512-wFofIaa2879ogD/WvkjYXJxRmfnL0scen6ORgaC3na1FNOR9ASIUANQdhqQcmWu/h77/pVHY7ch5flewa5Bcew=="],
 
     "@firebase/storage-compat/@firebase/util": ["@firebase/util@1.15.1", "", { "dependencies": { "tslib": "^2.1.0" } }, "sha512-LUdM4Wg7YM9Pq/49nGYySJA0CSQEKnGffFzWV8+6gXN7mGxn+FL1IqvFbuZUtAQcfZgHYDwCE1wwlK7rB7gl2g=="],
+
+    "@gdhub-io/gdhub-prisma/dayjs": ["dayjs@1.11.23", "", {}, "sha512-QDTCU0M0MxR3hQfnlDJfwekQiaanm1ubOD231u73WBckQ/fsamwRLiE2GBz6D3a/xF1NgfiDLJjXBa1hYOYTtQ=="],
 
     "@grpc/grpc-js/@types/node": ["@types/node@22.20.1", "", { "dependencies": { "undici-types": "~6.21.0" } }, "sha512-EANqOCF9QFyra+4pfxUcX9STKJpCLjMbObVzljIJomAWSnuSIEAvyzEU53GaajbXJEgdh0iEcPL+DGvpUd4k1Q=="],
 

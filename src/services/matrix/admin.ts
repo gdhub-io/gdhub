@@ -1,3 +1,4 @@
+import { parseMxc } from "@/helpers/chat-media";
 import { env } from "@/helpers/env";
 import { isAllowedRemoteImage } from "@/helpers/remote-image";
 import { getMatrixUserToken } from "@/services/matrix/session";
@@ -131,9 +132,6 @@ export async function ensureMatrixUser(
 // Upload an image to the Matrix media repo and return its mxc:// URI.
 // Profile/room avatars only render from mxc URIs, never from plain HTTP URLs.
 async function uploadMatrixMedia(imageUrl: string): Promise<string | null> {
-	const BASE_URL = env("MATRIX_CHAT_BASE_URL");
-	const ADMIN_TOKEN = env("MATRIX_CHAT_SYNAPSE_ADMIN_TOKEN");
-
 	// The URL comes from platform data (profile image, project cover) — fetching
 	// an arbitrary one from the server would be an SSRF.
 	if (!isAllowedRemoteImage(imageUrl)) return null;
@@ -141,15 +139,32 @@ async function uploadMatrixMedia(imageUrl: string): Promise<string | null> {
 	const img = await fetch(imageUrl);
 	if (!img.ok) return null;
 
+	return uploadMatrixAvatarBytes(
+		await img.arrayBuffer(),
+		img.headers.get("content-type") || "image/png",
+	);
+}
+
+/**
+ * Upload avatar bytes and protect them: Synapse purges media nobody opened for
+ * a year (`media_retention`), and a quiet user's avatar must survive that.
+ */
+export async function uploadMatrixAvatarBytes(
+	bytes: ArrayBuffer,
+	contentType: string,
+): Promise<string | null> {
+	const BASE_URL = env("MATRIX_CHAT_BASE_URL");
+	const ADMIN_TOKEN = env("MATRIX_CHAT_SYNAPSE_ADMIN_TOKEN");
+
 	const resp = await fetch(
 		`${BASE_URL}/_matrix/media/v3/upload?filename=avatar`,
 		{
 			method: "POST",
 			headers: {
-				"Content-Type": img.headers.get("content-type") || "image/png",
+				"Content-Type": contentType,
 				Authorization: `Bearer ${ADMIN_TOKEN}`,
 			},
-			body: await img.arrayBuffer(),
+			body: bytes,
 		},
 	);
 	if (!resp.ok) {
@@ -157,7 +172,34 @@ async function uploadMatrixMedia(imageUrl: string): Promise<string | null> {
 		throw new Error(`Failed to upload media: ${resp.status} ${text}`);
 	}
 	const data = (await resp.json()) as { content_uri?: string };
-	return data.content_uri || null;
+	if (!data.content_uri) return null;
+
+	await protectMatrixMedia(data.content_uri).catch((error) =>
+		console.error("[matrix] media protection failed", error),
+	);
+	return data.content_uri;
+}
+
+/** Exempt one local media item from the retention purge. Idempotent. */
+export async function protectMatrixMedia(mxcUri: string): Promise<void> {
+	const mediaId = parseMxc(mxcUri)?.mediaId;
+	if (!mediaId) throw new Error(`Not an mxc URI: ${mxcUri}`);
+
+	const resp = await fetch(
+		`${env("MATRIX_CHAT_BASE_URL")}/_synapse/admin/v1/media/protect/${encodeURIComponent(mediaId)}`,
+		{
+			method: "POST",
+			headers: {
+				"Content-Type": "application/json",
+				Authorization: `Bearer ${env("MATRIX_CHAT_SYNAPSE_ADMIN_TOKEN")}`,
+			},
+			body: "{}",
+		},
+	);
+	if (!resp.ok) {
+		const text = await resp.text();
+		throw new Error(`Failed to protect media: ${resp.status} ${text}`);
+	}
 }
 
 type SynapseThreepid = { medium: string; address: string };

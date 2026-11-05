@@ -314,7 +314,15 @@ const checkpointProvider: ChatKindProvider<CheckpointLoaded> = {
 	participantIds: (_room, loaded) => loaded?.ctx.userIds ?? [],
 };
 
+// Everyone reads it and nobody closes it; who may post is the post route's call.
+const announcementsProvider: ChatKindProvider<null> = {
+	load: async () => null,
+	buildContext: () => ({ type: "announcements", data: null }),
+	canClose: () => false,
+};
+
 export const chatProviders: Partial<Record<ChatRoomKind, ChatKindProvider>> = {
+	Announcements: announcementsProvider,
 	VacancyOffer: vacancyOfferProvider,
 	Direct: directProvider,
 	AdviceRequest: adviceRequestProvider,
