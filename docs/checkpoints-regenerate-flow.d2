@@ -1,0 +1,55 @@
+vars: {
+  d2-config: {
+    layout-engine: elk
+  }
+}
+
+direction: down
+
+title: "Regenerating an AI curator answer from the admin journal" {
+  shape: text
+  near: top-center
+  style.font-size: 22
+}
+
+open: "An admin opens a checkpoint's\ncurator journal"
+
+editable: "Is this answer's step still open?" {shape: diamond}
+open -> editable
+fixed: "Read-only\nno Regenerate, no Rebuild"
+editable -> fixed: "no: a later answer\nalready built on it,\nor the checkpoint is closed"
+
+actions: "Two actions on an open step" {
+  grid-columns: 2
+  regen: "Regenerate one answer\nsame inputs + the admin's hint"
+  rebuild: "Rebuild the step's input\nread artifacts, links, devlogs again\n(Notion included), then write\nthe step's answers again"
+}
+editable -> actions: "yes"
+
+draft: "A draft, next to the current answer\nheld for about an hour, not saved;\nthe team and the next steps\nstill use the current one"
+actions -> draft
+
+choose: "Admin compares and decides" {shape: diamond}
+draft -> choose
+
+replace: "Replace\nthe entry is updated in place;\nits history keeps the old answer,\nthe hint and the new one;\nthe team sees it marked \"updated\";\nmatches and later inputs follow it"
+keep: "Keep current\nnothing changes,\nnothing is kept"
+choose -> replace
+choose -> keep
+
+start: "Day one reads more" {
+  grid-columns: 2
+  devlogs: "Devlogs before the checkpoint\nall of them before the first one,\nsince the previous one otherwise;\noldest first, each with its date"
+  notion: "Public Notion pages\nread for their real text;\nno text = unread, not \"read\""
+}
+
+critical: |md
+  **Critical**
+  - Admins only (`admin.checkpoints.manage`), checked on every call.
+  - A draft never reaches the team, the evidence matches or the next step until Replace.
+  - The same prompts as the scheduled runs; the hint is one extra input.
+  - Replace never moves the checkpoint along: statuses, flags, hashes and dates stay as they are.
+  - Every replaced answer stays in the entry's history; every generation is in the AI spend.
+| {
+  near: bottom-center
+}
