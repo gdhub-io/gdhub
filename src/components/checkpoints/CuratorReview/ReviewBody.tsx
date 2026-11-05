@@ -2,6 +2,7 @@
 
 import { IconCalendarEvent, IconHourglass } from "@tabler/icons-react";
 import { useTranslate } from "@tolgee/react";
+import { Typography } from "antd";
 import dayjs from "dayjs";
 import { AiNote } from "@/components/checkpoints/AiNote";
 import { NotesSummary } from "@/components/checkpoints/CallRoom/CallNotes";
@@ -63,8 +64,16 @@ export function ReviewBody({
 			/>
 		);
 	}
+	const revisedAt = session.content?.revisedAt;
 	return (
 		<>
+			{revisedAt && (
+				<Typography.Text type="secondary">
+					{t("checkpoints.review.updatedOn", "Updated {date}", {
+						date: dayjs(revisedAt).format("D MMM"),
+					})}
+				</Typography.Text>
+			)}
 			<NotesSummary
 				index={index}
 				content={notes}

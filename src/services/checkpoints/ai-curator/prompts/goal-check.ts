@@ -1,6 +1,6 @@
 import { stripIndents } from "common-tags";
 import { CHECKPOINT_DAYS } from "@/config/checkpoint";
-import { fenced } from "@/lib/checkpoints/curator-text";
+import { devlogText, fenced } from "@/lib/checkpoints/curator-text";
 import type {
 	CuratorAuthor,
 	CuratorProject,
@@ -10,6 +10,7 @@ import { GOAL_FITS } from "@/types/checkpoints";
 import {
 	CURATOR_STANCE,
 	GOAL_STAGE,
+	hintBlock,
 	LENSES,
 	localeLine,
 	renderCard,
@@ -39,6 +40,26 @@ const renderAuthor = (author: CuratorAuthor | null) =>
 	author
 		? `The author: ${author.speciality}, ${author.level} level.${author.experience ? ` In their words: ${fenced(author.experience)}` : ""}`
 		: "The author's speciality is not known.";
+
+/** GDHUB-156: what the team wrote before the checkpoint, so the read knows what came after what. */
+const renderDevlogsBefore = ({
+	devlogs,
+	devlogsLeftOut,
+	devlogMedia,
+}: GoalCheckInput) =>
+	[
+		devlogs?.length
+			? `The team's devlogs before this checkpoint, oldest first (${devlogs.length}) — what they worked on, not evidence:\n${devlogs.map((post) => `--- ${post.publishedAt}\n${fenced(devlogText(post.content))}`).join("\n")}`
+			: "",
+		devlogsLeftOut
+			? `${devlogsLeftOut} earlier devlogs not included (too long).`
+			: "",
+		devlogMedia?.length
+			? `What the latest of those devlogs' images and videos show:\n${devlogMedia.map(fenced).join("\n")}`
+			: "",
+	]
+		.filter(Boolean)
+		.join("\n\n");
 
 export const GOAL_CHECK_FUNCTION_NAME = "report_goal_check";
 
@@ -140,12 +161,20 @@ export const goalCheckMessages = (input: GoalCheckInput, locale = "en") => [
 	},
 	{
 		role: "user" as const,
-		content: stripIndents`
+		content:
+			stripIndents`
 			${renderProject(input.project)}
 			${renderAuthor(input.author)}
 
 			${renderCard(input.card)}
-			${input.inputsSeen?.length ? `What the day-1 artifacts show, as looked at:\n${input.inputsSeen.map((line) => `- ${fenced(line)}`).join("\n")}` : ""}
+			${[
+				input.inputsSeen?.length
+					? `What the day-1 artifacts show, as looked at:\n${input.inputsSeen.map((line) => `- ${fenced(line)}`).join("\n")}`
+					: "",
+				renderDevlogsBefore(input),
+			]
+				.filter(Boolean)
+				.join("\n\n")}
 
 			${renderWorkflow(input.workflow)}
 
@@ -161,6 +190,6 @@ export const goalCheckMessages = (input: GoalCheckInput, locale = "en") => [
 			}
 
 			Answer via the ${GOAL_CHECK_FUNCTION_NAME} function.
-		`,
+		` + hintBlock(input.hint),
 	},
 ];

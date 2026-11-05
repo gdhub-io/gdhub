@@ -9,6 +9,7 @@ import { type AiMeter, recordAiUsage } from "@/services/ai-usage";
 import type { JournalEntry } from "@/types/checkpoint-curator";
 import {
 	AUTHOR_VOICE,
+	hintBlock,
 	PARTICIPANT_DATA,
 	renderCharacter,
 	renderJournal,
@@ -21,6 +22,8 @@ export type PlanLetterInput = {
 	journal: JournalEntry[];
 	/** When the curator looks again: the sprint 1 review, "Thursday 8 Oct". */
 	reviewOn: string;
+	/** An admin's note when the letter is regenerated (GDHUB-156). */
+	hint?: string | null;
 };
 
 const letterSchema = z.object({
@@ -56,13 +59,14 @@ export const composePlanLetter = async (
 			that was the check before. Write in the language of the goal and the
 			tasks.
 		`,
-		prompt: stripIndents`
+		prompt:
+			stripIndents`
 			${renderJournal(input.journal)}
 
 			The goal: ${fenced(input.goal)}
 			The tasks: ${input.tasks.map(fenced).join("; ")}
 			You look at what is new on: ${input.reviewOn}
-		`,
+		` + hintBlock(input.hint),
 	};
 	try {
 		const started = Date.now();

@@ -26,6 +26,7 @@ import {
 } from "@/repositories/checkpoints/ai-curator-context";
 import {
 	knownOnly,
+	type SprintEvidence,
 	sprintEvidence,
 } from "@/repositories/checkpoints/call-notes";
 import { journal } from "@/repositories/checkpoints/journal";
@@ -42,10 +43,12 @@ import {
 } from "@/repositories/checkpoints/review";
 import { canEditPlan } from "@/repositories/checkpoints/viewer";
 import { CONFIRMED_MEMBERS } from "@/repositories/project/team";
+import type { AiPurpose } from "@/services/ai-usage";
 import {
 	midwayAdviceInput,
 	type PlanAdviceInput,
 	reviewSprint,
+	type SprintReviewInput,
 	writePlanAdvice,
 	writeSprintReview,
 } from "@/services/checkpoints/ai-review";
@@ -184,20 +187,7 @@ export const adviseOnPlan = async (
 	await prisma.checkpointSession.update({
 		where: { id: session.id },
 		data: {
-			// The start's letter is the advice itself; a review keeps its own.
-			content: {
-				...content,
-				message: content?.notes
-					? content.message
-					: (written.message ?? content?.message ?? ""),
-				notes: content?.notes ?? null,
-				advice: shown.advice,
-				goal: shown.goal ?? content?.goal,
-				...(start && {
-					firstLetter: content?.firstLetter ?? content?.message,
-				}),
-				checkedAt,
-			} satisfies CuratorReview,
+			content: adviceContent(content, written, shown, start, checkedAt),
 			// With a pro curator the session stays unwritten: call 1's notes
 			// claim it by a null status, and they replace this draft advice.
 			...(ai && { contentStatus: CheckpointSessionContentStatus.Ready }),
@@ -221,8 +211,30 @@ export const adviseOnPlan = async (
 	return null;
 };
 
+/** The session as the advice writes it; the start's letter is the advice itself, a review keeps its own. */
+export const adviceContent = (
+	content: CuratorReview | null,
+	written: { message: string | null },
+	shown: { advice: PlanAdvice; goal?: GoalAdvice | null },
+	start: boolean,
+	checkedAt: string | undefined,
+) =>
+	({
+		...content,
+		message: content?.notes
+			? content.message
+			: (written.message ?? content?.message ?? ""),
+		notes: content?.notes ?? null,
+		advice: shown.advice,
+		goal: shown.goal ?? content?.goal,
+		...(start && {
+			firstLetter: content?.firstLetter ?? content?.message,
+		}),
+		checkedAt,
+	}) satisfies CuratorReview;
+
 /** Advice as the author reads it when a person curates: no goal checks. */
-const withoutGoalChecks = <
+export const withoutGoalChecks = <
 	T extends { advice: PlanAdvice; goal?: GoalAdvice | null },
 >(
 	written: T,
@@ -257,15 +269,13 @@ const adviceInput = (
 });
 
 /** The model's advice, kept for open tasks only and none it made up. */
-const adviceFor = async (
+export const adviceFor = async (
 	input: PlanAdviceInput,
 	items: TaskRow[],
 	checkpointId: string,
+	purpose: AiPurpose = "planAdvice",
 ) => {
-	const written = await writePlanAdvice(input, {
-		checkpointId,
-		purpose: "planAdvice",
-	});
+	const written = await writePlanAdvice(input, { checkpointId, purpose });
 	if (!written) return null;
 	const open = new Set(
 		items
@@ -385,15 +395,21 @@ const sprintChange = async (checkpointId: string, sprint: number) => {
  * their media show, its artifacts, the pulse, and the focus the last call or
  * review agreed. The final review reads the whole run; the verdict follows it.
  */
-const sprintReviewInput = async (
+export const sprintReviewInput = async (
 	checkpoint: ReviewCheckpoint,
 	startedAt: Date,
 	sessionIndex: number,
 	final: boolean,
+	/** What was seen, given instead of looking (GDHUB-156): nothing is looked at or written. */
+	seen?: {
+		evidence: SprintEvidence;
+		devlogMedia: string[];
+		artifactsSeen: string[];
+	},
 ) => {
 	const sprint = sessionIndex - 1;
 	const [{ devlogs, posts, artifacts }, facts, change] = await Promise.all([
-		sprintEvidence(checkpoint.projectId, startedAt, sprint),
+		seen?.evidence ?? sprintEvidence(checkpoint.projectId, startedAt, sprint),
 		checkpointFacts(
 			{ ...checkpoint, startedAt },
 			final
@@ -402,10 +418,12 @@ const sprintReviewInput = async (
 		),
 		sprintChange(checkpoint.id, sprint),
 	]);
-	const [devlogMedia, artifactsSeen] = await Promise.all([
-		devlogMediaLines(posts.map((post) => post.id)),
-		sprintArtifactLines(checkpoint.id, sprint),
-	]);
+	const [devlogMedia, artifactsSeen] = seen
+		? [seen.devlogMedia, seen.artifactsSeen]
+		: await Promise.all([
+				devlogMediaLines(posts.map((post) => post.id)),
+				sprintArtifactLines(checkpoint.id, sprint),
+			]);
 	// An AI review keeps its notes under `notes`; a human call's notes are the content.
 	const previous = checkpoint.sessions.find(
 		(row) => row.index === sessionIndex - 1,
@@ -430,6 +448,50 @@ const sprintReviewInput = async (
 		...change,
 		lastDirection: directionOf(previous) ?? null,
 		final,
+	};
+};
+
+/**
+ * A sprint review from its input — the compute half of `writeReviewFor`,
+ * nothing written: the review, halfway the advice on the tasks, the letter.
+ */
+export const composeReview = async (
+	checkpoint: ReviewCheckpoint,
+	sessionIndex: number,
+	input: SprintReviewInput,
+	{
+		purpose,
+		hint,
+		advicePurpose,
+	}: {
+		purpose: AiPurpose;
+		hint?: string | null;
+		/** What the advice inside it is charged to; the scheduled run's own by default. */
+		advicePurpose?: AiPurpose;
+	},
+) => {
+	// Halfway the tasks change for the last time.
+	const advise =
+		sessionIndex === SCOPE_SESSION
+			? async (review: string) =>
+					(
+						await adviceFor(
+							midwayAdviceInput(input, review),
+							checkpoint.items,
+							checkpoint.id,
+							advicePurpose,
+						)
+					)?.advice ?? null
+			: null;
+	const review = await reviewSprint({ ...input, hint }, advise, {
+		checkpointId: checkpoint.id,
+		purpose,
+	});
+	if (!review) return null;
+	return {
+		message: review.message,
+		notes: knownOnly(review.notes, checkpoint.items),
+		advice: review.advice,
 	};
 };
 
@@ -476,34 +538,15 @@ export const writeReviewFor = async (sessionId: string, now: Date) => {
 		session.index,
 		final,
 	);
-	// Halfway the tasks change for the last time.
-	const advise =
-		session.index === SCOPE_SESSION
-			? async (review: string) =>
-					(
-						await adviceFor(
-							midwayAdviceInput(input, review),
-							checkpoint.items,
-							session.checkpointId,
-						)
-					)?.advice ?? null
-			: null;
-	const review = await reviewSprint(input, advise, {
-		checkpointId: session.checkpointId,
+	const review = await composeReview(checkpoint, session.index, input, {
 		purpose: "sprintReview",
 	});
 	if (!review) return false;
 
-	const notes = knownOnly(review.notes, checkpoint.items);
-
 	await prisma.checkpointSession.update({
 		where: { id: sessionId },
 		data: {
-			content: {
-				message: review.message,
-				notes,
-				advice: review.advice,
-			} satisfies CuratorReview,
+			content: review satisfies CuratorReview,
 			contentStatus: CheckpointSessionContentStatus.Ready,
 			endedAt: now,
 		},
@@ -513,7 +556,7 @@ export const writeReviewFor = async (sessionId: string, now: Date) => {
 		kind: CheckpointJournalKind.Review,
 		sprint,
 		input,
-		output: { message: review.message, notes, advice: review.advice },
+		output: review,
 	});
 
 	// The verdict follows in the same night run, from closeDueCheckpoints.
@@ -580,6 +623,69 @@ export const writeDueBriefs = async (now = new Date()) => {
 	return written;
 };
 
+/** A human curator's brief from its input — the compute half of `writeBriefFor`, nothing written. */
+export const composeBrief = async (
+	checkpoint: ReviewCheckpoint,
+	sessionIndex: number,
+	input: SprintReviewInput,
+	{
+		purpose,
+		hint,
+		advicePurpose,
+	}: {
+		purpose: AiPurpose;
+		hint?: string | null;
+		/** What the advice inside it is charged to; the scheduled run's own by default. */
+		advicePurpose?: AiPurpose;
+	},
+) => {
+	const checkpointId = checkpoint.id;
+	const review = await writeSprintReview(
+		{ ...input, hint },
+		{
+			checkpointId,
+			purpose,
+		},
+	);
+	if (!review) return null;
+	// The plan is set on call 1 and changed on call 3: the briefs after them
+	// carry the goal and each task checked against the chain (GDHUB-125).
+	const planCall = sessionIndex - 1;
+	const checks =
+		planCall === 1 || planCall === SCOPE_SESSION
+			? await adviceFor(
+					{
+						...midwayAdviceInput(input, review.inShort),
+						moment: planCall === 1 ? "start" : "midway",
+					},
+					checkpoint.items,
+					checkpointId,
+					advicePurpose,
+				).catch((error) => {
+					console.error(
+						"[curator-brief] goal checks failed",
+						checkpointId,
+						error,
+					);
+					return null;
+				})
+			: null;
+
+	return {
+		audience: "curator" as const,
+		// The focus is agreed on the call, not proposed in the brief.
+		notes: knownOnly({ ...review, agreed: [] }, checkpoint.items),
+		// What the curator's card shows beside each task, so it never reads the input.
+		seen: input.tasks.flatMap((task) =>
+			task.evidence.flatMap((piece) =>
+				piece.seen ? [{ itemId: task.id, ...piece.seen }] : [],
+			),
+		),
+		goal: checks?.goal ?? null,
+		advice: checks?.advice ?? null,
+	};
+};
+
 /** One call's brief, once: a brief already in the journal is never written again. */
 export const writeBriefFor = async (sessionId: string) => {
 	const session = await prisma.checkpointSession.findUniqueOrThrow({
@@ -608,51 +714,17 @@ export const writeBriefFor = async (sessionId: string) => {
 		session.index,
 		false,
 	);
-	const review = await writeSprintReview(input, {
-		checkpointId,
+	const output = await composeBrief(checkpoint, session.index, input, {
 		purpose: "callBrief",
 	});
-	if (!review) return false;
-	// The plan is set on call 1 and changed on call 3: the briefs after them
-	// carry the goal and each task checked against the chain (GDHUB-125).
-	const planCall = session.index - 1;
-	const checks =
-		planCall === 1 || planCall === SCOPE_SESSION
-			? await adviceFor(
-					{
-						...midwayAdviceInput(input, review.inShort),
-						moment: planCall === 1 ? "start" : "midway",
-					},
-					checkpoint.items,
-					checkpointId,
-				).catch((error) => {
-					console.error(
-						"[curator-brief] goal checks failed",
-						checkpointId,
-						error,
-					);
-					return null;
-				})
-			: null;
+	if (!output) return false;
 
 	await journal({
 		checkpointId,
 		kind: CheckpointJournalKind.Review,
 		sprint,
 		input,
-		output: {
-			audience: "curator",
-			// The focus is agreed on the call, not proposed in the brief.
-			notes: knownOnly({ ...review, agreed: [] }, checkpoint.items),
-			// What the curator's card shows beside each task, so it never reads the input.
-			seen: input.tasks.flatMap((task) =>
-				task.evidence.flatMap((piece) =>
-					piece.seen ? [{ itemId: task.id, ...piece.seen }] : [],
-				),
-			),
-			goal: checks?.goal ?? null,
-			advice: checks?.advice ?? null,
-		},
+		output,
 	});
 	return true;
 };

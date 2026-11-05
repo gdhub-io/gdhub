@@ -13,6 +13,7 @@ import {
 	DIRECTION_RULES,
 	GOAL_STAGE,
 	HIRING,
+	hintBlock,
 	LENSES,
 	legOfSprint,
 	localeLine,
@@ -66,6 +67,8 @@ export type PlanAdviceInput = {
 	/** The project as its page shows it: the stage's path, the team, recent activity. */
 	picture: string;
 	marketing: CuratorMarketing;
+	/** An admin's note when the answer is regenerated (GDHUB-156). */
+	hint?: string | null;
 };
 
 export type SprintReviewInput = {
@@ -96,6 +99,8 @@ export type SprintReviewInput = {
 	idle?: boolean;
 	/** The direction the review before this one named. */
 	lastDirection?: SprintDirection | null;
+	/** An admin's note when the answer is regenerated (GDHUB-156). */
+	hint?: string | null;
 };
 
 const voice = (
@@ -225,7 +230,8 @@ export const writePlanAdvice = async (
 			${LENSES}
 			${locale ? localeLine(locale) : ""}
 		`,
-		prompt: stripIndents`
+		prompt:
+			stripIndents`
 			${renderJournal(input.journal)}
 
 			${renderWorkflow(input.workflow)}
@@ -240,7 +246,7 @@ export const writePlanAdvice = async (
 
 			${renderPicture(input.picture)}
 			${renderMarketing(input.marketing)}
-		`,
+		` + hintBlock(input.hint),
 	};
 	return runStructured("plan_advice", adviceSchema, request, meter);
 };
@@ -344,7 +350,8 @@ export const writeSprintReview = async (
 			${AUTHOR_VOICE}
 			${locale ? localeLine(locale) : ""}
 		`,
-		prompt: stripIndents`
+		prompt:
+			stripIndents`
 			${renderWorkflow(input.workflow)}
 			Goal: ${fenced(input.goal)}
 
@@ -375,7 +382,7 @@ export const writeSprintReview = async (
 			${input.idle ? "Nothing at all was done in this sprint: the direction is idle for both goals." : ""}
 			${input.lastDirection ? `Last sprint's direction: ${renderDirection(input.lastDirection)}.` : ""}
 
-		`,
+		` + hintBlock(input.hint),
 	};
 	const assessment = await runStructured(
 		"sprint_review",
@@ -504,7 +511,8 @@ const writeReviewLetter = async (
 			${final ? `This is the final review: the ${CHECKPOINT_DAYS} days are over. The verdict follows it; do not say whether the goal was reached.` : ""}
 			${locale ? localeLine(locale) : ""}
 		`,
-		prompt: stripIndents`
+		prompt:
+			stripIndents`
 			${renderJournal(input.journal)}
 
 			Goal: ${fenced(input.goal)}
@@ -530,7 +538,7 @@ const writeReviewLetter = async (
 					: ""
 			}
 
-		`,
+		` + hintBlock(input.hint),
 	};
 	return runStructured("review_letter", letterSchema, request, meter);
 };

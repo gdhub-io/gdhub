@@ -7,8 +7,12 @@ import {
 	Prisma,
 	TeamMemberStatus,
 } from "@gdhub-io/gdhub-prisma";
-import { SPRINTS_PER_CHECKPOINT } from "@/config/checkpoint";
+import {
+	DAY_ONE_DEVLOG_CHARS,
+	SPRINTS_PER_CHECKPOINT,
+} from "@/config/checkpoint";
 import { lettersSoFar } from "@/lib/checkpoints/curator-letters";
+import { devlogsWithin, devlogText } from "@/lib/checkpoints/curator-text";
 import { renderDifference } from "@/lib/checkpoints/picture";
 import { reviewOnLabel } from "@/lib/checkpoints/plan";
 import {
@@ -33,6 +37,10 @@ import {
 	briefMemberSelect,
 	lastVerdict,
 } from "@/repositories/checkpoints/brief";
+import {
+	type DayOneDevlog,
+	dayOneDevlogs,
+} from "@/repositories/checkpoints/day-one";
 import { journal } from "@/repositories/checkpoints/journal";
 import { runChangeOf } from "@/repositories/checkpoints/picture";
 import { recheckCheckpointArtifacts } from "@/repositories/project/artifact-check";
@@ -44,11 +52,14 @@ import {
 	checkpointCurator,
 	type GoalCheckInput,
 	type GoalCheckResult,
+	type ReportInput,
+	type ReportResult,
 } from "@/services/checkpoints/ai-curator";
 import { createCharacter } from "@/services/checkpoints/ai-curator/character";
 import { composePlanLetter } from "@/services/checkpoints/ai-curator/plan-letter";
 import {
 	lookedArtifactLines,
+	lookedMediaLines,
 	seeCheckpointEvidence,
 } from "@/services/checkpoints/flows/evidence-seen";
 import { notifyDayOne } from "@/services/checkpoints/notifications";
@@ -71,6 +82,46 @@ export const runGoalCheck = async (
 	checkpointId: string,
 	options: CuratorOptions = {},
 ): Promise<GoalCheckResult | null> => {
+	const read = await goalCheckInputOf(checkpointId);
+	if (!read) return null;
+	const { checkpoint, input } = read;
+
+	const hash = goalCheckHash(input);
+
+	if (checkpoint.goalCheck && checkpoint.goalCheckHash === hash) {
+		return checkpoint.goalCheck;
+	}
+
+	const result = await checkpointCurator.checkGoal(input, {
+		...options,
+		checkpointId,
+	});
+	if (!result) return null;
+
+	await prisma.projectCheckpoint.update({
+		where: { id: checkpointId },
+		data: {
+			goalCheck: result,
+			goalCheckHash: hash,
+		},
+	});
+
+	return result;
+};
+
+/**
+ * What the goal check reads — the compute half of `runGoalCheck`, nothing
+ * written. A rebuild of day one (GDHUB-156) passes the devlogs it loaded and
+ * the lines it has just seen in place of the ones in the journal.
+ */
+export const goalCheckInputOf = async (
+	checkpointId: string,
+	seen?: {
+		inputsSeen: string[];
+		devlogMedia: string[];
+		devlogs: DayOneDevlog[];
+	},
+) => {
 	const checkpoint = await prisma.projectCheckpoint.findUnique({
 		where: { id: checkpointId },
 		select: {
@@ -78,6 +129,7 @@ export const runGoalCheck = async (
 			goal: true,
 			stageName: true,
 			stepId: true,
+			startedAt: true,
 			goalCheck: true,
 			goalCheckHash: true,
 			curatorCharacter: true,
@@ -104,13 +156,22 @@ export const runGoalCheck = async (
 	if (!checkpoint) return null;
 
 	const members = checkpoint.project?.team?.members ?? [];
-	const [previous, facts, inputsSeen] = await Promise.all([
-		lastVerdict(checkpoint.projectId, checkpointId),
-		// Before the start nobody has joined during it, and the period is the lead-in.
-		checkpointFacts({ ...checkpoint, id: checkpointId, startedAt: null }),
-		lookedArtifactLines(checkpointId, 0),
-	]);
+	const [previous, facts, inputsSeen, devlogs, devlogMedia] = await Promise.all(
+		[
+			lastVerdict(checkpoint.projectId, checkpointId),
+			// Before the start nobody has joined during it, and the period is the lead-in.
+			checkpointFacts({ ...checkpoint, id: checkpointId, startedAt: null }),
+			seen?.inputsSeen ?? lookedArtifactLines(checkpointId, 0),
+			seen?.devlogs ?? dayOneDevlogs({ ...checkpoint, id: checkpointId }),
+			seen?.devlogMedia ?? lookedMediaLines({ checkpointId, sprint: 0 }),
+		],
+	);
 
+	const { kept, leftOut } = devlogsWithin(
+		devlogs.map(toDevlog),
+		(post) => devlogText(post.content).length,
+		DAY_ONE_DEVLOG_CHARS,
+	);
 	const founder = members.find(
 		(member) => member.status === TeamMemberStatus.Founder,
 	);
@@ -127,29 +188,12 @@ export const runGoalCheck = async (
 		character: checkpoint.curatorCharacter,
 		previous,
 		inputsSeen,
+		// Absent rather than empty, so a card without them hashes as it did before GDHUB-156.
+		...(kept.length ? { devlogs: kept } : {}),
+		...(leftOut ? { devlogsLeftOut: leftOut } : {}),
+		...(devlogMedia.length ? { devlogMedia } : {}),
 	};
-
-	const hash = goalCheckHash(input);
-
-	if (checkpoint.goalCheck && checkpoint.goalCheckHash === hash) {
-		return checkpoint.goalCheck;
-	}
-
-	const result = await checkpointCurator.checkGoal(input, {
-		...options,
-		checkpointId,
-	});
-	if (!result) return null;
-
-	await prisma.projectCheckpoint.update({
-		where: { id: checkpointId },
-		data: {
-			goalCheck: result,
-			goalCheckHash: hash,
-		},
-	});
-
-	return result;
+	return { checkpoint, input };
 };
 
 /**
@@ -204,13 +248,7 @@ export const writeFirstLetter = async (
 		await prisma.checkpointSession.updateMany({
 			where: { id: session.id, content: { equals: Prisma.AnyNull } },
 			data: {
-				content: {
-					message: read.note,
-					notes: null,
-					advice: null,
-					goal: read.goal,
-					suggestions: read.suggestions,
-				} satisfies CuratorReview,
+				content: firstLetterContent(read),
 				contentStatus: CheckpointSessionContentStatus.Ready,
 			},
 		});
@@ -224,6 +262,16 @@ export const writeFirstLetter = async (
 	if (notify) await notifyDayOne(checkpointId, !!read);
 	return !!read;
 };
+
+/** Session 1 as the first letter writes it. */
+const firstLetterContent = (read: GoalCheckResult) =>
+	({
+		message: read.note,
+		notes: null,
+		advice: null,
+		goal: read.goal,
+		suggestions: read.suggestions,
+	}) satisfies CuratorReview;
 
 /**
  * Day 1 with the AI curator (GDHUB-117): once the plan is approved, by the
@@ -397,29 +445,35 @@ export const writeVerdictRead = async (checkpointId: string) => {
 		kind: CheckpointJournalKind.Verdict,
 		sprint: SPRINTS_PER_CHECKPOINT,
 		input: read.reportInput,
-		output: {
-			by: "ai",
-			proposed: proposed.verdict,
-			settled: null,
-			note: proposed.verdictNote,
-			summary: proposed.summary,
-			unproven: read.reportInput.unproven,
-			// What the verdict window shows, so it never reads the input.
-			evidence: read.reportInput.artifacts.flatMap((artifact) =>
-				artifact.seen
-					? [
-							{
-								name: artifact.name ?? artifact.link,
-								match: artifact.seen.match,
-								note: artifact.seen.note,
-							},
-						]
-					: [],
-			),
-		},
+		output: verdictReadOutput(read.reportInput, proposed),
 	});
 	return true;
 };
+
+/** The AI's verdict read as the journal keeps it. */
+export const verdictReadOutput = (
+	reportInput: ReportInput,
+	proposed: ReportResult,
+) => ({
+	by: "ai" as const,
+	proposed: proposed.verdict,
+	settled: null,
+	note: proposed.verdictNote,
+	summary: proposed.summary,
+	unproven: reportInput.unproven,
+	// What the verdict window shows, so it never reads the input.
+	evidence: reportInput.artifacts.flatMap((artifact) =>
+		artifact.seen
+			? [
+					{
+						name: artifact.name ?? artifact.link,
+						match: artifact.seen.match,
+						note: artifact.seen.note,
+					},
+				]
+			: [],
+	),
+});
 
 /** Every human checkpoint waiting for its verdict that has no AI read yet. */
 export const writeDueVerdictReads = async () => {
@@ -450,11 +504,17 @@ export const writeDueVerdictReads = async () => {
  * what each call agreed. The AI curator's verdict and the human curator's AI
  * read (GDHUB-114) are written from the same input.
  */
-export const reportInputFor = async (checkpointId: string) => {
+export const reportInputFor = async (
+	checkpointId: string,
+	/** False for a regenerated read (GDHUB-156): nothing is checked or looked at again. */
+	{ look = true } = {},
+) => {
 	// The verdict counts only evidence that opens today, not on the day it was added,
 	// and the report says what that evidence shows.
-	await recheckCheckpointArtifacts(checkpointId);
-	await seeCheckpointEvidence(checkpointId);
+	if (look) {
+		await recheckCheckpointArtifacts(checkpointId);
+		await seeCheckpointEvidence(checkpointId);
+	}
 
 	const checkpoint = await prisma.projectCheckpoint.findUnique({
 		where: { id: checkpointId },

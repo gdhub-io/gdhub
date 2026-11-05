@@ -112,7 +112,9 @@ export function CuratorJournalDrawer({
 									"admin.checkpoints.journal.tab.conversation",
 									"Conversation",
 								),
-								children: <Conversation view={view} />,
+								children: (
+									<Conversation checkpointId={checkpoint.id} view={view} />
+								),
 							},
 							{
 								key: "inputs",

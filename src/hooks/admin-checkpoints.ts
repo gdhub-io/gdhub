@@ -16,7 +16,11 @@ import type {
 } from "@/config/prisma-enums";
 import { VERDICT_DAY } from "@/lib/checkpoints/plan";
 import type { RefundReason, RefundRowReason } from "@/lib/checkpoints/refund";
-import type { CuratorJournalViewDto } from "@/types/checkpoint-journal";
+import type {
+	CuratorJournalViewDto,
+	JournalDraftDto,
+	JournalDraftTarget,
+} from "@/types/checkpoint-journal";
 import type {
 	AdminCheckpointsPageDto,
 	AdvisorCheckpointDto,
@@ -56,6 +60,53 @@ export const useCuratorJournal = (checkpointId: string) =>
 			(await axios.get<CuratorJournalViewDto>(`${URL}/${checkpointId}/journal`))
 				.data,
 	});
+
+const draftPath = (checkpointId: string, target: JournalDraftTarget) =>
+	"entryId" in target
+		? `${URL}/${checkpointId}/journal/${target.entryId}`
+		: `${URL}/${checkpointId}/journal/steps/${target.step}`;
+
+/** A draft beside the current answer: regenerated, or the step rebuilt. Nothing is saved. */
+export const useJournalDraft = (checkpointId: string) =>
+	useMutation({
+		mutationFn: async ({
+			target,
+			hint,
+		}: {
+			target: JournalDraftTarget;
+			hint: string;
+		}) =>
+			(
+				await axios.post<JournalDraftDto>(
+					`${draftPath(checkpointId, target)}/${"entryId" in target ? "regenerate" : "rebuild"}`,
+					{ hint },
+				)
+			).data,
+	});
+
+/** Replace: the draft becomes the answer, and the journal is read again. */
+export const useReplaceJournalDraft = (checkpointId: string) => {
+	const queryClient = useQueryClient();
+
+	return useMutation({
+		mutationFn: async ({
+			target,
+			draftKey,
+		}: {
+			target: JournalDraftTarget;
+			draftKey: string;
+		}) =>
+			(
+				await axios.post(`${draftPath(checkpointId, target)}/replace`, {
+					draftKey,
+				})
+			).data,
+		onSuccess: () =>
+			queryClient.invalidateQueries({
+				queryKey: [...ROOT, "journal", checkpointId],
+			}),
+	});
+};
 
 export const useRefundQuote = (checkpointId?: string) =>
 	useQuery({

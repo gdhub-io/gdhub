@@ -125,7 +125,7 @@ class CheckpointCuratorService {
 			GOAL_CHECK_FUNCTION_NAME,
 			goalCheckSchema(),
 			goalCheckMessages(input, options.locale),
-			meter(options, "goalCheck"),
+			meter(options, options.purpose ?? "goalCheck"),
 		);
 	}
 

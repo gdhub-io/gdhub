@@ -125,3 +125,21 @@ export const devlogWords = (post: {
 		.filter((line) => line.trim())
 		.join("\n");
 };
+
+/**
+ * The newest devlogs whose text fits in `chars`, oldest first, and how many
+ * earlier ones were left out: the goal check reads the latest work whole.
+ */
+export const devlogsWithin = <T>(
+	devlogs: T[],
+	size: (devlog: T) => number,
+	chars: number,
+) => {
+	let start = devlogs.length;
+	let total = 0;
+	while (start > 0 && total + size(devlogs[start - 1]) <= chars) {
+		total += size(devlogs[start - 1]);
+		start -= 1;
+	}
+	return { kept: devlogs.slice(start), leftOut: start };
+};

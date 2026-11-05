@@ -48,6 +48,29 @@ export type JournalMessageDto = {
 	details: { label: string; value: string }[];
 	/** What it was made from, raw, under "Source". */
 	source: unknown;
+	/** GDHUB-156: an AI answer on an open step, which an admin may write again. */
+	regenerable: boolean;
+	/** Each time an admin replaced it, oldest first. */
+	history: JournalRevisionDto[];
+};
+export type JournalRevisionDto = {
+	at: string;
+	mode: "regenerate" | "rebuild";
+	hint: string | null;
+	/** The answer it replaced, as text. */
+	previous: string | null;
+};
+/** A regenerated answer next to the current one; `entryId` is null for a look the rebuild adds. */
+export type JournalDraftChangeDto = {
+	entryId: string | null;
+	current: JournalMessageDto | null;
+	draft: JournalMessageDto;
+};
+/** GDHUB-156: what a regeneration answers — one AI answer, or every answer of a step. */
+export type JournalDraftTarget = { entryId: string } | { step: number };
+export type JournalDraftDto = {
+	draftKey: string;
+	changes: JournalDraftChangeDto[];
 };
 export type JournalTaskDto = {
 	id: string;
@@ -102,6 +125,8 @@ export type CuratorJournalViewDto = {
 	/** The links the AI looked at, how many it could not read, the video it watched. */
 	looked: { links: number; unread: number; videoSeconds: number };
 	sprints: { number: number; from: string; to: string }[];
+	/** GDHUB-156: day one (0) and the sprints, and whether an admin may rebuild each. */
+	steps: { sprint: number; rebuildable: boolean }[];
 	/** When the verdict was settled: the conversation's last divider. */
 	finishedAt: string | null;
 	/** The settled verdict and why, shown under the goal. */
@@ -129,6 +154,8 @@ export type CuratorJournalViewDto = {
 			link: string;
 			addedAt: string;
 		}[];
+		/** GDHUB-156: the devlogs day one read, oldest first. */
+		devlogs: JournalDevlogDto[];
 	};
 	artifacts: JournalArtifactDto[];
 	devlogs: JournalDevlogDto[];

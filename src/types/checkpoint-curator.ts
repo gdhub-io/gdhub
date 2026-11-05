@@ -160,6 +160,14 @@ export type GoalCheckInput = {
 	marketing: CuratorMarketing;
 	/** GDHUB-133: what the day-1 inputs' artifacts were seen to show, one line each. */
 	inputsSeen?: string[];
+	/** GDHUB-156: the devlogs before the checkpoint, oldest first — the newest that fit. */
+	devlogs?: { publishedAt: string; content: string }[];
+	/** How many earlier devlogs did not fit. */
+	devlogsLeftOut?: number;
+	/** What those devlogs' images and videos were seen to show, one line each. */
+	devlogMedia?: string[];
+	/** An admin's note when the answer is regenerated (GDHUB-156). */
+	hint?: string | null;
 };
 
 /**
@@ -210,6 +218,8 @@ export type ReportInput = {
 	difference?: string;
 	/** The direction each sprint review named, sprint 1 first; a sprint with none is absent. */
 	directions?: { sprint: number; direction: SprintDirection }[];
+	/** An admin's note when the answer is regenerated (GDHUB-156). */
+	hint?: string | null;
 };
 
 export type ReportResult = {

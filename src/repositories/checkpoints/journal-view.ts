@@ -10,13 +10,22 @@ import {
 import { characterFace } from "@/lib/checkpoints/curator-characters";
 import { devlogText, devlogWords } from "@/lib/checkpoints/curator-text";
 import { firstLine, reviewDetails } from "@/lib/checkpoints/journal-text";
+import {
+	canRebuildIn,
+	canRegenerateIn,
+	openSteps,
+	revisionsOf,
+	withoutRevisions,
+} from "@/lib/checkpoints/regenerate";
 import { sprintOfDate, sprintRange } from "@/lib/checkpoints/sprints";
+import { dayOneDevlogsWhere } from "@/repositories/checkpoints/day-one";
 import type { JournalRead } from "@/services/checkpoints/flows/evidence-seen";
 import { prisma } from "@/services/prisma";
 import type {
 	CuratorJournalViewDto,
 	JournalMessageDto,
 	JournalMessageKind,
+	JournalRevisionDto,
 	JournalSide,
 } from "@/types/checkpoint-journal";
 import type { CallNotes, PlanAdvice } from "@/types/checkpoints";
@@ -32,7 +41,9 @@ import type { CallNotes, PlanAdvice } from "@/types/checkpoints";
 const BEFORE_SHOWN = 20;
 
 const journalViewSelect = {
+	id: true,
 	projectId: true,
+	status: true,
 	goal: true,
 	verdict: true,
 	verdictNote: true,
@@ -99,6 +110,215 @@ const journalViewSelect = {
 	},
 } as const;
 
+type MessageEntry = {
+	id: string;
+	kind: string;
+	sprint: number | null;
+	link: string | null;
+	devlogId: string | null;
+	input: unknown;
+	output: unknown;
+	createdAt: Date;
+};
+
+export type MessageHelpers = {
+	startedAt: Date | null;
+	devlogTitle: (id: string) => string | null;
+	nameOf: (id: string | null) => string | null;
+	taskName: (id: string | null) => string | null;
+};
+
+/** What an answer said, as text: a letter, a review, a look. */
+const answerText = (output: unknown) => {
+	const said = (output ?? {}) as {
+		message?: string | null;
+		summary?: string;
+		note?: string;
+		shows?: string | null;
+	};
+	return said.summary ?? said.message ?? said.note ?? said.shows ?? null;
+};
+
+const historyOf = (input: unknown): JournalRevisionDto[] =>
+	revisionsOf(input).map((revision) => ({
+		at: revision.at,
+		mode: revision.mode,
+		hint: revision.hint,
+		previous: answerText(revision.previousOutput),
+	}));
+
+/** One journal row as the conversation shows it; null for rows it does not show. */
+export const entryMessage = (
+	entry: MessageEntry,
+	{ startedAt, devlogTitle, nameOf, taskName }: MessageHelpers,
+): JournalMessageDto | null => {
+	const base = messageBase(startedAt);
+	// The revisions are shown as the message's history, not again in its source.
+	const source = { input: withoutRevisions(entry.input), output: entry.output };
+	const at = entry.createdAt;
+	const read = entry.input as JournalRead | null;
+	const message = (dto: JournalMessageDto): JournalMessageDto => ({
+		...dto,
+		history: historyOf(entry.input),
+	});
+	switch (entry.kind) {
+		case CheckpointJournalKind.Letter: {
+			const input = entry.input as { letter?: string; moment?: string };
+			const output = entry.output as {
+				message?: string | null;
+				note?: string;
+			};
+			return message({
+				...base(entry.id, at, "curator", "letter"),
+				variant:
+					input.letter ?? (input.moment === "midway" ? "advice" : "tasksCheck"),
+				text: output.message ?? output.note ?? null,
+				source,
+			});
+		}
+		case CheckpointJournalKind.Review: {
+			const output = entry.output as {
+				audience?: "curator";
+				message?: string;
+				summary?: string;
+				notes?: CallNotes | null;
+				advice?: Pick<PlanAdvice, "tasks" | "add"> | null;
+			};
+			const details = reviewDetails(output.notes, output.advice, taskName);
+			return message(
+				output.audience
+					? {
+							...base(entry.id, at, "curator", "brief"),
+							title: String((entry.sprint ?? 0) + 1),
+							details,
+							source,
+						}
+					: {
+							...base(entry.id, at, "curator", "letter"),
+							variant: output.summary
+								? "report"
+								: entry.sprint === SPRINTS_PER_CHECKPOINT
+									? "final"
+									: "review",
+							title: entry.sprint ? String(entry.sprint) : null,
+							text: output.summary ?? output.message ?? null,
+							details,
+							source,
+						},
+			);
+		}
+		case CheckpointJournalKind.Evidence:
+		case CheckpointJournalKind.Artifact:
+		case CheckpointJournalKind.DevlogMedia: {
+			const output = entry.output as {
+				match?: EvidenceMatch;
+				note?: string | null;
+				shows?: string | null;
+			};
+			const variant =
+				entry.kind === CheckpointJournalKind.Evidence
+					? "evidence"
+					: entry.kind === CheckpointJournalKind.Artifact
+						? "artifact"
+						: "media";
+			return message({
+				...base(entry.id, at, "curator", "looked"),
+				variant,
+				title:
+					variant === "media"
+						? (((entry.devlogId && devlogTitle(entry.devlogId)) ||
+								read?.devlog) ??
+							null)
+						: (read?.artifactName ?? read?.task ?? null),
+				text: output.note ?? output.shows ?? null,
+				unread: read?.unread ?? null,
+				match: output.match ?? null,
+				details: [
+					...(read?.task ? [{ label: "task", value: read.task }] : []),
+					...(entry.link ? [{ label: "link", value: entry.link }] : []),
+				],
+				source,
+			});
+		}
+		case CheckpointJournalKind.Verdict: {
+			const output = entry.output as {
+				by: "ai" | "curator";
+				proposed: CheckpointVerdict | null;
+				settled: CheckpointVerdict | null;
+				note?: string;
+			};
+			return message({
+				...base(
+					entry.id,
+					at,
+					output.by === "ai" ? "platform" : "curator",
+					"verdict",
+				),
+				text: output.note ?? null,
+				verdict: {
+					proposed: output.proposed,
+					settled: output.settled,
+					by: output.by,
+				},
+				source,
+			});
+		}
+		case CheckpointJournalKind.Platform: {
+			const input = entry.input as { to: string };
+			const output = entry.output as {
+				title: string;
+				message: string;
+				sent: boolean;
+			};
+			return message({
+				...base(entry.id, at, "platform", "sent"),
+				who: nameOf(input.to),
+				title: output.title,
+				details: output.sent ? [] : [{ label: "sent", value: "failed" }],
+				source,
+			});
+		}
+		default:
+			return null;
+	}
+};
+
+const messageBase =
+	(startedAt: Date | null) =>
+	(
+		id: string,
+		at: Date,
+		side: JournalSide,
+		kind: JournalMessageKind,
+	): JournalMessageDto => ({
+		id,
+		at: at.toISOString(),
+		sprint: startedAt ? sprintOfDate(startedAt, at) : null,
+		side,
+		kind,
+		variant: null,
+		who: null,
+		title: null,
+		text: null,
+		match: null,
+		unread: null,
+		verdict: null,
+		details: [],
+		source: null,
+		regenerable: false,
+		history: [],
+	});
+
+/** A devlog as the view shows it: its words, number, author and day. */
+const devlogSelect = {
+	id: true,
+	number: true,
+	content: true,
+	contentEditor: true,
+	publishedAt: true,
+	authorId: true,
+} as const;
+
 export const getJournalView = async (
 	checkpointId: string,
 ): Promise<CuratorJournalViewDto | null> => {
@@ -129,7 +349,7 @@ export const getJournalView = async (
 		: null;
 
 	const none = Promise.resolve([]);
-	const [before, artifacts, devlogs] = await Promise.all([
+	const [before, artifacts, devlogs, dayOne] = await Promise.all([
 		startedAt
 			? prisma.projectArtifact.findMany({
 					where: {
@@ -169,20 +389,24 @@ export const getJournalView = async (
 						publishedAt: window,
 					},
 					orderBy: { publishedAt: "asc" },
-					select: {
-						id: true,
-						number: true,
-						content: true,
-						contentEditor: true,
-						publishedAt: true,
-						authorId: true,
-					},
+					select: devlogSelect,
 				})
+			: none,
+		startedAt
+			? dayOneDevlogsWhere({ ...checkpoint, id: checkpointId }).then((where) =>
+					prisma.projectReport.findMany({
+						where,
+						orderBy: { publishedAt: "asc" },
+						select: devlogSelect,
+					}),
+				)
 			: none,
 	]);
 
 	const entries = checkpoint.journal;
-	const words = new Map(devlogs.map((row) => [row.id, devlogWords(row)]));
+	const words = new Map(
+		[...devlogs, ...dayOne].map((row) => [row.id, devlogWords(row)]),
+	);
 	const devlogTitle = (id: string) => firstLine(words.get(id) ?? "");
 	const recipients = entries.flatMap((entry) =>
 		entry.kind === CheckpointJournalKind.Platform
@@ -199,6 +423,7 @@ export const getJournalView = async (
 							...(checkpoint.goalAgreedById ? [checkpoint.goalAgreedById] : []),
 							...artifacts.map((row) => row.createdById),
 							...devlogs.map((row) => row.authorId),
+							...dayOne.map((row) => row.authorId),
 							...checkpoint.pulses.map((row) => row.teamMember.userId),
 							...recipients,
 						],
@@ -231,157 +456,22 @@ export const getJournalView = async (
 			note: matchNote,
 		}));
 
-	const base = (
-		id: string,
-		at: Date,
-		side: JournalSide,
-		kind: JournalMessageKind,
-	): JournalMessageDto => ({
-		id,
-		at: at.toISOString(),
-		sprint: sprintAt(at),
-		side,
-		kind,
-		variant: null,
-		who: null,
-		title: null,
-		text: null,
-		match: null,
-		unread: null,
-		verdict: null,
-		details: [],
-		source: null,
-	});
-
+	const base = messageBase(startedAt);
 	const messages: JournalMessageDto[] = [];
+	const steps = openSteps(checkpoint, entries);
 
 	for (const entry of entries) {
-		const source = { input: entry.input, output: entry.output };
-		const at = entry.createdAt;
-		const read = entry.input as JournalRead | null;
-		switch (entry.kind) {
-			case CheckpointJournalKind.Letter: {
-				const input = entry.input as { letter?: string; moment?: string };
-				const output = entry.output as {
-					message?: string | null;
-					note?: string;
-				};
-				messages.push({
-					...base(entry.id, at, "curator", "letter"),
-					variant:
-						input.letter ??
-						(input.moment === "midway" ? "advice" : "tasksCheck"),
-					text: output.message ?? output.note ?? null,
-					source,
-				});
-				break;
-			}
-			case CheckpointJournalKind.Review: {
-				const output = entry.output as {
-					audience?: "curator";
-					message?: string;
-					summary?: string;
-					notes?: CallNotes | null;
-					advice?: Pick<PlanAdvice, "tasks" | "add"> | null;
-				};
-				const details = reviewDetails(output.notes, output.advice, taskName);
-				messages.push(
-					output.audience
-						? {
-								...base(entry.id, at, "curator", "brief"),
-								title: String((entry.sprint ?? 0) + 1),
-								details,
-								source,
-							}
-						: {
-								...base(entry.id, at, "curator", "letter"),
-								variant: output.summary
-									? "report"
-									: entry.sprint === SPRINTS_PER_CHECKPOINT
-										? "final"
-										: "review",
-								title: entry.sprint ? String(entry.sprint) : null,
-								text: output.summary ?? output.message ?? null,
-								details,
-								source,
-							},
-				);
-				break;
-			}
-			case CheckpointJournalKind.Evidence:
-			case CheckpointJournalKind.Artifact:
-			case CheckpointJournalKind.DevlogMedia: {
-				const output = entry.output as {
-					match?: EvidenceMatch;
-					note?: string | null;
-					shows?: string | null;
-				};
-				const variant =
-					entry.kind === CheckpointJournalKind.Evidence
-						? "evidence"
-						: entry.kind === CheckpointJournalKind.Artifact
-							? "artifact"
-							: "media";
-				messages.push({
-					...base(entry.id, at, "curator", "looked"),
-					variant,
-					title:
-						variant === "media"
-							? (((entry.devlogId && devlogTitle(entry.devlogId)) ||
-									read?.devlog) ??
-								null)
-							: (read?.artifactName ?? read?.task ?? null),
-					text: output.note ?? output.shows ?? null,
-					unread: read?.unread ?? null,
-					match: output.match ?? null,
-					details: [
-						...(read?.task ? [{ label: "task", value: read.task }] : []),
-						...(entry.link ? [{ label: "link", value: entry.link }] : []),
-					],
-					source,
-				});
-				break;
-			}
-			case CheckpointJournalKind.Verdict: {
-				const output = entry.output as {
-					by: "ai" | "curator";
-					proposed: CheckpointVerdict | null;
-					settled: CheckpointVerdict | null;
-					note?: string;
-				};
-				messages.push({
-					...base(
-						entry.id,
-						at,
-						output.by === "ai" ? "platform" : "curator",
-						"verdict",
-					),
-					text: output.note ?? null,
-					verdict: {
-						proposed: output.proposed,
-						settled: output.settled,
-						by: output.by,
-					},
-					source,
-				});
-				break;
-			}
-			case CheckpointJournalKind.Platform: {
-				const input = entry.input as { to: string };
-				const output = entry.output as {
-					title: string;
-					message: string;
-					sent: boolean;
-				};
-				messages.push({
-					...base(entry.id, at, "platform", "sent"),
-					who: nameOf(input.to),
-					title: output.title,
-					details: output.sent ? [] : [{ label: "sent", value: "failed" }],
-					source,
-				});
-				break;
-			}
+		const message = entryMessage(entry, {
+			startedAt,
+			devlogTitle,
+			nameOf,
+			taskName,
+		});
+		if (message) {
+			messages.push({
+				...message,
+				regenerable: canRegenerateIn(steps, entry),
+			});
 		}
 	}
 
@@ -491,6 +581,24 @@ export const getJournalView = async (
 		}
 	}
 	const face = ai ? characterFace(checkpoint.curatorCharacter) : null;
+	const devlogDto = (row: (typeof devlogs)[number]) => ({
+		id: row.id,
+		number: row.number,
+		publishedAt: row.publishedAt.toISOString(),
+		author: nameOf(row.authorId),
+		sprint: sprintAt(row.publishedAt),
+		text: devlogText(words.get(row.id) ?? ""),
+		media: (mediaOf.get(row.id) ?? []).map((entry) => {
+			const output = entry.output as { shows?: string | null };
+			const read = entry.input as JournalRead | null;
+			return {
+				link: entry.link,
+				text: output.shows ?? null,
+				unread: read?.unread ?? null,
+				source: { input: entry.input, output: entry.output },
+			};
+		}),
+	});
 
 	return {
 		curator: {
@@ -510,6 +618,10 @@ export const getJournalView = async (
 					};
 				})
 			: [],
+		steps: Array.from({ length: SPRINTS_PER_CHECKPOINT + 1 }, (_, sprint) => ({
+			sprint,
+			rebuildable: canRebuildIn(steps, sprint),
+		})),
 		finishedAt: verdictEntry?.createdAt.toISOString() ?? null,
 		verdict: checkpoint.verdict && {
 			verdict: checkpoint.verdict,
@@ -547,6 +659,7 @@ export const getJournalView = async (
 				link: row.link,
 				addedAt: row.createdAt.toISOString(),
 			})),
+			devlogs: dayOne.map(devlogDto),
 		},
 		artifacts: artifacts.map((row) => {
 			const proves = tasksOfArtifact.get(row.id) ?? [];
@@ -578,23 +691,6 @@ export const getJournalView = async (
 					: null,
 			};
 		}),
-		devlogs: devlogs.map((row) => ({
-			id: row.id,
-			number: row.number,
-			publishedAt: row.publishedAt.toISOString(),
-			author: nameOf(row.authorId),
-			sprint: sprintAt(row.publishedAt),
-			text: devlogText(words.get(row.id) ?? ""),
-			media: (mediaOf.get(row.id) ?? []).map((entry) => {
-				const output = entry.output as { shows?: string | null };
-				const read = entry.input as JournalRead | null;
-				return {
-					link: entry.link,
-					text: output.shows ?? null,
-					unread: read?.unread ?? null,
-					source: { input: entry.input, output: entry.output },
-				};
-			}),
-		})),
+		devlogs: devlogs.map(devlogDto),
 	};
 };

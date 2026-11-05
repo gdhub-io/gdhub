@@ -34,6 +34,8 @@ export const sprintEvidence = async (
 	};
 };
 
+export type SprintEvidence = Awaited<ReturnType<typeof sprintEvidence>>;
+
 /** A task id the model made up points at nothing on the page: drop it. */
 export const knownOnly = (
 	notes: CallNotes,

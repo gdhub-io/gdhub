@@ -11,6 +11,7 @@ import { formatShort as day } from "@/components/WorkflowPath/dates";
 import type { ProjectArtifactType } from "@/config/prisma-enums";
 import type {
 	CuratorJournalViewDto,
+	JournalDevlogDto,
 	JournalTaskDto,
 } from "@/types/checkpoint-journal";
 import { Boundary, FoldOuts, when } from "./parts";
@@ -315,58 +316,57 @@ export function DevlogsTab({
 				"No devlogs were posted during the checkpoint.",
 			)}
 		>
-			{(row) => (
-				<Flex key={row.id} vertical gap={10} className={styles.card}>
-					<Flex gap={12} align="center">
-						<IconTile icon={IconNotebook} size="xs" />
-						<Flex vertical>
-							<Typography.Text strong>
-								{row.number
-									? t(
-											"admin.checkpoints.journal.devlogNumber",
-											"Devlog #{number}",
-											{
-												number: row.number,
-											},
-										)
-									: t("admin.checkpoints.journal.devlogPlain", "Devlog")}
-							</Typography.Text>
-							<Typography.Text type="secondary" className={styles.meta}>
-								{[row.author, when(row.publishedAt)]
-									.filter(Boolean)
-									.join(" · ")}
-							</Typography.Text>
-						</Flex>
-					</Flex>
-					<Typography.Paragraph
-						ellipsis={{ rows: 4, expandable: true }}
-						className={`${styles.flush} ${styles.lines}`}
-					>
-						{row.text}
-					</Typography.Paragraph>
-					{row.media.length ? (
-						row.media.map((media, index) => (
-							<Flex key={media.link ?? index} vertical gap={4}>
-								<AiRead text={media.text} unread={media.unread} />
-								<FoldOuts
-									details={
-										media.link ? [{ label: "link", value: media.link }] : []
-									}
-									source={media.source}
-								/>
-							</Flex>
-						))
-					) : (
-						<Typography.Text type="secondary" className={styles.meta}>
-							{t(
-								"admin.checkpoints.journal.noMedia",
-								"No images or videos read",
-							)}
-						</Typography.Text>
-					)}
-				</Flex>
-			)}
+			{(row) => <DevlogCard key={row.id} row={row} />}
 		</BySprint>
+	);
+}
+
+/** One devlog and what the AI read in its media. */
+function DevlogCard({ row }: { row: JournalDevlogDto }) {
+	const { t } = useTranslate();
+	return (
+		<Flex vertical gap={10} className={styles.card}>
+			<Flex gap={12} align="center">
+				<IconTile icon={IconNotebook} size="xs" />
+				<Flex vertical>
+					<Typography.Text strong>
+						{row.number
+							? t(
+									"admin.checkpoints.journal.devlogNumber",
+									"Devlog #{number}",
+									{
+										number: row.number,
+									},
+								)
+							: t("admin.checkpoints.journal.devlogPlain", "Devlog")}
+					</Typography.Text>
+					<Typography.Text type="secondary" className={styles.meta}>
+						{[row.author, when(row.publishedAt)].filter(Boolean).join(" · ")}
+					</Typography.Text>
+				</Flex>
+			</Flex>
+			<Typography.Paragraph
+				ellipsis={{ rows: 4, expandable: true }}
+				className={`${styles.flush} ${styles.lines}`}
+			>
+				{row.text}
+			</Typography.Paragraph>
+			{row.media.length ? (
+				row.media.map((media, index) => (
+					<Flex key={media.link ?? index} vertical gap={4}>
+						<AiRead text={media.text} unread={media.unread} />
+						<FoldOuts
+							details={media.link ? [{ label: "link", value: media.link }] : []}
+							source={media.source}
+						/>
+					</Flex>
+				))
+			) : (
+				<Typography.Text type="secondary" className={styles.meta}>
+					{t("admin.checkpoints.journal.noMedia", "No images or videos read")}
+				</Typography.Text>
+			)}
+		</Flex>
 	);
 }
 
@@ -410,6 +410,19 @@ export function InputsTab({
 							"No inputs were named.",
 						)}
 					</Typography.Text>
+				)}
+				{inputs.devlogs.length > 0 && (
+					<>
+						<Typography.Text type="secondary" className={styles.meta}>
+							{t(
+								"admin.journal.inputs.devlogs",
+								"Devlogs before the checkpoint, oldest first",
+							)}
+						</Typography.Text>
+						{inputs.devlogs.map((row) => (
+							<DevlogCard key={row.id} row={row} />
+						))}
+					</>
 				)}
 			</Flex>
 			<Flex vertical gap={12}>

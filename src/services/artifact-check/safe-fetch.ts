@@ -68,11 +68,13 @@ const refusedAsUnsafe = (error: unknown): boolean => {
 type Response = Awaited<ReturnType<typeof fetch>>;
 
 /**
- * GET a link the author gave, following at most three redirects, each checked
- * again. Resolves with the final 2xx response, its body unread, or why not.
+ * GET a link the author gave (or POST `json` to it), following at most three
+ * redirects, each checked again. Resolves with the final 2xx response, its body
+ * unread, or why not.
  */
 async function safeGet(
 	link: string,
+	json?: unknown,
 ): Promise<
 	| { ok: true; response: Response; url: URL }
 	| { ok: false; reason: OpenFailure }
@@ -110,7 +112,14 @@ async function safeGet(
 				redirect: "manual",
 				signal: AbortSignal.timeout(TIMEOUT_MS),
 				dispatcher: publicOnly,
-				headers: { "user-agent": "GDHub artifact check" },
+				headers: {
+					"user-agent": "GDHub artifact check",
+					...(json !== undefined && { "content-type": "application/json" }),
+				},
+				...(json !== undefined && {
+					method: "POST",
+					body: JSON.stringify(json),
+				}),
 			});
 		} catch (error) {
 			if (refusedAsUnsafe(error)) {
@@ -171,11 +180,13 @@ export async function fetchBody(
 	maxBytes: number,
 	/** Checked on the headers: a body of another type is never read. */
 	accept?: (contentType: string) => boolean,
+	/** Sent as a JSON POST body instead of a GET. */
+	json?: unknown,
 ): Promise<
 	| { ok: true; body: FetchedBody }
 	| { ok: false; reason: OpenFailure | "tooLarge" | "notAccepted" }
 > {
-	const result = await safeGet(link);
+	const result = await safeGet(link, json);
 	if (!result.ok) return result;
 	const { response, url } = result;
 

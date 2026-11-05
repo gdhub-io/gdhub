@@ -31,6 +31,8 @@ const message = (
 	verdict: null,
 	details: [],
 	source: { input: {}, output: {} },
+	regenerable: false,
+	history: [],
 	...over,
 });
 
@@ -51,6 +53,7 @@ const VIEW: CuratorJournalViewDto = {
 		from: `2026-09-${String(1 + (number - 1) * 7).padStart(2, "0")}T00:00:00.000Z`,
 		to: `2026-09-${String(number * 7).padStart(2, "0")}T00:00:00.000Z`,
 	})),
+	steps: [0, 1, 2, 3, 4].map((sprint) => ({ sprint, rebuildable: false })),
 	finishedAt: "2026-09-29T01:02:00.000Z",
 	verdict: {
 		verdict: "StageClosed",
@@ -199,6 +202,17 @@ const VIEW: CuratorJournalViewDto = {
 		],
 	},
 	inputs: {
+		devlogs: [
+			{
+				id: "d0",
+				number: 3,
+				publishedAt: "2026-08-20T10:00:00.000Z",
+				author: "Mira",
+				sprint: null,
+				text: "Blocked out the island in greybox and wrote down the tide rule.",
+				media: [],
+			},
+		],
 		items: [
 			{
 				id: "i1",
@@ -286,7 +300,41 @@ export const Empty: Story = {
 				finishedAt: null,
 				artifacts: [],
 				devlogs: [],
-				inputs: { items: [], before: [] },
+				inputs: { items: [], before: [], devlogs: [] },
+			} satisfies CuratorJournalViewDto,
+		}),
+	],
+};
+
+/** GDHUB-156: an open step — Regenerate on the AI's answers, Rebuild input on the step, one answer edited. */
+export const OpenStep: Story = {
+	decorators: [
+		withQueries({
+			key: KEY,
+			data: {
+				...VIEW,
+				finishedAt: null,
+				verdict: null,
+				steps: [0, 1, 2, 3, 4].map((sprint) => ({
+					sprint,
+					rebuildable: sprint === 4,
+				})),
+				messages: VIEW.messages.map((row) =>
+					row.side === "curator" && row.sprint === 4
+						? {
+								...row,
+								regenerable: true,
+								history: [
+									{
+										at: "2026-09-27T12:00:00.000Z",
+										mode: "regenerate" as const,
+										hint: "The concept is on the Notion page — read it all.",
+										previous: "The provided text shows a page titled 'Notion'.",
+									},
+								],
+							}
+						: row,
+				),
 			} satisfies CuratorJournalViewDto,
 		}),
 	],

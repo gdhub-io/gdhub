@@ -146,6 +146,26 @@ export async function cacheIncrement(
 	}
 }
 
+/**
+ * Reads a value and drops it in one step, so it is handed out once: a second
+ * caller racing for the same key gets `undefined`.
+ */
+export async function cacheTake<T>(key: string): Promise<T | undefined> {
+	const redis = await getClient();
+	if (!redis) return undefined;
+
+	try {
+		const [[, raw]] = (await redis.multi().get(key).del(key).exec()) as [
+			[unknown, string | null],
+			unknown,
+		];
+		return raw === null ? undefined : (JSON.parse(raw) as T);
+	} catch (error) {
+		console.error(`[cache] take failed for ${key}`, error);
+		return undefined;
+	}
+}
+
 /** Drops a key, so the next read goes back to the source. */
 export async function cacheDelete(key: string): Promise<void> {
 	const redis = await getClient();
