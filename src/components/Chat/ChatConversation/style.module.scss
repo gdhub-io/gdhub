@@ -140,3 +140,21 @@
   max-width: 280px;
   font-size: var(--gd-font-size-body-sm);
 }
+
+.subtitle {
+  overflow: hidden;
+  font-size: var(--gd-font-size-caption);
+  color: var(--gd-color-text-secondary);
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+.postingAs {
+  display: flex;
+  gap: var(--gd-space-2);
+  align-items: center;
+  padding-bottom: var(--gd-space-1);
+  font-size: var(--gd-font-size-caption);
+  font-weight: 500;
+  color: var(--gd-color-text-secondary);
+}

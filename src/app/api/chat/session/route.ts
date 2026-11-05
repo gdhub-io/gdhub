@@ -1,3 +1,4 @@
+import { after } from "next/server";
 import { z } from "zod";
 import {
 	apiError,
@@ -6,6 +7,7 @@ import {
 	withAuth,
 	withValidation,
 } from "@/lib/api-handlers";
+import { joinAnnouncements } from "@/services/chat/announcements";
 import { ensureMatrixUser } from "@/services/matrix/admin";
 import {
 	forgetMatrixUserToken,
@@ -75,6 +77,13 @@ export const POST = withAuth({ mode: "user" })(
 			);
 			token = await getMatrixUserToken(currentUser.id, deviceId);
 		}
+
+		// Everyone is in Announcements; a failure retries on the next session.
+		after(() =>
+			joinAnnouncements(currentUser.id).catch((error) =>
+				console.error("[chat/session] announcements join failed", error),
+			),
+		);
 
 		return json({
 			userId: matrixUserId,

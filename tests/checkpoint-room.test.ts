@@ -19,15 +19,17 @@ vi.mock("../src/repositories/project/team", () => ({
 }));
 
 vi.mock("../src/services/chat/ensure-room", () => ({
-	autoJoinRoom: vi.fn(),
 	ensureChatRoom: vi.fn(),
 }));
+vi.mock("../src/services/chat/auto-join", () => ({
+	autoJoinRoom: vi.fn(),
+}));
 
+import { autoJoinRoom } from "../src/services/chat/auto-join";
 import {
 	closeCheckpointRoom,
 	reconcileCheckpointRooms,
 } from "../src/services/chat/checkpoint-room";
-import { autoJoinRoom } from "../src/services/chat/ensure-room";
 import {
 	inviteUserToRoom,
 	kickUserFromRoom,

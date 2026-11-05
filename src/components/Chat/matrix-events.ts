@@ -1,5 +1,6 @@
 import type {
 	ClientEvent,
+	EventType,
 	HttpApiEvent,
 	NotificationCountType,
 	RoomEvent,
@@ -14,7 +15,10 @@ export const MatrixEvents = {
 	receipt: "Room.receipt" as RoomEvent.Receipt,
 	timeline: "Room.timeline" as RoomEvent.Timeline,
 	myMembership: "Room.myMembership" as RoomEvent.MyMembership,
+	accountData: "accountData" as ClientEvent.AccountData,
 };
+
+export const PUSH_RULES_EVENT = "m.push_rules" as EventType.PushRules;
 
 export const SyncStates = {
 	prepared: "PREPARED" as SyncState.Prepared,

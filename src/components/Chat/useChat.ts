@@ -1,5 +1,6 @@
 import type * as sdk from "matrix-js-sdk";
 import { create } from "zustand";
+import type { ChatImageRef } from "@/helpers/chat-media";
 
 export type PushStatus = {
 	supported: boolean;
@@ -12,7 +13,8 @@ export type PushStatus = {
 /** What the composer is doing besides writing a new message. */
 export type ComposerMode =
 	| { type: "reply"; eventId: string; senderName: string; preview: string }
-	| { type: "edit"; eventId: string; original: string };
+	/** `image`: editing a picture's caption; the picture itself stays. */
+	| { type: "edit"; eventId: string; original: string; image?: ChatImageRef };
 
 export type ChatStore = {
 	ready: boolean;

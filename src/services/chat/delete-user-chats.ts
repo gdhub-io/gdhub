@@ -1,3 +1,4 @@
+import { ChatRoomKind } from "@gdhub-io/gdhub-prisma";
 import { deleteMatrixRoom } from "@/services/matrix/admin";
 import { prisma } from "@/services/prisma";
 
@@ -28,6 +29,8 @@ export async function collectUserChatRooms(
 	add(
 		await prisma.chatRoom.findMany({
 			where: {
+				// Shared by everyone: purging it would erase the channel for all.
+				kind: { not: ChatRoomKind.Announcements },
 				OR: [
 					// direct:{minId}:{maxId} and vacancy:{vacancyId}:{candidateId}
 					{ directKey: { contains: `:${userId}` } },

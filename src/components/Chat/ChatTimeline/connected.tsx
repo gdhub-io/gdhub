@@ -10,11 +10,29 @@ import {
 	RoomEvent,
 } from "matrix-js-sdk";
 import { useCallback, useEffect, useMemo, useRef, useState } from "react";
-import { EmptyConversation } from "../ChatConversation";
+import { CHAT_IMAGE_MAX_BYTES } from "@/config/chat";
+import {
+	type ChatImageRef,
+	editContent,
+	messageContent,
+} from "@/helpers/chat-media";
+import {
+	useAnnouncementDelete,
+	useAnnouncementEdit,
+} from "@/hooks/chat-announcements";
+import { EmptyAnnouncements, EmptyConversation } from "../ChatConversation";
 import { markRoomRead } from "../matrix";
+import {
+	ImageTooLargeError,
+	pickImageFile,
+	uploadChatImage,
+} from "../media/pick-image";
+import { isGdhubUserId } from "../model/announcements";
 import {
 	buildTimeline,
 	type DeliveryStatus,
+	imageOf,
+	imageRefOf,
 	type Reaction,
 	type ReplyQuote,
 	stripReplyFallback,
@@ -119,6 +137,8 @@ function entriesOf(
 	room: Room,
 	client: MatrixClient,
 	t: Translate,
+	announcements: boolean,
+	announcementsAdmin: boolean,
 ): TimelineEntry[] {
 	const myId = client.getUserId();
 	const events = room.getLiveTimeline().getEvents();
@@ -140,6 +160,8 @@ function entriesOf(
 	events.forEach((event, index) => {
 		const id = event.getId() || event.getTxnId() || `${event.getTs()}`;
 		if (event.getType() === EventType.RoomMember) {
+			// Everyone joins Announcements; a line per newcomer would bury the news.
+			if (announcements) return;
 			const text = noticeText(event, room, t);
 			if (text) entries.push({ kind: "notice", id, ts: event.getTs(), text });
 			return;
@@ -149,6 +171,7 @@ function entriesOf(
 
 		const senderId = event.getSender() ?? "";
 		const member = room.getMember(senderId);
+		const image = imageOf(event.getContent());
 		const own = senderId === myId;
 		entries.push({
 			kind: "message",
@@ -158,10 +181,14 @@ function entriesOf(
 			avatarMxc: member?.getMxcAvatarUrl() ?? null,
 			own,
 			ts: event.getTs(),
-			text: event.replyEventId
-				? stripReplyFallback(String(event.getContent().body ?? ""))
-				: String(event.getContent().body ?? ""),
+			text: image
+				? (image.caption ?? "")
+				: event.replyEventId
+					? stripReplyFallback(String(event.getContent().body ?? ""))
+					: String(event.getContent().body ?? ""),
+			image,
 			edited: !!event.replacingEventId(),
+			manageable: announcementsAdmin && isGdhubUserId(senderId),
 			deleted: event.isRedacted(),
 			status: own ? deliveryOf(event, index, readUpTo) : undefined,
 			replyTo: replyOf(room, event),
@@ -178,15 +205,23 @@ export function ConnectedTimeline({
 	room,
 	name,
 	readOnly,
+	announcements,
+	announcementsAdmin,
 }: {
 	room: Room;
 	name: string;
 	readOnly?: boolean;
+	/** Readers react and copy; replying, editing and deleting are not theirs. */
+	announcements?: boolean;
+	/** May edit and delete GDHub's posts, through the server. */
+	announcementsAdmin?: boolean;
 }) {
 	const { t } = useTranslate();
 	const { modal, message } = App.useApp();
 	const chatClient = useChat((s) => s.chatClient);
 	const panelOpen = useChat((s) => s.openChatModal);
+	const editAnnouncement = useAnnouncementEdit();
+	const deleteAnnouncement = useAnnouncementDelete();
 	const [version, setVersion] = useState(0);
 	const [loadingEarlier, setLoadingEarlier] = useState(false);
 	const atBottomRef = useRef(true);
@@ -209,8 +244,19 @@ export function ConnectedTimeline({
 
 	// biome-ignore lint/correctness/useExhaustiveDependencies: `version` is the Matrix change signal
 	const items = useMemo(
-		() => (chatClient ? buildTimeline(entriesOf(room, chatClient, t)) : []),
-		[chatClient, room, t, version],
+		() =>
+			chatClient
+				? buildTimeline(
+						entriesOf(
+							room,
+							chatClient,
+							t,
+							!!announcements,
+							!!announcementsAdmin,
+						),
+					)
+				: [],
+		[chatClient, room, t, version, announcements, announcementsAdmin],
 	);
 
 	const timeline = room.getLiveTimeline();
@@ -266,6 +312,18 @@ export function ConnectedTimeline({
 			t("chat.message.actionFailed", "Couldn't update the message"),
 		);
 
+	const replaceImage = (target: TimelineMessage, image: ChatImageRef) => {
+		const change = { image, text: target.image?.caption };
+		if (announcements) {
+			return editAnnouncement.mutateAsync({ eventId: target.id, change });
+		}
+		return chatClient?.sendEvent(
+			room.roomId,
+			EventType.RoomMessage,
+			editContent(target.id, messageContent(change)) as never,
+		);
+	};
+
 	const actions = {
 		onRetry: (messageId: string) => {
 			const event = eventOf(messageId);
@@ -298,12 +356,35 @@ export function ConnectedTimeline({
 				type: "edit",
 				eventId: target.id,
 				original: target.text,
+				image: target.image && imageRefOf(target.image),
 			}),
 		onCopy: (target: TimelineMessage) =>
 			navigator.clipboard
 				.writeText(target.text)
 				.then(() => message.success(t("chat.message.copied", "Copied")))
 				.catch(failed),
+		// The new picture keeps the old one's caption.
+		onReplaceImage: async (target: TimelineMessage) => {
+			const file = await pickImageFile();
+			if (!file || !chatClient) return;
+			const done = message.loading(t("chat.media.uploading", "Uploading…"), 0);
+			try {
+				const image = await uploadChatImage(chatClient, file);
+				await replaceImage(target, image);
+			} catch (error) {
+				if (error instanceof ImageTooLargeError) {
+					message.error(
+						t("chat.media.tooLarge", "File too large (max {mb} MB)", {
+							mb: CHAT_IMAGE_MAX_BYTES / (1024 * 1024),
+						}),
+					);
+				} else {
+					failed();
+				}
+			} finally {
+				done();
+			}
+		},
 		onDelete: (target: TimelineMessage) =>
 			modal.confirm({
 				title: t("chat.deleteConfirm.title", "Delete this message?"),
@@ -315,7 +396,10 @@ export function ConnectedTimeline({
 				okButtonProps: { danger: true },
 				cancelText: t("chat.composer.cancel", "Cancel"),
 				onOk: () =>
-					chatClient?.redactEvent(room.roomId, target.id).catch(failed),
+					(announcements
+						? deleteAnnouncement.mutateAsync(target.id)
+						: chatClient?.redactEvent(room.roomId, target.id)
+					)?.catch(failed),
 			}),
 	};
 
@@ -325,14 +409,32 @@ export function ConnectedTimeline({
 			canLoadEarlier={canLoadEarlier}
 			loadingEarlier={loadingEarlier}
 			onLoadEarlier={loadEarlier}
-			actions={actions}
+			actions={
+				announcements
+					? {
+							onRetry: actions.onRetry,
+							onReact: actions.onReact,
+							onCopy: actions.onCopy,
+							...(announcementsAdmin && {
+								onEdit: actions.onEdit,
+								onReplaceImage: actions.onReplaceImage,
+								onDelete: actions.onDelete,
+							}),
+						}
+					: actions
+			}
 			readOnly={readOnly}
+			wide={announcements}
 			onAtBottomChange={onAtBottomChange}
 			empty={
-				<EmptyConversation
-					name={name}
-					group={room.getInvitedAndJoinedMemberCount() > 2}
-				/>
+				announcements ? (
+					<EmptyAnnouncements />
+				) : (
+					<EmptyConversation
+						name={name}
+						group={room.getInvitedAndJoinedMemberCount() > 2}
+					/>
+				)
 			}
 		/>
 	);

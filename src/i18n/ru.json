@@ -1320,6 +1320,13 @@
 	},
 	"change": "Изменить",
 	"chat": {
+		"announcements": {
+			"empty": {
+				"description": "Новости от команды GDHub будут отображаться здесь.",
+				"title": "Пока нет объявлений"
+			},
+			"postingAs": "Публикуя как GDHub"
+		},
 		"context": {
 			"checkpoint": {
 				"author": "Автор",

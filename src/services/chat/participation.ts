@@ -42,6 +42,8 @@ function contextOf(room: ParticipationRoom): RoomContext {
 
 /** Participation provable from the row alone — no extra query. */
 function isLocalParticipant(room: ParticipationRoom, userId: string): boolean {
+	// Every user is in the Announcements channel.
+	if (room.kind === ChatRoomKind.Announcements) return true;
 	if (room.directKey?.split(":").includes(userId)) return true;
 
 	const ctx = contextOf(room);

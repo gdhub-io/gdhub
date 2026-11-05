@@ -1,4 +1,6 @@
 import type { Meta, StoryObj } from "@storybook/nextjs";
+import { AnnouncementsAvatar } from "../AnnouncementsAvatar";
+import { ChatComposer } from "../ChatComposer";
 import { contextSlot, type RoomContext } from "../ChatContextLine/kinds";
 import { ChatTimeline } from "../ChatTimeline";
 import {
@@ -9,9 +11,12 @@ import {
 import { conversationFixture } from "../fixtures/timeline";
 import { buildTimeline } from "../model/timeline";
 import {
+	AnnouncementsBanner,
 	ChatConversation,
 	ChatInvite,
+	EmptyAnnouncements,
 	EmptyConversation,
+	PostingAsGdhub,
 	ReadOnlyBanner,
 } from "./index";
 
@@ -112,4 +117,38 @@ export const Closed: Story = {
 /** A room the user can no longer see. */
 export const Unavailable: Story = {
 	args: { name: "", presence: null, state: "unavailable" },
+};
+
+const announcementsHeader = {
+	name: "Announcements",
+	presence: null,
+	subtitle: "News from GDHub",
+	avatar: <AnnouncementsAvatar size={32} />,
+	info: undefined,
+};
+
+/** Frame `P9oMmV`: a member reads Announcements — no composer, the read-only line instead. */
+export const AnnouncementsMember: Story = {
+	args: {
+		...announcementsHeader,
+		children: <EmptyAnnouncements />,
+		footer: <AnnouncementsBanner />,
+	},
+};
+
+/** Frame `Z3xk5b`: a super admin or hub admin gets the composer, posting as GDHub. */
+export const AnnouncementsAdmin: Story = {
+	args: {
+		...announcementsHeader,
+		children: <EmptyAnnouncements />,
+		footer: (
+			<ChatComposer
+				value="Live intro stream this Friday, 18:00 CET"
+				onChange={noop}
+				onSubmit={noop}
+				notice={<PostingAsGdhub />}
+				onAttach={noop}
+			/>
+		),
+	},
 };

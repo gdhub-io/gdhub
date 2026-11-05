@@ -1,0 +1,148 @@
+// Message media — frames `E68BX8`, `XNDB6`.
+
+.fill {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+}
+
+.image {
+  display: block;
+  overflow: hidden;
+  border: 1px solid var(--gd-color-border);
+  border-radius: var(--gd-radius-card);
+  cursor: zoom-in;
+}
+
+.skeleton {
+  overflow: hidden;
+  border-radius: var(--gd-radius-card);
+
+  :global(.ant-skeleton),
+  :global(.ant-skeleton-image) {
+    width: 100% !important;
+    height: 100% !important;
+  }
+}
+
+.unavailable {
+  display: flex;
+  flex-direction: column;
+  gap: var(--gd-space-2);
+  align-items: center;
+  justify-content: center;
+  height: 120px;
+  font-size: var(--gd-font-size-body-sm);
+  color: var(--gd-color-text-secondary);
+  border: 1px solid var(--gd-color-border);
+  border-radius: var(--gd-radius-card);
+}
+
+.card {
+  display: flex !important;
+  gap: var(--gd-space-3);
+  align-items: center;
+  width: 320px;
+  max-width: 100%;
+  padding: var(--gd-space-2);
+  color: inherit !important;
+  border: 1px solid var(--gd-color-border);
+  border-radius: var(--gd-radius-card);
+
+  &:hover {
+    border-color: var(--gd-color-border-strong);
+  }
+}
+
+.cardImage {
+  display: block;
+  flex-shrink: 0;
+  width: 64px;
+  height: 64px;
+  overflow: hidden;
+  background: var(--gd-neutral-100);
+  border-radius: var(--gd-radius-chip);
+}
+
+.cardText {
+  display: flex;
+  flex: 1;
+  flex-direction: column;
+  gap: 2px;
+  min-width: 0;
+}
+
+.caption {
+  font-size: var(--gd-font-size-caption);
+}
+
+.cardTitle {
+  font-size: var(--gd-font-size-body-sm);
+}
+
+.cardDescription {
+  margin: 0 !important;
+  font-size: var(--gd-font-size-body-sm);
+  line-height: var(--gd-line-height-body);
+}
+
+.youtube {
+  display: flex;
+  flex-direction: column;
+  width: 320px;
+  max-width: 100%;
+  overflow: hidden;
+  border: 1px solid var(--gd-color-border);
+  border-radius: var(--gd-radius-card);
+}
+
+.cover,
+.frame {
+  display: block;
+  width: 100%;
+  aspect-ratio: 16 / 9;
+  border: 0;
+}
+
+.cover {
+  position: relative;
+  padding: 0;
+  cursor: pointer;
+  background: var(--gd-neutral-800);
+
+  &:hover .play {
+    background: var(--gd-scrim-chip-hover);
+  }
+}
+
+.coverImage {
+  position: absolute;
+  inset: 0;
+  display: block;
+  width: 100%;
+  height: 100%;
+}
+
+.play {
+  position: absolute;
+  top: 50%;
+  left: 50%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 48px;
+  height: 48px;
+  color: var(--gd-color-text-inverse);
+  background: var(--gd-scrim-chip);
+  border-radius: var(--gd-radius-pill);
+  corner-shape: round;
+  transform: translate(-50%, -50%);
+}
+
+.youtubeCaption {
+  display: flex;
+  flex-direction: column;
+  gap: 2px;
+  min-width: 0;
+  padding: var(--gd-space-2) var(--gd-space-3);
+}

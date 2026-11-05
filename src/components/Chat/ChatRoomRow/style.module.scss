@@ -166,3 +166,18 @@
 .row[data-menu-open] .meta {
   opacity: 0;
 }
+
+// The hairline under the pinned row closes the top group (07.03).
+.row[data-pinned] {
+  border-bottom-color: var(--gd-color-border);
+}
+
+.mark {
+  flex-shrink: 0;
+  color: var(--gd-color-text-tertiary);
+}
+
+// A muted chat still counts, but must not call for attention.
+.mutedCount :global(.ant-badge-count) {
+  color: var(--gd-color-text-secondary);
+}

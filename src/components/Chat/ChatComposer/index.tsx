@@ -2,16 +2,20 @@ import {
 	IconCornerDownRight,
 	IconMoodSmile,
 	IconPencil,
+	IconPhoto,
 	IconSend,
 	IconX,
 } from "@tabler/icons-react";
 import { useTranslate } from "@tolgee/react";
-import { Button, Input, Popover } from "antd";
+import { Button, Input, Popover, Tooltip, Upload } from "antd";
 import type { TextAreaRef } from "antd/es/input/TextArea";
 import { EmojiPicker } from "frimousse";
-import { useEffect, useRef, useState } from "react";
+import { type ReactNode, useEffect, useRef, useState } from "react";
 import type { ComposerMode } from "../useChat";
+import { AttachmentChip, type ComposerAttachment } from "./AttachmentChip";
 import styles from "./style.module.scss";
+
+export type { ComposerAttachment };
 
 type ChatComposerProps = {
 	value: string;
@@ -20,6 +24,12 @@ type ChatComposerProps = {
 	mode?: ComposerMode | null;
 	onCancelMode?: () => void;
 	autoFocus?: boolean;
+	/** Shown in the box above the text, e.g. who the message is posted as. */
+	notice?: ReactNode;
+	attachment?: ComposerAttachment | null;
+	/** Without it there is no attach button. */
+	onAttach?: (file: File) => void;
+	onRemoveAttachment?: () => void;
 };
 
 /** The message box under a conversation. Frames `YGPUq`, `X7HUy`, `hycZ7`. */
@@ -30,11 +40,23 @@ export function ChatComposer({
 	mode,
 	onCancelMode,
 	autoFocus,
+	notice,
+	attachment,
+	onAttach,
+	onRemoveAttachment,
 }: ChatComposerProps) {
 	const { t } = useTranslate();
 	const inputRef = useRef<TextAreaRef>(null);
 	const [emojiOpen, setEmojiOpen] = useState(false);
-	const empty = !value.trim();
+	const editing = mode?.type === "edit";
+	const blockedReason =
+		attachment?.status === "uploading"
+			? t("chat.media.waitForUpload", "Wait for the image to upload")
+			: attachment?.status === "error"
+				? t("chat.media.removeToSend", "Remove the image to send")
+				: null;
+	const canSend =
+		!blockedReason && (!!value.trim() || attachment?.status === "ready");
 
 	// Reply and edit both mean "type now".
 	useEffect(() => {
@@ -56,6 +78,7 @@ export function ChatComposer({
 	return (
 		<div className={styles.wrap}>
 			<div className={styles.box}>
+				{notice}
 				{mode && (
 					<div className={styles.strip}>
 						{mode.type === "reply" ? (
@@ -86,6 +109,12 @@ export function ChatComposer({
 						/>
 					</div>
 				)}
+				{attachment && !editing && (
+					<AttachmentChip
+						attachment={attachment}
+						onRemove={onRemoveAttachment}
+					/>
+				)}
 				<Input.TextArea
 					ref={inputRef}
 					variant="borderless"
@@ -108,52 +137,77 @@ export function ChatComposer({
 							!event.nativeEvent.isComposing
 						) {
 							event.preventDefault();
-							if (!empty) onSubmit();
+							if (canSend) onSubmit();
 						}
 					}}
 				/>
 				<div className={styles.tools}>
-					<Popover
-						open={emojiOpen}
-						onOpenChange={setEmojiOpen}
-						trigger="click"
-						placement="topLeft"
-						arrow={false}
-						classNames={{ container: styles.emojiPopover }}
-						content={
-							<EmojiPicker.Root
-								className={styles.picker}
-								columns={8}
-								onEmojiSelect={({ emoji }) => insertEmoji(emoji)}
+					<div className={styles.leftTools}>
+						<Popover
+							open={emojiOpen}
+							onOpenChange={setEmojiOpen}
+							trigger="click"
+							placement="topLeft"
+							arrow={false}
+							classNames={{ container: styles.emojiPopover }}
+							content={
+								<EmojiPicker.Root
+									className={styles.picker}
+									columns={8}
+									onEmojiSelect={({ emoji }) => insertEmoji(emoji)}
+								>
+									<EmojiPicker.Search className={styles.pickerSearch} />
+									<EmojiPicker.Viewport className={styles.pickerViewport}>
+										<EmojiPicker.Loading className={styles.pickerNote}>
+											…
+										</EmojiPicker.Loading>
+										<EmojiPicker.Empty className={styles.pickerNote}>
+											—
+										</EmojiPicker.Empty>
+										<EmojiPicker.List />
+									</EmojiPicker.Viewport>
+								</EmojiPicker.Root>
+							}
+						>
+							<Button
+								type="text"
+								icon={<IconMoodSmile size={20} />}
+								aria-label={t("chat.composer.emoji", "Emoji")}
+							/>
+						</Popover>
+						{/* An edit replaces text only: it cannot attach. */}
+						{onAttach && !editing && (
+							<Upload
+								accept="image/*"
+								showUploadList={false}
+								disabled={!!attachment}
+								beforeUpload={(file) => {
+									onAttach(file);
+									return Upload.LIST_IGNORE;
+								}}
 							>
-								<EmojiPicker.Search className={styles.pickerSearch} />
-								<EmojiPicker.Viewport className={styles.pickerViewport}>
-									<EmojiPicker.Loading className={styles.pickerNote}>
-										…
-									</EmojiPicker.Loading>
-									<EmojiPicker.Empty className={styles.pickerNote}>
-										—
-									</EmojiPicker.Empty>
-									<EmojiPicker.List />
-								</EmojiPicker.Viewport>
-							</EmojiPicker.Root>
-						}
-					>
-						<Button
-							type="text"
-							icon={<IconMoodSmile size={20} />}
-							aria-label={t("chat.composer.emoji", "Emoji")}
-						/>
-					</Popover>
-					<Button
-						type="primary"
-						icon={mode?.type === "edit" ? undefined : <IconSend size={16} />}
-						disabled={empty}
-						onClick={onSubmit}
-						aria-label={t("chat.composer.send", "Send")}
-					>
-						{mode?.type === "edit" && t("chat.composer.save", "Save")}
-					</Button>
+								<Button
+									type="text"
+									disabled={!!attachment}
+									icon={<IconPhoto size={20} />}
+									aria-label={t("chat.media.attachImage", "Attach image")}
+								/>
+							</Upload>
+						)}
+					</div>
+					<div className={styles.sendTools}>
+						<Tooltip title={blockedReason}>
+							<Button
+								type="primary"
+								icon={editing ? undefined : <IconSend size={16} />}
+								disabled={!canSend}
+								onClick={onSubmit}
+								aria-label={t("chat.composer.send", "Send")}
+							>
+								{editing && t("chat.composer.save", "Save")}
+							</Button>
+						</Tooltip>
+					</div>
 				</div>
 			</div>
 		</div>

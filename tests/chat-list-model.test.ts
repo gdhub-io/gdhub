@@ -1,6 +1,7 @@
 import { describe, expect, it } from "vitest";
 import {
 	canCloseFromList,
+	launcherUnreadCount,
 	type RoomSummary,
 	roomsForTab,
 	unreadChatCount,
@@ -21,6 +22,7 @@ const room = (patch: Partial<RoomSummary>): RoomSummary => ({
 	previewIsOwn: false,
 	previewDeleted: false,
 	unread: 0,
+	muted: false,
 	...patch,
 });
 
@@ -44,6 +46,28 @@ describe("roomsForTab", () => {
 
 	it("counts unread chats, not messages, and counts invites", () => {
 		expect(unreadChatCount(rooms)).toBe(2);
+	});
+
+	it("pins Announcements first whatever its age, the rest by recency", () => {
+		const withPinned = [
+			...rooms,
+			room({ roomId: "announcements", kind: "Announcements", lastTs: 0 }),
+		];
+		expect(ids(roomsForTab(withPinned, "all"))).toEqual([
+			"announcements",
+			"new",
+			"invite",
+			"old",
+		]);
+	});
+
+	it("keeps a muted unread chat under Unread", () => {
+		const muted = room({ roomId: "muted", unread: 1, muted: true, lastTs: 9 });
+		expect(ids(roomsForTab([...rooms, muted], "unread"))).toEqual([
+			"muted",
+			"new",
+			"invite",
+		]);
 	});
 
 	it("does not reorder the caller's array", () => {
@@ -100,5 +124,24 @@ describe("dayBucket", () => {
 		expect(dayBucket(new Date(2026, 8, 29, 0, 31).getTime(), now)).toEqual({
 			unit: "today",
 		});
+	});
+});
+
+describe("launcherUnreadCount", () => {
+	it("sums messages, counts an invite as one and leaves muted rooms out", () => {
+		expect(
+			launcherUnreadCount([
+				{ invite: false, unread: 3, muted: false },
+				{ invite: true, unread: 0, muted: false },
+				{ invite: false, unread: 7, muted: true },
+				{ invite: false, unread: Number.NaN, muted: false },
+			]),
+		).toBe(4);
+	});
+});
+
+describe("canCloseFromList for Announcements", () => {
+	it("never offers Close", () => {
+		expect(canCloseFromList(room({ kind: "Announcements" }))).toBe(false);
 	});
 });

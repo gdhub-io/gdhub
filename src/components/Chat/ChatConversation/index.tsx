@@ -3,12 +3,14 @@ import {
 	IconInfoCircle,
 	IconLock,
 	IconMoodSmile,
+	IconSpeakerphone,
 	IconX,
 } from "@tabler/icons-react";
 import { useTranslate } from "@tolgee/react";
 import { Button, Popover, Skeleton } from "antd";
-import type { ReactNode } from "react";
+import type { ComponentType, ReactNode } from "react";
 import { EmptyState, StatusDot } from "@/components/ui";
+import { GdhubAvatar } from "../AnnouncementsAvatar";
 import { ChatContextLine } from "../ChatContextLine";
 import type { ChatContextSlot } from "../ChatContextLine/kinds";
 import { MatrixAvatar } from "../MatrixAvatar";
@@ -20,6 +22,10 @@ type ChatConversationProps = {
 	name: string;
 	avatarMxc?: string | null;
 	presence?: "online" | "invitation" | null;
+	/** Second header line when there is no presence to show. */
+	subtitle?: ReactNode;
+	/** Replaces the room's Matrix avatar. */
+	avatar?: ReactNode;
 	context?: ChatContextSlot | null;
 	state: ConversationState;
 	onBack: () => void;
@@ -59,6 +65,8 @@ export function ChatConversation({
 	name,
 	avatarMxc,
 	presence,
+	subtitle,
+	avatar,
 	context,
 	state,
 	onBack,
@@ -82,11 +90,16 @@ export function ChatConversation({
 					<Skeleton.Input active size="small" className={styles.who} />
 				) : (
 					<div className={styles.who}>
-						<MatrixAvatar mxcUrl={avatarMxc} size={32}>
-							{name.slice(0, 1).toUpperCase()}
-						</MatrixAvatar>
+						{avatar ?? (
+							<MatrixAvatar mxcUrl={avatarMxc} size={32}>
+								{name.slice(0, 1).toUpperCase()}
+							</MatrixAvatar>
+						)}
 						<div className={styles.whoText}>
 							<span className={styles.name}>{name}</span>
+							{!presence && subtitle && (
+								<span className={styles.subtitle}>{subtitle}</span>
+							)}
 							{presence && (
 								<StatusDot
 									tone={presence === "online" ? "success" : "info"}
@@ -148,16 +161,62 @@ export function ChatConversation({
 	);
 }
 
-/** Replaces the composer once a chat is closed. */
-export function ReadOnlyBanner() {
+/** Replaces the composer once a chat is closed, or where only others post. */
+export function ReadOnlyBanner({
+	icon: Icon = IconLock,
+	children,
+}: {
+	icon?: ComponentType<{ size?: number }>;
+	children?: ReactNode;
+}) {
 	const { t } = useTranslate();
 	return (
 		<div className={styles.banner}>
-			<IconLock size={16} />
-			{t(
-				"chat.readOnly.banner",
-				"This chat is closed. You can read it, but not reply.",
-			)}
+			<Icon size={16} />
+			{children ??
+				t(
+					"chat.readOnly.banner",
+					"This chat is closed. You can read it, but not reply.",
+				)}
+		</div>
+	);
+}
+
+/** Announcements for a member: no composer. Frame `wADvW`. */
+export function AnnouncementsBanner() {
+	const { t } = useTranslate();
+	return (
+		<ReadOnlyBanner icon={IconSpeakerphone}>
+			{t("chat.announcements.readOnly", "Only GDHub admins post here")}
+		</ReadOnlyBanner>
+	);
+}
+
+/** Above an admin's composer in Announcements: whose name the post goes out under. Frame `JjXHO`. */
+export function PostingAsGdhub() {
+	const { t } = useTranslate();
+	return (
+		<div className={styles.postingAs}>
+			<GdhubAvatar size={20} />
+			{t("chat.announcements.postingAs", "Posting as GDHub")}
+		</div>
+	);
+}
+
+/** Announcements before the first post. */
+export function EmptyAnnouncements() {
+	const { t } = useTranslate();
+	return (
+		<div className={styles.center}>
+			<EmptyState
+				size="compact"
+				icon={IconSpeakerphone}
+				title={t("chat.announcements.empty.title", "No announcements yet")}
+				description={t(
+					"chat.announcements.empty.description",
+					"News from the GDHub team will appear here.",
+				)}
+			/>
 		</div>
 	);
 }

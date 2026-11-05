@@ -97,11 +97,13 @@ The chat launcher, panel and conversations.
 |---|---|---|
 | 07.01 | Chat · components | — |
 | 07.02 | Chat · Launcher (header icon states) | — |
-| 07.03 | Chat · Panel · List · All (hover + row menu) | 6 |
+| 07.03 | Chat · Panel · List · All (hover + row menu) | 7 |
 | 07.04 | Chat · Panel · Conversation · Advice (at bottom, delivery states) | 7 |
 | 07.05 | Chat · Mobile · List (full screen) | 1 |
 | 07.06 | Chat · Message actions · states | 1 |
 | 07.07 | Chat · Dialog · Close chat (Modal.confirm) | 1 |
+| 07.08 | Chat · Announcements · Member (no composer, reactions, picker open) | 2 |
+| 07.09 | Chat · Message content types · Direct (link, preview, image, YouTube) | 3 |
 
 ### 11 · Legal
 

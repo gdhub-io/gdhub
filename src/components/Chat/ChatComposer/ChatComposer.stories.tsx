@@ -8,7 +8,13 @@ const meta: Meta<typeof ChatComposer> = {
 	title: "Chat/ChatComposer",
 	component: ChatComposer,
 	parameters: { layout: "centered" },
-	args: { value: "", onSubmit: noop, onCancelMode: noop },
+	args: {
+		value: "",
+		onSubmit: noop,
+		onCancelMode: noop,
+		onAttach: noop,
+		onRemoveAttachment: noop,
+	},
 	decorators: [
 		(Story) => (
 			<div style={{ width: 520, background: "var(--gd-color-surface)" }}>
@@ -54,5 +60,52 @@ export const Editing: Story = {
 			eventId: "$b",
 			original: "Posting the numbers in a sec",
 		},
+	},
+};
+
+const previewUrl = `data:image/svg+xml;utf8,${encodeURIComponent(
+	'<svg xmlns="http://www.w3.org/2000/svg" width="80" height="80"><rect width="80" height="80" fill="gray"/></svg>',
+)}`;
+
+/** Frame `g3USr` case 1: shrunk in the browser, uploading; Send waits. */
+export const ImageUploading: Story = {
+	args: {
+		attachment: {
+			name: "level-03-sketch.webp",
+			previewUrl,
+			status: "uploading",
+			progress: 0.42,
+		},
+	},
+};
+
+/** Frame `g3USr` case 2: uploaded; the text becomes the image's caption. */
+export const ImageReady: Story = {
+	args: {
+		value: "Level 3 blockout — thoughts?",
+		attachment: {
+			name: "level-03-sketch.webp",
+			previewUrl,
+			status: "ready",
+			size: 1_468_006,
+		},
+	},
+};
+
+/** Frame `g3USr` case 3: over the server limit even after shrinking. */
+export const ImageTooLarge: Story = {
+	args: {
+		attachment: {
+			name: "trailer-raw.png",
+			status: "error",
+			error: "File too large (max 10 MB)",
+		},
+	},
+};
+
+/** Frame `Z3xk5b`: the notice slot, as the Announcements composer uses it. */
+export const WithNotice: Story = {
+	args: {
+		notice: <span>Posting as GDHub</span>,
 	},
 };

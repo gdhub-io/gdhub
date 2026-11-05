@@ -22,6 +22,11 @@
   [data-own] > & {
     align-items: flex-end;
   }
+
+  [data-wide] > & {
+    flex: 1;
+    max-width: none;
+  }
 }
 
 .head {
@@ -87,6 +92,29 @@
     background: var(--gd-color-accent-subtle);
   }
 
+  // An image is its own frame: no fill or padding around it.
+  &[data-media] {
+    padding: 0;
+    white-space: normal;
+    background: transparent;
+  }
+
+  // A captioned picture is one bubble: the picture on top, its text below.
+  &[data-media][data-captioned] {
+    width: min-content;
+    overflow: hidden;
+    background: var(--gd-neutral-100);
+
+    [data-own] & {
+      background: var(--gd-color-accent-subtle);
+    }
+
+    > :first-child {
+      border-bottom-right-radius: 0;
+      border-bottom-left-radius: 0;
+    }
+  }
+
   &[data-deleted] {
     font-style: italic;
     color: var(--gd-color-text-tertiary);
@@ -137,6 +165,17 @@
   box-shadow: var(--gd-shadow-e2);
 }
 
+.stripPopover {
+  padding: 0 !important;
+  background: transparent !important;
+  box-shadow: none !important;
+}
+
+// antd v6 adds its own drop-shadow filter on the root; the strip brings its own e2.
+.stripRoot:global(.ant-popover) {
+  filter: none;
+}
+
 .stripEmoji {
   width: 32px;
   height: 32px;
@@ -155,6 +194,9 @@
   display: flex;
   flex-wrap: wrap;
   gap: var(--gd-space-1);
+  // Close to its own bubble, clearly apart from the next message.
+  padding-top: var(--gd-space-1);
+  padding-bottom: var(--gd-space-2);
 }
 
 .chip {
@@ -177,6 +219,10 @@
     .chipCount {
       color: var(--gd-color-text);
     }
+  }
+
+  &[data-open] {
+    background: var(--gd-neutral-100);
   }
 
   &:disabled {
@@ -267,4 +313,9 @@
   cursor: pointer;
   background: none;
   border: 0;
+}
+
+.caption {
+  padding: var(--gd-space-2) var(--gd-space-3);
+  white-space: pre-wrap;
 }

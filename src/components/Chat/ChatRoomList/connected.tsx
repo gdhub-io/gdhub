@@ -9,6 +9,7 @@ import { markRoomRead, summarizeRoom } from "../matrix";
 import type { ChatTab } from "../model/rooms";
 import { useChat } from "../useChat";
 import { useCloseChat } from "../useCloseChat";
+import { useMutedRooms, useSetRoomMute } from "../useRoomMute";
 import { ChatRoomList } from "./index";
 
 // Room ids per request — keeps the GET URL far below header limits.
@@ -32,6 +33,8 @@ export function ConnectedChatRoomList() {
 	const { t } = useTranslate();
 	const { message } = App.useApp();
 	const closeChat = useCloseChat();
+	const muted = useMutedRooms();
+	const setMute = useSetRoomMute();
 	const chatClient = useChat((s) => s.chatClient);
 	const ready = useChat((s) => s.ready);
 	const syncError = useChat((s) => s.syncError);
@@ -102,10 +105,15 @@ export function ConnectedChatRoomList() {
 		() =>
 			rooms && chatClient
 				? rooms.map((room) =>
-						summarizeRoom(room, chatClient, meta?.[room.roomId]),
+						summarizeRoom(
+							room,
+							chatClient,
+							meta?.[room.roomId],
+							muted.has(room.roomId),
+						),
 					)
 				: null,
-		[rooms, chatClient, meta],
+		[rooms, chatClient, meta, muted],
 	);
 
 	return (
@@ -120,6 +128,7 @@ export function ConnectedChatRoomList() {
 				if (chatClient) markRoomRead(chatClient, roomId);
 			}}
 			onCloseChat={closeChat}
+			onToggleMute={setMute}
 			onLeave={(roomId) => {
 				chatClient?.leave(roomId).catch(() => {
 					message.error(t("chat.row.leaveError", "Couldn't leave the chat"));
