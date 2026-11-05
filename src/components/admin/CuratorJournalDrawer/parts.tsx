@@ -4,7 +4,8 @@ import { IconFlag } from "@tabler/icons-react";
 import { useTranslate } from "@tolgee/react";
 import { Collapse, Descriptions, Divider, Flex, Typography } from "antd";
 import dayjs from "dayjs";
-import type { Ref } from "react";
+import type { ReactNode, Ref } from "react";
+import type { JournalRevisionDto } from "@/types/checkpoint-journal";
 import styles from "./style.module.scss";
 
 export const when = (at: string) => dayjs(at).format("D MMM, HH:mm");
@@ -13,9 +14,12 @@ export const when = (at: string) => dayjs(at).format("D MMM, HH:mm");
 export function Boundary({
 	label,
 	ref,
+	extra,
 }: {
 	label: string;
 	ref?: Ref<HTMLDivElement>;
+	/** GDHUB-156: an action on the step, under its line. */
+	extra?: ReactNode;
 }) {
 	return (
 		<Flex ref={ref} vertical className={styles.boundary}>
@@ -25,6 +29,7 @@ export function Boundary({
 					{label}
 				</span>
 			</Divider>
+			{extra && <Flex justify="center">{extra}</Flex>}
 		</Flex>
 	);
 }
@@ -33,9 +38,12 @@ export function Boundary({
 export function FoldOuts({
 	details = [],
 	source,
+	history = [],
 }: {
 	details?: { label: string; value: string }[];
 	source: unknown;
+	/** GDHUB-156: each Replace, oldest first. */
+	history?: JournalRevisionDto[];
 }) {
 	const { t } = useTranslate();
 	const label = (key: string) =>
@@ -90,6 +98,65 @@ export function FoldOuts({
 												),
 										}))}
 									/>
+								),
+							},
+						]
+					: []),
+				...(history.length
+					? [
+							{
+								key: "history",
+								label: t(
+									"admin.journal.history.title",
+									"History · edited {count}×",
+									{
+										count: history.length,
+									},
+								),
+								children: (
+									<Flex vertical gap={12}>
+										{history.map((revision) => (
+											<Flex key={revision.at} vertical gap={2}>
+												<Typography.Text
+													type="secondary"
+													className={styles.meta}
+												>
+													{revision.mode === "rebuild"
+														? t(
+																"admin.journal.history.rebuilt",
+																"Input rebuilt {date}",
+																{ date: when(revision.at) },
+															)
+														: t(
+																"admin.journal.history.regenerated",
+																"Regenerated {date}",
+																{ date: when(revision.at) },
+															)}
+												</Typography.Text>
+												{revision.hint && (
+													<Typography.Text>
+														{t("admin.journal.history.hint", "Hint: {hint}", {
+															hint: revision.hint,
+														})}
+													</Typography.Text>
+												)}
+												<Typography.Text
+													type="secondary"
+													className={styles.lines}
+												>
+													{t(
+														"admin.journal.history.previous",
+														"Before: {text}",
+														{
+															text:
+																revision.previous ??
+																t("admin.journal.history.empty", "(nothing)"),
+														},
+													)}
+												</Typography.Text>
+											</Flex>
+										))}
+									</Flex>
 								),
 							},
 						]

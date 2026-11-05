@@ -50,11 +50,15 @@ const { TEAM } = vi.hoisted(() => ({
 
 vi.mock("@/services/checkpoints/flows/evidence-seen", () => ({
 	lookedArtifactLines: vi.fn(async () => []),
+	lookedMediaLines: vi.fn(async () => []),
 	seeInputArtifacts: vi.fn(async () => {}),
 	seeCheckpointEvidence: vi.fn(async () => {}),
 	devlogMediaLines: vi.fn(async () => []),
 }));
 vi.mock("@/repositories/checkpoints/journal", () => ({ journal: vi.fn() }));
+vi.mock("@/repositories/checkpoints/day-one", () => ({
+	dayOneDevlogs: vi.fn(async () => []),
+}));
 vi.mock("@/repositories/checkpoints/picture", () => ({
 	picturesOf: async () => new Map(),
 	takePicture: vi.fn(),

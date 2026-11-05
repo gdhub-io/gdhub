@@ -130,6 +130,8 @@ export const reportEvidence = (goal: string, items: ReportItem[]) => ({
 export const goalCheckHash = ({
 	picture: _,
 	marketing: __,
+	// An admin's note is never part of what a stored read answers.
+	hint: ___,
 	...input
 }: GoalCheckInput) =>
 	// The picture carries today's date and the latest activity: it informs the

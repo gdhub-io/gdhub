@@ -43,6 +43,8 @@ export type CuratorNow = {
 	until: string | null;
 	/** When this is next likely to change on its own: the page asks again then. */
 	nextAt: string | null;
+	/** GDHUB-156: an admin replaced the letter shown; the page marks it "updated". */
+	revisedAt?: string | null;
 };
 
 type NowInput = {
@@ -71,6 +73,16 @@ export const curatorNow = (
 	checkpoint: NowInput,
 	now = new Date(),
 ): CuratorNow => {
+	const said = nowOf(checkpoint, now);
+	const content = checkpoint.sessions.find(
+		(session) => session.index === said.index,
+	)?.content as CuratorReview | null | undefined;
+	return said.text && content?.revisedAt
+		? { ...said, revisedAt: content.revisedAt }
+		: said;
+};
+
+const nowOf = (checkpoint: NowInput, now: Date): CuratorNow => {
 	const sessions = [...checkpoint.sessions].sort((a, b) => a.index - b.index);
 	const index = currentSessionOf(sessions, now);
 	const current = sessions.find((session) => session.index === index);

@@ -1,12 +1,20 @@
 import pdf from "pdf-parse/lib/pdf-parse.js";
 import { capped } from "@/lib/checkpoints/curator-text";
 import { withCassette } from "@/services/ai/cassette";
+import type { AiMeter } from "@/services/ai-usage";
 import {
 	fetchBody,
 	type OpenFailure,
 } from "@/services/artifact-check/safe-fetch";
 import { videoFrames } from "./frames";
 import { oembedUrl, readableLink, type VideoPage } from "./links";
+import {
+	loadNotionBlocks,
+	type NotionPage,
+	notionPage,
+	notionText,
+} from "./notion";
+import { readViaWebSearch } from "./web-read";
 
 /** Limits on what is read (Dmitry, 2026-10-24). */
 const MAX_VIDEO_BYTES = 50 * 1024 * 1024;
@@ -16,6 +24,8 @@ const MAX_DOCUMENT_BYTES = 15 * 1024 * 1024;
 const MAX_PAGE_BYTES = 2 * 1024 * 1024;
 /** What the model reads of a document; the rest is said to exist. */
 const MAX_TEXT_CHARS = 20_000;
+/** Less than this beside its title, a page is a shell that renders with JavaScript. */
+const MIN_PAGE_BODY_CHARS = 25;
 
 export type EvidenceImage = { data: Uint8Array; mediaType: string };
 
@@ -56,15 +66,20 @@ const capText = (text: string) =>
 
 const decode = (bytes: Uint8Array) => new TextDecoder().decode(bytes);
 
-/** The words of an HTML page, with its title, and no scripts or styles. */
+const JS_SHELL = "the page renders with JavaScript; no text could be read";
+
+/** The words of an HTML page, with its title, and no scripts or styles; null for an empty shell. */
 const pageText = (html: string) => {
 	const title = html.match(/<title[^>]*>([^<]*)<\/title>/i)?.[1]?.trim();
-	const body = html
-		.replace(/<(script|style|noscript)[\s\S]*?<\/\1>/gi, " ")
-		.replace(/<[^>]+>/g, " ")
-		.replace(/&nbsp;/g, " ")
-		.replace(/&amp;/g, "&");
-	return `${title ? `Page title: ${title}\n` : ""}${capText(body)}`;
+	const body = capText(
+		html
+			.replace(/<(script|style|noscript|title)[\s\S]*?<\/\1>/gi, " ")
+			.replace(/<[^>]+>/g, " ")
+			.replace(/&nbsp;/g, " ")
+			.replace(/&amp;/g, "&"),
+	);
+	if (body.length < MIN_PAGE_BODY_CHARS) return null;
+	return `${title ? `Page title: ${title}\n` : ""}${body}`;
 };
 
 const FAILED: Record<OpenFailure | "tooLarge" | "notAccepted", string> = {
@@ -113,6 +128,44 @@ async function readVideoPage(
 	};
 }
 
+/** Refusals a site may give our servers but not a search engine's reader. */
+const WEB_SEARCH_RETRIES = new Set<string>(["needsLogin", "timeout"]);
+
+/** A page we could not read ourselves, read through OpenAI's web search; else unread. */
+async function viaWebSearch(
+	link: string,
+	unread: string,
+	meter?: AiMeter,
+): Promise<EvidenceContent> {
+	const read = await readViaWebSearch(link, MAX_TEXT_CHARS, meter);
+	if (!read) return nothing(unread);
+	return textOnly(
+		[
+			"Read through web search — a transcription of the page, not the page itself:",
+			read.text,
+			read.sources.length ? `Sources: ${read.sources.join(", ")}` : "",
+		]
+			.filter(Boolean)
+			.join("\n"),
+	);
+}
+
+async function readNotionPage(page: NotionPage): Promise<EvidenceContent> {
+	const loaded = await loadNotionBlocks(page);
+	// Web search cannot help here: Notion answers its reader with a 404.
+	if (!loaded.ok) return nothing(FAILED[loaded.reason]);
+	const { text, images } = notionText(loaded.blocks, page.pageId);
+	if (!text) return nothing("the Notion page is not shared to the web");
+	return {
+		text: `Notion page:\n${capped(text, MAX_TEXT_CHARS)}`,
+		images: [],
+		videoSeconds: 0,
+		unread: images
+			? `the page's images and videos (${images}) were not looked at`
+			: null,
+	};
+}
+
 /**
  * Read one link for the AI curator: a document as text, an image as an image, a
  * video as frames, a page as its words. Nothing is run and a build is never
@@ -124,18 +177,28 @@ export const readEvidence = (
 		videoSecondsLeft: number;
 		/** A build: its page is read, anything else at the link is not fetched. */
 		pageOnly?: boolean;
+		/** Whose AI spend a web-search read is charged to. */
+		meter?: AiMeter;
 	},
-): Promise<EvidenceContent> =>
+): Promise<EvidenceContent> => {
+	const { meter: _, ...recorded } = options;
 	// On the e2e stand a page reads as it was recorded: a live one changes its counters.
-	withCassette("evidence", { link, ...options }, () => readLive(link, options));
+	return withCassette("evidence", { link, ...recorded }, () =>
+		readLive(link, options),
+	);
+};
 
 async function readLive(
 	link: string,
 	{
 		videoSecondsLeft,
 		pageOnly = false,
-	}: { videoSecondsLeft: number; pageOnly?: boolean },
+		meter,
+	}: { videoSecondsLeft: number; pageOnly?: boolean; meter?: AiMeter },
 ): Promise<EvidenceContent> {
+	const notion = notionPage(link);
+	if (notion) return readNotionPage(notion);
+
 	const target = readableLink(link);
 	if (target.videoPage) return readVideoPage(target.videoPage, link);
 
@@ -144,7 +207,11 @@ async function readLive(
 		pageOnly ? MAX_PAGE_BYTES : MAX_VIDEO_BYTES,
 		pageOnly ? (type) => type === "text/html" : undefined,
 	);
-	if (!fetched.ok) return nothing(FAILED[fetched.reason]);
+	if (!fetched.ok) {
+		return WEB_SEARCH_RETRIES.has(fetched.reason)
+			? viaWebSearch(link, FAILED[fetched.reason], meter)
+			: nothing(FAILED[fetched.reason]);
+	}
 	const { contentType, bytes } = fetched.body;
 
 	if (contentType.startsWith("image/")) {
@@ -190,7 +257,8 @@ async function readLive(
 				"Google did not hand the file over: it is too large, or not open to anyone",
 			);
 		}
-		return textOnly(pageText(decode(bytes)));
+		const text = pageText(decode(bytes));
+		return text ? textOnly(text) : viaWebSearch(link, JS_SHELL, meter);
 	}
 
 	if (

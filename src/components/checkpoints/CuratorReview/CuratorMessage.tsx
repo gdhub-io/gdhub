@@ -35,6 +35,8 @@ export type CuratorMessageProps = {
 	/** Already formatted: "8 Oct". */
 	date: string;
 	message: string;
+	/** GDHUB-156: an admin replaced the letter; it is marked "updated". */
+	revised?: boolean;
 	verdict?: CheckpointVerdict | null;
 	/** Under the message: the countdown to a call. */
 	extra?: ReactNode;
@@ -51,6 +53,7 @@ export function CuratorMessage({
 	character,
 	date,
 	message,
+	revised,
 	verdict,
 	extra,
 	actions = [],
@@ -82,6 +85,7 @@ export function CuratorMessage({
 					</Typography.Text>
 					<Typography.Text type="secondary" className={styles.small}>
 						{date}
+						{revised && ` · ${t("checkpoints.review.updated", "updated")}`}
 					</Typography.Text>
 				</div>
 				{verdict && (

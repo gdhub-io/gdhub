@@ -2,14 +2,25 @@ import { CheckpointJournalKind } from "@/config/prisma-enums";
 import { duePicturePoints } from "@/lib/checkpoints/picture";
 import { CHECKPOINT_RUNNING_STATUSES } from "@/lib/checkpoints/status";
 import { writePicture } from "@/repositories/checkpoints/picture";
-import { seeInputArtifacts } from "@/services/checkpoints/flows/evidence-seen";
+import {
+	seeDayOneDevlogMedia,
+	seeInputArtifacts,
+} from "@/services/checkpoints/flows/evidence-seen";
 import { prisma } from "@/services/prisma";
 
-/** Day 1's inputs looked at before its picture; a failed look never holds the picture back. */
-const seeInputs = (checkpointId: string) =>
-	seeInputArtifacts(checkpointId).catch((error) =>
+/** Day 1's inputs and earlier devlogs looked at before its picture; a failed look never holds the picture back. */
+const seeInputs = async (checkpointId: string) => {
+	await seeInputArtifacts(checkpointId).catch((error) =>
 		console.error("[checkpoint-inputs] not looked at", checkpointId, error),
 	);
+	await seeDayOneDevlogMedia(checkpointId).catch((error) =>
+		console.error(
+			"[checkpoint-inputs] devlogs not looked at",
+			checkpointId,
+			error,
+		),
+	);
+};
 
 /**
  * Every picture whose moment has come and is not written yet (GDHUB-133). The

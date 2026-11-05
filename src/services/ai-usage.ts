@@ -13,7 +13,9 @@ export type AiPurpose =
 	| "verdictRead"
 	| "character"
 	| "planLetter"
-	| "shareLine";
+	| "shareLine"
+	/** An admin's regenerated answer or rebuilt step (GDHUB-156). */
+	| "regenerate";
 
 /** Which checkpoint an AI call is charged to, and for what. */
 export type AiMeter = { checkpointId: string; purpose: AiPurpose };

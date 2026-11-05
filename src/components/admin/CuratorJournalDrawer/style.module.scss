@@ -88,3 +88,13 @@
 .lines {
 	white-space: pre-line;
 }
+
+// GDHUB-156: the current answer and the draft side by side, stacked when narrow.
+.compare {
+	align-items: flex-start;
+}
+
+.compareSide {
+	flex: 1 1 400px;
+	min-width: 0;
+}

@@ -115,6 +115,12 @@ export const DEVLOG_MEDIA_PER_SPRINT = 6;
 export const ARTIFACTS_PER_SPRINT = 6;
 /** What the journal keeps of a document's text. */
 export const JOURNAL_TEXT_CHARS = 2000;
+/** The most devlog text day one's goal check reads (GDHUB-156): the newest devlogs that fit. */
+export const DAY_ONE_DEVLOG_CHARS = 40_000;
+/** How long a regenerated answer waits in the cache for the admin's Replace (GDHUB-156). */
+export const REGENERATE_DRAFT_SECONDS = 60 * 60;
+/** The longest admin hint a regeneration takes. */
+export const REGENERATE_HINT_MAX = 1000;
 /** How many of the project's latest artifacts stand in for inputs nobody named. */
 export const INPUT_ARTIFACTS = 5;
 /** Day 15 with the AI curator: hours before the change closes that an author who has not confirmed is reminded. */

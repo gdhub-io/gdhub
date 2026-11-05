@@ -95,6 +95,7 @@ export function Message({
 				character={review.character}
 				date={formatShort(now?.at ?? review.startedAt)}
 				message={said?.message ?? ""}
+				revised={said?.revised}
 				extra={
 					said?.deadline && (
 						<Typography.Text type="secondary">{said.deadline}</Typography.Text>

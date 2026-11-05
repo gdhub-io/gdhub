@@ -9,9 +9,10 @@ import {
 	IconHeartbeat,
 	IconNotes,
 	IconPhoto,
+	IconRefresh,
 } from "@tabler/icons-react";
 import { useTranslate } from "@tolgee/react";
-import { Avatar, Flex, Segmented, Typography } from "antd";
+import { Avatar, Button, Flex, Segmented, Typography } from "antd";
 import { type ReactNode, useLayoutEffect, useRef, useState } from "react";
 import { EvidenceMatchDot } from "@/components/checkpoints/EvidenceMatchTag";
 import { VerdictChip } from "@/components/checkpoints/VerdictChip";
@@ -21,9 +22,11 @@ import { formatShort } from "@/components/WorkflowPath/dates";
 import type { ProjectArtifactType } from "@/config/prisma-enums";
 import type {
 	CuratorJournalViewDto,
+	JournalDraftTarget,
 	JournalMessageDto,
 } from "@/types/checkpoint-journal";
 import { Boundary, FoldOuts, when } from "./parts";
+import { RegenerateModal } from "./RegenerateModal";
 import styles from "./style.module.scss";
 
 const LOOK_ICON: Record<string, Icon> = {
@@ -37,8 +40,23 @@ const LOOK_ICON: Record<string, Icon> = {
  * curator and the platform speak on the left, the author and the team on the
  * right; it opens on the newest, as a chat does.
  */
-export function Conversation({ view }: { view: CuratorJournalViewDto }) {
+export function Conversation({
+	checkpointId,
+	view,
+}: {
+	checkpointId: string;
+	view: CuratorJournalViewDto;
+}) {
 	const { t } = useTranslate();
+	const [target, setTarget] = useState<JournalDraftTarget | null>(null);
+	const rebuildable = (step: number) =>
+		view.steps.find((row) => row.sprint === step)?.rebuildable ?? false;
+	const rebuildButton = (step: number) =>
+		rebuildable(step) && (
+			<RefreshLink onClick={() => setTarget({ step })}>
+				{t("admin.journal.action.rebuild", "Rebuild input")}
+			</RefreshLink>
+		);
 	const list = useRef<HTMLDivElement>(null);
 	const [picked, setPicked] = useState<string | null>(null);
 	const marks = useRef(new Map<string, HTMLDivElement>());
@@ -63,6 +81,15 @@ export function Conversation({ view }: { view: CuratorJournalViewDto }) {
 	};
 
 	const rows: ReactNode[] = [];
+	if (rebuildable(0)) {
+		rows.push(
+			<Boundary
+				key="day-one"
+				label={t("admin.journal.dayOne", "Day one")}
+				extra={rebuildButton(0)}
+			/>,
+		);
+	}
 	let shown = 0;
 	const reached = new Set<string>();
 	for (const message of view.messages) {
@@ -74,6 +101,7 @@ export function Conversation({ view }: { view: CuratorJournalViewDto }) {
 				<Boundary
 					key={`sprint-${sprint.number}`}
 					ref={mark(String(sprint.number))}
+					extra={rebuildButton(sprint.number)}
 					label={t(
 						"admin.checkpoints.journal.sprintRange",
 						"Sprint {number} · {from} – {to}",
@@ -86,7 +114,18 @@ export function Conversation({ view }: { view: CuratorJournalViewDto }) {
 				/>,
 			);
 		}
-		rows.push(<Message key={message.id} message={message} view={view} />);
+		rows.push(
+			<Message
+				key={message.id}
+				message={message}
+				view={view}
+				onRegenerate={
+					message.regenerable
+						? () => setTarget({ entryId: message.id })
+						: undefined
+				}
+			/>,
+		);
 	}
 	if (view.finishedAt) {
 		reached.add("verdict");
@@ -142,18 +181,48 @@ export function Conversation({ view }: { view: CuratorJournalViewDto }) {
 					</Typography.Text>
 				)}
 			</Flex>
+			{target && (
+				<RegenerateModal
+					checkpointId={checkpointId}
+					view={view}
+					target={target}
+					onClose={() => setTarget(null)}
+				/>
+			)}
 		</Flex>
 	);
 }
 
-function Message({
+/** One line of the conversation; the regenerate draft renders the same way (GDHUB-156). */
+export function Message({
 	message,
 	view,
+	onRegenerate,
 }: {
 	message: JournalMessageDto;
 	view: CuratorJournalViewDto;
+	onRegenerate?: () => void;
 }) {
 	const { t } = useTranslate();
+	const edits = message.history.length > 0 && (
+		<Typography.Text type="secondary" className={styles.meta}>
+			{t("admin.journal.edited", "Edited {count}×", {
+				count: message.history.length,
+			})}
+		</Typography.Text>
+	);
+	const regenerate = onRegenerate && (
+		<RefreshLink onClick={onRegenerate}>
+			{t("admin.journal.action.regenerate", "Regenerate")}
+		</RefreshLink>
+	);
+	const foldOuts = (
+		<FoldOuts
+			details={message.details}
+			source={message.source}
+			history={message.history}
+		/>
+	);
 	const typeLabel = useArtifactTypeLabel();
 	const { who, title } = message;
 
@@ -246,7 +315,13 @@ function Message({
 					<Typography.Paragraph className={styles.curatorBubble}>
 						{message.text}
 					</Typography.Paragraph>
-					<FoldOuts details={message.details} source={message.source} />
+					{(edits || regenerate) && (
+						<Flex gap={8} align="center">
+							{edits}
+							{regenerate}
+						</Flex>
+					)}
+					{foldOuts}
 				</Flex>
 			</Flex>
 		);
@@ -359,11 +434,35 @@ function Message({
 				{notRead && (
 					<Typography.Text type="secondary">{notRead}</Typography.Text>
 				)}
-				<Typography.Text type="secondary" className={styles.meta}>
-					{side} · {when(message.at)}
-				</Typography.Text>
-				<FoldOuts details={message.details} source={message.source} />
+				<Flex gap={8} align="center" wrap>
+					<Typography.Text type="secondary" className={styles.meta}>
+						{side} · {when(message.at)}
+					</Typography.Text>
+					{edits}
+					{regenerate}
+				</Flex>
+				{foldOuts}
 			</Flex>
 		</Flex>
+	);
+}
+
+/** The small link that writes an answer or a step's input again. */
+function RefreshLink({
+	onClick,
+	children,
+}: {
+	onClick: () => void;
+	children: ReactNode;
+}) {
+	return (
+		<Button
+			type="link"
+			size="small"
+			icon={<IconRefresh size={14} />}
+			onClick={onClick}
+		>
+			{children}
+		</Button>
 	);
 }
