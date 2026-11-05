@@ -465,20 +465,99 @@
 				"title": "Assign a curator"
 			},
 			"journal": {
+				"addedBy": "added by {who}",
+				"aiFound": "What the AI found",
 				"aiRead": "The AI's read of the verdict",
+				"beside": "beside the tasks",
 				"brief": "Brief before call {call}",
 				"checkpoint": "Checkpoint {number}",
+				"conversationEmpty": "Nothing here yet. Messages appear as the curator, the platform and the team act.",
 				"curatorSent": "Verdict sent by the curator",
+				"detail": {
+					"advice": "Advice on the tasks",
+					"focus": "Focus for the next sprint",
+					"inShort": "How the sprint stands",
+					"link": "Link",
+					"sent": "Delivery",
+					"task": "Task"
+				},
+				"details": "Details",
+				"devlogNumber": "Devlog #{number}",
+				"devlogPlain": "Devlog",
 				"error": "The journal could not be loaded. Close it and open it again.",
+				"finished": "Checkpoint finished · {date}",
+				"goal": "Goal",
+				"goalAgreed": "The goal agreed on call 1",
+				"inputs": {
+					"added": "Added",
+					"artifact": "Artifact",
+					"before": "Made before the checkpoint",
+					"named": "What the team named at the start",
+					"none": "No inputs were named.",
+					"nothingBefore": "The project had no artifacts before the checkpoint.",
+					"type": "Type"
+				},
+				"letter": {
+					"advice": "Advice on the tasks",
+					"finalReview": "Final review",
+					"first": "First letter",
+					"plan": "The plan approved",
+					"report": "Verdict report",
+					"review": "Sprint {sprint} review",
+					"tasksCheck": "Tasks checked"
+				},
 				"looked": "Looked at",
 				"lookedValue": "{links} links · {unread} not read",
+				"noArtifacts": "No artifacts were added during the checkpoint.",
+				"noDevlogs": "No devlogs were posted during the checkpoint.",
+				"noMedia": "No images or videos read",
+				"notLooked": "Not looked at by the AI",
+				"outsideSprints": "Outside the sprints",
+				"plan": {
+					"added": "Added {date}",
+					"approved": "Approved {date}",
+					"confirmed": "Changed on day 15 · confirmed {date}",
+					"cut": "Cut",
+					"done": "Done",
+					"doneIn": "Done · sprint {sprint}",
+					"evidence": "Evidence",
+					"firstWording": "First worded: {text}",
+					"open": "Open",
+					"read": "AI read",
+					"sent": "Sent for the check {date}",
+					"status": "Status",
+					"task": "Task"
+				},
+				"platform": "Platform",
+				"platformSent": "Sent {who} “{title}”",
+				"proves": "proves “{task}”",
+				"pulseCounted": "Counted {who} as working · from {source}",
 				"seconds": "{seconds} s",
 				"settled": "Verdict settled",
+				"source": "Source",
 				"spend": "AI spend",
 				"sprint": "Sprint {sprint}",
+				"sprintRange": "Sprint {number} · {from} – {to}",
+				"tab": {
+					"artifacts": "Artifacts",
+					"conversation": "Conversation",
+					"devlogs": "Devlogs",
+					"inputs": "Inputs",
+					"plan": "Plan"
+				},
+				"team": {
+					"artifact": "Added {type} “{name}”",
+					"devlog": "Posted devlog #{number}: {title}",
+					"planApproved": "Approved the plan",
+					"pulse": "Answered the pulse: working this sprint",
+					"someone": "The team",
+					"tasksConfirmed": "Confirmed the tasks for the second half",
+					"tasksSent": "Sent the tasks for the curator's check"
+				},
 				"title": "Curator journal",
 				"unread": "Not read — {why}",
 				"verdict": "Verdict",
+				"verdictHead": "Verdict",
 				"video": "Video watched"
 			},
 			"kpi": {
@@ -718,6 +797,44 @@
 				"approved": "Approved",
 				"notApproved": "Not approved",
 				"pending": "Waiting for review"
+			}
+		},
+		"journal": {
+			"action": {
+				"rebuild": "Rebuild input",
+				"regenerate": "Regenerate"
+			},
+			"dayOne": "Day one",
+			"edited": "Edited {count}×",
+			"history": {
+				"empty": "(nothing)",
+				"hint": "Hint: {hint}",
+				"previous": "Before: {text}",
+				"rebuilt": "Input rebuilt {date}",
+				"regenerated": "Regenerated {date}",
+				"title": "History · edited {count}×"
+			},
+			"inputs": {
+				"devlogs": "Devlogs before the checkpoint, oldest first"
+			},
+			"rebuild": {
+				"explain": "The AI reads this step's artifacts, links and devlogs again, ignoring what it already saw, and writes the step's answers again. Nothing changes until you replace.",
+				"title": "Rebuild the step's input"
+			},
+			"regenerate": {
+				"cancel": "Cancel",
+				"current": "Current",
+				"explain": "The AI writes this answer again from the same inputs. Nothing changes until you replace.",
+				"failed": "The AI could not write it again. Try once more, or close.",
+				"generate": "Generate",
+				"hint": "Optional hint for the AI, e.g. “this is the concept document, read it all”",
+				"keep": "Keep current",
+				"new": "New",
+				"newLook": "Not looked at before",
+				"replace": "Replace",
+				"replaceFailed": "Not replaced: the draft expired or the step is no longer open.",
+				"replaced": "Replaced",
+				"title": "Regenerate the answer"
 			}
 		},
 		"payouts": {
@@ -2072,6 +2189,8 @@
 			"locked": "Available after the verdict."
 		},
 		"now": {
+			"approveBy": "Approve the plan when you're happy with it — otherwise it approves itself on {date}.",
+			"changeUntil": "You can change the tasks until {date}, then they stay as they are.",
 			"continueAnyway": "Continue anyway",
 			"createFirst": "Create a project first",
 			"ends": "Ends around {date}",
@@ -2092,8 +2211,12 @@
 			"people": "{count, plural, one {# person} other {# people}}",
 			"perCheckpoint": "The checkpoint",
 			"perSprint": "A sprint",
+			"planReady": "The plan is ready, so start on it. Tell me how it goes in your devlog posts, and attach the artifacts that show a task is done. In a week I'll look at what's new.",
 			"project": "Your project",
+			"readVerdict": "Read the verdict",
+			"reading": "Your curator is writing the first letter…",
 			"resource": "Work resource",
+			"reviewPlan": "Review the plan",
 			"riskTitle": "This goal may not fit the time you have",
 			"run": "{hours} hours over the whole checkpoint",
 			"share": "Your share a sprint",
@@ -2109,6 +2232,7 @@
 			"teamUnknown": "Your team of {count} has not stated its hours yet",
 			"title": "Glad you're heading for a checkpoint",
 			"titleNext": "Glad you're heading for the next checkpoint",
+			"verdictReading": "The last sprint is over. I'm reading everything the team made in these four weeks — the verdict will be here soon.",
 			"viewResults": "View results",
 			"when": "When would you like to start?",
 			"yourTime": "You give a sprint"
@@ -2318,8 +2442,10 @@
 				"move": "Move to {stage}",
 				"plan": "Plan Checkpoint {n}",
 				"reviewTasks": "Review the tasks",
+				"seePlan": "See the plan",
 				"share": "Share the result"
 			},
+			"aiCharacter": "{name} · AI curator",
 			"curator": "AI curator",
 			"empty": "No review yet",
 			"emptyNote": "The curator writes one for every sprint, after its devlog.",
@@ -2337,6 +2463,7 @@
 			},
 			"message": {
 				"greeting": "Hi, team! I'm the AI curator of {project} for the next 28 days. Let's start with the tasks that get you to the goal — when you save them, I'll tell you which are clear, which are risky for four weeks, and which are too vague to check.",
+				"sprintReading": "The sprint is over. I'm reading the devlog, the new artifacts and the team's pulse now. The review will be here soon — you'll get a letter when it's ready.",
 				"start": "Hi, I'm your curator for the next four weeks. Let's set the tasks that get you to the goal — when you save them, I'll tell you which are clear, which are risky for four weeks, and which are too vague to check."
 			},
 			"missing": "This review is not one of yours, or its checkpoint is not run by the AI curator.",
@@ -2390,6 +2517,8 @@
 			"subtitle": "Checkpoint {number} · {stage} · {from} – {to}",
 			"subtitleAi": "AI · Checkpoint {number} · {stage} · {from} – {to}",
 			"title": "The curator's review of the sprint",
+			"updated": "updated",
+			"updatedOn": "Updated {date}",
 			"verdict": "Verdict",
 			"write": "Your review of this sprint"
 		},
@@ -5080,6 +5209,8 @@
 			"curator": "Curator",
 			"goal": "Goal",
 			"industry": "Industry",
+			"readReview": "Read the review",
+			"setTasks": "Set the tasks",
 			"tasks": "Tasks"
 		},
 		"create-workflow": {

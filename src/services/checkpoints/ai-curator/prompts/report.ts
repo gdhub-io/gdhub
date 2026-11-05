@@ -6,6 +6,7 @@ import type { TrustReason, UnprovenReason } from "@/lib/checkpoints/verdict";
 import type { ReportInput } from "@/types/checkpoint-curator";
 import {
 	CURATOR_STANCE,
+	hintBlock,
 	LENSES,
 	localeLine,
 	renderCard,
@@ -146,7 +147,8 @@ export const reportMessages = (input: ReportInput, locale = "en") => [
 	},
 	{
 		role: "user" as const,
-		content: stripIndents`
+		content:
+			stripIndents`
 			${renderJournal(input.journal)}
 
 			${renderCard(input.card)}
@@ -226,6 +228,6 @@ export const reportMessages = (input: ReportInput, locale = "en") => [
 			}
 
 			Answer via the ${REPORT_FUNCTION_NAME} function.
-		`,
+		` + hintBlock(input.hint),
 	},
 ];

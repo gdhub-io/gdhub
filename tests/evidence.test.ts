@@ -9,6 +9,7 @@ import { readEvidence } from "@/services/evidence/read";
 import { prisma } from "@/services/prisma";
 
 vi.mock("@/services/artifact-check/safe-fetch", () => ({ fetchBody: vi.fn() }));
+vi.mock("@/services/evidence/web-read", () => ({ readViaWebSearch: vi.fn(async () => null) }));
 vi.mock("@/services/evidence/frames", () => ({
 	videoFrames: vi.fn(async (_: Uint8Array, maxSeconds: number) => ({
 		frames: [new Uint8Array([1])],
@@ -113,7 +114,7 @@ describe("reading what is behind a link", () => {
 		vi.mocked(fetchBody).mockResolvedValue(
 			body(
 				"text/html",
-				"<title>Devlog</title><script>x()</script><p>The boss fight</p>",
+				"<title>Devlog</title><script>x()</script><p>The boss fight is in the greybox now</p>",
 			),
 		);
 

@@ -1,13 +1,17 @@
-import { beforeEach, describe, expect, it, vi } from "vitest";
+import { afterEach, beforeEach, describe, expect, it, vi } from "vitest";
 
 const checkpointFind = vi.fn();
+const previousFind = vi.fn();
 const artifactFind = vi.fn();
 const reportFind = vi.fn();
 const userFind = vi.fn();
 
 vi.mock("@/services/prisma", () => ({
 	prisma: {
-		projectCheckpoint: { findUnique: (...a: unknown[]) => checkpointFind(...a) },
+		projectCheckpoint: {
+			findUnique: (...a: unknown[]) => checkpointFind(...a),
+			findFirst: (...a: unknown[]) => previousFind(...a),
+		},
 		projectArtifact: { findMany: (...a: unknown[]) => artifactFind(...a) },
 		projectReport: { findMany: (...a: unknown[]) => reportFind(...a) },
 		user: { findMany: (...a: unknown[]) => userFind(...a) },
@@ -20,7 +24,10 @@ const startedAt = new Date("2026-09-01T00:00:00Z");
 const at = (iso: string) => new Date(iso);
 
 const checkpoint = {
+	id: "cp1",
 	projectId: "p1",
+	status: "Active",
+	verdict: null,
 	goal: "A playable slice",
 	curatorKind: "AI",
 	curatorCharacter: null,
@@ -56,6 +63,7 @@ beforeEach(() => {
 			? [{ id: "b1", name: "Concept", type: "Document", link: "https://c", createdAt: at("2026-08-20T00:00:00Z") }]
 			: [{ id: "a1", name: "Demo", type: "ExecutableBuild", link: "https://x.itch.io", createdAt: at("2026-09-05T18:40:00Z"), createdById: "u-ivo" }],
 	);
+	previousFind.mockResolvedValue(null);
 	reportFind.mockResolvedValue([]);
 	userFind.mockResolvedValue([
 		{ id: "u-marta", name: "Marta" },
@@ -129,5 +137,105 @@ describe("getJournalView", () => {
 	it("is null for a checkpoint that does not exist", async () => {
 		checkpointFind.mockResolvedValue(null);
 		expect(await getJournalView("nope")).toBeNull();
+	});
+
+	it("lists the devlogs before the start under the inputs, oldest first, with their media looks", async () => {
+		const devlog = (id: string, iso: string, content: string) => ({
+			id,
+			number: null,
+			content,
+			video: null,
+			contentEditor: null,
+			publishedAt: at(iso),
+			authorId: "u-marta",
+		});
+		reportFind.mockImplementation(async ({ where }) =>
+			where.publishedAt.gte
+				? []
+				: [
+						devlog("d1", "2026-08-01T10:00:00Z", "Greybox of the island"),
+						devlog("d2", "2026-08-20T10:00:00Z", "The tide rule"),
+					],
+		);
+		checkpointFind.mockResolvedValue({
+			...checkpoint,
+			journal: [
+				...checkpoint.journal,
+				{ id: "j-media", kind: "DevlogMedia", sprint: 0, link: "https://img/1.png", devlogId: "d2", itemId: null, input: { devlog: "The tide", unread: null }, output: { shows: "A beach at low tide." }, createdAt: at("2026-09-01T08:00:00Z") },
+			],
+		});
+
+		const view = await getJournalView("cp1");
+
+		expect(view?.inputs.devlogs.map((row) => [row.id, row.text])).toEqual([
+			["d1", "Greybox of the island"],
+			["d2", "The tide rule"],
+		]);
+		expect(view?.inputs.devlogs[1].media[0]).toMatchObject({
+			text: "A beach at low tide.",
+		});
+		// The window ends at the start; at the first checkpoint nothing bounds it before.
+		expect(reportFind.mock.calls.at(-1)?.[0].where.publishedAt).toEqual({
+			lt: startedAt,
+		});
+	});
+
+	describe("which answers an admin may write again (GDHUB-156)", () => {
+		beforeEach(() => {
+			// Day 10: sprint 2, after the sprint 1 review.
+			vi.useFakeTimers({ toFake: ["Date"], now: at("2026-09-10T12:00:00Z") });
+		});
+		afterEach(() => vi.useRealTimers());
+
+		it("offers the step of the latest answer and after it, never day one once a review built on it", async () => {
+			const view = await getJournalView("cp1");
+			const byId = new Map(view?.messages.map((row) => [row.id, row]));
+			expect(byId.get("j-first")?.regenerable).toBe(false);
+			expect(byId.get("j-look")?.regenerable).toBe(true);
+			expect(byId.get("j-review")?.regenerable).toBe(true);
+			// Rule-based rows never.
+			expect(byId.get("j-sent")?.regenerable).toBe(false);
+			expect(view?.steps.map((row) => row.rebuildable)).toEqual([
+				false,
+				true,
+				true,
+				false,
+				false,
+			]);
+		});
+
+		it("offers nothing once the verdict is decided", async () => {
+			checkpointFind.mockResolvedValue({ ...checkpoint, verdict: "GoalMet" });
+			const view = await getJournalView("cp1");
+			expect(view?.messages.some((row) => row.regenerable)).toBe(false);
+			expect(view?.steps.some((row) => row.rebuildable)).toBe(false);
+		});
+
+		it("shows how often an answer was replaced, and what it said before", async () => {
+			checkpointFind.mockResolvedValue({
+				...checkpoint,
+				journal: checkpoint.journal.map((entry) =>
+					entry.id === "j-review"
+						? {
+								...entry,
+								input: {
+									revisions: [
+										{ at: "2026-09-09T10:00:00.000Z", by: "admin", mode: "regenerate", hint: "Read the build page", previousOutput: { message: "Unclear." } },
+									],
+								},
+							}
+						: entry,
+				),
+			});
+			const view = await getJournalView("cp1");
+			expect(view?.messages.find((row) => row.id === "j-review")?.history).toEqual([
+				{ at: "2026-09-09T10:00:00.000Z", mode: "regenerate", hint: "Read the build page", previous: "Unclear." },
+			]);
+			// The history is not sent a second time inside the source.
+			expect(view?.messages.find((row) => row.id === "j-review")?.source).toEqual({
+				input: {},
+				output: { message: "On course." },
+			});
+		});
 	});
 });

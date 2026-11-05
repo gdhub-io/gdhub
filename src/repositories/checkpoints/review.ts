@@ -62,6 +62,7 @@ export type TaskRow = {
 export const hashOf = ({
 	picture: _,
 	marketing: __,
+	hint: ___,
 	...input
 }: PlanAdviceInput) =>
 	// The picture informs the read; the same plan is not read twice for it.

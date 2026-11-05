@@ -8,6 +8,7 @@ import { aiModel } from "@/services/ai/model";
 import { traceGenerated } from "@/services/ai-trace";
 import { type AiMeter, recordAiUsage } from "@/services/ai-usage";
 import {
+	hintBlock,
 	localeLine,
 	PARTICIPANT_DATA,
 } from "@/services/checkpoints/ai-curator/prompts/card";
@@ -70,7 +71,13 @@ export type EvidenceTask = {
 	description: string | null;
 	/** The checkpoint's devlogs so far, oldest first: context, never proof. */
 	devlogs: string[];
+	/** An admin's note when the answer is regenerated (GDHUB-156). */
+	hint?: string | null;
 };
+
+/** The admin's note as the last part of a message, when there is one. */
+const hintParts = (hint?: string | null) =>
+	hint?.trim() ? [{ type: "text" as const, text: hintBlock(hint).trim() }] : [];
 
 /** Does this evidence show what the task promised? Null when the model gives nothing. */
 export async function judgeEvidence(
@@ -114,6 +121,7 @@ export async function judgeEvidence(
 								},
 							]
 						: []),
+					...hintParts(evidence.hint),
 				],
 			},
 		],
@@ -140,6 +148,7 @@ export async function describeMedia(
 	content: EvidenceContent,
 	meter?: AiMeter,
 	locale?: string,
+	hint?: string | null,
 ) {
 	const request = {
 		instructions: stripIndents`
@@ -147,7 +156,12 @@ export async function describeMedia(
 			Describe in one or two sentences what this media from a devlog shows.
 			${locale ? localeLine(locale) : ""}
 		`,
-		messages: [{ role: "user" as const, content: contentParts(content) }],
+		messages: [
+			{
+				role: "user" as const,
+				content: [...contentParts(content), ...hintParts(hint)],
+			},
+		],
 	};
 	const started = Date.now();
 	const result = await generateText({

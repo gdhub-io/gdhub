@@ -109,6 +109,7 @@ export const useCuratorNow = (
 
 	return {
 		message: now.text ?? fixed[now.state] ?? "",
+		revised: !!now.revisedAt,
 		deadline,
 		...actions[now.state],
 	};

@@ -470,6 +470,8 @@ export type CuratorReview = {
 	planLetter?: string;
 	/** Day 15 (GDHUB-125): when the curator checked the author's changes; confirming waits for it. */
 	checkedAt?: string;
+	/** GDHUB-156: when an admin last replaced a letter or review here; the team sees it marked "updated". */
+	revisedAt?: string;
 };
 
 export const GOAL_FITS = ["fits", "widen", "narrow"] as const;
