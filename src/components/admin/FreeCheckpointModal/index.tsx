@@ -41,6 +41,7 @@ export function FreeCheckpointModal({ onClose }: { onClose: () => void }) {
 	);
 	const [query, setQuery] = useState("");
 	const projectId = Form.useWatch("projectId", form);
+	const stepId = Form.useWatch("stepId", form);
 	const curatorId = Form.useWatch("userId", form);
 	const human = kind === CheckpointCuratorKind.Human;
 
@@ -52,6 +53,7 @@ export function FreeCheckpointModal({ onClose }: { onClose: () => void }) {
 	const start = useStartFreeCheckpoint();
 
 	const project = projects.data?.find((row) => row.id === projectId);
+	const stage = project?.stages.find((row) => row.id === stepId);
 	const failures: Record<string, string> = {
 		notEligible: t(
 			"admin.checkpoints.free.notEligible",
@@ -69,10 +71,15 @@ export function FreeCheckpointModal({ onClose }: { onClose: () => void }) {
 			"admin.checkpoints.free.firstCallMissing",
 			"Pick the first call.",
 		),
+		stageInvalid: t(
+			"admin.checkpoints.free.stageInvalid",
+			"A checkpoint cannot run on this stage.",
+		),
 	};
 
 	const submit = (values: {
 		projectId: string;
+		stepId?: string;
 		userId?: string;
 		firstCall?: string;
 		reason: string;
@@ -132,6 +139,12 @@ export function FreeCheckpointModal({ onClose }: { onClose: () => void }) {
 							"admin.checkpoints.free.searchProject",
 							"Search a project",
 						)}
+						onChange={(id: string) =>
+							form.setFieldValue(
+								"stepId",
+								projects.data?.find((row) => row.id === id)?.stepId,
+							)
+						}
 						options={(projects.data ?? []).map((row) => ({
 							value: row.id,
 							label: [row.name, row.stage, row.author]
@@ -142,11 +155,39 @@ export function FreeCheckpointModal({ onClose }: { onClose: () => void }) {
 				</Form.Item>
 
 				{project && (
+					<Form.Item
+						name="stepId"
+						label={t("admin.checkpoints.free.stage", "Stage")}
+						extra={t(
+							"admin.checkpoints.free.stageHelp",
+							"The stage the project is on now. Pick another to move the project there before the checkpoint starts.",
+						)}
+						rules={[{ required: true }]}
+					>
+						<Select
+							options={project.stages.map((row) => ({
+								value: row.id,
+								label:
+									row.id === project.stepId
+										? t(
+												"admin.checkpoints.free.stageCurrent",
+												"{stage} · now",
+												{
+													stage: row.name,
+												},
+											)
+										: row.name,
+							}))}
+						/>
+					</Form.Item>
+				)}
+
+				{stage && (
 					<Flex vertical gap={4} style={{ marginBottom: 16 }}>
 						<Typography.Text strong>
 							{t("admin.checkpoints.free.goal", "Goal")}
 						</Typography.Text>
-						<Typography.Text>{project.goal}</Typography.Text>
+						<Typography.Text>{stage.goal}</Typography.Text>
 						<Typography.Text type="secondary">
 							{t(
 								"admin.checkpoints.free.goalHelp",

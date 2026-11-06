@@ -267,6 +267,7 @@ export const useStartFreeCheckpoint = () => {
 			kind: CheckpointCuratorKind;
 			userId?: string;
 			firstCall?: string;
+			stepId?: string;
 			reason: string;
 		}) => (await axios.post(`${URL}/free`, body)).data,
 		onSuccess: () => queryClient.invalidateQueries({ queryKey: LIST_KEY }),

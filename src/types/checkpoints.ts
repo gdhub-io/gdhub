@@ -823,9 +823,11 @@ export type FreeCheckpointProjectDto = {
 	id: string;
 	name: string;
 	stage: string;
+	/** The stage it is on now: the modal's default. */
+	stepId: string | null;
 	author: string | null;
-	/** The goal it would start with. */
-	goal: string;
+	/** The stages a checkpoint can run on, each with the goal it would start with. */
+	stages: { id: string; name: string; goal: string }[];
 };
 
 export type CheckpointReviewDto = {
