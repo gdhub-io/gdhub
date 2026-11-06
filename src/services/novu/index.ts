@@ -62,7 +62,12 @@ export class NovuService {
 				subscriberId: to.subscriberId,
 				email: to.email,
 			},
-			payload: { app: "main", ...payload },
+			// The email templates build links and image URLs from appUrl.
+			payload: {
+				app: "main",
+				appUrl: process.env.NEXT_PUBLIC_APP_URL,
+				...payload,
+			},
 			transactionId,
 		});
 		const timeout = new Promise<never>((_, reject) =>
