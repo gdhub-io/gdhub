@@ -9,30 +9,40 @@ import { useChat } from "@/components/Chat/useChat";
 import { AppAvatar } from "@/components/ui/AppAvatar";
 import { AI_CURATOR_AVATAR } from "@/config/checkpoint";
 import { CheckpointCuratorKind } from "@/config/prisma-enums";
+import { checkpointPathHref } from "@/lib/checkpoints/hrefs";
 import { opensRoom } from "@/lib/checkpoints/room";
+import type { CallRole } from "@/types/checkpoint-call";
 import type { CheckpointDto } from "@/types/checkpoints";
 import styles from "./style.module.scss";
 
-/** Who curates the checkpoint and the two ways to reach them — the card's right side, and the page header's. */
+/** Who curates the checkpoint and the two ways to reach them — the card's right side. */
 export function CheckpointCurator({
 	checkpoint,
 	projectSlug,
+	viewer = "team",
 }: {
-	checkpoint: Pick<CheckpointDto, "id" | "status" | "curatorKind" | "curator">;
-	/** The project the checkpoint is opened in; the call button leads to its room tab. */
-	projectSlug?: string;
+	checkpoint: Pick<
+		CheckpointDto,
+		"id" | "order" | "status" | "curatorKind" | "curator"
+	>;
+	/** The project the checkpoint is opened in; the call button leads to its Path to Checkpoint. */
+	projectSlug: string;
+	viewer?: CallRole;
 }) {
 	const { t } = useTranslate();
 	const { can } = useAccess();
-	// No room, no button: an AI curator, a checkpoint not running, or the
-	// curator's own pages outside the project space.
-	const roomOpen =
-		!!projectSlug && can("project.room.use") && opensRoom(checkpoint);
+	// No room, no button: an AI curator, a checkpoint not running, or a viewer
+	// outside the project space.
+	const roomOpen = can("project.room.use") && opensRoom(checkpoint);
 	const { setOpenChatModal } = useChat();
 
 	const isAI = checkpoint.curatorKind === CheckpointCuratorKind.AI;
 	const { curator } = checkpoint;
 	const speciality = curator?.speciality;
+	const chatLabel =
+		viewer === "curator"
+			? t("checkpoints.card.chatTeam", "Chat with team")
+			: t("checkpoints.card.chat", "Chat with curator");
 
 	return (
 		<Flex gap={12} align="center">
@@ -65,9 +75,7 @@ export function CheckpointCurator({
 			<Divider orientation="vertical" className={styles.divider} />
 			{roomOpen && (
 				<Tooltip title={t("checkpoints.card.room", "Open the room")}>
-					<Link
-						href={`/user/project/${projectSlug}/checkpoints/${checkpoint.id}?tab=room`}
-					>
+					<Link href={checkpointPathHref(projectSlug, checkpoint.order)}>
 						<Button
 							icon={<IconVideo size={16} />}
 							aria-label={t("checkpoints.card.room", "Open the room")}
@@ -75,10 +83,10 @@ export function CheckpointCurator({
 					</Link>
 				</Tooltip>
 			)}
-			<Tooltip title={t("checkpoints.card.chat", "Chat with curator")}>
+			<Tooltip title={chatLabel}>
 				<Button
 					icon={<IconMessageCircle size={16} />}
-					aria-label={t("checkpoints.card.chat", "Chat with curator")}
+					aria-label={chatLabel}
 					onClick={() => setOpenChatModal(true)}
 				/>
 			</Tooltip>
