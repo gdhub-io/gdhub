@@ -454,21 +454,33 @@
 	color: var(--gd-color-text-tertiary);
 }
 
-.listActions {
-	display: flex;
-	align-items: center;
-	gap: var(--gd-space-2);
-	flex-wrap: wrap;
-}
-
-// The AI's action wears its colour, like its advice.
-.suggestTasks.suggestTasks {
-	color: var(--gd-direction-game-design-ink);
+// The remove button inside must not make a saved task taller than the empty field.
+.taskInput.taskInput {
+	height: var(--gd-control-height);
+	padding-block: 0;
 }
 
 .addTask.addTask {
 	align-self: flex-start;
-	color: var(--gd-color-text-secondary);
+}
+
+// Frames 10.1 / 10.5: the author's own tasks, then the curator's, under a hairline.
+.planSections {
+	display: flex;
+	flex-direction: column;
+	gap: var(--gd-space-6);
+}
+
+.recommended {
+	padding-top: var(--gd-space-6);
+	border-top: 1px solid var(--gd-color-border);
+}
+
+.lockedRow.suggested {
+	padding: var(--gd-space-1) var(--gd-space-1) var(--gd-space-1) var(--gd-space-3);
+	border: 1px solid var(--gd-color-border);
+	background: var(--gd-color-surface-sunken);
+	color: var(--gd-color-text);
 }
 
 .planFooter {
@@ -627,11 +639,6 @@
 // The AI's colour: the game-design direction's ink, the purple the AI tag wears.
 .goalAdvice {
 	margin-top: var(--gd-space-2);
-}
-
-.why {
-	padding-inline: var(--gd-space-3);
-	font-size: var(--gd-font-size-caption);
 }
 
 .advice {

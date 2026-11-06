@@ -20,6 +20,7 @@ import {
 } from "@/repositories/checkpoints/number";
 import {
 	canEditPlan,
+	editorOf,
 	viewerOf,
 	viewerSelect,
 } from "@/repositories/checkpoints/viewer";
@@ -174,7 +175,7 @@ export const getCall = async (
 		state: callState(session.scheduledAt, session.endedAt, now),
 		missed: callMissed(session, now),
 		curatorJoinedAt: session.curatorJoinedAt?.toISOString() ?? null,
-		canMove: movable && canEditPlan(checkpoint, userId),
+		canMove: movable && !!editorOf(checkpoint, userId),
 		move:
 			movable && session.moveTo && session.moveAskedById
 				? {

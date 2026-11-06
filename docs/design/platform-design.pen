@@ -355557,7 +355557,7 @@
           "fill": "$text-secondary",
           "textGrowth": "fixed-width",
           "width": "fill_container",
-          "content": "This is the last time the tasks can change in this checkpoint. Done tasks stay as they are; the goal stays as agreed on call 1.",
+          "content": "Last change in this checkpoint: done tasks stay, and the goal stays as agreed on call 1.",
           "lineHeight": 1.5,
           "fontFamily": "$font",
           "fontSize": 14,
@@ -356218,7 +356218,7 @@
           "strokeWidth": 1,
           "strokeAlignment": "inner",
           "layout": "vertical",
-          "gap": 16,
+          "gap": 24,
           "padding": 24,
           "children": [
             {
@@ -356255,7 +356255,7 @@
                           "fill": "$text-tertiary",
                           "content": "Sprint",
                           "fontFamily": "$font",
-                          "fontSize": 15,
+                          "fontSize": 16,
                           "fontWeight": "500"
                         }
                       ]
@@ -356280,7 +356280,7 @@
                           "fill": "$text-tertiary",
                           "content": "Review",
                           "fontFamily": "$font",
-                          "fontSize": 15,
+                          "fontSize": 16,
                           "fontWeight": "500"
                         }
                       ]
@@ -356308,7 +356308,7 @@
                           "fill": "$text-primary",
                           "content": "Plan",
                           "fontFamily": "$font",
-                          "fontSize": 15,
+                          "fontSize": 16,
                           "fontWeight": "600"
                         }
                       ]
@@ -356334,7 +356334,7 @@
                           "fill": "$text-tertiary",
                           "content": "Transcript",
                           "fontFamily": "$font",
-                          "fontSize": 15,
+                          "fontSize": 16,
                           "fontWeight": "500"
                         }
                       ]
@@ -356614,7 +356614,7 @@
                               "fill": "$text-tertiary",
                               "content": "3 of 5",
                               "fontFamily": "$font",
-                              "fontSize": 12,
+                              "fontSize": 13,
                               "fontWeight": "normal"
                             }
                           ]
@@ -356654,10 +356654,10 @@
               "fill": "$text-secondary",
               "textGrowth": "fixed-width",
               "width": "fill_container",
-              "content": "Change the tasks yourself or take the curator's suggestions. This is the last change in this checkpoint: done tasks stay as they are, and the first wording of each task is kept.",
+              "content": "Last change in this checkpoint: done tasks stay, and each task keeps its first wording.",
               "lineHeight": 1.5,
               "fontFamily": "$font",
-              "fontSize": 13,
+              "fontSize": 14,
               "fontWeight": "normal"
             },
             {
@@ -356672,24 +356672,25 @@
                   "type": "text",
                   "id": "eWsH5",
                   "name": "Label",
-                  "fill": "$text-tertiary",
+                  "fill": "$text-primary",
                   "content": "Tasks",
                   "fontFamily": "$font",
-                  "fontSize": 12,
-                  "fontWeight": "normal"
+                  "fontSize": 16,
+                  "fontWeight": "600"
                 },
                 {
                   "type": "frame",
                   "id": "KiXOH",
                   "name": "Task done",
                   "width": "fill_container",
+                  "height": 40,
                   "fill": "$neutral-100",
                   "cornerRadius": "$radius-md",
                   "stroke": "$border-strong",
                   "strokeAlignment": "inner",
                   "gap": 8,
                   "padding": [
-                    8,
+                    0,
                     12
                   ],
                   "alignItems": "center",
@@ -356834,7 +356835,8 @@
                   "width": "fill_container",
                   "descendants": {
                     "RaXuR": {
-                      "stroke": "$border-strong"
+                      "stroke": "$border-strong",
+                      "strokeWidth": 0
                     },
                     "z0CVR": {
                       "content": "A 1-minute clip of the tide mechanic"
@@ -356855,66 +356857,11 @@
                 },
                 {
                   "type": "frame",
-                  "id": "U04bh",
-                  "name": "Suggested task",
-                  "width": "fill_container",
-                  "fill": "$neutral-100",
-                  "cornerRadius": "$radius-md",
-                  "gap": 8,
-                  "padding": [
-                    8,
-                    12
-                  ],
-                  "alignItems": "center",
-                  "children": [
-                    {
-                      "type": "icon",
-                      "id": "DpEsg",
-                      "name": "Ic",
-                      "width": 14,
-                      "height": 14,
-                      "icon": "sparkles",
-                      "library": "lucide",
-                      "fill": "$text-tertiary"
-                    },
-                    {
-                      "type": "text",
-                      "id": "hYkSI",
-                      "name": "Value",
-                      "fill": "$text-secondary",
-                      "textGrowth": "fixed-width",
-                      "width": "fill_container",
-                      "content": "3 playtest recordings with strangers",
-                      "fontFamily": "$font",
-                      "fontSize": 14,
-                      "fontWeight": "normal"
-                    },
-                    {
-                      "type": "text",
-                      "id": "b06mC",
-                      "name": "Add",
-                      "fill": "$text-primary",
-                      "content": "Add",
-                      "fontFamily": "$font",
-                      "fontSize": 14,
-                      "fontWeight": "500"
-                    },
-                    {
-                      "type": "icon",
-                      "id": "ftnIT",
-                      "name": "Ic",
-                      "width": 14,
-                      "height": 14,
-                      "icon": "x",
-                      "library": "lucide",
-                      "fill": "$text-tertiary"
-                    }
-                  ]
-                },
-                {
-                  "type": "frame",
                   "id": "U3EAei",
+                  "x": 0,
+                  "y": 332,
                   "name": "Plan actions",
+                  "enabled": false,
                   "gap": 16,
                   "alignItems": "center",
                   "children": [
@@ -356985,6 +356932,274 @@
                       ]
                     }
                   ]
+                },
+                {
+                  "type": "frame",
+                  "id": "iYwPk",
+                  "name": "Task input · empty",
+                  "width": "fill_container",
+                  "height": 40,
+                  "fill": "$bg-muted",
+                  "cornerRadius": "$radius-md",
+                  "stroke": "$border",
+                  "strokeAlignment": "inner",
+                  "gap": 8,
+                  "padding": [
+                    0,
+                    12
+                  ],
+                  "alignItems": "center",
+                  "children": [
+                    {
+                      "type": "text",
+                      "id": "r0l6Z",
+                      "name": "Value",
+                      "fill": "$text-tertiary",
+                      "textGrowth": "fixed-width",
+                      "width": "fill_container",
+                      "content": "Write a task: what you will make, and where anyone can open it…",
+                      "fontFamily": "$font",
+                      "fontSize": 14,
+                      "fontWeight": "normal"
+                    },
+                    {
+                      "type": "icon",
+                      "id": "ULpKd",
+                      "x": 727,
+                      "y": 10,
+                      "name": "Ic",
+                      "enabled": false,
+                      "width": 14,
+                      "height": 14,
+                      "icon": "x",
+                      "library": "lucide",
+                      "fill": "$text-tertiary"
+                    }
+                  ]
+                },
+                {
+                  "type": "frame",
+                  "id": "tF29O",
+                  "name": "Btn Add task",
+                  "height": 40,
+                  "cornerRadius": "$radius-md",
+                  "stroke": "$border",
+                  "strokeWidth": 1,
+                  "strokeAlignment": "inner",
+                  "gap": 8,
+                  "padding": [
+                    0,
+                    16
+                  ],
+                  "alignItems": "center",
+                  "children": [
+                    {
+                      "type": "icon",
+                      "id": "iaXsP",
+                      "name": "Ic",
+                      "width": 14,
+                      "height": 14,
+                      "icon": "plus",
+                      "library": "lucide",
+                      "fill": "$text-primary"
+                    },
+                    {
+                      "type": "text",
+                      "id": "SRtbe",
+                      "name": "L",
+                      "fill": "$text-primary",
+                      "content": "Add task",
+                      "fontFamily": "$font",
+                      "fontSize": 14,
+                      "fontWeight": "500"
+                    }
+                  ]
+                }
+              ]
+            },
+            {
+              "type": "frame",
+              "id": "zQ11A",
+              "name": "Recommended tasks",
+              "width": "fill_container",
+              "stroke": "$border-subtle",
+              "strokeWidth": {
+                "top": 1
+              },
+              "layout": "vertical",
+              "gap": 12,
+              "padding": [
+                16,
+                0,
+                0,
+                0
+              ],
+              "children": [
+                {
+                  "type": "frame",
+                  "id": "Q5rwz8",
+                  "name": "Head",
+                  "width": "fill_container",
+                  "justifyContent": "space_between",
+                  "alignItems": "center",
+                  "children": [
+                    {
+                      "type": "frame",
+                      "id": "F4Pyt",
+                      "name": "Title",
+                      "width": "fill_container",
+                      "layout": "vertical",
+                      "gap": 4,
+                      "children": [
+                        {
+                          "type": "text",
+                          "id": "p9xFV",
+                          "name": "Label",
+                          "fill": "$text-primary",
+                          "content": "Recommended tasks",
+                          "fontFamily": "$font",
+                          "fontSize": 16,
+                          "fontWeight": "600"
+                        },
+                        {
+                          "type": "text",
+                          "id": "KFKjG",
+                          "name": "Note",
+                          "fill": "$text-secondary",
+                          "textGrowth": "fixed-width",
+                          "width": "fill_container",
+                          "content": "The curator's ideas. None is in your plan until you add it.",
+                          "fontFamily": "$font",
+                          "fontSize": 14,
+                          "fontWeight": "normal"
+                        }
+                      ]
+                    }
+                  ]
+                },
+                {
+                  "type": "frame",
+                  "id": "U04bh",
+                  "name": "Suggested task",
+                  "width": "fill_container",
+                  "fill": "$surface-sunken",
+                  "cornerRadius": "$radius-md",
+                  "stroke": "$border",
+                  "strokeWidth": 1,
+                  "strokeAlignment": "inner",
+                  "gap": 8,
+                  "padding": [
+                    4,
+                    4,
+                    4,
+                    12
+                  ],
+                  "alignItems": "center",
+                  "children": [
+                    {
+                      "type": "icon",
+                      "id": "DpEsg",
+                      "name": "Ic",
+                      "width": 14,
+                      "height": 14,
+                      "icon": "sparkles",
+                      "library": "lucide",
+                      "fill": "$text-tertiary"
+                    },
+                    {
+                      "type": "text",
+                      "id": "hYkSI",
+                      "name": "Value",
+                      "fill": "$text-primary",
+                      "textGrowth": "fixed-width",
+                      "width": "fill_container",
+                      "content": "3 playtest recordings with strangers",
+                      "fontFamily": "$font",
+                      "fontSize": 14,
+                      "fontWeight": "normal"
+                    },
+                    {
+                      "type": "icon",
+                      "id": "ftnIT",
+                      "x": 727,
+                      "y": 10,
+                      "name": "Ic",
+                      "enabled": false,
+                      "width": 14,
+                      "height": 14,
+                      "icon": "x",
+                      "library": "lucide",
+                      "fill": "$text-tertiary"
+                    },
+                    {
+                      "type": "frame",
+                      "id": "E2z6U",
+                      "name": "Btn Why",
+                      "height": 32,
+                      "gap": 4,
+                      "padding": [
+                        0,
+                        8
+                      ],
+                      "alignItems": "center",
+                      "children": [
+                        {
+                          "type": "icon",
+                          "id": "wdWLd",
+                          "name": "Ic",
+                          "width": 14,
+                          "height": 14,
+                          "icon": "info",
+                          "library": "lucide",
+                          "fill": "$text-secondary"
+                        },
+                        {
+                          "type": "text",
+                          "id": "IWUXm",
+                          "name": "L",
+                          "fill": "$text-secondary",
+                          "content": "Why",
+                          "fontFamily": "$font",
+                          "fontSize": 14,
+                          "fontWeight": "500"
+                        }
+                      ]
+                    },
+                    {
+                      "type": "frame",
+                      "id": "n5TePJ",
+                      "name": "Add",
+                      "height": 32,
+                      "gap": 4,
+                      "padding": [
+                        0,
+                        8
+                      ],
+                      "alignItems": "center",
+                      "children": [
+                        {
+                          "type": "icon",
+                          "id": "jIXcL",
+                          "name": "Ic",
+                          "width": 14,
+                          "height": 14,
+                          "icon": "plus",
+                          "library": "lucide",
+                          "fill": "$text-primary"
+                        },
+                        {
+                          "type": "text",
+                          "id": "WuONH",
+                          "name": "L",
+                          "fill": "$text-primary",
+                          "content": "Add",
+                          "fontFamily": "$font",
+                          "fontSize": 14,
+                          "fontWeight": "500"
+                        }
+                      ]
+                    }
+                  ]
                 }
               ]
             },
@@ -357000,7 +357215,7 @@
                   "type": "text",
                   "id": "byOUi",
                   "name": "L",
-                  "fill": "$text-tertiary",
+                  "fill": "$text-secondary",
                   "content": "Open until 16 Oct, 14:00 · send your changes for a check before confirming",
                   "fontFamily": "$font",
                   "fontSize": 13,
@@ -357010,12 +357225,14 @@
                   "type": "frame",
                   "id": "UlXMJ",
                   "name": "Btn Save",
+                  "height": 40,
                   "fill": "$btn-black",
                   "cornerRadius": "$radius-md",
                   "padding": [
-                    8,
+                    0,
                     16
                   ],
+                  "alignItems": "center",
                   "children": [
                     {
                       "type": "text",
@@ -357562,7 +357779,7 @@
                           "fill": "$text-tertiary",
                           "content": "Sprint",
                           "fontFamily": "$font",
-                          "fontSize": 15,
+                          "fontSize": 16,
                           "fontWeight": "500"
                         }
                       ]
@@ -357590,7 +357807,7 @@
                           "fill": "$text-tertiary",
                           "content": "Review",
                           "fontFamily": "$font",
-                          "fontSize": 15,
+                          "fontSize": 16,
                           "fontWeight": "500"
                         }
                       ]
@@ -357618,7 +357835,7 @@
                           "fill": "$text-primary",
                           "content": "Plan",
                           "fontFamily": "$font",
-                          "fontSize": 15,
+                          "fontSize": 16,
                           "fontWeight": "600"
                         }
                       ]
@@ -357644,7 +357861,7 @@
                           "fill": "$text-tertiary",
                           "content": "Transcript",
                           "fontFamily": "$font",
-                          "fontSize": 15,
+                          "fontSize": 16,
                           "fontWeight": "500"
                         }
                       ]
@@ -357927,7 +358144,7 @@
                               "fill": "$text-tertiary",
                               "content": "1 of 5",
                               "fontFamily": "$font",
-                              "fontSize": 12,
+                              "fontSize": 13,
                               "fontWeight": "normal"
                             }
                           ]
@@ -357967,7 +358184,7 @@
               "fill": "$text-secondary",
               "textGrowth": "fixed-width",
               "width": "fill_container",
-              "content": "Write 1 to 5 tasks that will show the goal is reached. Each one should end in something anyone can open: a build, a document, a video. Add the curator's suggestions or write your own.",
+              "content": "1–5 tasks, each ending in a build, a document or a video anyone can open.",
               "fontFamily": "$font",
               "fontSize": 14,
               "fontWeight": "normal"
@@ -357978,241 +358195,31 @@
               "name": "Tasks",
               "width": "fill_container",
               "layout": "vertical",
-              "gap": 8,
+              "gap": 12,
               "children": [
                 {
                   "type": "text",
                   "id": "t62dz",
                   "name": "Label",
-                  "fill": "$text-tertiary",
+                  "fill": "$text-primary",
                   "content": "Tasks",
                   "fontFamily": "$font",
-                  "fontSize": 12,
-                  "fontWeight": "normal"
-                },
-                {
-                  "type": "frame",
-                  "id": "OSDvB",
-                  "name": "Suggested task",
-                  "width": "fill_container",
-                  "fill": "$neutral-100",
-                  "cornerRadius": "$radius-md",
-                  "gap": 8,
-                  "padding": [
-                    8,
-                    12
-                  ],
-                  "alignItems": "center",
-                  "children": [
-                    {
-                      "type": "icon",
-                      "id": "WNNHI",
-                      "name": "Ic",
-                      "width": 14,
-                      "height": 14,
-                      "icon": "sparkles",
-                      "library": "lucide",
-                      "fill": "$text-tertiary"
-                    },
-                    {
-                      "type": "text",
-                      "id": "Gu3Z6",
-                      "name": "Value",
-                      "fill": "$text-secondary",
-                      "textGrowth": "fixed-width",
-                      "width": "fill_container",
-                      "content": "A playable demo of one island area on itch.io",
-                      "fontFamily": "$font",
-                      "fontSize": 14,
-                      "fontWeight": "normal"
-                    },
-                    {
-                      "type": "text",
-                      "id": "t23vM",
-                      "name": "Add",
-                      "fill": "$text-primary",
-                      "content": "Add",
-                      "fontFamily": "$font",
-                      "fontSize": 14,
-                      "fontWeight": "500"
-                    },
-                    {
-                      "type": "icon",
-                      "id": "qvrI3",
-                      "name": "Ic",
-                      "width": 14,
-                      "height": 14,
-                      "icon": "x",
-                      "library": "lucide",
-                      "fill": "$text-tertiary"
-                    }
-                  ]
-                },
-                {
-                  "type": "text",
-                  "id": "T3A3CF",
-                  "name": "Why",
-                  "fill": "$text-tertiary",
-                  "textGrowth": "fixed-width",
-                  "width": "fill_container",
-                  "content": "Why: It ends in a build anyone can open, and fits the hours you have.",
-                  "fontFamily": "$font",
-                  "fontSize": 12,
-                  "fontWeight": "normal"
-                },
-                {
-                  "type": "frame",
-                  "id": "CEFyo",
-                  "name": "Suggested task",
-                  "width": "fill_container",
-                  "fill": "$neutral-100",
-                  "cornerRadius": "$radius-md",
-                  "gap": 8,
-                  "padding": [
-                    8,
-                    12
-                  ],
-                  "alignItems": "center",
-                  "children": [
-                    {
-                      "type": "icon",
-                      "id": "r5BTYF",
-                      "name": "Ic",
-                      "width": 14,
-                      "height": 14,
-                      "icon": "sparkles",
-                      "library": "lucide",
-                      "fill": "$text-tertiary"
-                    },
-                    {
-                      "type": "text",
-                      "id": "p6MgG",
-                      "name": "Value",
-                      "fill": "$text-secondary",
-                      "textGrowth": "fixed-width",
-                      "width": "fill_container",
-                      "content": "A style board: palette and one hero sheet",
-                      "fontFamily": "$font",
-                      "fontSize": 14,
-                      "fontWeight": "normal"
-                    },
-                    {
-                      "type": "text",
-                      "id": "S0la5",
-                      "name": "Add",
-                      "fill": "$text-primary",
-                      "content": "Add",
-                      "fontFamily": "$font",
-                      "fontSize": 14,
-                      "fontWeight": "500"
-                    },
-                    {
-                      "type": "icon",
-                      "id": "M7VttF",
-                      "name": "Ic",
-                      "width": 14,
-                      "height": 14,
-                      "icon": "x",
-                      "library": "lucide",
-                      "fill": "$text-tertiary"
-                    }
-                  ]
-                },
-                {
-                  "type": "text",
-                  "id": "i01g1",
-                  "name": "Why",
-                  "fill": "$text-tertiary",
-                  "textGrowth": "fixed-width",
-                  "width": "fill_container",
-                  "content": "Why: Art direction is what Prototyping asks for, at the size one artist can do.",
-                  "fontFamily": "$font",
-                  "fontSize": 12,
-                  "fontWeight": "normal"
-                },
-                {
-                  "type": "frame",
-                  "id": "J9oEbW",
-                  "name": "Suggested task",
-                  "width": "fill_container",
-                  "fill": "$neutral-100",
-                  "cornerRadius": "$radius-md",
-                  "gap": 8,
-                  "padding": [
-                    8,
-                    12
-                  ],
-                  "alignItems": "center",
-                  "children": [
-                    {
-                      "type": "icon",
-                      "id": "HouZk",
-                      "name": "Ic",
-                      "width": 14,
-                      "height": 14,
-                      "icon": "sparkles",
-                      "library": "lucide",
-                      "fill": "$text-tertiary"
-                    },
-                    {
-                      "type": "text",
-                      "id": "OeA72",
-                      "name": "Value",
-                      "fill": "$text-secondary",
-                      "textGrowth": "fixed-width",
-                      "width": "fill_container",
-                      "content": "Playtest with 5 players, notes in a doc",
-                      "fontFamily": "$font",
-                      "fontSize": 14,
-                      "fontWeight": "normal"
-                    },
-                    {
-                      "type": "text",
-                      "id": "DAzGj",
-                      "name": "Add",
-                      "fill": "$text-primary",
-                      "content": "Add",
-                      "fontFamily": "$font",
-                      "fontSize": 14,
-                      "fontWeight": "500"
-                    },
-                    {
-                      "type": "icon",
-                      "id": "oAnIt",
-                      "name": "Ic",
-                      "width": 14,
-                      "height": 14,
-                      "icon": "x",
-                      "library": "lucide",
-                      "fill": "$text-tertiary"
-                    }
-                  ]
-                },
-                {
-                  "type": "text",
-                  "id": "Y69gp",
-                  "name": "Why",
-                  "fill": "$text-tertiary",
-                  "textGrowth": "fixed-width",
-                  "width": "fill_container",
-                  "content": "Why: Five strangers show whether the tide reads without you there.",
-                  "fontFamily": "$font",
-                  "fontSize": 12,
-                  "fontWeight": "normal"
+                  "fontSize": 16,
+                  "fontWeight": "600"
                 },
                 {
                   "type": "frame",
                   "id": "kezVq",
                   "name": "Task input · empty",
                   "width": "fill_container",
-                  "fill": "$surface",
+                  "height": 40,
+                  "fill": "$bg-muted",
                   "cornerRadius": "$radius-md",
                   "stroke": "$border",
-                  "strokeWidth": 1,
                   "strokeAlignment": "inner",
                   "gap": 8,
                   "padding": [
-                    8,
+                    0,
                     12
                   ],
                   "alignItems": "center",
@@ -358224,7 +358231,7 @@
                       "fill": "$text-tertiary",
                       "textGrowth": "fixed-width",
                       "width": "fill_container",
-                      "content": "Write a task of your own…",
+                      "content": "Write a task: what you will make, and where anyone can open it…",
                       "fontFamily": "$font",
                       "fontSize": 14,
                       "fontWeight": "normal"
@@ -358232,7 +358239,10 @@
                     {
                       "type": "icon",
                       "id": "sAMNu",
+                      "x": 727,
+                      "y": 10,
                       "name": "Ic",
+                      "enabled": false,
                       "width": 14,
                       "height": 14,
                       "icon": "x",
@@ -358244,7 +358254,10 @@
                 {
                   "type": "frame",
                   "id": "AK7Ah",
+                  "x": 0,
+                  "y": 65,
                   "name": "Plan actions",
+                  "enabled": false,
                   "gap": 16,
                   "alignItems": "center",
                   "children": [
@@ -358280,42 +358293,555 @@
                           "fontWeight": "normal"
                         }
                       ]
+                    }
+                  ]
+                },
+                {
+                  "type": "frame",
+                  "id": "iCuTF",
+                  "name": "Btn Add task",
+                  "height": 40,
+                  "cornerRadius": "$radius-md",
+                  "stroke": "$border",
+                  "strokeWidth": 1,
+                  "strokeAlignment": "inner",
+                  "gap": 8,
+                  "padding": [
+                    0,
+                    16
+                  ],
+                  "alignItems": "center",
+                  "children": [
+                    {
+                      "type": "icon",
+                      "id": "oWGFY",
+                      "name": "Ic",
+                      "width": 14,
+                      "height": 14,
+                      "icon": "plus",
+                      "library": "lucide",
+                      "fill": "$text-primary"
+                    },
+                    {
+                      "type": "text",
+                      "id": "dDkkw",
+                      "name": "L",
+                      "fill": "$text-primary",
+                      "content": "Add task",
+                      "fontFamily": "$font",
+                      "fontSize": 14,
+                      "fontWeight": "500"
+                    }
+                  ]
+                }
+              ]
+            },
+            {
+              "type": "frame",
+              "id": "Txy3f",
+              "name": "Recommended tasks",
+              "width": "fill_container",
+              "stroke": "$border-subtle",
+              "strokeWidth": {
+                "top": 1
+              },
+              "layout": "vertical",
+              "gap": 12,
+              "padding": [
+                16,
+                0,
+                0,
+                0
+              ],
+              "children": [
+                {
+                  "type": "frame",
+                  "id": "B9em7",
+                  "name": "Head",
+                  "width": "fill_container",
+                  "justifyContent": "space_between",
+                  "alignItems": "center",
+                  "children": [
+                    {
+                      "type": "frame",
+                      "id": "xxcI7",
+                      "name": "Title",
+                      "width": "fill_container",
+                      "layout": "vertical",
+                      "gap": 4,
+                      "children": [
+                        {
+                          "type": "text",
+                          "id": "LDCzb",
+                          "name": "Label",
+                          "fill": "$text-primary",
+                          "content": "Recommended tasks",
+                          "fontFamily": "$font",
+                          "fontSize": 16,
+                          "fontWeight": "600"
+                        },
+                        {
+                          "type": "text",
+                          "id": "uOl81",
+                          "name": "Note",
+                          "fill": "$text-secondary",
+                          "textGrowth": "fixed-width",
+                          "width": "fill_container",
+                          "content": "The curator's ideas. None is in your plan until you add it.",
+                          "fontFamily": "$font",
+                          "fontSize": 14,
+                          "fontWeight": "normal"
+                        }
+                      ]
+                    }
+                  ]
+                },
+                {
+                  "type": "frame",
+                  "id": "OSDvB",
+                  "name": "Suggested task",
+                  "width": "fill_container",
+                  "fill": "$surface-sunken",
+                  "cornerRadius": "$radius-md",
+                  "stroke": "$border",
+                  "strokeWidth": 1,
+                  "strokeAlignment": "inner",
+                  "gap": 8,
+                  "padding": [
+                    4,
+                    4,
+                    4,
+                    12
+                  ],
+                  "alignItems": "center",
+                  "children": [
+                    {
+                      "type": "icon",
+                      "id": "WNNHI",
+                      "name": "Ic",
+                      "width": 14,
+                      "height": 14,
+                      "icon": "sparkles",
+                      "library": "lucide",
+                      "fill": "$text-tertiary"
+                    },
+                    {
+                      "type": "text",
+                      "id": "Gu3Z6",
+                      "name": "Value",
+                      "fill": "$text-primary",
+                      "textGrowth": "fixed-width",
+                      "width": "fill_container",
+                      "content": "A playable demo of one island area on itch.io",
+                      "fontFamily": "$font",
+                      "fontSize": 14,
+                      "fontWeight": "normal"
+                    },
+                    {
+                      "type": "icon",
+                      "id": "qvrI3",
+                      "x": 727,
+                      "y": 10,
+                      "name": "Ic",
+                      "enabled": false,
+                      "width": 14,
+                      "height": 14,
+                      "icon": "x",
+                      "library": "lucide",
+                      "fill": "$text-tertiary"
                     },
                     {
                       "type": "frame",
-                      "id": "oCE7l",
-                      "x": 96,
-                      "y": 0,
-                      "name": "Suggest tasks",
-                      "enabled": false,
-                      "gap": 8,
+                      "id": "CSNrD",
+                      "name": "Btn Why",
+                      "height": 32,
+                      "fill": "$bg-muted",
+                      "cornerRadius": "$radius-md",
+                      "gap": 4,
                       "padding": [
-                        4,
-                        0
+                        0,
+                        8
                       ],
                       "alignItems": "center",
                       "children": [
                         {
                           "type": "icon",
-                          "id": "F11gKJ",
+                          "id": "F9Sx7",
                           "name": "Ic",
                           "width": 14,
                           "height": 14,
-                          "icon": "sparkles",
+                          "icon": "info",
                           "library": "lucide",
-                          "fill": "#382A7A"
+                          "fill": "$text-primary"
                         },
                         {
                           "type": "text",
-                          "id": "R4BSd",
+                          "id": "adCZW",
                           "name": "L",
-                          "fill": "#382A7A",
-                          "content": "Suggest tasks",
+                          "fill": "$text-primary",
+                          "content": "Why",
                           "fontFamily": "$font",
                           "fontSize": 14,
                           "fontWeight": "500"
                         }
                       ]
+                    },
+                    {
+                      "type": "frame",
+                      "id": "Ur203",
+                      "name": "Add",
+                      "height": 32,
+                      "gap": 4,
+                      "padding": [
+                        0,
+                        8
+                      ],
+                      "alignItems": "center",
+                      "children": [
+                        {
+                          "type": "icon",
+                          "id": "QE4nA",
+                          "name": "Ic",
+                          "width": 14,
+                          "height": 14,
+                          "icon": "plus",
+                          "library": "lucide",
+                          "fill": "$text-primary"
+                        },
+                        {
+                          "type": "text",
+                          "id": "ksDRa",
+                          "name": "L",
+                          "fill": "$text-primary",
+                          "content": "Add",
+                          "fontFamily": "$font",
+                          "fontSize": 14,
+                          "fontWeight": "500"
+                        }
+                      ]
+                    }
+                  ]
+                },
+                {
+                  "type": "text",
+                  "id": "T3A3CF",
+                  "x": 0,
+                  "y": 130,
+                  "name": "Why",
+                  "enabled": false,
+                  "fill": "$text-secondary",
+                  "textGrowth": "fixed-width",
+                  "width": "fill_container(753)",
+                  "content": "Why: It ends in a build anyone can open, and fits the hours you have.",
+                  "fontFamily": "$font",
+                  "fontSize": 13,
+                  "fontWeight": "normal"
+                },
+                {
+                  "type": "frame",
+                  "id": "CEFyo",
+                  "name": "Suggested task",
+                  "width": "fill_container",
+                  "fill": "$surface-sunken",
+                  "cornerRadius": "$radius-md",
+                  "stroke": "$border",
+                  "strokeWidth": 1,
+                  "strokeAlignment": "inner",
+                  "gap": 8,
+                  "padding": [
+                    4,
+                    4,
+                    4,
+                    12
+                  ],
+                  "alignItems": "center",
+                  "children": [
+                    {
+                      "type": "icon",
+                      "id": "r5BTYF",
+                      "name": "Ic",
+                      "width": 14,
+                      "height": 14,
+                      "icon": "sparkles",
+                      "library": "lucide",
+                      "fill": "$text-tertiary"
+                    },
+                    {
+                      "type": "text",
+                      "id": "p6MgG",
+                      "name": "Value",
+                      "fill": "$text-primary",
+                      "textGrowth": "fixed-width",
+                      "width": "fill_container",
+                      "content": "A style board: palette and one hero sheet",
+                      "fontFamily": "$font",
+                      "fontSize": 14,
+                      "fontWeight": "normal"
+                    },
+                    {
+                      "type": "icon",
+                      "id": "M7VttF",
+                      "x": 727,
+                      "y": 10,
+                      "name": "Ic",
+                      "enabled": false,
+                      "width": 14,
+                      "height": 14,
+                      "icon": "x",
+                      "library": "lucide",
+                      "fill": "$text-tertiary"
+                    },
+                    {
+                      "type": "frame",
+                      "id": "nLuT1",
+                      "name": "Btn Why",
+                      "height": 32,
+                      "gap": 4,
+                      "padding": [
+                        0,
+                        8
+                      ],
+                      "alignItems": "center",
+                      "children": [
+                        {
+                          "type": "icon",
+                          "id": "CC4R8",
+                          "name": "Ic",
+                          "width": 14,
+                          "height": 14,
+                          "icon": "info",
+                          "library": "lucide",
+                          "fill": "$text-secondary"
+                        },
+                        {
+                          "type": "text",
+                          "id": "Y9TS9q",
+                          "name": "L",
+                          "fill": "$text-secondary",
+                          "content": "Why",
+                          "fontFamily": "$font",
+                          "fontSize": 14,
+                          "fontWeight": "500"
+                        }
+                      ]
+                    },
+                    {
+                      "type": "frame",
+                      "id": "HnNts",
+                      "name": "Add",
+                      "height": 32,
+                      "gap": 4,
+                      "padding": [
+                        0,
+                        8
+                      ],
+                      "alignItems": "center",
+                      "children": [
+                        {
+                          "type": "icon",
+                          "id": "ONi7b",
+                          "name": "Ic",
+                          "width": 14,
+                          "height": 14,
+                          "icon": "plus",
+                          "library": "lucide",
+                          "fill": "$text-primary"
+                        },
+                        {
+                          "type": "text",
+                          "id": "u8vCJI",
+                          "name": "L",
+                          "fill": "$text-primary",
+                          "content": "Add",
+                          "fontFamily": "$font",
+                          "fontSize": 14,
+                          "fontWeight": "500"
+                        }
+                      ]
+                    }
+                  ]
+                },
+                {
+                  "type": "text",
+                  "id": "i01g1",
+                  "x": 0,
+                  "y": 190,
+                  "name": "Why",
+                  "enabled": false,
+                  "fill": "$text-secondary",
+                  "textGrowth": "fixed-width",
+                  "width": "fill_container(753)",
+                  "content": "Why: Art direction is what Prototyping asks for, at the size one artist can do.",
+                  "fontFamily": "$font",
+                  "fontSize": 13,
+                  "fontWeight": "normal"
+                },
+                {
+                  "type": "frame",
+                  "id": "J9oEbW",
+                  "name": "Suggested task",
+                  "width": "fill_container",
+                  "fill": "$surface-sunken",
+                  "cornerRadius": "$radius-md",
+                  "stroke": "$border",
+                  "strokeWidth": 1,
+                  "strokeAlignment": "inner",
+                  "gap": 8,
+                  "padding": [
+                    4,
+                    4,
+                    4,
+                    12
+                  ],
+                  "alignItems": "center",
+                  "children": [
+                    {
+                      "type": "icon",
+                      "id": "HouZk",
+                      "name": "Ic",
+                      "width": 14,
+                      "height": 14,
+                      "icon": "sparkles",
+                      "library": "lucide",
+                      "fill": "$text-tertiary"
+                    },
+                    {
+                      "type": "text",
+                      "id": "OeA72",
+                      "name": "Value",
+                      "fill": "$text-primary",
+                      "textGrowth": "fixed-width",
+                      "width": "fill_container",
+                      "content": "Playtest with 5 players, notes in a doc",
+                      "fontFamily": "$font",
+                      "fontSize": 14,
+                      "fontWeight": "normal"
+                    },
+                    {
+                      "type": "icon",
+                      "id": "oAnIt",
+                      "x": 727,
+                      "y": 10,
+                      "name": "Ic",
+                      "enabled": false,
+                      "width": 14,
+                      "height": 14,
+                      "icon": "x",
+                      "library": "lucide",
+                      "fill": "$text-tertiary"
+                    },
+                    {
+                      "type": "frame",
+                      "id": "pReQs",
+                      "name": "Btn Why",
+                      "height": 32,
+                      "gap": 4,
+                      "padding": [
+                        0,
+                        8
+                      ],
+                      "alignItems": "center",
+                      "children": [
+                        {
+                          "type": "icon",
+                          "id": "HcHSn",
+                          "name": "Ic",
+                          "width": 14,
+                          "height": 14,
+                          "icon": "info",
+                          "library": "lucide",
+                          "fill": "$text-secondary"
+                        },
+                        {
+                          "type": "text",
+                          "id": "wZHFn",
+                          "name": "L",
+                          "fill": "$text-secondary",
+                          "content": "Why",
+                          "fontFamily": "$font",
+                          "fontSize": 14,
+                          "fontWeight": "500"
+                        }
+                      ]
+                    },
+                    {
+                      "type": "frame",
+                      "id": "yF5pF",
+                      "name": "Add",
+                      "height": 32,
+                      "gap": 4,
+                      "padding": [
+                        0,
+                        8
+                      ],
+                      "alignItems": "center",
+                      "children": [
+                        {
+                          "type": "icon",
+                          "id": "VYuTL",
+                          "name": "Ic",
+                          "width": 14,
+                          "height": 14,
+                          "icon": "plus",
+                          "library": "lucide",
+                          "fill": "$text-primary"
+                        },
+                        {
+                          "type": "text",
+                          "id": "sDRDY",
+                          "name": "L",
+                          "fill": "$text-primary",
+                          "content": "Add",
+                          "fontFamily": "$font",
+                          "fontSize": 14,
+                          "fontWeight": "500"
+                        }
+                      ]
+                    }
+                  ]
+                },
+                {
+                  "type": "text",
+                  "id": "Y69gp",
+                  "x": 0,
+                  "y": 250,
+                  "name": "Why",
+                  "enabled": false,
+                  "fill": "$text-secondary",
+                  "textGrowth": "fixed-width",
+                  "width": "fill_container(753)",
+                  "content": "Why: Five strangers show whether the tide reads without you there.",
+                  "fontFamily": "$font",
+                  "fontSize": 13,
+                  "fontWeight": "normal"
+                },
+                {
+                  "type": "frame",
+                  "id": "Ue5ec",
+                  "layoutPosition": "absolute",
+                  "x": 507.5,
+                  "y": 16,
+                  "name": "Tooltip · Why (hover)",
+                  "width": 280,
+                  "fill": "$text-primary",
+                  "cornerRadius": "$radius-sm",
+                  "padding": [
+                    8,
+                    12
+                  ],
+                  "children": [
+                    {
+                      "type": "text",
+                      "id": "yuLS2",
+                      "name": "L",
+                      "fill": "$text-invert",
+                      "textGrowth": "fixed-width",
+                      "width": "fill_container",
+                      "content": "It ends in a build anyone can open, and fits the hours you have.",
+                      "lineHeight": 1.4,
+                      "fontFamily": "$font",
+                      "fontSize": 13,
+                      "fontWeight": "normal"
                     }
                   ]
                 }
@@ -358333,7 +358859,7 @@
                   "type": "text",
                   "id": "vcllj",
                   "name": "L",
-                  "fill": "$text-tertiary",
+                  "fill": "$text-secondary",
                   "content": "Open until you send the tasks, at least until 2 Oct, 14:20",
                   "fontFamily": "$font",
                   "fontSize": 13,
@@ -358343,12 +358869,14 @@
                   "type": "frame",
                   "id": "OUicJ",
                   "name": "Btn Save",
+                  "height": 40,
                   "fill": "$btn-black",
                   "cornerRadius": "$radius-md",
                   "padding": [
-                    8,
+                    0,
                     16
                   ],
+                  "alignItems": "center",
                   "children": [
                     {
                       "type": "text",
@@ -361436,7 +361964,7 @@
           "id": "RaXuR",
           "name": "Task input",
           "width": "fill_container",
-          "fill": "$surface",
+          "fill": "$bg-muted",
           "cornerRadius": "$radius-md",
           "stroke": "$warning",
           "strokeWidth": 1,
@@ -461357,7 +461885,7 @@
       "type": "frame",
       "id": "cSbct",
       "x": 4950,
-      "y": 77547,
+      "y": 77642,
       "name": "12.10.1a · Path to Checkpoint · AI · Start, the window closed: the closing letter",
       "width": 801,
       "fill": "$page-bg",
@@ -496314,7 +496842,7 @@
       "type": "frame",
       "id": "E8V0vo",
       "x": 7720,
-      "y": 77465,
+      "y": 77632,
       "name": "12.10.5a · Path to Checkpoint · AI · Sprint 3, Plan tab: day 15, the curator checked the changes — Confirm",
       "width": 801,
       "fill": "#000000",

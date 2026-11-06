@@ -1,4 +1,5 @@
 import type { useTranslate } from "@tolgee/react";
+import { CHECKPOINT_MAX_ITEMS_PER_KIND } from "@/config/checkpoint";
 import type { PlanEdit } from "@/lib/checkpoints/call";
 
 export const planHint = (
@@ -7,14 +8,15 @@ export const planHint = (
 ) => {
 	if (edit === "goalAndTasks") {
 		return t(
-			"checkpoints.review.plan.dayOneHint",
-			"Write 1 to 5 tasks that will show the goal is reached. Each one should end in something anyone can open: a build, a document, a video. Add the curator's suggestions or write your own.",
+			"checkpoints.review.plan.dayOneLine",
+			"1–{max} tasks, each ending in a build, a document or a video anyone can open.",
+			{ max: CHECKPOINT_MAX_ITEMS_PER_KIND },
 		);
 	}
 	if (edit === "tasks") {
 		return t(
-			"checkpoints.review.plan.midHint",
-			"Change the tasks yourself or take the curator's suggestions, then confirm them. This is the last change in this checkpoint: done tasks stay as they are, and the first wording of each task is kept.",
+			"checkpoints.review.plan.midLine",
+			"Last change in this checkpoint: done tasks stay, and each task keeps its first wording.",
 		);
 	}
 	return undefined;

@@ -179,7 +179,7 @@ describe("the limit of five tasks", () => {
 	it("refuses a sixth open task", async () => {
 		checkpointFindUnique.mockResolvedValue(plan({ items: five.map((id) => task(id)) }));
 		expect(
-			await changePlan("cp", "curator", { op: "add", text: "Sixth" }, duringCall1),
+			await changePlan("cp", "author", { op: "add", text: "Sixth" }, duringCall1),
 		).toBe("tooManyTasks");
 		expect(itemCreate).not.toHaveBeenCalled();
 	});
@@ -190,21 +190,23 @@ describe("the limit of five tasks", () => {
 			plan({ items: five.map((id) => task(id, id === "e")) }),
 		);
 		expect(
-			await changePlan("cp", "curator", { op: "add", text: "New" }, duringCall3),
+			await changePlan("cp", "author", { op: "add", text: "New" }, duringCall3),
 		).toBeNull();
 		expect(itemCreate).toHaveBeenCalled();
 	});
 });
 
 describe("changePlan", () => {
-	it("lets only the curator and the project's author edit", async () => {
+	it("lets only the project's author edit; the curator advises", async () => {
 		checkpointFindUnique.mockResolvedValue(plan());
 		const change = { op: "goal" as const, goal: "A greybox" };
 		expect(await changePlan("cp", "teammate", change, duringCall1)).toBe(
 			"forbidden",
 		);
 		expect(await changePlan("cp", "author", change, duringCall1)).toBeNull();
-		expect(await changePlan("cp", "curator", change, duringCall1)).toBeNull();
+		expect(await changePlan("cp", "curator", change, duringCall1)).toBe(
+			"forbidden",
+		);
 	});
 
 	it("lets the author draft tasks before call 1, never the goal", async () => {
@@ -250,20 +252,20 @@ describe("changePlan", () => {
 
 		it("keeps the record: first wording, cut instead of delete, dated additions", async () => {
 			checkpointFindUnique.mockResolvedValue(plan());
-			await changePlan("cp", "curator", { op: "edit", itemId: "open", text: "Greybox in the browser" }, duringCall3);
+			await changePlan("cp", "author", { op: "edit", itemId: "open", text: "Greybox in the browser" }, duringCall3);
 			expect(itemUpdate).toHaveBeenCalledWith({
 				where: { id: "open" },
 				data: { text: "Greybox in the browser", originalText: "Greybox" },
 			});
 
-			await changePlan("cp", "curator", { op: "remove", itemId: "open" }, duringCall3);
+			await changePlan("cp", "author", { op: "remove", itemId: "open" }, duringCall3);
 			expect(itemDelete).not.toHaveBeenCalled();
 			expect(itemUpdate).toHaveBeenLastCalledWith({
 				where: { id: "open" },
 				data: { cut: true },
 			});
 
-			await changePlan("cp", "curator", { op: "add", text: "Stranger test" }, duringCall3);
+			await changePlan("cp", "author", { op: "add", text: "Stranger test" }, duringCall3);
 			expect(itemCreate.mock.calls[0][0].data).toMatchObject({
 				order: 3,
 				text: "Stranger test",

@@ -1,9 +1,15 @@
 "use client";
 
-import { IconPlus, IconSparkles } from "@tabler/icons-react";
+import {
+	IconInfoCircle,
+	IconLock,
+	IconPlus,
+	IconSparkles,
+} from "@tabler/icons-react";
 import { useTranslate } from "@tolgee/react";
-import { Button, Tooltip, Typography } from "antd";
-import { type ReactNode, useRef, useState } from "react";
+import { Button, Input, Tooltip, Typography } from "antd";
+import { type ReactNode, useState } from "react";
+import { SectionHeading } from "@/components/ui";
 import { ArtifactLinks } from "@/components/WorkflowPath/ArtifactLink";
 import { CHECKPOINT_MAX_ITEMS_PER_KIND } from "@/config/checkpoint";
 import type {
@@ -12,24 +18,25 @@ import type {
 	TaskSuggestion,
 } from "@/types/checkpoints";
 import type { PlanBodyProps } from "./CallPlan";
-import { Field } from "./Field";
 import type { Plan, Task } from "./plan-types";
 import styles from "./style.module.scss";
 import { TaskIcon } from "./TaskIcon";
-import { TaskInput } from "./TaskInput";
+import { TaskInput, taskFieldProps } from "./TaskInput";
 
-/** A task that can no longer change: done or cut. */
+/** A row that is not an input: a done or cut task, or a suggested one. */
 function LockedRow({
 	icon,
 	children,
 	end,
+	className,
 }: {
 	icon: ReactNode;
 	children: ReactNode;
 	end?: ReactNode;
+	className?: string;
 }) {
 	return (
-		<div className={styles.lockedRow}>
+		<div className={`${styles.lockedRow} ${className ?? ""}`}>
 			{icon}
 			<span className={styles.grow}>{children}</span>
 			{end}
@@ -42,45 +49,28 @@ export function PlanForm({
 	onChange,
 	advice,
 	suggestions = [],
-	listAction,
-	blank,
 }: {
 	plan: Plan;
 	onChange: PlanBodyProps["onChange"];
 	advice?: PlanAdvice | null;
 	suggestions?: TaskSuggestion[];
-	listAction?: ReactNode;
-	blank?: boolean;
 }) {
 	const { t } = useTranslate();
-	const [drafts, setDrafts] = useState<number[]>([]);
-	const nextDraft = useRef(0);
 	const full =
-		plan.tasks.filter((task) => !task.cut).length + drafts.length >=
+		plan.tasks.filter((task) => !task.cut).length >=
 		CHECKPOINT_MAX_ITEMS_PER_KIND;
-
-	const addDraft = () => {
-		nextDraft.current += 1;
-		setDrafts((was) => [...was, nextDraft.current]);
-	};
-	const dropDraft = (draft: number) =>
-		setDrafts((was) => was.filter((key) => key !== draft));
-
-	const addButton = (
-		<Button
-			type="text"
-			icon={<IconPlus size={16} />}
-			disabled={full}
-			onClick={addDraft}
-			className={styles.addTask}
-		>
-			{t("checkpoints.call.plan.addTask", "Add task")}
-		</Button>
-	);
+	const recommended = [
+		...suggestions,
+		...(advice?.add ?? []).map((text) => ({ text, why: null })),
+	].filter(({ text }) => !plan.tasks.some((task) => task.text === text));
 
 	return (
-		<Field label={t("checkpoints.call.plan.tasks", "Tasks")}>
+		<div className={styles.planSections}>
 			<div className={`${styles.planList} ${styles.planForm}`}>
+				<SectionHeading
+					level={4}
+					title={t("checkpoints.call.plan.tasks", "Tasks")}
+				/>
 				{plan.tasks.map((task) => (
 					<TaskRow
 						key={task.id}
@@ -89,12 +79,24 @@ export function PlanForm({
 						advice={advice?.tasks.find((row) => row.itemId === task.id)}
 					/>
 				))}
-				{[
-					...suggestions,
-					...(advice?.add ?? []).map((text) => ({ text, why: null })),
-				]
-					.filter(({ text }) => !plan.tasks.some((task) => task.text === text))
-					.map(({ text, why }) => (
+				<NewTask full={full} onAdd={(text) => onChange({ op: "add", text })} />
+			</div>
+			{recommended.length > 0 && (
+				<div
+					className={`${styles.planList} ${styles.planForm} ${styles.recommended}`}
+				>
+					<SectionHeading
+						level={4}
+						title={t(
+							"checkpoints.review.plan.recommended",
+							"Recommended tasks",
+						)}
+						description={t(
+							"checkpoints.review.plan.recommendedNote",
+							"The curator's ideas. None is in your plan until you add it.",
+						)}
+					/>
+					{recommended.map(({ text, why }) => (
 						<SuggestedTask
 							key={text}
 							text={text}
@@ -103,47 +105,68 @@ export function PlanForm({
 							onAdd={() => onChange({ op: "add", text })}
 						/>
 					))}
-				{drafts.map((draft) => (
-					<TaskInput
-						key={`draft-${draft}`}
-						text=""
-						autoFocus
-						onSave={(text) =>
-							onChange({ op: "add", text }).then(() => dropDraft(draft))
-						}
-						onEmpty={() => dropDraft(draft)}
-					/>
-				))}
-				{blank && !full && (
-					<TaskInput
-						// A fresh field once the one typed into is saved as a task.
-						key={`blank-${plan.tasks.length}`}
-						text=""
-						placeholder={t(
-							"checkpoints.call.plan.ownTask",
-							"Write a task of your own…",
-						)}
-						onSave={(text) => onChange({ op: "add", text })}
-					/>
-				)}
-				<div className={styles.listActions}>
-					{full ? (
-						<Tooltip
-							title={t(
-								"checkpoints.call.plan.tooMany",
-								"A checkpoint holds at most {max} tasks",
-								{ max: CHECKPOINT_MAX_ITEMS_PER_KIND },
-							)}
-						>
-							{addButton}
-						</Tooltip>
-					) : (
-						addButton
-					)}
-					{listAction}
 				</div>
-			</div>
-		</Field>
+			)}
+		</div>
+	);
+}
+
+/** Frame kezVq: the author's own task, typed and added with the button or Enter. */
+function NewTask({
+	full,
+	onAdd,
+}: {
+	full: boolean;
+	onAdd: (text: string) => Promise<void>;
+}) {
+	const { t } = useTranslate();
+	const [value, setValue] = useState("");
+	const [saving, setSaving] = useState(false);
+	const text = value.trim();
+
+	const add = () => {
+		if (!text || saving) return;
+		setSaving(true);
+		onAdd(text)
+			.then(() => setValue(""))
+			.catch(() => undefined)
+			.finally(() => setSaving(false));
+	};
+
+	return (
+		<>
+			<Input
+				value={value}
+				{...taskFieldProps}
+				disabled={full}
+				placeholder={t(
+					"checkpoints.call.plan.newTask",
+					"Write a task: what you will make, and where anyone can open it…",
+				)}
+				onChange={(event) => setValue(event.target.value)}
+				onPressEnter={add}
+			/>
+			<Tooltip
+				title={
+					full &&
+					t(
+						"checkpoints.call.plan.tooMany",
+						"A checkpoint holds at most {max} tasks",
+						{ max: CHECKPOINT_MAX_ITEMS_PER_KIND },
+					)
+				}
+			>
+				<Button
+					icon={full ? <IconLock size={16} /> : <IconPlus size={16} />}
+					disabled={full || !text}
+					loading={saving}
+					onClick={add}
+					className={styles.addTask}
+				>
+					{t("checkpoints.call.plan.addTask", "Add task")}
+				</Button>
+			</Tooltip>
+		</>
 	);
 }
 
@@ -229,7 +252,7 @@ export function AdviceLine({ children }: { children: ReactNode }) {
 	);
 }
 
-/** A task the AI curator proposes adding: frame r5hAR, with its why on day 1. */
+/** A task the AI curator proposes adding: frame r5hAR, its why behind a button. */
 function SuggestedTask({
 	text,
 	why,
@@ -243,29 +266,38 @@ function SuggestedTask({
 }) {
 	const { t } = useTranslate();
 
-	const row = (
-		<div className={styles.lockedRow}>
-			<IconSparkles size={16} className={styles.tertiary} />
-			<span className={styles.grow}>{text}</span>
-			<Button
-				type="text"
-				size="small"
-				disabled={disabled}
-				onClick={() => onAdd().catch(() => undefined)}
-			>
-				{t("checkpoints.review.plan.add", "Add")}
-			</Button>
-		</div>
-	);
-	if (!why) return row;
-
 	return (
-		<div className={styles.advisedTask}>
-			{row}
-			<Typography.Text type="secondary" className={styles.why}>
-				{t("checkpoints.review.plan.why", "Why: {why}", { why })}
-			</Typography.Text>
-		</div>
+		<LockedRow
+			className={styles.suggested}
+			icon={<IconSparkles size={16} className={styles.tertiary} />}
+			end={
+				<>
+					{why && (
+						<Tooltip title={why}>
+							<Button
+								type="text"
+								size="small"
+								icon={<IconInfoCircle size={14} />}
+								className={styles.secondary}
+							>
+								{t("checkpoints.review.plan.whyButton", "Why")}
+							</Button>
+						</Tooltip>
+					)}
+					<Button
+						type="text"
+						size="small"
+						icon={<IconPlus size={14} />}
+						disabled={disabled}
+						onClick={() => onAdd().catch(() => undefined)}
+					>
+						{t("checkpoints.review.plan.add", "Add")}
+					</Button>
+				</>
+			}
+		>
+			{text}
+		</LockedRow>
 	);
 }
 

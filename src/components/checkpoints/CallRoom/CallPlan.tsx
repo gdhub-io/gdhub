@@ -1,6 +1,6 @@
 "use client";
 
-import { IconCheck, IconSparkles } from "@tabler/icons-react";
+import { IconCheck } from "@tabler/icons-react";
 import { useTranslate } from "@tolgee/react";
 import { App, Button, Typography } from "antd";
 import axios from "axios";
@@ -68,10 +68,6 @@ export type PlanBodyProps = {
 	hint?: ReactNode;
 	/** Under the tasks while they can change; "saved as you type" by default. */
 	footer?: ReactNode;
-	/** Beside "Add task": the AI's "Suggest tasks". */
-	listAction?: ReactNode;
-	/** An empty task field always open above "Add task" (frame kezVq). */
-	blank?: boolean;
 	/** Add or let go of the artifacts that prove a task; absent for whoever may not. */
 	evidence?: EvidenceActions;
 };
@@ -87,8 +83,6 @@ export function PlanBody({
 	suggestions,
 	hint,
 	footer,
-	listAction,
-	blank,
 	evidence,
 }: PlanBodyProps) {
 	const { t } = useTranslate();
@@ -97,13 +91,14 @@ export function PlanBody({
 	if (lead === undefined && (edit === "plan" || edit === "goalAndTasks")) {
 		// The first sprint reads the same with either curator.
 		lead = t(
-			"checkpoints.review.plan.startHint",
-			"Set 3–5 tasks that get you to the goal in 4 weeks. Each one should end in something anyone can open: a build, a document, a video. Take the curator's suggestions or write your own.",
+			"checkpoints.review.plan.startLine",
+			"3–{max} tasks for 4 weeks, each ending in a build, a document or a video anyone can open.",
+			{ max: CHECKPOINT_MAX_ITEMS_PER_KIND },
 		);
 	} else if (lead === undefined && edit === "tasks") {
 		lead = t(
-			"checkpoints.call.plan.callThreeHint",
-			"This is the last time the tasks can change in this checkpoint. Done tasks stay as they are; the goal stays as agreed on call 1.",
+			"checkpoints.call.plan.callThreeLine",
+			"Last change in this checkpoint: done tasks stay, and the goal stays as agreed on call 1.",
 		);
 	}
 
@@ -118,8 +113,6 @@ export function PlanBody({
 					onChange={onChange}
 					advice={advice}
 					suggestions={suggestions}
-					listAction={listAction}
-					blank={blank}
 				/>
 			) : (
 				<PlanView plan={plan} evidence={evidence} />
@@ -140,11 +133,8 @@ export function PlanBody({
 	);
 }
 
-/**
- * The AI's two ways in, for any plan it reads: "Suggest tasks" beside "Add
- * task", and "Save changes" — the tasks save as typed; this asks for the read.
- */
-export const adviceSlots = ({
+/** "Save changes": the tasks save as typed; this asks the AI for its read. */
+export function AdviseFooter({
 	until,
 	loading,
 	onAdvise,
@@ -154,51 +144,6 @@ export const adviceSlots = ({
 	loading: boolean;
 	onAdvise: () => void;
 	sessionIndex: number;
-}): Pick<PlanBodyProps, "listAction" | "footer"> => ({
-	listAction: <SuggestTasks loading={loading} onClick={onAdvise} />,
-	footer: (
-		<AdviseFooter
-			until={until}
-			loading={loading}
-			onClick={() => {
-				trackCheckpoint("checkpoint_plan_saved", {
-					session_index: sessionIndex,
-				});
-				onAdvise();
-			}}
-		/>
-	),
-});
-
-function SuggestTasks({
-	loading,
-	onClick,
-}: {
-	loading: boolean;
-	onClick: () => void;
-}) {
-	const { t } = useTranslate();
-	return (
-		<Button
-			type="text"
-			icon={<IconSparkles size={16} />}
-			loading={loading}
-			onClick={onClick}
-			className={styles.suggestTasks}
-		>
-			{t("checkpoints.review.plan.suggest", "Suggest tasks")}
-		</Button>
-	);
-}
-
-function AdviseFooter({
-	until,
-	loading,
-	onClick,
-}: {
-	until: string | null;
-	loading: boolean;
-	onClick: () => void;
 }) {
 	const { t } = useTranslate();
 	return (
@@ -209,7 +154,16 @@ function AdviseFooter({
 						date: dayjs(until).format("ddd D MMM, HH:mm"),
 					})}
 			</Typography.Text>
-			<Button type="primary" loading={loading} onClick={onClick}>
+			<Button
+				type="primary"
+				loading={loading}
+				onClick={() => {
+					trackCheckpoint("checkpoint_plan_saved", {
+						session_index: sessionIndex,
+					});
+					onAdvise();
+				}}
+			>
 				{t("checkpoints.review.plan.save", "Save changes")}
 			</Button>
 		</div>
