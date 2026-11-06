@@ -13,12 +13,9 @@ import { sprintFactsOf } from "@/lib/checkpoints/facts";
 import type { CheckpointDto, CheckpointItemDto } from "@/types/checkpoints";
 import { AskPanel } from "./AskPanel";
 import { CheckpointCard } from "./CheckpointCard";
-import { CheckpointPath } from "./CheckpointPath";
 import { CheckpointStatusSlot } from "./CheckpointStatusSlot";
-import { CheckpointStepPanel } from "./CheckpointStepPanel";
 import { CuratorBadge } from "./CuratorBadge";
 import { GoalStrip } from "./GoalStrip";
-import { InputsPanel } from "./InputsPanel";
 import { PaidPanel } from "./PaidPanel";
 import { Evidence } from "./SprintPanel/Evidence";
 import { Review } from "./SprintPanel/Review";
@@ -58,6 +55,7 @@ const base: CheckpointDto = {
 	items: [],
 	day: 14,
 	daysLeft: 14,
+	upcoming: false,
 };
 
 const meta: Meta = { title: "Checkpoints/Pieces" };
@@ -173,75 +171,6 @@ export const AwaitingVerdict: StoryObj = {
 				sprints: sprints.map((sprint) => ({ ...sprint, state: "done" })),
 			}}
 			projectSlug="neon-drift"
-		/>
-	),
-};
-
-/** The path, mid-checkpoint: sprint 2 is where the author lives today. */
-export const Path: StoryObj = {
-	render: () => (
-		<CheckpointPath
-			selected="sprint-2"
-			onSelect={() => {}}
-			next={{ disabled: true, reason: "Opens when the verdict is in." }}
-			steps={[
-				{
-					key: "inputs",
-					label: "Inputs",
-					meta: "what was bought",
-					glyph: "start",
-				},
-				{ key: "sprint-1", label: "Sprint 1", meta: "1–7 Sep", glyph: "done" },
-				{
-					key: "sprint-2",
-					label: "Sprint 2",
-					meta: "8–14 Sep",
-					glyph: "current",
-					needsYou: true,
-				},
-				{
-					key: "sprint-3",
-					label: "Sprint 3",
-					meta: "15–21 Sep",
-					glyph: "ahead",
-				},
-				{
-					key: "sprint-4",
-					label: "Sprint 4",
-					meta: "22–28 Sep",
-					glyph: "ahead",
-				},
-				{
-					key: "checkpoint",
-					label: "Checkpoint",
-					meta: "28 Sep",
-					glyph: "locked",
-				},
-			]}
-		/>
-	),
-};
-
-/** Before it is paid for: every step after the first is undated and grey. */
-export const PathBeforePayment: StoryObj = {
-	render: () => (
-		<CheckpointPath
-			selected="inputs"
-			onSelect={() => {}}
-			footNote="The dates appear once it is paid and the day it starts is set."
-			steps={[
-				{
-					key: "inputs",
-					label: "Prepare",
-					meta: "buying the 28 days",
-					glyph: "current",
-				},
-				{ key: "sprint-1", label: "Sprint 1", glyph: "ahead" },
-				{ key: "sprint-2", label: "Sprint 2", glyph: "ahead" },
-				{ key: "sprint-3", label: "Sprint 3", glyph: "ahead" },
-				{ key: "sprint-4", label: "Sprint 4", glyph: "ahead" },
-				{ key: "checkpoint", label: "Checkpoint", glyph: "locked" },
-			]}
 		/>
 	),
 };
@@ -442,53 +371,6 @@ const withItems: CheckpointDto = { ...base, items, sprints };
 
 export const Goal: StoryObj = {
 	render: () => <GoalStrip goal={base.goal} />,
-};
-
-export const Inputs: StoryObj = {
-	render: () => <InputsPanel checkpoint={withItems} />,
-};
-
-/** Bought, and the curator has not taken the 28 days yet — nothing listed either side. */
-export const InputsBeforeTheCuratorAnswers: StoryObj = {
-	render: () => (
-		<InputsPanel
-			checkpoint={{
-				...base,
-				items: [],
-				curatorKind: CheckpointCuratorKind.Human,
-				curator: { id: "u1", name: "Marta Ilves", image: null },
-				startedAt: null,
-			}}
-		/>
-	),
-};
-
-export const Verdict: StoryObj = {
-	render: () => (
-		<CheckpointStepPanel
-			checkpoint={{
-				...withItems,
-				status: CheckpointStatus.Closed,
-				verdict: CheckpointVerdict.GoalMet,
-				verdictNote:
-					"The slice reads. Tides are legible in under a minute of play, and the boss holds its shape end to end.",
-				decidedAt: "2026-09-30T09:00:00.000Z",
-			}}
-		/>
-	),
-};
-
-/** Day 28 has not come: the count is the only thing there is to say. */
-export const VerdictLocked: StoryObj = {
-	render: () => <CheckpointStepPanel checkpoint={withItems} />,
-};
-
-export const VerdictBeingWritten: StoryObj = {
-	render: () => (
-		<CheckpointStepPanel
-			checkpoint={{ ...withItems, status: CheckpointStatus.Review }}
-		/>
-	),
 };
 
 const evidenced: CheckpointDto = {

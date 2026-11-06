@@ -68,6 +68,7 @@ const CHECKPOINT: CheckpointDto = {
 	],
 	day: 14,
 	daysLeft: 14,
+	upcoming: false,
 };
 
 /** As `/api/user/project/artifacts` sends them — the row, not the narrow ref. */

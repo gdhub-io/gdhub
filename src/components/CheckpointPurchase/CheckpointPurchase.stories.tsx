@@ -64,6 +64,7 @@ const draft: CheckpointDto = {
 	items: [],
 	day: null,
 	daysLeft: null,
+	upcoming: false,
 };
 
 const goal =

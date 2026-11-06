@@ -35,6 +35,7 @@ const paid: CheckpointDto = {
 	items: [],
 	day: 1,
 	daysLeft: 27,
+	upcoming: false,
 };
 
 const human: CheckpointDto = {
@@ -70,6 +71,7 @@ export const AICuratorLater: Story = {
 			...paid,
 			startedAt: "2099-01-05T00:00:00.000Z",
 			dueAt: "2099-02-01T00:00:00.000Z",
+			upcoming: true,
 		},
 	},
 };
