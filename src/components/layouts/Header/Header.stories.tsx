@@ -34,7 +34,7 @@ const headerActions = (
  * The shared authenticated header. The logo and the right-side actions
  * (documentation, chat, notifications, avatar) stay the same everywhere; only
  * the breadcrumbs after the logo change per section. The stories below show how
- * it looks inside my/project, my/event, my/course and the hub.
+ * it looks inside my/project, my/event and the hub.
  */
 const meta = {
 	title: "Layouts/Header",
@@ -72,23 +72,13 @@ export const Event: Story = {
 	},
 };
 
-/** A course, likewise. */
-export const Course: Story = {
-	args: {
-		trail: {
-			parent: { href: "/user/courses", label: "My courses" },
-			current: { label: "Unreal Engine Basics" },
-			space: { kind: "course", id: "c1" },
-		},
-	},
-};
-
 /** The admin space: a trail, but no entry in the switcher. */
 export const Admin: Story = {
 	args: {
 		trail: {
 			parent: { href: "/admin/users", label: "Admin" },
 			current: { label: "Users" },
+			noSwitcher: true,
 		},
 	},
 };

@@ -25,7 +25,7 @@ import type { PlanAdvice } from "@/types/checkpoints";
 import { CallBrief } from "./CallBrief";
 import { NotesBody, NotesTranscript } from "./CallNotes";
 import {
-	adviceSlots,
+	AdviseFooter,
 	PlanBody,
 	type PlanBodyProps,
 	usePlanChange,
@@ -259,15 +259,18 @@ export function PanelBlock({
 					selected === current &&
 					plan.edit === "plan" && {
 						advice: advise.advice,
-						...adviceSlots({
-							// The draft is free until call 1; on it, the plan is agreed.
-							until:
-								sessions.find((session) => session.index === current)
-									?.scheduledAt ?? null,
-							loading: advise.loading,
-							onAdvise: advise.onAdvise,
-							sessionIndex: current,
-						}),
+						footer: (
+							<AdviseFooter
+								// The draft is free until call 1; on it, the plan is agreed.
+								until={
+									sessions.find((session) => session.index === current)
+										?.scheduledAt ?? null
+								}
+								loading={advise.loading}
+								onAdvise={advise.onAdvise}
+								sessionIndex={current}
+							/>
+						),
 					})}
 			/>
 		),

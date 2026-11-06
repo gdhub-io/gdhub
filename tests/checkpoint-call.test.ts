@@ -251,15 +251,13 @@ describe("who may see the call", () => {
 		expect((await getCall("abc", 2, "marta", during))?.briefs).toEqual([]);
 	});
 
-	it("opens call 1's plan to the curator and the author, not the rest of the team", async () => {
+	it("opens call 1's plan to the author alone; the curator advises", async () => {
 		sessionFindUnique.mockResolvedValue(row({ onTeam: true }));
 		expect((await getCall("abc", 1, "marta", during))?.plan.edit).toBeNull();
 		expect((await getCall("abc", 1, "author", during))?.plan.edit).toBe(
 			"goalAndTasks",
 		);
-		expect((await getCall("abc", 1, "curator", during))?.plan.edit).toBe(
-			"goalAndTasks",
-		);
+		expect((await getCall("abc", 1, "curator", during))?.plan.edit).toBeNull();
 	});
 
 	it("scopes the team lookup to the caller", async () => {

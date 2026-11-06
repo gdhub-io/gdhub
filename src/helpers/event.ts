@@ -150,3 +150,8 @@ export function hasEventEnded(schedule: ScheduleLike[] | null | undefined) {
 
 	return Number.isFinite(lastEnd) && dayjs().isAfter(lastEnd);
 }
+
+/** `hasEventEnded` as a Prisma `where` on Event: every session over, at least one. */
+export const eventEndedWhere = (now: Date) => ({
+	schedule: { some: {}, every: { endDate: { lt: now } } },
+});

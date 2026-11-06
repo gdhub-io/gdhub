@@ -59,12 +59,10 @@ export const ScoutSpace = ({ children }: { children: ReactNode }) => {
 			SHIPPED.find((item) => pathname.startsWith(item.key)) ?? SHIPPED[0];
 
 		return {
-			// The same shape the admin space uses: the space name links home, the
-			// current page is plain text. No `space`, so the last crumb gets no
-			// switcher — there is one cabinet to switch between.
 			trail: {
 				parent: { href: SHIPPED[0].key, label: "Scout" },
 				current: { label: selected.name },
+				space: { kind: "scout" },
 			},
 			menuItems: MENU_ITEMS.filter((item) => can(item.permission)).map(
 				({ key, name, planned }) =>

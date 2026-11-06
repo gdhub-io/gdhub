@@ -55,6 +55,7 @@ export const AdvisorSpace = ({ children }: { children: ReactNode }) => {
 			trail: {
 				parent: { href: MENU_ITEMS[0].key, label: "Advisor" },
 				current: { label: selected.name },
+				space: { kind: "advisor" },
 			},
 			menuItems: MENU_ITEMS.filter((item) => can(item.permission)).map(
 				({ key, name }) => ({ key, label: <Link href={key}>{name}</Link> }),

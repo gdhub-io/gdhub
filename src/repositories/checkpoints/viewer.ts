@@ -66,9 +66,9 @@ export const editorOf = (row: EditorRow, userId: string) => {
 
 export type CheckpointEditor = NonNullable<ReturnType<typeof editorOf>>;
 
-/** The plan's editors: its curator and the project's author. */
+/** The plan is the author's alone; the curator only advises. */
 export const canEditPlan = (row: EditorRow, userId: string) =>
-	!!editorOf(row, userId);
+	editorOf(row, userId) === "author";
 
 /** The checkpoint's status with what `viewerOf` reads. */
 export const chatAccessOf = (checkpointId: string, userId: string) =>

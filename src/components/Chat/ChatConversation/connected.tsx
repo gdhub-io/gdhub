@@ -32,6 +32,7 @@ const ROOM_EVENTS = [
 	ClientEvent.Room,
 	RoomEvent.MyMembership,
 	RoomEvent.Name,
+	RoomEvent.Summary,
 	UserEvent.Presence,
 	UserEvent.CurrentlyActive,
 ] as const;
@@ -156,9 +157,16 @@ export function ConnectedConversation({ roomId }: { roomId: string }) {
 			}
 			avatar={announcements ? <AnnouncementsAvatar size={32} /> : undefined}
 			subtitle={
-				announcements
-					? t("chat.announcements.subtitle", "News from GDHub")
-					: undefined
+				announcementsAdmin && room
+					? // Lets an admin check that everyone was joined; GDHub itself is not counted.
+						t(
+							"chat.announcements.members",
+							"{count, plural, one {# member} other {# members}}",
+							{ count: Math.max(room.getJoinedMemberCount() - 1, 0) },
+						)
+					: announcements
+						? t("chat.announcements.subtitle", "News from GDHub")
+						: undefined
 			}
 			avatarMxc={room?.getMxcAvatarUrl() || member?.getMxcAvatarUrl() || null}
 			presence={invited ? "invitation" : online ? "online" : null}

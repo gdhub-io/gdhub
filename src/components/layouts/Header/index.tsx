@@ -16,11 +16,7 @@ export type HeaderProps = {
 	 * publish none and get `fallback` instead.
 	 */
 	trail?: SpaceTrailConfig;
-	/**
-	 * What stands after the logo when there is no space — today the signed-in
-	 * user. Not a link and not a step in a path, so it gets no hover chip and
-	 * no separator.
-	 */
+	/** What stands after the logo when there is no space — the hub's switcher. */
 	fallback?: ReactNode;
 	/** Right-side actions (docs link, notifications, avatar menu, …). */
 	actions?: ReactNode;

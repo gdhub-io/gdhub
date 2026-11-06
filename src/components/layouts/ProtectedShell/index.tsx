@@ -24,12 +24,12 @@ import { signOutWithChat } from "@/components/Chat/session";
 import { Header as AppHeader } from "@/components/layouts/Header";
 import { HeaderActions } from "@/components/layouts/HeaderActions";
 import { useSpaceHeader } from "@/components/layouts/SpaceHeader";
+import { SpaceSwitcher } from "@/components/layouts/SpaceTrail";
 import { AppAvatar } from "@/components/ui/AppAvatar";
 import { productTheme } from "@/config/design";
 import { isAvailableLocale } from "@/config/locale";
 import type { Permission } from "@/config/spaces";
 import { useTelegram } from "@/helpers/useTelegram";
-import { useUserSpaces } from "@/hooks/useUserSpaces";
 import styles from "./style.module.scss";
 import { useSwitchAccountMenuItems } from "./useSwitchAccountMenu";
 
@@ -62,11 +62,6 @@ export function ProtectedShell({ children }: { children: ReactNode }) {
 	// Drawn from a permission, not from a role: whoever may look at the user list
 	// gets the link, including the narrower staff roles added later.
 	const showAdministration = can("admin.users.view");
-
-	// The scout link cannot come from a permission: the shell sits outside the
-	// scout gate, so it holds no access snapshot for that space. Having a
-	// cabinet is the same answer — it is what the space gate checks.
-	const { data: userSpaces } = useUserSpaces();
 
 	// The scroll container is the shell's own content, not the document, so route
 	// changes no longer reset the scroll position by themselves.
@@ -178,28 +173,6 @@ export function ProtectedShell({ children }: { children: ReactNode }) {
 			});
 		}
 
-		if (userSpaces?.hasScoutCabinet) {
-			menu.push({
-				label: (
-					<Link href="/scout/games">
-						{t("hub.menu.scoutCabinet", "Scout cabinet")}
-					</Link>
-				),
-				key: "/scout/games",
-			});
-		}
-
-		if (userSpaces?.hasAdvisorSpace) {
-			menu.push({
-				label: (
-					<Link href="/advisor/requests">
-						{t("hub.menu.advisorSpace", "Advisor space")}
-					</Link>
-				),
-				key: "/advisor/requests",
-			});
-		}
-
 		menu = [
 			...menu,
 			{
@@ -252,7 +225,6 @@ export function ProtectedShell({ children }: { children: ReactNode }) {
 			: [...inlineMenuItems, { key: "divider1", type: "divider" }, ...menu];
 	}, [
 		showAdministration,
-		userSpaces?.hasScoutCabinet,
 		isOpenedInTelegram,
 		screens,
 		t,
@@ -348,14 +320,23 @@ export function ProtectedShell({ children }: { children: ReactNode }) {
 						className={styles.header}
 						trail={spaceHeader?.trail}
 						fallback={
-							/* No space: this names who is signed in, not where you are —
-							   so no switcher, no separator and no hover chip. */
-							<Space className={styles.identity}>
-								<AppAvatar src={session?.user?.image ?? undefined} size={24} />
-								{screens.sm ? (
-									<Text className="username">{session?.user?.name}</Text>
-								) : null}
-							</Space>
+							/* No space of its own: the hub is named by who is signed in,
+							   and that name opens the same switcher a space does. */
+							<SpaceSwitcher
+								current={
+									pathname.startsWith("/hub") ? { kind: "hub" } : undefined
+								}
+							>
+								<Space className={styles.identity}>
+									<AppAvatar
+										src={session?.user?.image ?? undefined}
+										size={24}
+									/>
+									{screens.sm ? (
+										<Text className="username">{session?.user?.name}</Text>
+									) : null}
+								</Space>
+							</SpaceSwitcher>
 						}
 						actions={
 							spaceHeader?.exit ?? (

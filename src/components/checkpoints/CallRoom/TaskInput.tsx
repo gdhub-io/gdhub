@@ -4,24 +4,26 @@ import { IconX } from "@tabler/icons-react";
 import { Button, Input, Tooltip } from "antd";
 import { useState } from "react";
 import { CHECKPOINT_ITEM_TEXT_MAX } from "@/config/checkpoint";
+import styles from "./style.module.scss";
+
+/** What every task field shares: the saved ones and the new one. */
+export const taskFieldProps = {
+	className: styles.taskInput,
+	variant: "filled",
+	maxLength: CHECKPOINT_ITEM_TEXT_MAX,
+} as const;
 
 /** Saved on blur or Enter; an emptied or refused field goes back to what was saved. */
 export function TaskInput({
 	text,
-	placeholder,
-	autoFocus,
 	warning,
 	onSave,
-	onEmpty,
 	onRemove,
 	removeLabel,
 }: {
 	text: string;
-	placeholder?: string;
-	autoFocus?: boolean;
 	warning?: boolean;
 	onSave: (text: string) => Promise<void>;
-	onEmpty?: () => void;
 	onRemove?: () => void;
 	removeLabel?: string;
 }) {
@@ -31,7 +33,6 @@ export function TaskInput({
 		const next = value.trim();
 		if (!next) {
 			setValue(text);
-			onEmpty?.();
 			return;
 		}
 		if (next === text) return;
@@ -41,10 +42,8 @@ export function TaskInput({
 	return (
 		<Input
 			value={value}
-			placeholder={placeholder}
-			autoFocus={autoFocus}
+			{...taskFieldProps}
 			status={warning ? "warning" : undefined}
-			maxLength={CHECKPOINT_ITEM_TEXT_MAX}
 			onChange={(event) => setValue(event.target.value)}
 			onBlur={commit}
 			onPressEnter={(event) => event.currentTarget.blur()}

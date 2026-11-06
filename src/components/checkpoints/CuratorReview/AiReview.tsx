@@ -351,7 +351,6 @@ export function AiReviewView({
 											advice={open?.advice}
 											suggestions={open?.suggestions}
 											hint={planHint(t, plan.edit)}
-											blank={plan.edit === "goalAndTasks"}
 											footer={
 												<PlanFooter
 													plan={plan}

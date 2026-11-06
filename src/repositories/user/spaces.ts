@@ -1,3 +1,5 @@
+import { EventStatus, ProjectStatus } from "@gdhub-io/gdhub-prisma";
+import { eventEndedWhere } from "@/helpers/event";
 import { cached } from "@/services/cache";
 import { prisma } from "@/services/prisma";
 
@@ -20,7 +22,6 @@ export type UserSpaceGroup = { items: UserSpace[]; total: number };
 export type UserSpaces = {
 	projects: UserSpaceGroup;
 	events: UserSpaceGroup;
-	courses: UserSpaceGroup;
 	/** Whether the user has a scout cabinet — the space is single-instance. */
 	hasScoutCabinet: boolean;
 	/**
@@ -36,11 +37,9 @@ export type UserSpaces = {
  * depends on the kind of space — you are a team member of a project but an
  * organiser of an event.
  */
-const roleLabel = (role: string, kind: "project" | "event" | "course") => {
+const roleLabel = (role: string, kind: "project" | "event") => {
 	if (role === "Owner") return "Owner";
-	if (kind === "project") return "Team member";
-	if (kind === "event") return "Organiser";
-	return "Participant";
+	return kind === "project" ? "Team member" : "Organiser";
 };
 
 /**
@@ -50,13 +49,17 @@ const roleLabel = (role: string, kind: "project" | "event" | "course") => {
  * into someone else's project belongs in their switcher too. The rows come from
  * `SpaceMember`, which is polymorphic, so the entities are fetched per type
  * afterwards and stitched back in the membership's order.
+ *
+ * Only spaces still worth switching to: archived projects, and events that are
+ * closed, archived or already over, stay behind "View all".
  */
 export async function loadUserSpaces(userId: string): Promise<UserSpaces> {
+	const now = new Date();
 	const memberships = await prisma.spaceMember.findMany({
 		where: {
 			userId,
 			revokedAt: null,
-			spaceType: { in: ["project", "event", "course"] },
+			spaceType: { in: ["project", "event"] },
 		},
 		orderBy: [{ joinedAt: "desc" }, { createdAt: "desc" }],
 		select: { spaceType: true, spaceId: true, role: true },
@@ -65,43 +68,47 @@ export async function loadUserSpaces(userId: string): Promise<UserSpaces> {
 	const idsOf = (type: string) =>
 		memberships.filter((row) => row.spaceType === type).map((r) => r.spaceId);
 
-	const [scoutCabinet, mentoring, projects, events, courses] =
-		await Promise.all([
-			prisma.scoutCabinet.findUnique({
-				where: { userId },
-				select: { id: true },
-			}),
-			prisma.speciality.count({
-				where: { userId, isOpenForMentoring: true },
-			}),
-			prisma.project.findMany({
-				where: { id: { in: idsOf("project") } },
-				select: {
-					id: true,
-					slug: true,
-					name: true,
-					status: true,
-					coverImage: true,
-				},
-			}),
-			prisma.event.findMany({
-				where: { id: { in: idsOf("event") } },
-				select: {
-					id: true,
-					slug: true,
-					title: true,
-					status: true,
-					image: true,
-				},
-			}),
-			prisma.course.findMany({
-				where: { id: { in: idsOf("course") } },
-				select: { id: true, slug: true, name: true, status: true, image: true },
-			}),
-		]);
+	const [scoutCabinet, mentoring, projects, events] = await Promise.all([
+		prisma.scoutCabinet.findUnique({
+			where: { userId },
+			select: { id: true },
+		}),
+		prisma.speciality.count({
+			where: { userId, isOpenForMentoring: true },
+		}),
+		prisma.project.findMany({
+			where: {
+				id: { in: idsOf("project") },
+				status: { not: ProjectStatus.Archived },
+			},
+			select: {
+				id: true,
+				slug: true,
+				name: true,
+				status: true,
+				coverImage: true,
+			},
+		}),
+		prisma.event.findMany({
+			where: {
+				id: { in: idsOf("event") },
+				status: { notIn: [EventStatus.Closed, EventStatus.Archived] },
+				// The archive cron catches up later; until then a finished event is
+				// still Published.
+				NOT: eventEndedWhere(now),
+			},
+			select: {
+				id: true,
+				slug: true,
+				title: true,
+				status: true,
+				image: true,
+			},
+		}),
+	]);
 
 	const group = (
-		type: "project" | "event" | "course",
+		type: "project" | "event",
 		rows: Map<string, Omit<UserSpace, "role">>,
 	): UserSpaceGroup => {
 		// Membership order is the "recently active" order the menu promises, so
@@ -146,21 +153,6 @@ export async function loadUserSpaces(userId: string): Promise<UserSpaces> {
 						name: e.title,
 						status: e.status,
 						coverUrl: e.image,
-					},
-				]),
-			),
-		),
-		courses: group(
-			"course",
-			new Map(
-				courses.map((c) => [
-					c.id,
-					{
-						id: c.id,
-						slug: c.slug,
-						name: c.name,
-						status: c.status,
-						coverUrl: c.image,
 					},
 				]),
 			),

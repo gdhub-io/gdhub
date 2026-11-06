@@ -29,8 +29,8 @@ describe("viewerOf", () => {
 });
 
 describe("canEditPlan", () => {
-	it("is the curator's and the author's, not the rest of the team's", () => {
-		expect(canEditPlan(row(), "curator")).toBe(true);
+	it("is the author's alone: the curator advises, the team reads", () => {
+		expect(canEditPlan(row(), "curator")).toBe(false);
 		expect(canEditPlan(row(), "author")).toBe(true);
 		expect(canEditPlan(row([{ id: "tm1" }]), "member")).toBe(false);
 	});
