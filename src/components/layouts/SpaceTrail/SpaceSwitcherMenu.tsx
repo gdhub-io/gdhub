@@ -1,6 +1,12 @@
 "use client";
 
-import { IconCheck, IconHome } from "@tabler/icons-react";
+import {
+	type Icon,
+	IconBinoculars,
+	IconCheck,
+	IconHeartHandshake,
+	IconHome,
+} from "@tabler/icons-react";
 import { useTranslate } from "@tolgee/react";
 import Link from "next/link";
 import type React from "react";
@@ -8,10 +14,10 @@ import { avatarImage } from "@/helpers/image";
 import { useUserSpaces } from "@/hooks/useUserSpaces";
 import type { UserSpaceGroup } from "@/repositories/user/spaces";
 import styles from "./style.module.scss";
-import type { SpaceKind } from "./types";
+import type { CurrentSpace, SpaceKind } from "./types";
 
 type GroupSpec = {
-	kind: SpaceKind;
+	kind: "project" | "event";
 	title: string;
 	viewAllHref: string;
 	href: (space: { id: string; slug: string | null }) => string;
@@ -33,6 +39,40 @@ function CoverSwatch({ name, url }: { name: string; url: string | null }) {
 		<span className={`${styles.swatch} ${styles.swatchEmpty}`} aria-hidden>
 			{name.charAt(0).toUpperCase()}
 		</span>
+	);
+}
+
+function MenuRow({
+	href,
+	swatch,
+	name,
+	meta,
+	isCurrent,
+	onNavigate,
+}: {
+	href: string;
+	swatch: React.ReactNode;
+	name: string;
+	meta?: string;
+	isCurrent: boolean;
+	onNavigate: () => void;
+}) {
+	return (
+		<Link
+			href={href}
+			onClick={onNavigate}
+			role="menuitem"
+			className={styles.row}
+			data-current={isCurrent || undefined}
+			aria-current={isCurrent ? "page" : undefined}
+		>
+			{swatch}
+			<span className={styles.rowText}>
+				<span className={styles.rowName}>{name}</span>
+				{meta && <span className={styles.rowMeta}>{meta}</span>}
+			</span>
+			{isCurrent && <IconCheck size={15} className={styles.rowCheck} />}
+		</Link>
 	);
 }
 
@@ -63,53 +103,42 @@ function SpaceGroup({
 			</div>
 
 			<div className={styles.groupList}>
-				{spec.group.items.map((space) => {
-					const isCurrent = space.id === currentId;
-
-					return (
-						<Link
-							key={space.id}
-							href={spec.href(space)}
-							onClick={onNavigate}
-							role="menuitem"
-							className={styles.row}
-							data-current={isCurrent || undefined}
-							aria-current={isCurrent ? "page" : undefined}
-						>
-							<CoverSwatch name={space.name} url={space.coverUrl} />
-							<span className={styles.rowText}>
-								<span className={styles.rowName}>{space.name}</span>
-								<span className={styles.rowMeta}>
-									{space.role} · {space.status}
-								</span>
-							</span>
-							{isCurrent && <IconCheck size={15} className={styles.rowCheck} />}
-						</Link>
-					);
-				})}
+				{spec.group.items.map((space) => (
+					<MenuRow
+						key={space.id}
+						href={spec.href(space)}
+						swatch={<CoverSwatch name={space.name} url={space.coverUrl} />}
+						name={space.name}
+						meta={`${space.role} · ${space.status}`}
+						isCurrent={space.id === currentId}
+						onNavigate={onNavigate}
+					/>
+				))}
 			</div>
 		</div>
 	);
 }
 
 /**
- * The switcher's contents: the user's own spaces, grouped by kind.
+ * The switcher's contents: the single spaces first, then the user's own spaces
+ * grouped by kind.
  *
  * Five per group, most recently joined first, with the rest behind "View all".
  * The admin space is not here on purpose — it belongs to the platform, not to
  * the person, and listing it would suggest otherwise.
  */
 export function SpaceSwitcherMenu({
-	currentId,
+	current,
 	onNavigate,
 }: {
-	currentId?: string;
+	current?: CurrentSpace;
 	onNavigate: () => void;
 }) {
 	const { t } = useTranslate();
 
 	const { data } = useUserSpaces();
 
+	// Course spaces will get a group here once they exist.
 	const groups: GroupSpec[] = data
 		? [
 				{
@@ -126,17 +155,37 @@ export function SpaceSwitcherMenu({
 					href: (space) => `/user/event/${space.id}`,
 					group: data.events,
 				},
-				{
-					kind: "course",
-					title: t("space.switcher.courses", "Courses"),
-					viewAllHref: "/user/courses",
-					href: (space) => `/user/course/${space.slug ?? space.id}`,
-					group: data.courses,
-				},
 			]
 		: [];
 
-	const hasAny = groups.some((spec) => spec.group.items.length > 0);
+	// The logo goes home too, but was never discoverable — hence the hub row.
+	const singles: {
+		kind: SpaceKind;
+		href: string;
+		icon: Icon;
+		label: string;
+	}[] = [
+		current?.kind !== "hub" && {
+			kind: "hub" as const,
+			href: "/hub",
+			icon: IconHome,
+			label: t("space.switcher.backToHub", "Back to Hub"),
+		},
+		data?.hasAdvisorSpace && {
+			kind: "advisor" as const,
+			href: "/advisor/requests",
+			icon: IconHeartHandshake,
+			label: t("space.switcher.advisor", "Advisor space"),
+		},
+		data?.hasScoutCabinet && {
+			kind: "scout" as const,
+			href: "/scout/games",
+			icon: IconBinoculars,
+			label: t("space.switcher.scout", "Scout space"),
+		},
+	].filter((row) => !!row);
+	const hasSingles = singles.length > 0;
+	const hasGroups = groups.some((spec) => spec.group.items.length > 0);
 
 	/** Up and down walk the rows; the browser handles Enter on a link. */
 	const onKeyDown = (event: React.KeyboardEvent<HTMLDivElement>) => {
@@ -156,35 +205,43 @@ export function SpaceSwitcherMenu({
 	};
 
 	return (
-		// biome-ignore lint/a11y/noStaticElementInteractions: this is the menu
-		// surface itself; the handler moves focus between its own items.
 		<div className={styles.menu} role="menu" onKeyDown={onKeyDown}>
+			{hasSingles && (
+				<div className={styles.singles}>
+					{singles.map(({ kind, href, icon: RowIcon, label }) => (
+						<MenuRow
+							key={kind}
+							href={href}
+							swatch={
+								<span
+									className={`${styles.swatch} ${styles.swatchEmpty}`}
+									aria-hidden
+								>
+									<RowIcon size={16} />
+								</span>
+							}
+							name={label}
+							isCurrent={current?.kind === kind}
+							onNavigate={onNavigate}
+						/>
+					))}
+				</div>
+			)}
+
 			{groups.map((spec) => (
 				<SpaceGroup
 					key={spec.kind}
 					spec={spec}
-					currentId={currentId}
+					currentId={current?.id}
 					onNavigate={onNavigate}
 				/>
 			))}
 
-			{!hasAny && (
+			{!hasSingles && !hasGroups && (
 				<div className={styles.empty}>
 					{t("space.switcher.empty", "Nothing here yet")}
 				</div>
 			)}
-
-			{/* The same destination as the logo, said in words. The logo alone was
-			    never discoverable, which is the reason this menu exists. */}
-			<Link
-				href="/hub"
-				role="menuitem"
-				onClick={onNavigate}
-				className={styles.homeRow}
-			>
-				<IconHome size={16} />
-				{t("space.switcher.backToHub", "Back to Hub")}
-			</Link>
 		</div>
 	);
 }

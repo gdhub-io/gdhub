@@ -1,5 +1,11 @@
-/** The kinds of space the switcher lists. Admin is deliberately not one. */
-export type SpaceKind = "project" | "event" | "course";
+/**
+ * Where the switcher can take you. Hub, advisor and scout are single spaces;
+ * projects and events come in many. Admin is deliberately not one.
+ */
+export type SpaceKind = "hub" | "advisor" | "scout" | "project" | "event";
+
+/** The open space, so the switcher can mark it. `id` only for the many-kinds. */
+export type CurrentSpace = { kind: SpaceKind; id?: string };
 
 /**
  * The trail after the logo: where this space sits, and what it is.
@@ -14,9 +20,10 @@ export type SpaceTrailConfig = {
 	parent?: { href: string; label: string };
 	/** The space itself: the page title and the switcher's trigger. */
 	current: { label: string };
+	space?: CurrentSpace;
 	/**
-	 * Which space is open, so the switcher can mark it. Absent for spaces that
-	 * are not the user's own — admin has a trail but no entry in the menu.
+	 * Admin only: a platform space, not the person's, so its last crumb is a
+	 * plain name — a switcher without it in would lie about where you are.
 	 */
-	space?: { kind: SpaceKind; id: string };
+	noSwitcher?: true;
 };

@@ -1,15 +1,14 @@
 "use client";
 
-import { IconSelector } from "@tabler/icons-react";
 import { useTranslate } from "@tolgee/react";
-import { Dropdown, Grid } from "antd";
+import { Grid } from "antd";
 import Link from "next/link";
-import { useState } from "react";
-import { SpaceSwitcherMenu } from "./SpaceSwitcherMenu";
+import { SpaceSwitcher } from "./SpaceSwitcher";
 import styles from "./style.module.scss";
 import type { SpaceTrailConfig } from "./types";
 
-export type { SpaceKind, SpaceTrailConfig } from "./types";
+export { SpaceSwitcher } from "./SpaceSwitcher";
+export type { SpaceTrailConfig } from "./types";
 
 /**
  * Where you are, and a way to go somewhere else.
@@ -25,7 +24,6 @@ export type { SpaceKind, SpaceTrailConfig } from "./types";
 export function SpaceTrail({ trail }: { trail: SpaceTrailConfig }) {
 	const { t } = useTranslate();
 	const screens = Grid.useBreakpoint();
-	const [open, setOpen] = useState(false);
 
 	const showParent = !!trail.parent && !!screens.md;
 
@@ -50,38 +48,14 @@ export function SpaceTrail({ trail }: { trail: SpaceTrailConfig }) {
 				)}
 
 				<li>
-					{/* A switcher only where there is something to switch to. Admin
-					    is a platform space and not in the menu, so its last crumb is
-					    a plain name — a chevron that opened a list without it in
-					    would be a lie about where you are. */}
-					{!trail.space ? (
+					{trail.noSwitcher ? (
 						<span className={styles.currentStatic} aria-current="page">
 							{trail.current.label}
 						</span>
 					) : (
-						<Dropdown
-							open={open}
-							onOpenChange={setOpen}
-							trigger={["click"]}
-							placement="bottomLeft"
-							popupRender={() => (
-								<SpaceSwitcherMenu
-									currentId={trail.space?.id}
-									onNavigate={() => setOpen(false)}
-								/>
-							)}
-						>
-							<button
-								type="button"
-								className={styles.current}
-								aria-haspopup="menu"
-								aria-expanded={open}
-								aria-current="page"
-							>
-								{trail.current.label}
-								<IconSelector size={15} className={styles.chevron} />
-							</button>
-						</Dropdown>
+						<SpaceSwitcher current={trail.space}>
+							{trail.current.label}
+						</SpaceSwitcher>
 					)}
 				</li>
 			</ol>

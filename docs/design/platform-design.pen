@@ -139694,7 +139694,7 @@
                   "id": "AcQrv",
                   "name": "Caption",
                   "fill": "$text-tertiary",
-                  "content": "HUB — NO SPACE TO LEAVE, SO THE CRUMB IS THE SIGNED-IN USER",
+                  "content": "HUB — THE SIGNED-IN USER IS THE CRUMB, AND IT OPENS THE SAME SWITCHER",
                   "fontFamily": "$font",
                   "fontSize": 11,
                   "fontWeight": "600",
@@ -139754,7 +139754,14 @@
                           "type": "frame",
                           "id": "ufw7O",
                           "name": "User",
+                          "cornerRadius": 10,
                           "gap": 8,
+                          "padding": [
+                            4,
+                            8,
+                            4,
+                            12
+                          ],
                           "alignItems": "center",
                           "children": [
                             {
@@ -139789,6 +139796,16 @@
                               "fontFamily": "$font",
                               "fontSize": 14,
                               "fontWeight": "500"
+                            },
+                            {
+                              "type": "icon",
+                              "id": "uQDXi",
+                              "name": "Caret",
+                              "width": 15,
+                              "height": 15,
+                              "icon": "chevrons-up-down",
+                              "library": "lucide",
+                              "fill": "$text-tertiary"
                             }
                           ]
                         }
@@ -140695,7 +140712,7 @@
               "fill": "$text-secondary",
               "textGrowth": "fixed-width",
               "width": 900,
-              "content": "One menu answers all three questions: where am I, what else of this kind do I have, and what else do I belong to. Spaces are grouped by type and the current one is ticked, so the menu doubles as an answer to \"where am I\" without reading the crumb.",
+              "content": "One menu, opened from the last crumb in a space and from your name on the hub. Single spaces first — Back to Hub (hidden on the hub itself), Advisor and Scout when you have them — then the spaces you have many of: projects without archived ones, events without closed, archived or finished ones. Courses get their own group once course spaces exist. The current space is ticked.",
               "lineHeight": 1.5,
               "fontFamily": "$font",
               "fontSize": 12,
@@ -140707,7 +140724,7 @@
               "name": "Stage",
               "clip": true,
               "width": "fill_container",
-              "height": 520,
+              "height": 560,
               "fill": "$surface",
               "cornerRadius": 12,
               "stroke": "$card-border",
@@ -140947,6 +140964,177 @@
                   "children": [
                     {
                       "type": "frame",
+                      "id": "Ms98p",
+                      "name": "Single spaces",
+                      "width": "fill_container",
+                      "layout": "vertical",
+                      "padding": [
+                        8,
+                        0
+                      ],
+                      "children": [
+                        {
+                          "type": "frame",
+                          "id": "uw6Y6",
+                          "name": "Back to Hub",
+                          "width": "fill_container",
+                          "fill": "#00000000",
+                          "gap": 10,
+                          "padding": [
+                            8,
+                            16
+                          ],
+                          "alignItems": "center",
+                          "children": [
+                            {
+                              "type": "frame",
+                              "id": "E5eLPV",
+                              "name": "Sw",
+                              "width": 26,
+                              "height": 26,
+                              "fill": "$border",
+                              "cornerRadius": 6,
+                              "justifyContent": "center",
+                              "alignItems": "center",
+                              "children": [
+                                {
+                                  "type": "icon",
+                                  "id": "ENEWP",
+                                  "name": "Ic",
+                                  "width": 16,
+                                  "height": 16,
+                                  "icon": "house",
+                                  "library": "lucide",
+                                  "fill": "$text-secondary"
+                                }
+                              ]
+                            },
+                            {
+                              "type": "text",
+                              "id": "c2vO3",
+                              "name": "N",
+                              "fill": "$text-primary",
+                              "textGrowth": "fixed-width",
+                              "width": "fill_container",
+                              "content": "Back to Hub",
+                              "fontFamily": "$font",
+                              "fontSize": 13,
+                              "fontWeight": "500"
+                            }
+                          ]
+                        },
+                        {
+                          "type": "frame",
+                          "id": "TS7qM",
+                          "name": "Advisor space",
+                          "width": "fill_container",
+                          "fill": "#00000000",
+                          "gap": 10,
+                          "padding": [
+                            8,
+                            16
+                          ],
+                          "alignItems": "center",
+                          "children": [
+                            {
+                              "type": "frame",
+                              "id": "UW3Wa",
+                              "name": "Sw",
+                              "width": 26,
+                              "height": 26,
+                              "fill": "$border",
+                              "cornerRadius": 6,
+                              "justifyContent": "center",
+                              "alignItems": "center",
+                              "children": [
+                                {
+                                  "type": "icon",
+                                  "id": "f7YC1",
+                                  "name": "Ic",
+                                  "width": 16,
+                                  "height": 16,
+                                  "icon": "heart-handshake",
+                                  "library": "lucide",
+                                  "fill": "$text-secondary"
+                                }
+                              ]
+                            },
+                            {
+                              "type": "text",
+                              "id": "Xxl99",
+                              "name": "N",
+                              "fill": "$text-primary",
+                              "textGrowth": "fixed-width",
+                              "width": "fill_container",
+                              "content": "Advisor space",
+                              "fontFamily": "$font",
+                              "fontSize": 13,
+                              "fontWeight": "500"
+                            }
+                          ]
+                        },
+                        {
+                          "type": "frame",
+                          "id": "juwmC",
+                          "name": "Scout space",
+                          "width": "fill_container",
+                          "fill": "#00000000",
+                          "gap": 10,
+                          "padding": [
+                            8,
+                            16
+                          ],
+                          "alignItems": "center",
+                          "children": [
+                            {
+                              "type": "frame",
+                              "id": "bkUdy",
+                              "name": "Sw",
+                              "width": 26,
+                              "height": 26,
+                              "fill": "$border",
+                              "cornerRadius": 6,
+                              "justifyContent": "center",
+                              "alignItems": "center",
+                              "children": [
+                                {
+                                  "type": "icon",
+                                  "id": "G4YyPf",
+                                  "name": "Ic",
+                                  "width": 16,
+                                  "height": 16,
+                                  "icon": "binoculars",
+                                  "library": "lucide",
+                                  "fill": "$text-secondary"
+                                }
+                              ]
+                            },
+                            {
+                              "type": "text",
+                              "id": "A0by4O",
+                              "name": "N",
+                              "fill": "$text-primary",
+                              "textGrowth": "fixed-width",
+                              "width": "fill_container",
+                              "content": "Scout space",
+                              "fontFamily": "$font",
+                              "fontSize": 13,
+                              "fontWeight": "500"
+                            }
+                          ]
+                        }
+                      ]
+                    },
+                    {
+                      "type": "rectangle",
+                      "id": "yKFGF",
+                      "name": "Rule",
+                      "fill": "$border",
+                      "width": "fill_container",
+                      "height": 1
+                    },
+                    {
+                      "type": "frame",
                       "id": "vGOp3",
                       "name": "MY PROJECTS",
                       "width": "fill_container",
@@ -140964,7 +141152,7 @@
                           "id": "NrjJf",
                           "name": "L",
                           "fill": "$text-tertiary",
-                          "content": "MY PROJECTS",
+                          "content": "PROJECTS",
                           "fontFamily": "$font",
                           "fontSize": 11,
                           "fontWeight": "700",
@@ -141235,7 +141423,7 @@
                           "id": "SRKkS",
                           "name": "L",
                           "fill": "$text-tertiary",
-                          "content": "MY EVENTS",
+                          "content": "EVENTS",
                           "fontFamily": "$font",
                           "fontSize": 11,
                           "fontWeight": "700",
@@ -141394,48 +141582,6 @@
                               "fontWeight": "normal"
                             }
                           ]
-                        }
-                      ]
-                    },
-                    {
-                      "type": "rectangle",
-                      "id": "X5lPW",
-                      "name": "Rule",
-                      "fill": "$border",
-                      "width": "fill_container",
-                      "height": 1
-                    },
-                    {
-                      "type": "frame",
-                      "id": "xz3UI",
-                      "name": "Back to Hub",
-                      "width": "fill_container",
-                      "gap": 10,
-                      "padding": [
-                        12,
-                        16
-                      ],
-                      "alignItems": "center",
-                      "children": [
-                        {
-                          "type": "icon",
-                          "id": "ZzTbs",
-                          "name": "Ic",
-                          "width": 16,
-                          "height": 16,
-                          "icon": "house",
-                          "library": "lucide",
-                          "fill": "$text-secondary"
-                        },
-                        {
-                          "type": "text",
-                          "id": "xXthu",
-                          "name": "L",
-                          "fill": "$text-primary",
-                          "content": "Back to Hub",
-                          "fontFamily": "$font",
-                          "fontSize": 13,
-                          "fontWeight": "500"
                         }
                       ]
                     }

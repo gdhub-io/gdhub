@@ -229,18 +229,8 @@ $separator-line: #c5c4c0;
 	color: var(--gd-color-text-secondary);
 }
 
-.homeRow {
-	display: flex;
-	align-items: center;
-	gap: var(--gd-space-2);
-	padding: var(--gd-space-3) var(--gd-space-4);
-	color: var(--gd-color-text);
-	font-size: var(--gd-font-size-body);
-	transition: background-color 0.15s ease;
-
-	&:hover {
-		background: var(--gd-fill-base);
-	}
+.singles {
+	padding-block: var(--gd-space-2);
 }
 
 .empty {

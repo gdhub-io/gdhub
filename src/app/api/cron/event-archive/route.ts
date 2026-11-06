@@ -1,5 +1,6 @@
 import { EventStatus } from "@gdhub-io/gdhub-prisma";
 import { runWithCronLog } from "@/decorators/QueueCronLog";
+import { eventEndedWhere } from "@/helpers/event";
 import { json, withAuth } from "@/lib/api-handlers";
 import { prisma } from "@/services/prisma";
 
@@ -19,14 +20,7 @@ export const GET = withAuth({ mode: "vercel_cron" })(async () => {
 		const archivedEvents = await prisma.event.updateMany({
 			where: {
 				status: EventStatus.Published,
-				schedule: {
-					some: {},
-					every: {
-						endDate: {
-							lt: now,
-						},
-					},
-				},
+				...eventEndedWhere(now),
 			},
 			data: {
 				status: EventStatus.Archived,

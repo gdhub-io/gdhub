@@ -101,11 +101,10 @@ export const AdminSpace = ({ children }: { children: ReactNode }) => {
 		const section = MENU_ITEMS.find((item) => item.key === selectedKey);
 
 		return {
-			// Admin has a trail but no `space`: it belongs to the platform rather
-			// than to the person, so the switcher does not list it.
 			trail: {
 				parent: { href: "/admin/users", label: "Admin" },
 				current: { label: section?.name ?? "Admin" },
+				noSwitcher: true,
 			},
 			menuItems: MENU_ITEMS.filter((item) => can(item.permission)).map(
 				({ key, name }) => ({ key, label: <Link href={key}>{name}</Link> }),
