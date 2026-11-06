@@ -1442,6 +1442,7 @@
 				"description": "Новости от команды GDHub будут отображаться здесь.",
 				"title": "Пока нет объявлений"
 			},
+			"members": "{count, plural, one {# участник} other {# участников}}",
 			"postingAs": "Публикуя как GDHub",
 			"preview": "GDHub: {text}",
 			"readOnly": "Только администраторы GDHub могут здесь публиковать сообщения",
