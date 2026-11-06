@@ -41,6 +41,7 @@ function AdminCheckpoints() {
 	const { t } = useTranslate();
 	const { can } = useAccess();
 	const canManage = can("admin.checkpoints.manage");
+	const canDelete = can("admin.checkpoints.delete");
 	const canViewCurators = can("admin.curators.view");
 	const [creating, setCreating] = useState(false);
 	const [giving, setGiving] = useState(false);
@@ -90,7 +91,9 @@ function AdminCheckpoints() {
 						{
 							key: "checkpoints",
 							label: t("admin.checkpoints.tab.checkpoints", "Checkpoints"),
-							children: <CheckpointsTable canManage={canManage} />,
+							children: (
+								<CheckpointsTable canManage={canManage} canDelete={canDelete} />
+							),
 						},
 						...(canViewCurators
 							? [

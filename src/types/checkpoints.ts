@@ -601,6 +601,8 @@ export type AdminCheckpointRowDto = {
 	overdue: boolean;
 	canRefund: boolean;
 	canAssign: boolean;
+	/** Given for free and still under way: an admin may delete it. */
+	canDelete: boolean;
 	/** The curator's frozen fee; null while running, for the AI, or when none is owed. */
 	fee: { amount: number; reason: CheckpointFeeReason; parts: number } | null;
 	/** Why a finished human checkpoint pays its curator nothing. */
@@ -821,9 +823,11 @@ export type FreeCheckpointProjectDto = {
 	id: string;
 	name: string;
 	stage: string;
+	/** The stage it is on now: the modal's default. */
+	stepId: string | null;
 	author: string | null;
-	/** The goal it would start with. */
-	goal: string;
+	/** The stages a checkpoint can run on, each with the goal it would start with. */
+	stages: { id: string; name: string; goal: string }[];
 };
 
 export type CheckpointReviewDto = {

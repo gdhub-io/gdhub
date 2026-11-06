@@ -5,10 +5,19 @@ import {
 	IconNotebook,
 	IconReceiptRefund,
 	IconSignature,
+	IconTrash,
 	IconUserPlus,
 } from "@tabler/icons-react";
 import { useTranslate } from "@tolgee/react";
-import { Button, Divider, Dropdown, Flex, Tooltip, Typography } from "antd";
+import {
+	App,
+	Button,
+	Divider,
+	Dropdown,
+	Flex,
+	Tooltip,
+	Typography,
+} from "antd";
 import type { ColumnsType } from "antd/es/table";
 import dayjs from "dayjs";
 import { useVerdictCopy } from "@/components/checkpoints/VerdictChip";
@@ -24,7 +33,10 @@ import {
 	signedMoney,
 } from "@/config/checkpoint-pricing";
 import { CheckpointStatus } from "@/config/prisma-enums";
-import { useRefundReasonLabels } from "@/hooks/admin-checkpoints";
+import {
+	useDeleteCheckpoint,
+	useRefundReasonLabels,
+} from "@/hooks/admin-checkpoints";
 import { useFeeReasonLabel } from "@/hooks/payouts";
 import type { AdminCheckpointRowDto as Row } from "@/types/checkpoints";
 import { BreakdownLine } from "./BreakdownLine";
@@ -44,18 +56,56 @@ const spent = (minor: number) => Math.round(minor) > 0;
 
 export function useCheckpointColumns({
 	canManage,
+	canDelete,
 	setRefunding,
 	setDeciding,
 	setAssigning,
 	setReading,
 }: {
 	canManage: boolean;
+	canDelete: boolean;
 	setRefunding: (row: Row) => void;
 	setDeciding: (row: Row) => void;
 	setAssigning: (row: Row) => void;
 	setReading: (row: Row) => void;
 }) {
 	const { t } = useTranslate();
+	const { modal, message } = App.useApp();
+	const deleteCheckpoint = useDeleteCheckpoint();
+
+	const confirmDelete = (row: Row) =>
+		modal.confirm({
+			title: t(
+				"admin.checkpoints.delete.title",
+				"Delete checkpoint {number}?",
+				{
+					number: row.number,
+				},
+			),
+			content: t(
+				"admin.checkpoints.delete.content",
+				"{project} · {stage}. The checkpoint and its journal are deleted for good. The author is told a platform administrator deleted it.",
+				{ project: row.projectName, stage: row.stageName },
+			),
+			okText: t("admin.checkpoints.delete.ok", "Delete"),
+			okButtonProps: { danger: true },
+			onOk: () =>
+				deleteCheckpoint
+					.mutateAsync(row.id)
+					.then(() =>
+						message.success(
+							t("admin.checkpoints.delete.done", "Checkpoint deleted"),
+						),
+					)
+					.catch(() =>
+						message.error(
+							t(
+								"admin.checkpoints.delete.failed",
+								"Couldn't delete the checkpoint",
+							),
+						),
+					),
+		});
 
 	const reasonLabels = useRefundReasonLabels();
 	const feeReason = useFeeReasonLabel("admin");
@@ -394,13 +444,26 @@ export function useCheckpointColumns({
 								},
 							]
 						: [];
-				const items = [
-					...curating,
-					...(curating.length && money.length
-						? [{ type: "divider" as const }]
-						: []),
-					...money,
-				];
+				const removal =
+					canDelete && row.canDelete
+						? [
+								{
+									key: "delete",
+									danger: true,
+									icon: <IconTrash size={14} />,
+									label: t(
+										"admin.checkpoints.menu.delete",
+										"Delete checkpoint",
+									),
+									onClick: () => confirmDelete(row),
+								},
+							]
+						: [];
+				const items = [curating, money, removal]
+					.filter((group) => group.length)
+					.flatMap((group, index) =>
+						index ? [{ type: "divider" as const }, ...group] : group,
+					);
 
 				return (
 					<Flex gap={4} justify="end">

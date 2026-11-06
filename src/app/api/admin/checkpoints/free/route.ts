@@ -29,6 +29,7 @@ const StartSchema = z.object({
 	kind: z.nativeEnum(CheckpointCuratorKind),
 	userId: z.string().optional(),
 	firstCall: z.coerce.date().optional(),
+	stepId: z.string().min(1).optional(),
 	reason: z.string().trim().min(3).max(500),
 });
 

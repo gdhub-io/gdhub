@@ -48,16 +48,32 @@ export const freeCheckpointProjects = async (
 				id: true,
 				name: true,
 				author: { select: { name: true } },
-				workflow: { select: { currentStep: { select: { name: true } } } },
+				workflow: {
+					select: {
+						currentStepId: true,
+						currentStep: { select: { name: true } },
+						steps: {
+							select: { id: true, name: true },
+							orderBy: { order: "asc" },
+						},
+					},
+				},
 			},
 		})
 	).map((project) => ({
 		id: project.id,
 		name: project.name,
 		stage: project.workflow?.currentStep?.name ?? "",
+		stepId: project.workflow?.currentStepId ?? null,
 		author: project.author?.name ?? null,
-		goal: stageGoal(project.workflow?.currentStep?.name ?? ""),
+		stages: (project.workflow?.steps ?? [])
+			.filter(isCheckpointStage)
+			.map((step) => ({ ...step, goal: stageGoal(step.name) })),
 	}));
+
+/** A stage a checkpoint can run on: not Introduction or the ones after release. */
+export const isCheckpointStage = (step: { name: string }) =>
+	!UNSELECTABLE_STAGES.includes(step.name);
 
 /** The goal a free checkpoint starts with: the stage's own; the author rewrites it on day 1. */
 export const stageGoal = (stage: string) =>
@@ -91,4 +107,6 @@ export type FreeCheckpointInput = AssignCuratorInput & {
 	projectId: string;
 	/** A person's first call, from their free hours; the five calls are booked from it. */
 	firstCall?: Date;
+	/** The stage to run it on, when the admin moves the project to it first. */
+	stepId?: string;
 };
