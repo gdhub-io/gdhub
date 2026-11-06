@@ -189,14 +189,18 @@ export async function ensureChatRoom(
 
 	if (avatarUrl && isAllowedRemoteImage(avatarUrl)) {
 		try {
-			const file = await fetch(avatarUrl).then((res) => res.blob());
-			const uploaded = await client.uploadContent(file, {
-				type: "image/png",
-				name: `room-${row.id}-avatar.png`,
-			});
-			await client.sendStateEvent(roomId, EventType.RoomAvatar, {
-				url: uploaded.content_uri || undefined,
-			});
+			const res = await fetch(avatarUrl);
+			const type = res.headers.get("content-type") ?? "";
+			// An error page uploaded as a PNG becomes an avatar nothing can render.
+			if (res.ok && type.startsWith("image/")) {
+				const uploaded = await client.uploadContent(await res.blob(), {
+					type,
+					name: `room-${row.id}-avatar`,
+				});
+				await client.sendStateEvent(roomId, EventType.RoomAvatar, {
+					url: uploaded.content_uri || undefined,
+				});
+			}
 		} catch (error) {
 			console.error("[chat] avatar upload failed", error);
 		}
