@@ -33,8 +33,11 @@ never been designed.
   notifications (`default-message`, team invitations, events, project news),
   Brevo sends sign-in and registration, and SMTP to MailHog is used in dev.
   This work changes what they send, not who sends it.
-- **Bodies live in git.** Novu workflows move to code (`@novu/framework` +
-  `@react-email/components`, both already installed). Sign-in and registration
+- **Bodies live in git.** Novu workflows stay in the dashboard with their
+  in-app and push steps; only their email steps come from
+  `src/services/novu/emails`, written by `bun run novu:emails` through the
+  Novu API (decided 2026-11-06; Novu Framework would move every step into code
+  and make Novu call the app for each notification). Sign-in and registration
   are rendered by the app and sent through Brevo's transactional API, which
   retires the Brevo-hosted templates 1–4. Synapse templates stay Jinja in
   `matrix-chat-server`.
@@ -49,9 +52,8 @@ never been designed.
 
 ## Done when
 
-This pass covers Synapse only (Dmitry, 2026-11-06). Sign-in, registration and
-the Novu emails are designed (13.03–13.09) but not built yet; their two items
-below wait for a later pass.
+Synapse and Novu are done. Sign-in and registration (13.03, 13.04) are designed
+but not built yet.
 
 
 - [ ] A chat notification email shows the GDHub layout, with no Element, Riot
@@ -104,6 +106,10 @@ below wait for a later pass.
   room) is its own state, "you have unread messages", with no text.
 
 ## Before release — remind Dmitry
+
+- [ ] Novu: after the app with `appUrl` in every payload is deployed, run
+      `bun run novu:emails --promote` (Development → Production), and delete the
+      `demo-*` workflows in Production if they are there.
 
 - [ ] Production Synapse: `email.client_base_url: "https://gdhub.io/open-chat"` in
       `homeserver.yaml`, then restart Synapse. Dmitry does this on the server.

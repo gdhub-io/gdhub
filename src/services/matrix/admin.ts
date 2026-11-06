@@ -137,12 +137,10 @@ async function uploadMatrixMedia(imageUrl: string): Promise<string | null> {
 	if (!isAllowedRemoteImage(imageUrl)) return null;
 
 	const img = await fetch(imageUrl);
-	if (!img.ok) return null;
+	const type = img.headers.get("content-type") ?? "";
+	if (!img.ok || !type.startsWith("image/")) return null;
 
-	return uploadMatrixAvatarBytes(
-		await img.arrayBuffer(),
-		img.headers.get("content-type") || "image/png",
-	);
+	return uploadMatrixAvatarBytes(await img.arrayBuffer(), type);
 }
 
 /**
