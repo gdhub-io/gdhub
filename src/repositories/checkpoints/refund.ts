@@ -480,6 +480,7 @@ export const listAdminCheckpoints = async (
 						? draftComplete({ goal: row.goal, inputs: row._count.items })
 						: row.curatorKind === CheckpointCuratorKind.Human &&
 							isOpen(row.status),
+				canDelete: !payment && isOpen(row.status),
 			};
 		}),
 	};

@@ -49,7 +49,13 @@ const LISTED = [
 const PROJECT_WIDTH = 160;
 
 /** Frames 11.5–11.5d: every paid checkpoint, and the way into its refund. */
-export function CheckpointsTable({ canManage }: { canManage: boolean }) {
+export function CheckpointsTable({
+	canManage,
+	canDelete,
+}: {
+	canManage: boolean;
+	canDelete: boolean;
+}) {
 	const { t } = useTranslate();
 	const [filter, setFilter] = useState<AdminCheckpointsFilter>({ page: 1 });
 	const [refunding, setRefunding] = useState<Row | null>(null);
@@ -66,6 +72,7 @@ export function CheckpointsTable({ canManage }: { canManage: boolean }) {
 
 	const { columns, statusLabels } = useCheckpointColumns({
 		canManage,
+		canDelete,
 		setRefunding,
 		setDeciding,
 		setAssigning,

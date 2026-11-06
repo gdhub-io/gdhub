@@ -9,6 +9,8 @@ const createDraftCheckpoint = vi.fn();
 const assignCurator = vi.fn();
 const getCreationBlocker = vi.fn();
 const userFindUnique = vi.fn();
+const setCurrentStep = vi.fn();
+const auditCreate = vi.fn();
 
 vi.mock("@/services/prisma", () => ({
 	prisma: {
@@ -22,7 +24,13 @@ vi.mock("@/services/prisma", () => ({
 			update: (...a: unknown[]) => checkpointUpdate(...a),
 			delete: (...a: unknown[]) => checkpointDelete(...a),
 		},
+		auditLog: { create: (...a: unknown[]) => auditCreate(...a) },
+		$transaction: (run: (tx: unknown) => unknown) => run("tx"),
 	},
+}));
+vi.mock("@/repositories/project/workflow", async (importOriginal) => ({
+	...(await importOriginal<typeof import("@/repositories/project/workflow")>()),
+	setCurrentStep: (...a: unknown[]) => setCurrentStep(...a),
 }));
 vi.mock("@/repositories/checkpoints/checkpoint", () => ({
 	createDraftCheckpoint: (...a: unknown[]) => createDraftCheckpoint(...a),
@@ -171,5 +179,57 @@ describe("startFreeCheckpoint", () => {
 			}),
 		).resolves.toEqual({ ok: false, error: "slotTaken" });
 		expect(checkpointDelete).toHaveBeenCalledWith({ where: { id: "cp1" } });
+	});
+});
+
+describe("the stage a free checkpoint runs on", () => {
+	const onIdeation = {
+		workflow: {
+			id: "wf1",
+			currentStep: { id: "s-idea", name: "Ideation" },
+			steps: [
+				{ id: "s-intro", name: "Introduction" },
+				{ id: "s-idea", name: "Ideation" },
+				{ id: "s-proto", name: "Prototyping" },
+			],
+		},
+	};
+
+	beforeEach(() => projectFindFirst.mockResolvedValue(onIdeation));
+
+	it("moves the project to the stage the admin picked, before the draft opens, and audits it", async () => {
+		const result = await startFreeCheckpoint("admin", { ...ai, stepId: "s-proto" });
+
+		expect(result).toEqual({ ok: true, checkpointId: "cp1" });
+		expect(setCurrentStep).toHaveBeenCalledWith("tx", "wf1", "s-proto");
+		expect(setCurrentStep.mock.invocationCallOrder[0]).toBeLessThan(
+			createDraftCheckpoint.mock.invocationCallOrder[0],
+		);
+		expect(auditCreate).toHaveBeenCalledWith({
+			data: expect.objectContaining({
+				meta: expect.objectContaining({
+					stageMovedFrom: "Ideation",
+					stageMovedTo: "Prototyping",
+				}),
+			}),
+		});
+	});
+
+	it("leaves the stage alone when the admin keeps the current one", async () => {
+		await startFreeCheckpoint("admin", { ...ai, stepId: "s-idea" });
+
+		expect(setCurrentStep).not.toHaveBeenCalled();
+		expect(auditCreate).not.toHaveBeenCalled();
+	});
+
+	it.each([
+		["Introduction", "s-intro"],
+		["a stage of another project", "s-elsewhere"],
+	])("refuses %s, with no draft made", async (_label, stepId) => {
+		await expect(
+			startFreeCheckpoint("admin", { ...ai, stepId }),
+		).resolves.toEqual({ ok: false, error: "stageInvalid" });
+		expect(setCurrentStep).not.toHaveBeenCalled();
+		expect(createDraftCheckpoint).not.toHaveBeenCalled();
 	});
 });

@@ -192,6 +192,7 @@ Entering a space is not guarded by a permission — any role gets you in
 | | | | | | |
 | `admin.checkpoints.view` | ✅ | ✅ | ✅ | — | read & take part |
 | `admin.checkpoints.manage` | ✅ | ✅ | — | — | manage |
+| `admin.checkpoints.delete` | ✅ | — | — | — | irreversible |
 | | | | | | |
 | `admin.payouts.view` | ✅ | — | — | — | read & take part |
 | `admin.payouts.manage` | ✅ | — | — | — | manage |

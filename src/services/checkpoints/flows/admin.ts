@@ -1,4 +1,5 @@
 import {
+	AuditAction,
 	CheckpointCuratorKind,
 	CheckpointItemKind,
 	CheckpointStatus,
@@ -16,10 +17,16 @@ import {
 	audit,
 	missedCallsRefund,
 } from "@/repositories/checkpoints/admin";
-import { keptPayment } from "@/repositories/checkpoints/payment";
+import { deleteCheckpoint } from "@/repositories/checkpoints/checkpoint";
+import { checkpointNumber } from "@/repositories/checkpoints/number";
+import {
+	isCheckpointPaid,
+	keptPayment,
+} from "@/repositories/checkpoints/payment";
 import { recipient } from "@/repositories/checkpoints/recipient";
 import { refundWrites } from "@/repositories/checkpoints/refund";
 import type { CuratorVerdictInput } from "@/repositories/checkpoints/verdict";
+import { closeCheckpointRoom, syncChat } from "@/services/chat/checkpoint-room";
 import { startAiCheckpoint } from "@/services/checkpoints/flows/payment";
 import { sendCheckpointRefund } from "@/services/checkpoints/flows/refund";
 import { afterVerdictSent } from "@/services/checkpoints/flows/verdict";
@@ -27,6 +34,7 @@ import {
 	notify,
 	notifyAuthorOfRefund,
 	notifyCuratorAsked,
+	workflowUrl,
 } from "@/services/checkpoints/notifications";
 import { prisma } from "@/services/prisma";
 
@@ -269,6 +277,71 @@ export const assignCurator = async (
 				redirectUrl: `${appUrl()}/user/project/${checkpoint.project.slug}/workflow`,
 			},
 		),
+	]);
+
+	return { ok: true as const };
+};
+
+/**
+ * Removes a checkpoint an admin gave for free while it is still under way —
+ * never a draft, a finished one, or one holding a payment — and
+ * tells its author a platform admin did it.
+ */
+export const deleteFreeCheckpoint = async (
+	checkpointId: string,
+	adminId: string,
+) => {
+	const [checkpoint, paid] = await Promise.all([
+		prisma.projectCheckpoint.findUnique({
+			where: { id: checkpointId },
+			select: {
+				projectId: true,
+				createdAt: true,
+				status: true,
+				stageName: true,
+				curatorKind: true,
+				project: { select: { name: true, slug: true, author: recipient } },
+			},
+		}),
+		isCheckpointPaid(checkpointId),
+	]);
+	if (!checkpoint) return { ok: false as const, error: "notFound" as const };
+	if (paid) return { ok: false as const, error: "notFree" as const };
+	// Only the project's current one, its latest: the next checkpoint then takes its number.
+	if (!isOpen(checkpoint.status)) {
+		return { ok: false as const, error: "notOpen" as const };
+	}
+
+	// Read before the row goes: the number counts the checkpoints around it.
+	const number = await checkpointNumber(checkpoint);
+	const { project } = checkpoint;
+
+	await prisma.$transaction([
+		deleteCheckpoint(checkpointId),
+		prisma.auditLog.create({
+			data: {
+				...audit(adminId, checkpointId, {
+					projectId: checkpoint.projectId,
+					project: project.name,
+					stageName: checkpoint.stageName,
+					status: checkpoint.status,
+					curatorKind: checkpoint.curatorKind,
+				}),
+				action: AuditAction.DELETE,
+			},
+		}),
+	]);
+
+	// The room is keyed by the id, not linked to the row: it stays as read-only history.
+	await Promise.all([
+		syncChat(`delete ${checkpointId}`, () => closeCheckpointRoom(checkpointId)),
+		// No checkpointId: its journal went with it.
+		notify(project.author, `cp-deleted-${checkpointId}`, {
+			title: `Checkpoint ${number} of ${project.name} was deleted`,
+			message:
+				"A GDHub platform administrator deleted this checkpoint. Nothing was charged for it.",
+			redirectUrl: workflowUrl(project.slug),
+		}),
 	]);
 
 	return { ok: true as const };

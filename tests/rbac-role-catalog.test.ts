@@ -31,7 +31,7 @@ describe("catalogOf", () => {
 });
 
 describe("defaultsOf", () => {
-	it("gives the owner everything the admin space declares, and an admin all but payouts and curators", () => {
+	it("gives the owner everything the admin space declares, and an admin all but payouts, curators and deleting checkpoints", () => {
 		const defaults = defaultsOf("admin");
 		const catalog = permissionCatalog("admin");
 		const allowedTo = (role: SpaceRole) =>
@@ -45,7 +45,9 @@ describe("defaultsOf", () => {
 			catalog.filter(
 				(permission) =>
 					!permission.startsWith("admin.payouts.") &&
-					!permission.startsWith("admin.curators."),
+					!permission.startsWith("admin.curators.") &&
+					// Irreversible: the owner's alone.
+					permission !== "admin.checkpoints.delete",
 			),
 		);
 	});
