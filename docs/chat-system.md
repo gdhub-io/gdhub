@@ -544,11 +544,12 @@ party running a client we do not use. The destination is a homeserver setting,
 
 Templates cannot help: the mailer hands them a finished `link` and no room id.
 
-So `client_base_url` points at `https://gdhub.io/chat` (locally
-`http://localhost:3000/chat`), and [src/app/chat](../src/app/chat) turns that
+So `client_base_url` points at `https://gdhub.io/open-chat` (locally
+`http://localhost:3000/open-chat`; renamed from `/chat` in GDHUB-160 to keep
+`/chat` free for the chat itself), and [src/app/open-chat](../src/app/open-chat) turns that
 shape into `/hub?chat=1&roomId=…`. The room id lives in the URL *fragment*,
 which never reaches the server, so the page is a client-side redirect —
-[deep-link.ts](../src/app/chat/deep-link.ts) holds the mapping and is unit
+[deep-link.ts](../src/lib/chat/deep-link.ts) holds the mapping and is unit
 tested.
 
 `src/proxy.ts` now keeps the query string in `callbackUrl`: without it a
@@ -569,7 +570,7 @@ Synapse renders them with its own Jinja environment, so they can only use what
 `synapse/push/mailer.py` passes in and the filters in
 `synapse/util/templates.py`.
 
-- **Links.** Emails sent before `client_base_url` moved to `/chat` link to
+- **Links.** Emails sent before `client_base_url` moved to `/open-chat` link to
   `/hub#/room/…`. `useChatDrawerQuery` reads `#/room/<id>` on any page, so those
   links open the room too.
 - **Images.** Synapse's `mxc_to_http` filter points at the unauthenticated media
