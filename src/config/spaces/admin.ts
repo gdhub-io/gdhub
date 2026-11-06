@@ -25,7 +25,8 @@ export const adminSpace = defineSpace({
 		// project's process. Not to be confused with `project.workflow` (§3.4).
 		workflow: ["view", "manage"],
 		// Checkpoint promotion codes, kept in Stripe; `manage` creates and turns them off.
-		checkpoints: ["view", "manage"],
+		// `delete` removes a free checkpoint for good: the owner alone by default.
+		checkpoints: ["view", "manage", "delete"],
 		// Curator payouts: bank details and money out. The owner alone by default;
 		// anyone else is granted it by hand in the role matrix.
 		payouts: ["view", "manage"],

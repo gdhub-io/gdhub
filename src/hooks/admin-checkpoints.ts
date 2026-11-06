@@ -234,6 +234,17 @@ export const useAssignCurator = (checkpointId: string) => {
 	});
 };
 
+/** Deletes a checkpoint given for free. */
+export const useDeleteCheckpoint = () => {
+	const queryClient = useQueryClient();
+
+	return useMutation({
+		mutationFn: async (checkpointId: string) =>
+			(await axios.delete(`${URL}/${checkpointId}`)).data,
+		onSettled: () => queryClient.invalidateQueries({ queryKey: LIST_KEY }),
+	});
+};
+
 /** Frame 12.11.12: projects a free checkpoint can start on. */
 export const useFreeCheckpointProjects = (query: string) =>
 	useQuery({

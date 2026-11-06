@@ -601,6 +601,8 @@ export type AdminCheckpointRowDto = {
 	overdue: boolean;
 	canRefund: boolean;
 	canAssign: boolean;
+	/** Given for free and still under way: an admin may delete it. */
+	canDelete: boolean;
 	/** The curator's frozen fee; null while running, for the AI, or when none is owed. */
 	fee: { amount: number; reason: CheckpointFeeReason; parts: number } | null;
 	/** Why a finished human checkpoint pays its curator nothing. */

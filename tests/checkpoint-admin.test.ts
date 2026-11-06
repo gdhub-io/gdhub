@@ -7,20 +7,33 @@ import {
 import { beforeEach, describe, expect, it, vi } from "vitest";
 import { bookSessions, SlotTakenError } from "@/repositories/advisor/availability";
 import { refundCaseOf } from "@/repositories/checkpoints/refund";
-import { assignCurator, writeAdminVerdict } from "@/services/checkpoints/flows/admin";
+import {
+	assignCurator,
+	deleteFreeCheckpoint,
+	writeAdminVerdict,
+} from "@/services/checkpoints/flows/admin";
 import { startAiCheckpoint } from "@/services/checkpoints/flows/payment";
 import { afterVerdictSent } from "@/services/checkpoints/flows/verdict";
-import { notifyCuratorAsked } from "@/services/checkpoints/notifications";
+import { notify, notifyCuratorAsked } from "@/services/checkpoints/notifications";
 import { prisma } from "@/services/prisma";
 import { refundCheckout } from "@/services/stripe/server";
 
 vi.mock("@/services/prisma", () => {
 	const client = {
-		projectCheckpoint: { findUnique: vi.fn(), update: vi.fn(), updateMany: vi.fn() },
+		projectCheckpoint: {
+			findUnique: vi.fn(),
+			update: vi.fn(),
+			updateMany: vi.fn(),
+			delete: vi.fn(),
+			count: vi.fn(async () => 0),
+		},
 		user: { findUnique: vi.fn() },
 		refund: { upsert: vi.fn() },
 		// No payment kept from a curator who turned it down, unless a test says so.
-		payment: { update: vi.fn(), findFirst: vi.fn(async () => null) },
+		payment: {
+			update: vi.fn(),
+			findFirst: vi.fn(async () => null),
+		},
 		auditLog: { create: vi.fn() },
 		$transaction: vi.fn(),
 	};
@@ -50,6 +63,11 @@ vi.mock("@/services/checkpoints/notifications", () => ({
 	notifyCuratorAsked: vi.fn(),
 	recipient: { select: { id: true, email: true } },
 	appUrl: () => "",
+	workflowUrl: (slug: string) => `/user/project/${slug}/workflow`,
+}));
+vi.mock("@/services/chat/checkpoint-room", () => ({
+	closeCheckpointRoom: vi.fn(),
+	syncChat: vi.fn(),
 }));
 
 const NOW = new Date("2026-10-25T12:00:00.000Z");
@@ -321,5 +339,74 @@ describe("assigning a curator by hand", () => {
 		await expect(
 			assignCurator("cp1", "admin1", { kind: CheckpointCuratorKind.AI, reason: "x x" }),
 		).resolves.toEqual({ ok: false, error: "notSwappable" });
+	});
+});
+
+describe("deleting a free checkpoint", () => {
+	const free = {
+		projectId: "p1",
+		createdAt: new Date("2026-10-01"),
+		status: CheckpointStatus.Active,
+		stageName: "Ideation",
+		curatorKind: CheckpointCuratorKind.AI,
+		project: {
+			name: "Hollow Tide",
+			slug: "hollow-tide",
+			author: { id: "u1", email: "a@b.c" },
+		},
+	};
+
+	beforeEach(() => {
+		vi.mocked(prisma.payment.findFirst).mockResolvedValue(null);
+	});
+
+	it("deletes it, audits it and tells the author an admin did", async () => {
+		vi.mocked(prisma.projectCheckpoint.findUnique).mockResolvedValue(free as never);
+
+		expect(await deleteFreeCheckpoint("cp1", "admin1")).toEqual({ ok: true });
+		expect(prisma.projectCheckpoint.delete).toHaveBeenCalledWith({
+			where: { id: "cp1" },
+		});
+		expect(prisma.auditLog.create).toHaveBeenCalledWith({
+			data: expect.objectContaining({ entityId: "cp1", action: "DELETE" }),
+		});
+		expect(notify).toHaveBeenCalledWith(
+			free.project.author,
+			"cp-deleted-cp1",
+			expect.objectContaining({
+				message: expect.stringContaining("platform administrator"),
+			}),
+		);
+	});
+
+	it("refuses one holding a payment", async () => {
+		vi.mocked(prisma.projectCheckpoint.findUnique).mockResolvedValue(free as never);
+		vi.mocked(prisma.payment.findFirst).mockResolvedValueOnce({
+			id: "pay1",
+			amount: 2000,
+		} as never);
+
+		expect(await deleteFreeCheckpoint("cp1", "admin1")).toEqual({
+			ok: false,
+			error: "notFree",
+		});
+		expect(prisma.projectCheckpoint.delete).not.toHaveBeenCalled();
+	});
+
+	it.each([
+		CheckpointStatus.Draft,
+		CheckpointStatus.Closed,
+		CheckpointStatus.Cancelled,
+	])("refuses one that is %s", async (status) => {
+		vi.mocked(prisma.projectCheckpoint.findUnique).mockResolvedValue({
+			...free,
+			status,
+		} as never);
+
+		expect(await deleteFreeCheckpoint("cp1", "admin1")).toEqual({
+			ok: false,
+			error: "notOpen",
+		});
+		expect(prisma.projectCheckpoint.delete).not.toHaveBeenCalled();
 	});
 });

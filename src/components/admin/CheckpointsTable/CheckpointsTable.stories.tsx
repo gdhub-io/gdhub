@@ -32,6 +32,7 @@ const row = (over: Partial<AdminCheckpointRowDto>): AdminCheckpointRowDto => ({
 	overdue: false,
 	canRefund: true,
 	canAssign: true,
+	canDelete: false,
 	fee: null,
 	noFee: null,
 	calls: {
@@ -105,6 +106,19 @@ const PAGE: AdminCheckpointsPageDto = {
 			status: CheckpointStatus.Review,
 			paid: 2000,
 			aiCost: 84,
+		}),
+		// Given for free: the menu offers "Delete checkpoint".
+		row({
+			id: "cp9",
+			projectName: "Lantern Field",
+			number: 1,
+			stageName: "Ideation",
+			curatorKind: CheckpointCuratorKind.AI,
+			curatorName: null,
+			paid: null,
+			canRefund: false,
+			canAssign: false,
+			canDelete: true,
 		}),
 		row({
 			id: "cp3",
@@ -206,7 +220,7 @@ const PAGE: AdminCheckpointsPageDto = {
 const meta: Meta<typeof CheckpointsTable> = {
 	title: "Admin/CheckpointsTable",
 	component: CheckpointsTable,
-	args: { canManage: true },
+	args: { canManage: true, canDelete: true },
 };
 
 export default meta;
@@ -250,5 +264,5 @@ export const LoadFailed: Story = {
 /** Without the manage permission the rows have no "Refund…". */
 export const ReadOnly: Story = {
 	decorators: [withQueries({ key: KEY, data: PAGE })],
-	args: { canManage: false },
+	args: { canManage: false, canDelete: false },
 };
