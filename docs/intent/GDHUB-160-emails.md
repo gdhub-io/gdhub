@@ -92,7 +92,11 @@ never been designed.
 
 - Does Brevo stay the sender for auth, or does Novu take it? *Assumed: Brevo
   stays; only the body moves into the repo.*
-- Is the production `client_base_url` changed to `/chat`? *Assumed: yes, done by
-  Dmitry on the server; the app handles both shapes anyway.*
 - How long does a signed media URL live? *Assumed: 30 days, long enough for a
   notification to be read.*
+
+## Before release — remind Dmitry
+
+- [ ] Production Synapse: `email.client_base_url: "https://gdhub.io/chat"` in
+      `homeserver.yaml`, then restart Synapse. Dmitry does this on the server.
+- [ ] Deploy the new Synapse templates from `matrix-chat-server` to the server.
