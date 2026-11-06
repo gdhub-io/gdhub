@@ -44,6 +44,9 @@
 	overflow-y: auto;
 	overflow-x: hidden;
 	overscroll-behavior: contain;
+	// A page's own z-index stays inside the page: without this the hub greeting
+	// (z-index 1) painted over the header's popovers, which share the header's layer.
+	isolation: isolate;
 
 	:global(.layout-background) {
 		// One fluid gutter instead of steps. It used to drop to 20px only below
