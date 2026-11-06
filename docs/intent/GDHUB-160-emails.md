@@ -39,7 +39,7 @@ never been designed.
   retires the Brevo-hosted templates 1–4. Synapse templates stay Jinja in
   `matrix-chat-server`.
 - **Old links keep working.** Emails already sent link to `/hub#/room/…`; that
-  shape opens the right room too, alongside `/chat#/room/…`.
+  shape opens the right room too, alongside `/open-chat#/room/…`.
 - **Media proxy is not a hole.** Images reach the mail client through
   `/api/chat/media`, which serves only thumbnails of our own homeserver's media,
   never originals, and is rate-limited. Synapse's Jinja cannot sign a URL, so the
@@ -105,7 +105,7 @@ below wait for a later pass.
 
 ## Before release — remind Dmitry
 
-- [ ] Production Synapse: `email.client_base_url: "https://gdhub.io/chat"` in
+- [ ] Production Synapse: `email.client_base_url: "https://gdhub.io/open-chat"` in
       `homeserver.yaml`, then restart Synapse. Dmitry does this on the server.
 - [ ] Deploy the app first: the templates load `/images/email/*` and
       `/api/chat/media` from gdhub.io.

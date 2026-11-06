@@ -1,10 +1,10 @@
 import { useEffect } from "react";
-import { roomIdFromHash } from "@/app/chat/deep-link";
 import { useChat } from "@/components/Chat/useChat";
+import { roomIdFromHash } from "@/lib/chat/deep-link";
 
 /**
  * `?chat=1&roomId=` opens the chat panel straight on that conversation. So does
- * `#/room/<id>`: emails sent before `client_base_url` pointed at /chat link to
+ * `#/room/<id>`: emails sent before `client_base_url` pointed at /open-chat link to
  * `/hub#/room/…`. The room may not be synced yet — the conversation view waits for it.
  */
 export function useChatDrawerQuery() {

@@ -3,7 +3,7 @@
 import { Flex, Spin } from "antd";
 import { useRouter } from "next/navigation";
 import { useEffect } from "react";
-import { chatDeepLinkFromHash } from "./deep-link";
+import { chatDeepLinkFromHash } from "@/lib/chat/deep-link";
 
 /**
  * Landing page for the links in Synapse's "you have missed messages" emails —

@@ -1,5 +1,5 @@
 import { describe, expect, it } from "vitest";
-import { chatDeepLinkFromHash, roomIdFromHash } from "../src/app/chat/deep-link";
+import { chatDeepLinkFromHash, roomIdFromHash } from "../src/lib/chat/deep-link";
 
 const ROOM = "!DZYIUPmKlKhhJeIvAa:matrix.gdhub.io";
 
