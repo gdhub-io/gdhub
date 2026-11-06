@@ -10,6 +10,7 @@ import { type AiMeter, recordAiUsage } from "@/services/ai-usage";
 import {
 	DIRECTION_RULES,
 	PARTICIPANT_DATA,
+	PLAIN_LANGUAGE,
 } from "@/services/checkpoints/ai-curator/prompts/card";
 import type { CallNotes } from "@/types/checkpoints";
 
@@ -189,6 +190,8 @@ export const writeCallNotes = async (
 			to report. Use only task ids from the plan. The transcript is
 			machine-made and has errors: read through them, do not quote them.
 			Plain English, short sentences, no filler.
+
+			${PLAIN_LANGUAGE}
 
 			${PARTICIPANT_DATA}
 		`,

@@ -11,6 +11,7 @@ import {
 	hintBlock,
 	localeLine,
 	PARTICIPANT_DATA,
+	PLAIN_LANGUAGE,
 } from "@/services/checkpoints/ai-curator/prompts/card";
 import type { EvidenceContent } from "./read";
 
@@ -19,6 +20,7 @@ const HONEST = stripIndents`
 	sampled from a video. Say only what is actually there. You did not run or
 	play anything: say what is shown — a level, a mechanic, a menu, a character —
 	never how the game feels to play. Plain English, short.
+	${PLAIN_LANGUAGE}
 	${PARTICIPANT_DATA}
 `;
 
