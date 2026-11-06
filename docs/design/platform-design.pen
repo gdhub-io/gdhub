@@ -522313,6 +522313,3312 @@
           ]
         }
       ]
+    },
+    {
+      "type": "note",
+      "id": "bKz0l",
+      "x": -420,
+      "y": 92500,
+      "name": "Row — 13 · Emails",
+      "width": 300,
+      "height": 420,
+      "content": "13 · Emails (GDHUB-160) — left to right\n\n13.01 layout (desktop 600 + mobile 375) holds the reusable parts: Email / Header, Email / Footer, Email / Button (primary, secondary).\n13.02 chat · missed messages (Synapse): .1 one room · .2 several rooms, image · .3 invite · .4 no message content. Times are server time with zone (“14:32 UTC”); one primary button per room.\n13.03 sign in · 13.04 registration (Brevo)\n13.05 team invitation · 13.06 responses to the inviter\n13.07 default message (Novu, ~23 triggers)\n13.08 events · 13.09 devlog reminder\n\nEvery email is English only. States of one email stack downward under it.\nLight theme only, one 600 column, system font stack in code (drawn in Onest). Radii drawn as plain circles: chip 6 / button 10 / card 12 / column 16 / avatar 999 — email clients have no squircle.\nFooter social icons: the English channels of SocialLinks.tsx only (Telegram EN, Discord, LinkedIn), as PNGs.\n\nIntent: docs/intent/GDHUB-160-emails.md"
+    },
+    {
+      "type": "frame",
+      "id": "B8G10y",
+      "x": 0,
+      "y": 92500,
+      "name": "13.01 — Email layout · desktop 600",
+      "clip": true,
+      "width": 728,
+      "fill": "$page-bg",
+      "layout": "vertical",
+      "gap": 24,
+      "padding": [
+        40,
+        64,
+        48,
+        64
+      ],
+      "children": [
+        {
+          "type": "frame",
+          "id": "HWWOO",
+          "name": "Email / Header",
+          "reusable": true,
+          "width": "fill_container",
+          "height": 32,
+          "padding": [
+            0,
+            48
+          ],
+          "alignItems": "center",
+          "children": [
+            {
+              "id": "Dnifr",
+              "type": "ref",
+              "ref": "MDNum",
+              "name": "Logo (PNG, alt “GDHub”)"
+            }
+          ]
+        },
+        {
+          "type": "frame",
+          "id": "X8q2K",
+          "name": "Body",
+          "width": "fill_container",
+          "fill": "$surface",
+          "cornerRadius": 16,
+          "stroke": "$border",
+          "strokeWidth": 1,
+          "strokeAlignment": "inner",
+          "layout": "vertical",
+          "gap": 32,
+          "padding": 48,
+          "children": [
+            {
+              "type": "frame",
+              "id": "D8Wjqa",
+              "name": "Copy",
+              "width": "fill_container",
+              "layout": "vertical",
+              "gap": 12,
+              "children": [
+                {
+                  "type": "text",
+                  "id": "txKIl",
+                  "name": "Heading",
+                  "fill": "$text-primary",
+                  "textGrowth": "fixed-width",
+                  "width": "fill_container",
+                  "content": "One short heading",
+                  "lineHeight": 1.25,
+                  "fontFamily": "$font",
+                  "fontSize": 24,
+                  "fontWeight": "600"
+                },
+                {
+                  "type": "text",
+                  "id": "jvQjV",
+                  "name": "Message",
+                  "fill": "$text-primary",
+                  "textGrowth": "fixed-width",
+                  "width": "fill_container",
+                  "content": "One or two sentences that say what happened and what the button does. Nothing else competes with them.",
+                  "lineHeight": 1.5,
+                  "fontFamily": "$font",
+                  "fontSize": 16
+                }
+              ]
+            },
+            {
+              "type": "frame",
+              "id": "vCuwR",
+              "name": "Email / Button · primary",
+              "reusable": true,
+              "height": 48,
+              "fill": "$btn-black",
+              "cornerRadius": 10,
+              "padding": [
+                0,
+                24
+              ],
+              "justifyContent": "center",
+              "alignItems": "center",
+              "children": [
+                {
+                  "type": "text",
+                  "id": "H1P4Cj",
+                  "name": "Label",
+                  "fill": "$text-invert",
+                  "content": "Primary action",
+                  "fontFamily": "$font",
+                  "fontSize": 16,
+                  "fontWeight": "500"
+                }
+              ]
+            },
+            {
+              "type": "frame",
+              "id": "yCZcr",
+              "name": "Note",
+              "width": "fill_container",
+              "layout": "vertical",
+              "gap": 8,
+              "children": [
+                {
+                  "type": "text",
+                  "id": "oxO2q",
+                  "name": "Note line",
+                  "fill": "$text-secondary",
+                  "textGrowth": "fixed-width",
+                  "width": "fill_container",
+                  "content": "An optional quiet line under the button: a fallback link, an expiry, a hint.",
+                  "lineHeight": 1.5,
+                  "fontFamily": "$font",
+                  "fontSize": 14
+                }
+              ]
+            },
+            {
+              "type": "frame",
+              "id": "YfMif",
+              "name": "Email / Button · secondary",
+              "reusable": true,
+              "height": 48,
+              "fill": "$surface",
+              "cornerRadius": 10,
+              "stroke": "$border-strong",
+              "strokeWidth": 1,
+              "strokeAlignment": "inner",
+              "padding": [
+                0,
+                24
+              ],
+              "justifyContent": "center",
+              "alignItems": "center",
+              "children": [
+                {
+                  "type": "text",
+                  "id": "aeHUF",
+                  "name": "Label",
+                  "fill": "$text-primary",
+                  "content": "Secondary action",
+                  "fontFamily": "$font",
+                  "fontSize": 16,
+                  "fontWeight": "500"
+                }
+              ]
+            }
+          ]
+        },
+        {
+          "type": "frame",
+          "id": "DjI1t",
+          "name": "Email / Footer",
+          "reusable": true,
+          "width": "fill_container",
+          "layout": "vertical",
+          "gap": 8,
+          "padding": [
+            8,
+            48,
+            0,
+            48
+          ],
+          "alignItems": "center",
+          "children": [
+            {
+              "type": "frame",
+              "id": "x59bBo",
+              "name": "Socials (PNG icons 20, text-secondary, links from SocialLinks.tsx)",
+              "gap": 16,
+              "padding": [
+                0,
+                0,
+                8,
+                0
+              ],
+              "alignItems": "center",
+              "children": [
+                {
+                  "type": "icon",
+                  "id": "JzkNf",
+                  "name": "IconBrandTelegram · EN · t.me/gdhub_en",
+                  "width": 20,
+                  "height": 20,
+                  "icon": "telegram-logo",
+                  "library": "phosphor",
+                  "fill": "$text-secondary"
+                },
+                {
+                  "type": "icon",
+                  "id": "sUEuY",
+                  "name": "IconBrandDiscord · discord.gg/WcUFD3tHqg",
+                  "width": 20,
+                  "height": 20,
+                  "icon": "discord-logo",
+                  "library": "phosphor",
+                  "fill": "$text-secondary"
+                },
+                {
+                  "type": "icon",
+                  "id": "Wi5Hy",
+                  "name": "IconBrandLinkedin · linkedin.com/company/game-developers-hub",
+                  "width": 20,
+                  "height": 20,
+                  "icon": "linkedin-logo",
+                  "library": "phosphor",
+                  "fill": "$text-secondary"
+                }
+              ]
+            },
+            {
+              "type": "text",
+              "id": "dU6cQ",
+              "name": "Reason",
+              "fill": "$text-secondary",
+              "textGrowth": "fixed-width",
+              "width": "fill_container",
+              "content": "You’re getting this because you have an account at gdhub.io.",
+              "lineHeight": 1.5,
+              "textAlign": "center",
+              "fontFamily": "$font",
+              "fontSize": 13
+            },
+            {
+              "type": "frame",
+              "id": "CSV2J",
+              "name": "Settings link row (hidden in auth emails)",
+              "gap": 8,
+              "alignItems": "center",
+              "children": [
+                {
+                  "type": "text",
+                  "id": "ahuYi",
+                  "name": "Settings link",
+                  "fill": "$text-secondary",
+                  "content": "Notification settings",
+                  "fontFamily": "$font",
+                  "fontSize": 13,
+                  "fontWeight": "normal"
+                }
+              ]
+            },
+            {
+              "type": "text",
+              "id": "EceYH",
+              "name": "Legal line (for now: “Founder gdhub.io”)",
+              "fill": "$text-secondary",
+              "textGrowth": "fixed-width",
+              "width": "fill_container",
+              "content": "Founder gdhub.io",
+              "lineHeight": 1.5,
+              "textAlign": "center",
+              "fontFamily": "$font",
+              "fontSize": 13,
+              "fontWeight": "normal"
+            },
+            {
+              "type": "text",
+              "id": "a1NAlR",
+              "name": "Address (hubLegalEntity().address)",
+              "fill": "$text-secondary",
+              "textGrowth": "fixed-width",
+              "width": "fill_container",
+              "content": "Police Street I Dead End, N5, Samgori District, Tbilisi 0182, Georgia",
+              "lineHeight": 1.5,
+              "textAlign": "center",
+              "fontFamily": "$font",
+              "fontSize": 13
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "type": "frame",
+      "id": "YvxEs",
+      "x": 808,
+      "y": 92500,
+      "name": "13.01.1 — Email layout · mobile 375",
+      "clip": true,
+      "width": 375,
+      "fill": "$page-bg",
+      "layout": "vertical",
+      "gap": 24,
+      "padding": [
+        24,
+        16,
+        32,
+        16
+      ],
+      "children": [
+        {
+          "id": "rxqdO",
+          "type": "ref",
+          "ref": "HWWOO",
+          "name": "Email / Header",
+          "width": "fill_container",
+          "padding": [
+            0,
+            24
+          ]
+        },
+        {
+          "type": "frame",
+          "id": "LKzOT",
+          "name": "Body",
+          "width": "fill_container",
+          "fill": "$surface",
+          "cornerRadius": 16,
+          "stroke": "$border",
+          "strokeWidth": 1,
+          "strokeAlignment": "inner",
+          "layout": "vertical",
+          "gap": 24,
+          "padding": 24,
+          "children": [
+            {
+              "type": "frame",
+              "id": "nX7uZ",
+              "name": "Copy",
+              "width": "fill_container",
+              "layout": "vertical",
+              "gap": 12,
+              "children": [
+                {
+                  "type": "text",
+                  "id": "DybcZ",
+                  "name": "Heading",
+                  "fill": "$text-primary",
+                  "textGrowth": "fixed-width",
+                  "width": "fill_container",
+                  "content": "One short heading",
+                  "lineHeight": 1.25,
+                  "fontFamily": "$font",
+                  "fontSize": 20,
+                  "fontWeight": "600"
+                },
+                {
+                  "type": "text",
+                  "id": "MBxDC",
+                  "name": "Message",
+                  "fill": "$text-primary",
+                  "textGrowth": "fixed-width",
+                  "width": "fill_container",
+                  "content": "One or two sentences that say what happened and what the button does. Nothing else competes with them.",
+                  "lineHeight": 1.5,
+                  "fontFamily": "$font",
+                  "fontSize": 16
+                }
+              ]
+            },
+            {
+              "id": "w9dDcI",
+              "type": "ref",
+              "ref": "vCuwR",
+              "name": "Email / Button · primary",
+              "width": "fill_container",
+              "descendants": {
+                "H1P4Cj": {
+                  "content": "Primary action"
+                }
+              }
+            },
+            {
+              "type": "frame",
+              "id": "M06pb",
+              "name": "Note",
+              "width": "fill_container",
+              "layout": "vertical",
+              "gap": 8,
+              "children": [
+                {
+                  "type": "text",
+                  "id": "HaOfp",
+                  "name": "Note line",
+                  "fill": "$text-secondary",
+                  "textGrowth": "fixed-width",
+                  "width": "fill_container",
+                  "content": "An optional quiet line under the button: a fallback link, an expiry, a hint.",
+                  "lineHeight": 1.5,
+                  "fontFamily": "$font",
+                  "fontSize": 14
+                }
+              ]
+            },
+            {
+              "id": "D2GQfi",
+              "type": "ref",
+              "ref": "YfMif",
+              "name": "Email / Button · secondary",
+              "width": "fill_container"
+            }
+          ]
+        },
+        {
+          "id": "vTEBv",
+          "type": "ref",
+          "ref": "DjI1t",
+          "name": "Email / Footer",
+          "padding": [
+            8,
+            8,
+            0,
+            8
+          ]
+        }
+      ]
+    },
+    {
+      "type": "frame",
+      "id": "AD2Gb",
+      "x": 1263,
+      "y": 92500,
+      "name": "13.02.1 — Chat · missed messages · one room, one message",
+      "clip": true,
+      "width": 728,
+      "fill": "$page-bg",
+      "layout": "vertical",
+      "gap": 24,
+      "padding": [
+        40,
+        64,
+        48,
+        64
+      ],
+      "children": [
+        {
+          "id": "nKBvI",
+          "type": "ref",
+          "ref": "HWWOO",
+          "name": "Email / Header",
+          "width": "fill_container"
+        },
+        {
+          "type": "frame",
+          "id": "M1lei",
+          "name": "Body",
+          "width": "fill_container",
+          "fill": "$surface",
+          "cornerRadius": 16,
+          "stroke": "$border",
+          "strokeWidth": 1,
+          "strokeAlignment": "inner",
+          "layout": "vertical",
+          "gap": 32,
+          "padding": 48,
+          "children": [
+            {
+              "type": "frame",
+              "id": "bV5An",
+              "name": "Copy",
+              "width": "fill_container",
+              "layout": "vertical",
+              "gap": 12,
+              "children": [
+                {
+                  "type": "text",
+                  "id": "L1qH9X",
+                  "name": "Heading",
+                  "fill": "$text-primary",
+                  "textGrowth": "fixed-width",
+                  "width": "fill_container",
+                  "content": "You have 1 unread message",
+                  "lineHeight": 1.25,
+                  "fontFamily": "$font",
+                  "fontSize": 24,
+                  "fontWeight": "600"
+                },
+                {
+                  "type": "text",
+                  "id": "QaAPj",
+                  "name": "Message",
+                  "fill": "$text-primary",
+                  "textGrowth": "fixed-width",
+                  "width": "fill_container",
+                  "content": "Mira Kovač wrote to you on GDHub.",
+                  "lineHeight": 1.5,
+                  "fontFamily": "$font",
+                  "fontSize": 16
+                }
+              ]
+            },
+            {
+              "type": "frame",
+              "id": "NKhgx",
+              "name": "Room · Mira Kovač",
+              "width": "fill_container",
+              "cornerRadius": 12,
+              "stroke": "$border",
+              "strokeWidth": 1,
+              "strokeAlignment": "inner",
+              "layout": "vertical",
+              "gap": 24,
+              "padding": 24,
+              "children": [
+                {
+                  "type": "frame",
+                  "id": "O5ySfv",
+                  "name": "Room head",
+                  "width": "fill_container",
+                  "gap": 12,
+                  "alignItems": "center",
+                  "children": [
+                    {
+                      "type": "ellipse",
+                      "id": "ZVZ49",
+                      "name": "Avatar 40",
+                      "fill": {
+                        "type": "image",
+                        "enabled": true,
+                        "url": "https://images.unsplash.com/photo-1604364721460-0cbc5866219d?crop=entropy&cs=tinysrgb&fit=max&fm=jpg&ixid=M3w4NDM0ODN8MHwxfHJhbmRvbXx8fHx8fHx8fDE3OTA3MDY1MTV8&ixlib=rb-4.1.0&q=80&w=1080",
+                        "mode": "cover"
+                      },
+                      "width": 40,
+                      "height": 40
+                    },
+                    {
+                      "type": "frame",
+                      "id": "DwyBD",
+                      "name": "Room text",
+                      "width": "fill_container",
+                      "layout": "vertical",
+                      "children": [
+                        {
+                          "type": "text",
+                          "id": "kRpyD",
+                          "name": "Room name",
+                          "fill": "$text-primary",
+                          "textGrowth": "fixed-width",
+                          "width": "fill_container",
+                          "content": "Mira Kovač",
+                          "lineHeight": 1.5,
+                          "fontFamily": "$font",
+                          "fontSize": 16,
+                          "fontWeight": "600"
+                        },
+                        {
+                          "type": "text",
+                          "id": "U4YcD",
+                          "name": "Room meta",
+                          "fill": "$text-secondary",
+                          "textGrowth": "fixed-width",
+                          "width": "fill_container",
+                          "content": "Direct message",
+                          "lineHeight": 1.5,
+                          "fontFamily": "$font",
+                          "fontSize": 14
+                        }
+                      ]
+                    }
+                  ]
+                },
+                {
+                  "type": "frame",
+                  "id": "UdiTQ",
+                  "name": "Messages (one sender: no repeated avatar or name)",
+                  "width": "fill_container",
+                  "layout": "vertical",
+                  "gap": 16,
+                  "padding": [
+                    0,
+                    0,
+                    0,
+                    52
+                  ],
+                  "children": [
+                    {
+                      "type": "frame",
+                      "id": "wDGWI",
+                      "name": "Message",
+                      "width": "fill_container",
+                      "layout": "vertical",
+                      "gap": 4,
+                      "children": [
+                        {
+                          "type": "text",
+                          "id": "F9F9U",
+                          "name": "Time",
+                          "fill": "$text-secondary",
+                          "content": "14:32 UTC",
+                          "fontFamily": "$font",
+                          "fontSize": 13,
+                          "fontWeight": "normal"
+                        },
+                        {
+                          "type": "text",
+                          "id": "x9fOc9",
+                          "name": "Text",
+                          "fill": "$text-primary",
+                          "textGrowth": "fixed-width",
+                          "width": "fill_container",
+                          "content": "Pushed the new cave tileset to the shared folder. Can you check the lighting on level two before Friday?",
+                          "lineHeight": 1.5,
+                          "fontFamily": "$font",
+                          "fontSize": 14,
+                          "fontWeight": "normal"
+                        }
+                      ]
+                    }
+                  ]
+                },
+                {
+                  "id": "TfZ20",
+                  "type": "ref",
+                  "ref": "vCuwR",
+                  "name": "Email / Button · primary",
+                  "descendants": {
+                    "H1P4Cj": {
+                      "content": "Open conversation"
+                    }
+                  }
+                }
+              ]
+            }
+          ]
+        },
+        {
+          "id": "rxlqp",
+          "type": "ref",
+          "ref": "DjI1t",
+          "name": "Email / Footer",
+          "width": "fill_container",
+          "descendants": {
+            "dU6cQ": {
+              "content": "You’re getting this because you have unread messages at gdhub.io."
+            }
+          }
+        }
+      ]
+    },
+    {
+      "type": "frame",
+      "id": "x06TGc",
+      "x": 1263,
+      "y": 93340,
+      "name": "13.02.2 — Chat · missed messages · several rooms, image, initials",
+      "clip": true,
+      "width": 728,
+      "fill": "$page-bg",
+      "layout": "vertical",
+      "gap": 24,
+      "padding": [
+        40,
+        64,
+        48,
+        64
+      ],
+      "children": [
+        {
+          "id": "JipQO",
+          "type": "ref",
+          "ref": "HWWOO",
+          "name": "Email / Header",
+          "width": "fill_container"
+        },
+        {
+          "type": "frame",
+          "id": "V6ojkB",
+          "name": "Body",
+          "width": "fill_container",
+          "fill": "$surface",
+          "cornerRadius": 16,
+          "stroke": "$border",
+          "strokeWidth": 1,
+          "strokeAlignment": "inner",
+          "layout": "vertical",
+          "gap": 32,
+          "padding": 48,
+          "children": [
+            {
+              "type": "frame",
+              "id": "AavRG",
+              "name": "Copy",
+              "width": "fill_container",
+              "layout": "vertical",
+              "gap": 12,
+              "children": [
+                {
+                  "type": "text",
+                  "id": "e4wAu",
+                  "name": "Heading",
+                  "fill": "$text-primary",
+                  "textGrowth": "fixed-width",
+                  "width": "fill_container",
+                  "content": "You have 4 unread messages",
+                  "lineHeight": 1.25,
+                  "fontFamily": "$font",
+                  "fontSize": 24,
+                  "fontWeight": "600"
+                },
+                {
+                  "type": "text",
+                  "id": "k4Udrm",
+                  "name": "Message",
+                  "fill": "$text-primary",
+                  "textGrowth": "fixed-width",
+                  "width": "fill_container",
+                  "content": "In 2 conversations on GDHub.",
+                  "lineHeight": 1.5,
+                  "fontFamily": "$font",
+                  "fontSize": 16
+                }
+              ]
+            },
+            {
+              "type": "frame",
+              "id": "Thblc",
+              "name": "Room · Ember Hollow · Art team",
+              "width": "fill_container",
+              "cornerRadius": 12,
+              "stroke": "$border",
+              "strokeWidth": 1,
+              "strokeAlignment": "inner",
+              "layout": "vertical",
+              "gap": 24,
+              "padding": 24,
+              "children": [
+                {
+                  "type": "frame",
+                  "id": "r4rsc",
+                  "name": "Room head",
+                  "width": "fill_container",
+                  "gap": 12,
+                  "alignItems": "center",
+                  "children": [
+                    {
+                      "type": "ellipse",
+                      "id": "x1N93",
+                      "name": "Avatar 40",
+                      "fill": {
+                        "type": "image",
+                        "enabled": true,
+                        "url": "https://images.unsplash.com/photo-1572583949319-3d1ea748e486?crop=entropy&cs=tinysrgb&fit=max&fm=jpg&ixid=M3w4NDM0ODN8MHwxfHJhbmRvbXx8fHx8fHx8fDE3OTM4NzYyNDd8&ixlib=rb-4.1.0&q=80&w=1080",
+                        "mode": "cover"
+                      },
+                      "width": 40,
+                      "height": 40
+                    },
+                    {
+                      "type": "frame",
+                      "id": "QealI",
+                      "name": "Room text",
+                      "width": "fill_container",
+                      "layout": "vertical",
+                      "children": [
+                        {
+                          "type": "text",
+                          "id": "IMomS",
+                          "name": "Room name",
+                          "fill": "$text-primary",
+                          "textGrowth": "fixed-width",
+                          "width": "fill_container",
+                          "content": "Ember Hollow · Art team",
+                          "lineHeight": 1.5,
+                          "fontFamily": "$font",
+                          "fontSize": 16,
+                          "fontWeight": "600"
+                        },
+                        {
+                          "type": "text",
+                          "id": "h81O8j",
+                          "name": "Room meta",
+                          "fill": "$text-secondary",
+                          "textGrowth": "fixed-width",
+                          "width": "fill_container",
+                          "content": "Project chat · 3 new",
+                          "lineHeight": 1.5,
+                          "fontFamily": "$font",
+                          "fontSize": 14
+                        }
+                      ]
+                    }
+                  ]
+                },
+                {
+                  "type": "frame",
+                  "id": "xTYIR",
+                  "name": "Message · Mira Kovač",
+                  "width": "fill_container",
+                  "gap": 12,
+                  "children": [
+                    {
+                      "type": "ellipse",
+                      "id": "xIcS9",
+                      "name": "Avatar 32",
+                      "fill": {
+                        "type": "image",
+                        "enabled": true,
+                        "url": "https://images.unsplash.com/photo-1604364721460-0cbc5866219d?crop=entropy&cs=tinysrgb&fit=max&fm=jpg&ixid=M3w4NDM0ODN8MHwxfHJhbmRvbXx8fHx8fHx8fDE3OTA3MDY1MTV8&ixlib=rb-4.1.0&q=80&w=1080",
+                        "mode": "cover"
+                      },
+                      "width": 32,
+                      "height": 32
+                    },
+                    {
+                      "type": "frame",
+                      "id": "dvxmq",
+                      "name": "Message body",
+                      "width": "fill_container",
+                      "layout": "vertical",
+                      "gap": 4,
+                      "children": [
+                        {
+                          "type": "frame",
+                          "id": "XckXE",
+                          "name": "Sender line",
+                          "gap": 8,
+                          "alignItems": "center",
+                          "children": [
+                            {
+                              "type": "text",
+                              "id": "UqG9J",
+                              "name": "Sender",
+                              "fill": "$text-primary",
+                              "content": "Mira Kovač",
+                              "fontFamily": "$font",
+                              "fontSize": 14,
+                              "fontWeight": "600"
+                            },
+                            {
+                              "type": "text",
+                              "id": "Rmzgx",
+                              "name": "Time",
+                              "fill": "$text-secondary",
+                              "content": "10:05 UTC",
+                              "fontFamily": "$font",
+                              "fontSize": 13,
+                              "fontWeight": "normal"
+                            }
+                          ]
+                        },
+                        {
+                          "type": "text",
+                          "id": "qCiWJ",
+                          "name": "Text",
+                          "fill": "$text-primary",
+                          "textGrowth": "fixed-width",
+                          "width": "fill_container",
+                          "content": "First pass at the lantern room. Fog is baked, lights are still placeholders.",
+                          "lineHeight": 1.5,
+                          "fontFamily": "$font",
+                          "fontSize": 14
+                        },
+                        {
+                          "type": "frame",
+                          "id": "wbKUV",
+                          "name": "Posted image (≤ column width, 16:9 crop, alt = file name)",
+                          "width": "fill_container",
+                          "height": 232,
+                          "fill": {
+                            "type": "image",
+                            "enabled": true,
+                            "url": "https://images.unsplash.com/photo-1589178208772-6f239b7652e9?crop=entropy&cs=tinysrgb&fit=max&fm=jpg&ixid=M3w4NDM0ODN8MHwxfHJhbmRvbXx8fHx8fHx8fDE3OTM4NzYyMzF8&ixlib=rb-4.1.0&q=80&w=1080",
+                            "mode": "cover"
+                          },
+                          "cornerRadius": 12
+                        }
+                      ]
+                    }
+                  ]
+                },
+                {
+                  "type": "frame",
+                  "id": "HhSVJ",
+                  "name": "Message · Leo Andersen",
+                  "width": "fill_container",
+                  "gap": 12,
+                  "children": [
+                    {
+                      "type": "frame",
+                      "id": "ZPqWF",
+                      "name": "Avatar 32 · initials fallback",
+                      "width": 32,
+                      "height": 32,
+                      "fill": "$neutral-100",
+                      "cornerRadius": 999,
+                      "justifyContent": "center",
+                      "alignItems": "center",
+                      "children": [
+                        {
+                          "type": "text",
+                          "id": "LOZvN",
+                          "name": "Initials",
+                          "fill": "$text-secondary",
+                          "content": "LA",
+                          "fontFamily": "$font",
+                          "fontSize": 13,
+                          "fontWeight": "600"
+                        }
+                      ]
+                    },
+                    {
+                      "type": "frame",
+                      "id": "yWTM4",
+                      "name": "Message body",
+                      "width": "fill_container",
+                      "layout": "vertical",
+                      "gap": 4,
+                      "children": [
+                        {
+                          "type": "frame",
+                          "id": "YFP33",
+                          "name": "Sender line",
+                          "gap": 8,
+                          "alignItems": "center",
+                          "children": [
+                            {
+                              "type": "text",
+                              "id": "cXa0p",
+                              "name": "Sender",
+                              "fill": "$text-primary",
+                              "content": "Leo Andersen",
+                              "fontFamily": "$font",
+                              "fontSize": 14,
+                              "fontWeight": "600"
+                            },
+                            {
+                              "type": "text",
+                              "id": "VfQw5",
+                              "name": "Time",
+                              "fill": "$text-secondary",
+                              "content": "10:12 UTC",
+                              "fontFamily": "$font",
+                              "fontSize": 13,
+                              "fontWeight": "normal"
+                            }
+                          ]
+                        },
+                        {
+                          "type": "text",
+                          "id": "mAsmW",
+                          "name": "Text",
+                          "fill": "$text-primary",
+                          "textGrowth": "fixed-width",
+                          "width": "fill_container",
+                          "content": "Love the fog. Can we try the lanterns a bit warmer?",
+                          "lineHeight": 1.5,
+                          "fontFamily": "$font",
+                          "fontSize": 14
+                        }
+                      ]
+                    }
+                  ]
+                },
+                {
+                  "id": "eHqAI",
+                  "type": "ref",
+                  "ref": "vCuwR",
+                  "name": "Email / Button · primary",
+                  "descendants": {
+                    "H1P4Cj": {
+                      "content": "Open conversation"
+                    }
+                  }
+                }
+              ]
+            },
+            {
+              "type": "frame",
+              "id": "hiluY",
+              "name": "Room · Tomás Okafor",
+              "width": "fill_container",
+              "cornerRadius": 12,
+              "stroke": "$border",
+              "strokeWidth": 1,
+              "strokeAlignment": "inner",
+              "layout": "vertical",
+              "gap": 24,
+              "padding": 24,
+              "children": [
+                {
+                  "type": "frame",
+                  "id": "D2bGC8",
+                  "name": "Room head",
+                  "width": "fill_container",
+                  "gap": 12,
+                  "alignItems": "center",
+                  "children": [
+                    {
+                      "type": "ellipse",
+                      "id": "rOOZQ",
+                      "name": "Avatar 40",
+                      "fill": {
+                        "type": "image",
+                        "enabled": true,
+                        "url": "https://images.unsplash.com/photo-1610386056148-4f75f72a0fe5?crop=entropy&cs=tinysrgb&fit=max&fm=jpg&ixid=M3w4NDM0ODN8MHwxfHJhbmRvbXx8fHx8fHx8fDE3OTA3MDY0MTh8&ixlib=rb-4.1.0&q=80&w=1080",
+                        "mode": "cover"
+                      },
+                      "width": 40,
+                      "height": 40
+                    },
+                    {
+                      "type": "frame",
+                      "id": "dT6Ts",
+                      "name": "Room text",
+                      "width": "fill_container",
+                      "layout": "vertical",
+                      "children": [
+                        {
+                          "type": "text",
+                          "id": "ZBUs2",
+                          "name": "Room name",
+                          "fill": "$text-primary",
+                          "textGrowth": "fixed-width",
+                          "width": "fill_container",
+                          "content": "Tomás Okafor",
+                          "lineHeight": 1.5,
+                          "fontFamily": "$font",
+                          "fontSize": 16,
+                          "fontWeight": "600"
+                        },
+                        {
+                          "type": "text",
+                          "id": "K7kgx",
+                          "name": "Room meta",
+                          "fill": "$text-secondary",
+                          "textGrowth": "fixed-width",
+                          "width": "fill_container",
+                          "content": "Direct message · 2 new",
+                          "lineHeight": 1.5,
+                          "fontFamily": "$font",
+                          "fontSize": 14
+                        }
+                      ]
+                    }
+                  ]
+                },
+                {
+                  "type": "frame",
+                  "id": "eEGLS",
+                  "name": "Messages (one sender: no repeated avatar or name)",
+                  "width": "fill_container",
+                  "layout": "vertical",
+                  "gap": 16,
+                  "padding": [
+                    0,
+                    0,
+                    0,
+                    52
+                  ],
+                  "children": [
+                    {
+                      "type": "frame",
+                      "id": "K2wRK",
+                      "name": "Message",
+                      "width": "fill_container",
+                      "layout": "vertical",
+                      "gap": 4,
+                      "children": [
+                        {
+                          "type": "text",
+                          "id": "lULpk",
+                          "name": "Time",
+                          "fill": "$text-secondary",
+                          "content": "11:40 UTC",
+                          "fontFamily": "$font",
+                          "fontSize": 13,
+                          "fontWeight": "normal"
+                        },
+                        {
+                          "type": "text",
+                          "id": "VP2U9",
+                          "name": "Text",
+                          "fill": "$text-primary",
+                          "textGrowth": "fixed-width",
+                          "width": "fill_container",
+                          "content": "Are we still on for the build review tomorrow at 15:00?",
+                          "lineHeight": 1.5,
+                          "fontFamily": "$font",
+                          "fontSize": 14,
+                          "fontWeight": "normal"
+                        }
+                      ]
+                    },
+                    {
+                      "type": "frame",
+                      "id": "SJ49Z",
+                      "name": "Message",
+                      "width": "fill_container",
+                      "layout": "vertical",
+                      "gap": 4,
+                      "children": [
+                        {
+                          "type": "text",
+                          "id": "S15ufN",
+                          "name": "Time",
+                          "fill": "$text-secondary",
+                          "content": "11:41 UTC",
+                          "fontFamily": "$font",
+                          "fontSize": 13,
+                          "fontWeight": "normal"
+                        },
+                        {
+                          "type": "text",
+                          "id": "ETlLn",
+                          "name": "Text",
+                          "fill": "$text-primary",
+                          "textGrowth": "fixed-width",
+                          "width": "fill_container",
+                          "content": "I’ll bring the new save system, it finally survives a crash.",
+                          "lineHeight": 1.5,
+                          "fontFamily": "$font",
+                          "fontSize": 14,
+                          "fontWeight": "normal"
+                        }
+                      ]
+                    }
+                  ]
+                },
+                {
+                  "id": "eHmjH",
+                  "type": "ref",
+                  "ref": "vCuwR",
+                  "name": "Email / Button · primary",
+                  "descendants": {
+                    "H1P4Cj": {
+                      "content": "Open conversation"
+                    }
+                  }
+                }
+              ]
+            }
+          ]
+        },
+        {
+          "id": "PKIlb",
+          "type": "ref",
+          "ref": "DjI1t",
+          "name": "Email / Footer",
+          "width": "fill_container",
+          "descendants": {
+            "dU6cQ": {
+              "content": "You’re getting this because you have unread messages at gdhub.io."
+            }
+          }
+        }
+      ]
+    },
+    {
+      "type": "frame",
+      "id": "IuRFl",
+      "x": 1263,
+      "y": 94804,
+      "name": "13.02.3 — Chat · invite to a room",
+      "clip": true,
+      "width": 728,
+      "fill": "$page-bg",
+      "layout": "vertical",
+      "gap": 24,
+      "padding": [
+        40,
+        64,
+        48,
+        64
+      ],
+      "children": [
+        {
+          "id": "qBUbQ",
+          "type": "ref",
+          "ref": "HWWOO",
+          "name": "Email / Header",
+          "width": "fill_container"
+        },
+        {
+          "type": "frame",
+          "id": "GuuOR",
+          "name": "Body",
+          "width": "fill_container",
+          "fill": "$surface",
+          "cornerRadius": 16,
+          "stroke": "$border",
+          "strokeWidth": 1,
+          "strokeAlignment": "inner",
+          "layout": "vertical",
+          "gap": 32,
+          "padding": 48,
+          "children": [
+            {
+              "type": "frame",
+              "id": "bKYBF",
+              "name": "Copy",
+              "width": "fill_container",
+              "layout": "vertical",
+              "gap": 12,
+              "children": [
+                {
+                  "type": "text",
+                  "id": "c8iHV7",
+                  "name": "Heading",
+                  "fill": "$text-primary",
+                  "textGrowth": "fixed-width",
+                  "width": "fill_container",
+                  "content": "Mira Kovač invited you to a chat",
+                  "lineHeight": 1.25,
+                  "fontFamily": "$font",
+                  "fontSize": 24,
+                  "fontWeight": "600"
+                },
+                {
+                  "type": "text",
+                  "id": "AfFYc",
+                  "name": "Message",
+                  "fill": "$text-primary",
+                  "textGrowth": "fixed-width",
+                  "width": "fill_container",
+                  "content": "Join Ember Hollow · Art team to talk with the people working on the art.",
+                  "lineHeight": 1.5,
+                  "fontFamily": "$font",
+                  "fontSize": 16
+                }
+              ]
+            },
+            {
+              "type": "frame",
+              "id": "kWubD",
+              "name": "Room · Ember Hollow · Art team",
+              "width": "fill_container",
+              "cornerRadius": 12,
+              "stroke": "$border",
+              "strokeWidth": 1,
+              "strokeAlignment": "inner",
+              "layout": "vertical",
+              "gap": 24,
+              "padding": 24,
+              "children": [
+                {
+                  "type": "frame",
+                  "id": "p7UbDS",
+                  "name": "Room head",
+                  "width": "fill_container",
+                  "gap": 12,
+                  "alignItems": "center",
+                  "children": [
+                    {
+                      "type": "ellipse",
+                      "id": "N5KTEM",
+                      "name": "Avatar 40",
+                      "fill": {
+                        "type": "image",
+                        "enabled": true,
+                        "url": "https://images.unsplash.com/photo-1572583949319-3d1ea748e486?crop=entropy&cs=tinysrgb&fit=max&fm=jpg&ixid=M3w4NDM0ODN8MHwxfHJhbmRvbXx8fHx8fHx8fDE3OTM4NzYyNDd8&ixlib=rb-4.1.0&q=80&w=1080",
+                        "mode": "cover"
+                      },
+                      "width": 40,
+                      "height": 40
+                    },
+                    {
+                      "type": "frame",
+                      "id": "M8aRZ9",
+                      "name": "Room text",
+                      "width": "fill_container",
+                      "layout": "vertical",
+                      "children": [
+                        {
+                          "type": "text",
+                          "id": "G6ZMD",
+                          "name": "Room name",
+                          "fill": "$text-primary",
+                          "textGrowth": "fixed-width",
+                          "width": "fill_container",
+                          "content": "Ember Hollow · Art team",
+                          "lineHeight": 1.5,
+                          "fontFamily": "$font",
+                          "fontSize": 16,
+                          "fontWeight": "600"
+                        },
+                        {
+                          "type": "text",
+                          "id": "kz97m",
+                          "name": "Room meta",
+                          "fill": "$text-secondary",
+                          "textGrowth": "fixed-width",
+                          "width": "fill_container",
+                          "content": "Project chat · 5 members",
+                          "lineHeight": 1.5,
+                          "fontFamily": "$font",
+                          "fontSize": 14
+                        }
+                      ]
+                    }
+                  ]
+                },
+                {
+                  "id": "aVs5o",
+                  "type": "ref",
+                  "ref": "vCuwR",
+                  "name": "Email / Button · primary",
+                  "descendants": {
+                    "H1P4Cj": {
+                      "content": "Open conversation"
+                    }
+                  }
+                }
+              ]
+            }
+          ]
+        },
+        {
+          "id": "JR4gG",
+          "type": "ref",
+          "ref": "DjI1t",
+          "name": "Email / Footer",
+          "width": "fill_container",
+          "descendants": {
+            "dU6cQ": {
+              "content": "You’re getting this because someone invited you to a chat at gdhub.io."
+            }
+          }
+        }
+      ]
+    },
+    {
+      "type": "frame",
+      "id": "YRk0J",
+      "x": 2071,
+      "y": 92500,
+      "name": "13.03 — Sign in (magic link)",
+      "clip": true,
+      "width": 728,
+      "fill": "$page-bg",
+      "layout": "vertical",
+      "gap": 24,
+      "padding": [
+        40,
+        64,
+        48,
+        64
+      ],
+      "children": [
+        {
+          "id": "ysGhf",
+          "type": "ref",
+          "ref": "HWWOO",
+          "name": "Email / Header",
+          "width": "fill_container"
+        },
+        {
+          "type": "frame",
+          "id": "gAYNa",
+          "name": "Body",
+          "width": "fill_container",
+          "fill": "$surface",
+          "cornerRadius": 16,
+          "stroke": "$border",
+          "strokeWidth": 1,
+          "strokeAlignment": "inner",
+          "layout": "vertical",
+          "gap": 32,
+          "padding": 48,
+          "children": [
+            {
+              "type": "frame",
+              "id": "AX0DN",
+              "name": "Copy",
+              "width": "fill_container",
+              "layout": "vertical",
+              "gap": 12,
+              "children": [
+                {
+                  "type": "text",
+                  "id": "yrJcT",
+                  "name": "Heading",
+                  "fill": "$text-primary",
+                  "textGrowth": "fixed-width",
+                  "width": "fill_container",
+                  "content": "Sign in to GDHub",
+                  "lineHeight": 1.25,
+                  "fontFamily": "$font",
+                  "fontSize": 24,
+                  "fontWeight": "600"
+                },
+                {
+                  "type": "text",
+                  "id": "erJAx",
+                  "name": "Message",
+                  "fill": "$text-primary",
+                  "textGrowth": "fixed-width",
+                  "width": "fill_container",
+                  "content": "Use the button below to sign in. The link works once and expires in 24 hours.",
+                  "lineHeight": 1.5,
+                  "fontFamily": "$font",
+                  "fontSize": 16
+                }
+              ]
+            },
+            {
+              "id": "mw9Xe",
+              "type": "ref",
+              "ref": "vCuwR",
+              "name": "Email / Button · primary",
+              "descendants": {
+                "H1P4Cj": {
+                  "content": "Sign in to GDHub"
+                }
+              }
+            },
+            {
+              "type": "frame",
+              "id": "kGCOz",
+              "name": "Note",
+              "width": "fill_container",
+              "layout": "vertical",
+              "gap": 16,
+              "children": [
+                {
+                  "type": "frame",
+                  "id": "yvFQy",
+                  "name": "Fallback link",
+                  "width": "fill_container",
+                  "layout": "vertical",
+                  "gap": 4,
+                  "children": [
+                    {
+                      "type": "text",
+                      "id": "mujEd",
+                      "name": "Fallback label",
+                      "fill": "$text-secondary",
+                      "textGrowth": "fixed-width",
+                      "width": "fill_container",
+                      "content": "Or paste this link into your browser:",
+                      "lineHeight": 1.5,
+                      "fontFamily": "$font",
+                      "fontSize": 14
+                    },
+                    {
+                      "type": "text",
+                      "id": "LWH1z",
+                      "name": "Link",
+                      "fill": "$link",
+                      "textGrowth": "fixed-width",
+                      "width": "fill_container",
+                      "content": "https://gdhub.io/api/auth/callback/email?callbackUrl=https%3A%2F%2Fgdhub.io%2Fhub&token=4b8e1f0c9a7d2e63&email=mira%40kovac.studio",
+                      "lineHeight": 1.5,
+                      "fontFamily": "$font",
+                      "fontSize": 14
+                    }
+                  ]
+                },
+                {
+                  "type": "text",
+                  "id": "dai5X",
+                  "name": "Ignore line",
+                  "fill": "$text-secondary",
+                  "textGrowth": "fixed-width",
+                  "width": "fill_container",
+                  "content": "If you didn’t ask to sign in, ignore this email. Nobody can get into your account without this link.",
+                  "lineHeight": 1.5,
+                  "fontFamily": "$font",
+                  "fontSize": 14
+                }
+              ]
+            }
+          ]
+        },
+        {
+          "id": "t5vTXW",
+          "type": "ref",
+          "ref": "DjI1t",
+          "name": "Email / Footer",
+          "width": "fill_container",
+          "descendants": {
+            "dU6cQ": {
+              "content": "You’re getting this because someone asked to sign in to gdhub.io with this address."
+            },
+            "CSV2J": {
+              "enabled": false
+            }
+          }
+        }
+      ]
+    },
+    {
+      "type": "frame",
+      "id": "cM048",
+      "x": 2879,
+      "y": 92500,
+      "name": "13.04 — Registration (magic link, new account)",
+      "clip": true,
+      "width": 728,
+      "fill": "$page-bg",
+      "layout": "vertical",
+      "gap": 24,
+      "padding": [
+        40,
+        64,
+        48,
+        64
+      ],
+      "children": [
+        {
+          "id": "sUrNK",
+          "type": "ref",
+          "ref": "HWWOO",
+          "name": "Email / Header",
+          "width": "fill_container"
+        },
+        {
+          "type": "frame",
+          "id": "QLIPs",
+          "name": "Body",
+          "width": "fill_container",
+          "fill": "$surface",
+          "cornerRadius": 16,
+          "stroke": "$border",
+          "strokeWidth": 1,
+          "strokeAlignment": "inner",
+          "layout": "vertical",
+          "gap": 32,
+          "padding": 48,
+          "children": [
+            {
+              "type": "frame",
+              "id": "r8RXDY",
+              "name": "Copy",
+              "width": "fill_container",
+              "layout": "vertical",
+              "gap": 12,
+              "children": [
+                {
+                  "type": "text",
+                  "id": "ijHgZ",
+                  "name": "Heading",
+                  "fill": "$text-primary",
+                  "textGrowth": "fixed-width",
+                  "width": "fill_container",
+                  "content": "Welcome to GDHub",
+                  "lineHeight": 1.25,
+                  "fontFamily": "$font",
+                  "fontSize": 24,
+                  "fontWeight": "600"
+                },
+                {
+                  "type": "text",
+                  "id": "jMxv1",
+                  "name": "Message",
+                  "fill": "$text-primary",
+                  "textGrowth": "fixed-width",
+                  "width": "fill_container",
+                  "content": "One step left: confirm your email to create your account. The link works once and expires in 24 hours.",
+                  "lineHeight": 1.5,
+                  "fontFamily": "$font",
+                  "fontSize": 16
+                }
+              ]
+            },
+            {
+              "id": "TdCFA",
+              "type": "ref",
+              "ref": "vCuwR",
+              "name": "Email / Button · primary",
+              "descendants": {
+                "H1P4Cj": {
+                  "content": "Confirm email and continue"
+                }
+              }
+            },
+            {
+              "type": "frame",
+              "id": "Rsx1G",
+              "name": "Note",
+              "width": "fill_container",
+              "layout": "vertical",
+              "gap": 16,
+              "children": [
+                {
+                  "type": "frame",
+                  "id": "Vuj1n",
+                  "name": "Fallback link",
+                  "width": "fill_container",
+                  "layout": "vertical",
+                  "gap": 4,
+                  "children": [
+                    {
+                      "type": "text",
+                      "id": "NfHDA",
+                      "name": "Fallback label",
+                      "fill": "$text-secondary",
+                      "textGrowth": "fixed-width",
+                      "width": "fill_container",
+                      "content": "Or paste this link into your browser:",
+                      "lineHeight": 1.5,
+                      "fontFamily": "$font",
+                      "fontSize": 14
+                    },
+                    {
+                      "type": "text",
+                      "id": "e71UR",
+                      "name": "Link",
+                      "fill": "$link",
+                      "textGrowth": "fixed-width",
+                      "width": "fill_container",
+                      "content": "https://gdhub.io/api/auth/callback/email?callbackUrl=https%3A%2F%2Fgdhub.io%2Fhub&token=4b8e1f0c9a7d2e63&email=mira%40kovac.studio",
+                      "lineHeight": 1.5,
+                      "fontFamily": "$font",
+                      "fontSize": 14
+                    }
+                  ]
+                },
+                {
+                  "type": "text",
+                  "id": "z8Po1",
+                  "name": "Ignore line",
+                  "fill": "$text-secondary",
+                  "textGrowth": "fixed-width",
+                  "width": "fill_container",
+                  "content": "If you didn’t sign up for GDHub, ignore this email and no account will be created.",
+                  "lineHeight": 1.5,
+                  "fontFamily": "$font",
+                  "fontSize": 14
+                }
+              ]
+            }
+          ]
+        },
+        {
+          "id": "Wam5O",
+          "type": "ref",
+          "ref": "DjI1t",
+          "name": "Email / Footer",
+          "width": "fill_container",
+          "descendants": {
+            "dU6cQ": {
+              "content": "You’re getting this because someone started creating an account at gdhub.io with this address."
+            },
+            "CSV2J": {
+              "enabled": false
+            }
+          }
+        }
+      ]
+    },
+    {
+      "type": "frame",
+      "id": "axpdT",
+      "x": 3687,
+      "y": 92500,
+      "name": "13.05 — Team invitation",
+      "clip": true,
+      "width": 728,
+      "fill": "$page-bg",
+      "layout": "vertical",
+      "gap": 24,
+      "padding": [
+        40,
+        64,
+        48,
+        64
+      ],
+      "children": [
+        {
+          "id": "QNCyH",
+          "type": "ref",
+          "ref": "HWWOO",
+          "name": "Email / Header",
+          "width": "fill_container"
+        },
+        {
+          "type": "frame",
+          "id": "eXjRY",
+          "name": "Body",
+          "width": "fill_container",
+          "fill": "$surface",
+          "cornerRadius": 16,
+          "stroke": "$border",
+          "strokeWidth": 1,
+          "strokeAlignment": "inner",
+          "layout": "vertical",
+          "gap": 32,
+          "padding": 48,
+          "children": [
+            {
+              "type": "frame",
+              "id": "E2ozKe",
+              "name": "Copy",
+              "width": "fill_container",
+              "layout": "vertical",
+              "gap": 12,
+              "children": [
+                {
+                  "type": "text",
+                  "id": "pDUq9",
+                  "name": "Heading",
+                  "fill": "$text-primary",
+                  "textGrowth": "fixed-width",
+                  "width": "fill_container",
+                  "content": "Mira Kovač invited you to Ember Hollow",
+                  "lineHeight": 1.25,
+                  "fontFamily": "$font",
+                  "fontSize": 24,
+                  "fontWeight": "600"
+                },
+                {
+                  "type": "text",
+                  "id": "dT5pE",
+                  "name": "Message",
+                  "fill": "$text-primary",
+                  "textGrowth": "fixed-width",
+                  "width": "fill_container",
+                  "content": "You’re invited to the Art team. See the details and answer the invitation on GDHub.",
+                  "lineHeight": 1.5,
+                  "fontFamily": "$font",
+                  "fontSize": 16
+                }
+              ]
+            },
+            {
+              "type": "frame",
+              "id": "JqX9H",
+              "name": "Facts (outlined panel)",
+              "width": "fill_container",
+              "cornerRadius": 12,
+              "stroke": "$border",
+              "strokeWidth": 1,
+              "strokeAlignment": "inner",
+              "layout": "vertical",
+              "gap": 12,
+              "padding": [
+                16,
+                24
+              ],
+              "children": [
+                {
+                  "type": "frame",
+                  "id": "htP5E",
+                  "name": "Fact · Project",
+                  "width": "fill_container",
+                  "gap": 16,
+                  "children": [
+                    {
+                      "type": "text",
+                      "id": "Qhmws",
+                      "name": "Label",
+                      "fill": "$text-secondary",
+                      "textGrowth": "fixed-width",
+                      "width": 120,
+                      "content": "Project",
+                      "lineHeight": 1.5,
+                      "fontFamily": "$font",
+                      "fontSize": 14,
+                      "fontWeight": "normal"
+                    },
+                    {
+                      "type": "text",
+                      "id": "wckVf",
+                      "name": "Value",
+                      "fill": "$text-primary",
+                      "textGrowth": "fixed-width",
+                      "width": "fill_container",
+                      "content": "Ember Hollow",
+                      "lineHeight": 1.5,
+                      "fontFamily": "$font",
+                      "fontSize": 14,
+                      "fontWeight": "500"
+                    }
+                  ]
+                },
+                {
+                  "type": "frame",
+                  "id": "prSak",
+                  "name": "Fact · Team",
+                  "width": "fill_container",
+                  "gap": 16,
+                  "children": [
+                    {
+                      "type": "text",
+                      "id": "BsWaW",
+                      "name": "Label",
+                      "fill": "$text-secondary",
+                      "textGrowth": "fixed-width",
+                      "width": 120,
+                      "content": "Team",
+                      "lineHeight": 1.5,
+                      "fontFamily": "$font",
+                      "fontSize": 14,
+                      "fontWeight": "normal"
+                    },
+                    {
+                      "type": "text",
+                      "id": "CfcL2",
+                      "name": "Value",
+                      "fill": "$text-primary",
+                      "textGrowth": "fixed-width",
+                      "width": "fill_container",
+                      "content": "Art",
+                      "lineHeight": 1.5,
+                      "fontFamily": "$font",
+                      "fontSize": 14,
+                      "fontWeight": "500"
+                    }
+                  ]
+                },
+                {
+                  "type": "frame",
+                  "id": "juWfE",
+                  "name": "Fact · Position",
+                  "width": "fill_container",
+                  "gap": 16,
+                  "children": [
+                    {
+                      "type": "text",
+                      "id": "ywLny",
+                      "name": "Label",
+                      "fill": "$text-secondary",
+                      "textGrowth": "fixed-width",
+                      "width": 120,
+                      "content": "Position",
+                      "lineHeight": 1.5,
+                      "fontFamily": "$font",
+                      "fontSize": 14,
+                      "fontWeight": "normal"
+                    },
+                    {
+                      "type": "text",
+                      "id": "P5xUkw",
+                      "name": "Value",
+                      "fill": "$text-primary",
+                      "textGrowth": "fixed-width",
+                      "width": "fill_container",
+                      "content": "2D Environment Artist",
+                      "lineHeight": 1.5,
+                      "fontFamily": "$font",
+                      "fontSize": 14,
+                      "fontWeight": "500"
+                    }
+                  ]
+                },
+                {
+                  "type": "frame",
+                  "id": "YmIcE",
+                  "name": "Fact · Start date",
+                  "width": "fill_container",
+                  "gap": 16,
+                  "children": [
+                    {
+                      "type": "text",
+                      "id": "O4NuV",
+                      "name": "Label",
+                      "fill": "$text-secondary",
+                      "textGrowth": "fixed-width",
+                      "width": 120,
+                      "content": "Start date",
+                      "lineHeight": 1.5,
+                      "fontFamily": "$font",
+                      "fontSize": 14,
+                      "fontWeight": "normal"
+                    },
+                    {
+                      "type": "text",
+                      "id": "Rhfhq",
+                      "name": "Value",
+                      "fill": "$text-primary",
+                      "textGrowth": "fixed-width",
+                      "width": "fill_container",
+                      "content": "12 January 2027",
+                      "lineHeight": 1.5,
+                      "fontFamily": "$font",
+                      "fontSize": 14,
+                      "fontWeight": "500"
+                    }
+                  ]
+                }
+              ]
+            },
+            {
+              "id": "TJnVv",
+              "type": "ref",
+              "ref": "vCuwR",
+              "name": "Email / Button · primary",
+              "descendants": {
+                "H1P4Cj": {
+                  "content": "View invitation"
+                }
+              }
+            }
+          ]
+        },
+        {
+          "id": "a5wKv",
+          "type": "ref",
+          "ref": "DjI1t",
+          "name": "Email / Footer",
+          "width": "fill_container",
+          "descendants": {
+            "dU6cQ": {
+              "content": "You’re getting this because someone invited you to a project team at gdhub.io."
+            }
+          }
+        }
+      ]
+    },
+    {
+      "type": "frame",
+      "id": "TGSjs",
+      "x": 4495,
+      "y": 92500,
+      "name": "13.06.1 — Invitation response · accepted",
+      "clip": true,
+      "width": 728,
+      "fill": "$page-bg",
+      "layout": "vertical",
+      "gap": 24,
+      "padding": [
+        40,
+        64,
+        48,
+        64
+      ],
+      "children": [
+        {
+          "id": "ffREu",
+          "type": "ref",
+          "ref": "HWWOO",
+          "name": "Email / Header",
+          "width": "fill_container"
+        },
+        {
+          "type": "frame",
+          "id": "xcmTz",
+          "name": "Body",
+          "width": "fill_container",
+          "fill": "$surface",
+          "cornerRadius": 16,
+          "stroke": "$border",
+          "strokeWidth": 1,
+          "strokeAlignment": "inner",
+          "layout": "vertical",
+          "gap": 32,
+          "padding": 48,
+          "children": [
+            {
+              "type": "frame",
+              "id": "m1jX2",
+              "name": "Copy",
+              "width": "fill_container",
+              "layout": "vertical",
+              "gap": 12,
+              "children": [
+                {
+                  "type": "text",
+                  "id": "I9lXg",
+                  "name": "Heading",
+                  "fill": "$text-primary",
+                  "textGrowth": "fixed-width",
+                  "width": "fill_container",
+                  "content": "Leo Andersen accepted your invitation",
+                  "lineHeight": 1.25,
+                  "fontFamily": "$font",
+                  "fontSize": 24,
+                  "fontWeight": "600"
+                },
+                {
+                  "type": "text",
+                  "id": "EhJed",
+                  "name": "Message",
+                  "fill": "$text-primary",
+                  "textGrowth": "fixed-width",
+                  "width": "fill_container",
+                  "content": "Leo joins Ember Hollow as 2D Environment Artist.",
+                  "lineHeight": 1.5,
+                  "fontFamily": "$font",
+                  "fontSize": 16
+                }
+              ]
+            },
+            {
+              "id": "Znj8u",
+              "type": "ref",
+              "ref": "vCuwR",
+              "name": "Email / Button · primary",
+              "descendants": {
+                "H1P4Cj": {
+                  "content": "Open team"
+                }
+              }
+            }
+          ]
+        },
+        {
+          "id": "PNsCM",
+          "type": "ref",
+          "ref": "DjI1t",
+          "name": "Email / Footer",
+          "width": "fill_container",
+          "descendants": {
+            "dU6cQ": {
+              "content": "You’re getting this because you invited Leo Andersen to Ember Hollow."
+            }
+          }
+        }
+      ]
+    },
+    {
+      "type": "frame",
+      "id": "Bnl6P",
+      "x": 4495,
+      "y": 93136,
+      "name": "13.06.2 — Invitation response · accepted, waiting for approval",
+      "clip": true,
+      "width": 728,
+      "fill": "$page-bg",
+      "layout": "vertical",
+      "gap": 24,
+      "padding": [
+        40,
+        64,
+        48,
+        64
+      ],
+      "children": [
+        {
+          "id": "WOiRz",
+          "type": "ref",
+          "ref": "HWWOO",
+          "name": "Email / Header",
+          "width": "fill_container"
+        },
+        {
+          "type": "frame",
+          "id": "iCv69",
+          "name": "Body",
+          "width": "fill_container",
+          "fill": "$surface",
+          "cornerRadius": 16,
+          "stroke": "$border",
+          "strokeWidth": 1,
+          "strokeAlignment": "inner",
+          "layout": "vertical",
+          "gap": 32,
+          "padding": 48,
+          "children": [
+            {
+              "type": "frame",
+              "id": "A2PW35",
+              "name": "Copy",
+              "width": "fill_container",
+              "layout": "vertical",
+              "gap": 12,
+              "children": [
+                {
+                  "type": "text",
+                  "id": "h5y85",
+                  "name": "Heading",
+                  "fill": "$text-primary",
+                  "textGrowth": "fixed-width",
+                  "width": "fill_container",
+                  "content": "Leo Andersen is waiting for your approval",
+                  "lineHeight": 1.25,
+                  "fontFamily": "$font",
+                  "fontSize": 24,
+                  "fontWeight": "600"
+                },
+                {
+                  "type": "text",
+                  "id": "HtiWx",
+                  "name": "Message",
+                  "fill": "$text-primary",
+                  "textGrowth": "fixed-width",
+                  "width": "fill_container",
+                  "content": "Leo accepted the invitation to Ember Hollow as 2D Environment Artist. Review it to add Leo to the team.",
+                  "lineHeight": 1.5,
+                  "fontFamily": "$font",
+                  "fontSize": 16
+                }
+              ]
+            },
+            {
+              "id": "uvIwX",
+              "type": "ref",
+              "ref": "vCuwR",
+              "name": "Email / Button · primary",
+              "descendants": {
+                "H1P4Cj": {
+                  "content": "Review"
+                }
+              }
+            }
+          ]
+        },
+        {
+          "id": "cpPkj",
+          "type": "ref",
+          "ref": "DjI1t",
+          "name": "Email / Footer",
+          "width": "fill_container",
+          "descendants": {
+            "dU6cQ": {
+              "content": "You’re getting this because you invited Leo Andersen to Ember Hollow."
+            }
+          }
+        }
+      ]
+    },
+    {
+      "type": "frame",
+      "id": "ybUmv",
+      "x": 4495,
+      "y": 93796,
+      "name": "13.06.3 — Invitation response · completed (member joined)",
+      "clip": true,
+      "width": 728,
+      "fill": "$page-bg",
+      "layout": "vertical",
+      "gap": 24,
+      "padding": [
+        40,
+        64,
+        48,
+        64
+      ],
+      "children": [
+        {
+          "id": "OtYe8",
+          "type": "ref",
+          "ref": "HWWOO",
+          "name": "Email / Header",
+          "width": "fill_container"
+        },
+        {
+          "type": "frame",
+          "id": "KwsRu",
+          "name": "Body",
+          "width": "fill_container",
+          "fill": "$surface",
+          "cornerRadius": 16,
+          "stroke": "$border",
+          "strokeWidth": 1,
+          "strokeAlignment": "inner",
+          "layout": "vertical",
+          "gap": 32,
+          "padding": 48,
+          "children": [
+            {
+              "type": "frame",
+              "id": "y7bHVm",
+              "name": "Copy",
+              "width": "fill_container",
+              "layout": "vertical",
+              "gap": 12,
+              "children": [
+                {
+                  "type": "text",
+                  "id": "WUwG1",
+                  "name": "Heading",
+                  "fill": "$text-primary",
+                  "textGrowth": "fixed-width",
+                  "width": "fill_container",
+                  "content": "Leo Andersen joined Ember Hollow",
+                  "lineHeight": 1.25,
+                  "fontFamily": "$font",
+                  "fontSize": 24,
+                  "fontWeight": "600"
+                },
+                {
+                  "type": "text",
+                  "id": "smJC3",
+                  "name": "Message",
+                  "fill": "$text-primary",
+                  "textGrowth": "fixed-width",
+                  "width": "fill_container",
+                  "content": "Leo is now on the team as 2D Environment Artist.",
+                  "lineHeight": 1.5,
+                  "fontFamily": "$font",
+                  "fontSize": 16
+                }
+              ]
+            },
+            {
+              "id": "FDozZ",
+              "type": "ref",
+              "ref": "vCuwR",
+              "name": "Email / Button · primary",
+              "descendants": {
+                "H1P4Cj": {
+                  "content": "Open team"
+                }
+              }
+            }
+          ]
+        },
+        {
+          "id": "R6pVM",
+          "type": "ref",
+          "ref": "DjI1t",
+          "name": "Email / Footer",
+          "width": "fill_container",
+          "descendants": {
+            "dU6cQ": {
+              "content": "You’re getting this because you invited Leo Andersen to Ember Hollow."
+            }
+          }
+        }
+      ]
+    },
+    {
+      "type": "frame",
+      "id": "nqmp1",
+      "x": 4495,
+      "y": 94432,
+      "name": "13.06.4 — Invitation response · declined",
+      "clip": true,
+      "width": 728,
+      "fill": "$page-bg",
+      "layout": "vertical",
+      "gap": 24,
+      "padding": [
+        40,
+        64,
+        48,
+        64
+      ],
+      "children": [
+        {
+          "id": "Smn1Z",
+          "type": "ref",
+          "ref": "HWWOO",
+          "name": "Email / Header",
+          "width": "fill_container"
+        },
+        {
+          "type": "frame",
+          "id": "UfZtH",
+          "name": "Body",
+          "width": "fill_container",
+          "fill": "$surface",
+          "cornerRadius": 16,
+          "stroke": "$border",
+          "strokeWidth": 1,
+          "strokeAlignment": "inner",
+          "layout": "vertical",
+          "gap": 32,
+          "padding": 48,
+          "children": [
+            {
+              "type": "frame",
+              "id": "kVq5G",
+              "name": "Copy",
+              "width": "fill_container",
+              "layout": "vertical",
+              "gap": 12,
+              "children": [
+                {
+                  "type": "text",
+                  "id": "z4MtH",
+                  "name": "Heading",
+                  "fill": "$text-primary",
+                  "textGrowth": "fixed-width",
+                  "width": "fill_container",
+                  "content": "Leo Andersen declined your invitation",
+                  "lineHeight": 1.25,
+                  "fontFamily": "$font",
+                  "fontSize": 24,
+                  "fontWeight": "600"
+                },
+                {
+                  "type": "text",
+                  "id": "orE0m",
+                  "name": "Message",
+                  "fill": "$text-primary",
+                  "textGrowth": "fixed-width",
+                  "width": "fill_container",
+                  "content": "Leo won’t be joining Ember Hollow as 2D Environment Artist. The position stays open.",
+                  "lineHeight": 1.5,
+                  "fontFamily": "$font",
+                  "fontSize": 16
+                }
+              ]
+            },
+            {
+              "id": "AQ8Ci",
+              "type": "ref",
+              "ref": "YfMif",
+              "name": "Email / Button · secondary",
+              "descendants": {
+                "aeHUF": {
+                  "content": "Open team"
+                }
+              }
+            }
+          ]
+        },
+        {
+          "id": "fYHdQ",
+          "type": "ref",
+          "ref": "DjI1t",
+          "name": "Email / Footer",
+          "width": "fill_container",
+          "descendants": {
+            "dU6cQ": {
+              "content": "You’re getting this because you invited Leo Andersen to Ember Hollow."
+            }
+          }
+        }
+      ]
+    },
+    {
+      "type": "frame",
+      "id": "hdQty",
+      "x": 5303,
+      "y": 92500,
+      "name": "13.07.1 — Default message · short",
+      "clip": true,
+      "width": 728,
+      "fill": "$page-bg",
+      "layout": "vertical",
+      "gap": 24,
+      "padding": [
+        40,
+        64,
+        48,
+        64
+      ],
+      "children": [
+        {
+          "id": "YMst2",
+          "type": "ref",
+          "ref": "HWWOO",
+          "name": "Email / Header",
+          "width": "fill_container"
+        },
+        {
+          "type": "frame",
+          "id": "MU2jt",
+          "name": "Body",
+          "width": "fill_container",
+          "fill": "$surface",
+          "cornerRadius": 16,
+          "stroke": "$border",
+          "strokeWidth": 1,
+          "strokeAlignment": "inner",
+          "layout": "vertical",
+          "gap": 32,
+          "padding": 48,
+          "children": [
+            {
+              "type": "frame",
+              "id": "BdHpH",
+              "name": "Copy",
+              "width": "fill_container",
+              "layout": "vertical",
+              "gap": 12,
+              "children": [
+                {
+                  "type": "text",
+                  "id": "MUVnx",
+                  "name": "Heading",
+                  "fill": "$text-primary",
+                  "textGrowth": "fixed-width",
+                  "width": "fill_container",
+                  "content": "New application for 2D Environment Artist",
+                  "lineHeight": 1.25,
+                  "fontFamily": "$font",
+                  "fontSize": 24,
+                  "fontWeight": "600"
+                },
+                {
+                  "type": "text",
+                  "id": "y6d6j",
+                  "name": "Message",
+                  "fill": "$text-primary",
+                  "textGrowth": "fixed-width",
+                  "width": "fill_container",
+                  "content": "Leo Andersen applied to the open position on Ember Hollow.",
+                  "lineHeight": 1.5,
+                  "fontFamily": "$font",
+                  "fontSize": 16
+                }
+              ]
+            },
+            {
+              "id": "KhgUa",
+              "type": "ref",
+              "ref": "vCuwR",
+              "name": "Email / Button · primary",
+              "descendants": {
+                "H1P4Cj": {
+                  "content": "Open"
+                }
+              }
+            }
+          ]
+        },
+        {
+          "id": "vGTsz",
+          "type": "ref",
+          "ref": "DjI1t",
+          "name": "Email / Footer",
+          "width": "fill_container",
+          "descendants": {
+            "dU6cQ": {
+              "content": "You’re getting this because you have an account at gdhub.io."
+            }
+          }
+        }
+      ]
+    },
+    {
+      "type": "frame",
+      "id": "FroEC",
+      "x": 5303,
+      "y": 93136,
+      "name": "13.07.2 — Default message · long, several paragraphs",
+      "clip": true,
+      "width": 728,
+      "fill": "$page-bg",
+      "layout": "vertical",
+      "gap": 24,
+      "padding": [
+        40,
+        64,
+        48,
+        64
+      ],
+      "children": [
+        {
+          "id": "uYfeN",
+          "type": "ref",
+          "ref": "HWWOO",
+          "name": "Email / Header",
+          "width": "fill_container"
+        },
+        {
+          "type": "frame",
+          "id": "f3Alhd",
+          "name": "Body",
+          "width": "fill_container",
+          "fill": "$surface",
+          "cornerRadius": 16,
+          "stroke": "$border",
+          "strokeWidth": 1,
+          "strokeAlignment": "inner",
+          "layout": "vertical",
+          "gap": 32,
+          "padding": 48,
+          "children": [
+            {
+              "type": "frame",
+              "id": "YxZxQ",
+              "name": "Copy",
+              "width": "fill_container",
+              "layout": "vertical",
+              "gap": 12,
+              "children": [
+                {
+                  "type": "text",
+                  "id": "f0Uonb",
+                  "name": "Heading",
+                  "fill": "$text-primary",
+                  "textGrowth": "fixed-width",
+                  "width": "fill_container",
+                  "content": "Tomás Okafor answered your advice request",
+                  "lineHeight": 1.25,
+                  "fontFamily": "$font",
+                  "fontSize": 24,
+                  "fontWeight": "600"
+                },
+                {
+                  "type": "text",
+                  "id": "bwZ3x",
+                  "name": "Message",
+                  "fill": "$text-primary",
+                  "textGrowth": "fixed-width",
+                  "width": "fill_container",
+                  "content": "Thanks for sending the build. I played the first two levels twice, once with a gamepad and once with keyboard and mouse.",
+                  "lineHeight": 1.5,
+                  "fontFamily": "$font",
+                  "fontSize": 16
+                },
+                {
+                  "type": "text",
+                  "id": "sIGoJ",
+                  "name": "Message",
+                  "fill": "$text-primary",
+                  "textGrowth": "fixed-width",
+                  "width": "fill_container",
+                  "content": "The core loop is clear, and the lantern mechanic is the strongest part of the game. Right now it only shows up in the second level. I’d bring it into the first ten minutes, even in a small form, so players learn early what makes Ember Hollow different.",
+                  "lineHeight": 1.5,
+                  "fontFamily": "$font",
+                  "fontSize": 16
+                },
+                {
+                  "type": "text",
+                  "id": "B8q8Z",
+                  "name": "Message",
+                  "fill": "$text-primary",
+                  "textGrowth": "fixed-width",
+                  "width": "fill_container",
+                  "content": "The difficulty spike at the bridge is the one thing I’d change before the demo: three of the four playtest videos you shared stop there.",
+                  "lineHeight": 1.5,
+                  "fontFamily": "$font",
+                  "fontSize": 16
+                },
+                {
+                  "type": "text",
+                  "id": "dnsBh",
+                  "name": "Message",
+                  "fill": "$text-primary",
+                  "textGrowth": "fixed-width",
+                  "width": "fill_container",
+                  "content": "Happy to look again after the next build. Book a follow-up from my profile when you’re ready.",
+                  "lineHeight": 1.5,
+                  "fontFamily": "$font",
+                  "fontSize": 16
+                }
+              ]
+            },
+            {
+              "id": "ok2yB",
+              "type": "ref",
+              "ref": "vCuwR",
+              "name": "Email / Button · primary",
+              "descendants": {
+                "H1P4Cj": {
+                  "content": "Open"
+                }
+              }
+            }
+          ]
+        },
+        {
+          "id": "F4fyeC",
+          "type": "ref",
+          "ref": "DjI1t",
+          "name": "Email / Footer",
+          "width": "fill_container",
+          "descendants": {
+            "dU6cQ": {
+              "content": "You’re getting this because you have an account at gdhub.io."
+            }
+          }
+        }
+      ]
+    },
+    {
+      "type": "frame",
+      "id": "FEQAT",
+      "x": 6111,
+      "y": 92500,
+      "name": "13.08.1 — Events · you are registered (to the member)",
+      "clip": true,
+      "width": 728,
+      "fill": "$page-bg",
+      "layout": "vertical",
+      "gap": 24,
+      "padding": [
+        40,
+        64,
+        48,
+        64
+      ],
+      "children": [
+        {
+          "id": "qOOKr",
+          "type": "ref",
+          "ref": "HWWOO",
+          "name": "Email / Header",
+          "width": "fill_container"
+        },
+        {
+          "type": "frame",
+          "id": "GUVkK",
+          "name": "Body",
+          "width": "fill_container",
+          "fill": "$surface",
+          "cornerRadius": 16,
+          "stroke": "$border",
+          "strokeWidth": 1,
+          "strokeAlignment": "inner",
+          "layout": "vertical",
+          "gap": 32,
+          "padding": 48,
+          "children": [
+            {
+              "type": "frame",
+              "id": "mBK2q",
+              "name": "Copy",
+              "width": "fill_container",
+              "layout": "vertical",
+              "gap": 12,
+              "children": [
+                {
+                  "type": "text",
+                  "id": "D0yG2",
+                  "name": "Heading",
+                  "fill": "$text-primary",
+                  "textGrowth": "fixed-width",
+                  "width": "fill_container",
+                  "content": "You’re registered for Pixel Forge Jam",
+                  "lineHeight": 1.25,
+                  "fontFamily": "$font",
+                  "fontSize": 24,
+                  "fontWeight": "600"
+                },
+                {
+                  "type": "text",
+                  "id": "Vjbpu",
+                  "name": "Message",
+                  "fill": "$text-primary",
+                  "textGrowth": "fixed-width",
+                  "width": "fill_container",
+                  "content": "The schedule and everything else about the event are on its page.",
+                  "lineHeight": 1.5,
+                  "fontFamily": "$font",
+                  "fontSize": 16
+                }
+              ]
+            },
+            {
+              "id": "W5iSaC",
+              "type": "ref",
+              "ref": "vCuwR",
+              "name": "Email / Button · primary",
+              "descendants": {
+                "H1P4Cj": {
+                  "content": "Open event"
+                }
+              }
+            }
+          ]
+        },
+        {
+          "id": "nUdQV",
+          "type": "ref",
+          "ref": "DjI1t",
+          "name": "Email / Footer",
+          "width": "fill_container",
+          "descendants": {
+            "dU6cQ": {
+              "content": "You’re getting this because you registered for Pixel Forge Jam."
+            }
+          }
+        }
+      ]
+    },
+    {
+      "type": "frame",
+      "id": "sJpBJ",
+      "x": 6111,
+      "y": 93136,
+      "name": "13.08.2 — Events · new member (to the organiser)",
+      "clip": true,
+      "width": 728,
+      "fill": "$page-bg",
+      "layout": "vertical",
+      "gap": 24,
+      "padding": [
+        40,
+        64,
+        48,
+        64
+      ],
+      "children": [
+        {
+          "id": "q3J81F",
+          "type": "ref",
+          "ref": "HWWOO",
+          "name": "Email / Header",
+          "width": "fill_container"
+        },
+        {
+          "type": "frame",
+          "id": "c6OO7V",
+          "name": "Body",
+          "width": "fill_container",
+          "fill": "$surface",
+          "cornerRadius": 16,
+          "stroke": "$border",
+          "strokeWidth": 1,
+          "strokeAlignment": "inner",
+          "layout": "vertical",
+          "gap": 32,
+          "padding": 48,
+          "children": [
+            {
+              "type": "frame",
+              "id": "wvm0W",
+              "name": "Copy",
+              "width": "fill_container",
+              "layout": "vertical",
+              "gap": 12,
+              "children": [
+                {
+                  "type": "text",
+                  "id": "YJArb",
+                  "name": "Heading",
+                  "fill": "$text-primary",
+                  "textGrowth": "fixed-width",
+                  "width": "fill_container",
+                  "content": "Leo Andersen registered for Pixel Forge Jam",
+                  "lineHeight": 1.25,
+                  "fontFamily": "$font",
+                  "fontSize": 24,
+                  "fontWeight": "600"
+                },
+                {
+                  "type": "text",
+                  "id": "Yg2Zv",
+                  "name": "Message",
+                  "fill": "$text-primary",
+                  "textGrowth": "fixed-width",
+                  "width": "fill_container",
+                  "content": "Your event has a new member. See who else is coming on the event’s page.",
+                  "lineHeight": 1.5,
+                  "fontFamily": "$font",
+                  "fontSize": 16
+                }
+              ]
+            },
+            {
+              "id": "WzU9N",
+              "type": "ref",
+              "ref": "vCuwR",
+              "name": "Email / Button · primary",
+              "descendants": {
+                "H1P4Cj": {
+                  "content": "Open event"
+                }
+              }
+            }
+          ]
+        },
+        {
+          "id": "cVXCh",
+          "type": "ref",
+          "ref": "DjI1t",
+          "name": "Email / Footer",
+          "width": "fill_container",
+          "descendants": {
+            "dU6cQ": {
+              "content": "You’re getting this because you organise Pixel Forge Jam."
+            }
+          }
+        }
+      ]
+    },
+    {
+      "type": "frame",
+      "id": "h9yQr",
+      "x": 6111,
+      "y": 93828,
+      "name": "13.08.3 — Events · message from the organiser (to members)",
+      "clip": true,
+      "width": 728,
+      "fill": "$page-bg",
+      "layout": "vertical",
+      "gap": 24,
+      "padding": [
+        40,
+        64,
+        48,
+        64
+      ],
+      "children": [
+        {
+          "id": "k0b75Q",
+          "type": "ref",
+          "ref": "HWWOO",
+          "name": "Email / Header",
+          "width": "fill_container"
+        },
+        {
+          "type": "frame",
+          "id": "GVWnG",
+          "name": "Body",
+          "width": "fill_container",
+          "fill": "$surface",
+          "cornerRadius": 16,
+          "stroke": "$border",
+          "strokeWidth": 1,
+          "strokeAlignment": "inner",
+          "layout": "vertical",
+          "gap": 32,
+          "padding": 48,
+          "children": [
+            {
+              "type": "frame",
+              "id": "kv0eH",
+              "name": "Copy",
+              "width": "fill_container",
+              "layout": "vertical",
+              "gap": 12,
+              "children": [
+                {
+                  "type": "text",
+                  "id": "wqpIp",
+                  "name": "Heading",
+                  "fill": "$text-primary",
+                  "textGrowth": "fixed-width",
+                  "width": "fill_container",
+                  "content": "Message from Pixel Forge Jam",
+                  "lineHeight": 1.25,
+                  "fontFamily": "$font",
+                  "fontSize": 24,
+                  "fontWeight": "600"
+                },
+                {
+                  "type": "text",
+                  "id": "tGjil",
+                  "name": "Message",
+                  "fill": "$text-primary",
+                  "textGrowth": "fixed-width",
+                  "width": "fill_container",
+                  "content": "Nadia Petrova, the organiser, wrote to everyone registered.",
+                  "lineHeight": 1.5,
+                  "fontFamily": "$font",
+                  "fontSize": 16
+                }
+              ]
+            },
+            {
+              "type": "frame",
+              "id": "iynZP",
+              "name": "Quoted message (outlined panel)",
+              "width": "fill_container",
+              "cornerRadius": 12,
+              "stroke": "$border",
+              "strokeWidth": 1,
+              "strokeAlignment": "inner",
+              "layout": "vertical",
+              "gap": 8,
+              "padding": 24,
+              "children": [
+                {
+                  "type": "text",
+                  "id": "b2ZKH",
+                  "name": "Sender",
+                  "fill": "$text-secondary",
+                  "textGrowth": "fixed-width",
+                  "width": "fill_container",
+                  "content": "Nadia Petrova · organiser",
+                  "lineHeight": 1.5,
+                  "fontFamily": "$font",
+                  "fontSize": 14,
+                  "fontWeight": "600"
+                },
+                {
+                  "type": "text",
+                  "id": "LIgc2",
+                  "name": "Message",
+                  "fill": "$text-primary",
+                  "textGrowth": "fixed-width",
+                  "width": "fill_container",
+                  "content": "Hi everyone! Doors open at 10:00 CET on Saturday. The theme drops on the opening stream, and submissions close on Sunday at 18:00. If you’d like feedback in the warm-up session, bring a build of anything you’ve made before.",
+                  "lineHeight": 1.5,
+                  "fontFamily": "$font",
+                  "fontSize": 16
+                }
+              ]
+            },
+            {
+              "id": "qmtMb",
+              "type": "ref",
+              "ref": "vCuwR",
+              "name": "Email / Button · primary",
+              "descendants": {
+                "H1P4Cj": {
+                  "content": "Open event"
+                }
+              }
+            }
+          ]
+        },
+        {
+          "id": "OtPPY",
+          "type": "ref",
+          "ref": "DjI1t",
+          "name": "Email / Footer",
+          "width": "fill_container",
+          "descendants": {
+            "dU6cQ": {
+              "content": "You’re getting this because you registered for Pixel Forge Jam."
+            }
+          }
+        }
+      ]
+    },
+    {
+      "type": "frame",
+      "id": "kb84k",
+      "x": 6919,
+      "y": 92500,
+      "name": "13.09 — Devlog reminder",
+      "clip": true,
+      "width": 728,
+      "fill": "$page-bg",
+      "layout": "vertical",
+      "gap": 24,
+      "padding": [
+        40,
+        64,
+        48,
+        64
+      ],
+      "children": [
+        {
+          "id": "ipXAX",
+          "type": "ref",
+          "ref": "HWWOO",
+          "name": "Email / Header",
+          "width": "fill_container"
+        },
+        {
+          "type": "frame",
+          "id": "Yvesp",
+          "name": "Body",
+          "width": "fill_container",
+          "fill": "$surface",
+          "cornerRadius": 16,
+          "stroke": "$border",
+          "strokeWidth": 1,
+          "strokeAlignment": "inner",
+          "layout": "vertical",
+          "gap": 32,
+          "padding": 48,
+          "children": [
+            {
+              "type": "frame",
+              "id": "TBFMP",
+              "name": "Copy",
+              "width": "fill_container",
+              "layout": "vertical",
+              "gap": 12,
+              "children": [
+                {
+                  "type": "text",
+                  "id": "tW9To",
+                  "name": "Heading",
+                  "fill": "$text-primary",
+                  "textGrowth": "fixed-width",
+                  "width": "fill_container",
+                  "content": "Time for a devlog post on Ember Hollow",
+                  "lineHeight": 1.25,
+                  "fontFamily": "$font",
+                  "fontSize": 24,
+                  "fontWeight": "600"
+                },
+                {
+                  "type": "text",
+                  "id": "DeUqR",
+                  "name": "Message",
+                  "fill": "$text-primary",
+                  "textGrowth": "fixed-width",
+                  "width": "fill_container",
+                  "content": "A short update keeps your team and followers in the loop. What changed since the last one?",
+                  "lineHeight": 1.5,
+                  "fontFamily": "$font",
+                  "fontSize": 16
+                }
+              ]
+            },
+            {
+              "id": "u4cQAh",
+              "type": "ref",
+              "ref": "vCuwR",
+              "name": "Email / Button · primary",
+              "descendants": {
+                "H1P4Cj": {
+                  "content": "Write a devlog post"
+                }
+              }
+            }
+          ]
+        },
+        {
+          "id": "F326u",
+          "type": "ref",
+          "ref": "DjI1t",
+          "name": "Email / Footer",
+          "width": "fill_container",
+          "descendants": {
+            "dU6cQ": {
+              "content": "You’re getting this because you lead Ember Hollow and devlog reminders are on."
+            }
+          }
+        }
+      ]
+    },
+    {
+      "type": "note",
+      "id": "U6TRf5",
+      "x": 808,
+      "y": 93268,
+      "name": "13.01 · anatomy — values",
+      "width": 375,
+      "height": 420,
+      "content": "Email layout — values (resolved to literals at build time)\n\nGround: page-bg (neutral-50), full width. Column 600, centred; outer padding 40 top / 48 bottom (mobile 24 / 32, sides 16).\nHeader: logo PNG 115×31, alt “GDHub”, inset 48 (mobile 24) to the body's text line.\nBody: surface (white), radius 16, padding 48 (mobile 24), gap 32 between blocks (mobile 24).\nHeading 24/600, lh 1.25 (mobile 20). Message 16/400, lh 1.5, text-primary. Paragraph gap 12.\nButton: solid rectangle, 48 high, padding 0 24, radius 10, 16/500. Primary btn-black + text-invert; secondary surface + 1px border-strong + text-primary. Full width on mobile.\nOutlined panel (facts, quote, chat room): 1px border, radius 12, padding 24 (facts 16 24).\nAvatars: 40 room, 32 sender, circles; no image → initials on neutral-100, 13–14/600 text-secondary.\nPosted image: column width, 16:9 crop, radius 12, alt text = file name.\nFooter: on the ground, centred, 13/400 text-secondary, gap 8, stacked: social icons (20, gap 16) · reason · “Notification settings” (underlined; none in auth emails) · “Founder gdhub.io” (legal name for now) · address from hubLegalEntity()."
+    },
+    {
+      "type": "frame",
+      "id": "TPcrx",
+      "x": 1263,
+      "y": 95580,
+      "name": "13.02.4 — Chat · unread messages, no content (encrypted or left out)",
+      "clip": true,
+      "width": 728,
+      "fill": "$page-bg",
+      "layout": "vertical",
+      "gap": 24,
+      "padding": [
+        40,
+        64,
+        48,
+        64
+      ],
+      "children": [
+        {
+          "id": "mNgE5",
+          "type": "ref",
+          "ref": "HWWOO",
+          "name": "Email / Header",
+          "width": "fill_container"
+        },
+        {
+          "type": "frame",
+          "id": "MaVS1",
+          "name": "Body",
+          "width": "fill_container",
+          "fill": "$surface",
+          "cornerRadius": 16,
+          "stroke": "$border",
+          "strokeWidth": 1,
+          "strokeAlignment": "inner",
+          "layout": "vertical",
+          "gap": 32,
+          "padding": 48,
+          "children": [
+            {
+              "type": "frame",
+              "id": "IhixS",
+              "name": "Copy",
+              "width": "fill_container",
+              "layout": "vertical",
+              "gap": 12,
+              "children": [
+                {
+                  "type": "text",
+                  "id": "PEjCm",
+                  "name": "Heading",
+                  "fill": "$text-primary",
+                  "textGrowth": "fixed-width",
+                  "width": "fill_container",
+                  "content": "You have 5 unread messages",
+                  "lineHeight": 1.25,
+                  "fontFamily": "$font",
+                  "fontSize": 24,
+                  "fontWeight": "600"
+                },
+                {
+                  "type": "text",
+                  "id": "uQdAH",
+                  "name": "Message",
+                  "fill": "$text-primary",
+                  "textGrowth": "fixed-width",
+                  "width": "fill_container",
+                  "content": "They are in 3 conversations on GDHub.",
+                  "lineHeight": 1.5,
+                  "fontFamily": "$font",
+                  "fontSize": 16
+                }
+              ]
+            },
+            {
+              "type": "frame",
+              "id": "RHeJ1",
+              "name": "Rooms (optional compact list, no message text)",
+              "width": "fill_container",
+              "cornerRadius": 12,
+              "stroke": "$border",
+              "strokeWidth": 1,
+              "strokeAlignment": "inner",
+              "layout": "vertical",
+              "padding": [
+                8,
+                24
+              ],
+              "children": [
+                {
+                  "type": "frame",
+                  "id": "d0Ajvf",
+                  "name": "Room · Ember Hollow · Art team",
+                  "width": "fill_container",
+                  "stroke": "$border-subtle",
+                  "strokeWidth": {
+                    "bottom": 1
+                  },
+                  "strokeAlignment": "inner",
+                  "gap": 12,
+                  "padding": [
+                    12,
+                    0
+                  ],
+                  "alignItems": "center",
+                  "children": [
+                    {
+                      "type": "ellipse",
+                      "id": "OsvHH",
+                      "name": "Avatar 32",
+                      "fill": {
+                        "type": "image",
+                        "enabled": true,
+                        "url": "https://images.unsplash.com/photo-1572583949319-3d1ea748e486?crop=entropy&cs=tinysrgb&fit=max&fm=jpg&ixid=M3w4NDM0ODN8MHwxfHJhbmRvbXx8fHx8fHx8fDE3OTM4NzYyNDd8&ixlib=rb-4.1.0&q=80&w=1080",
+                        "mode": "cover"
+                      },
+                      "width": 32,
+                      "height": 32
+                    },
+                    {
+                      "type": "text",
+                      "id": "lYAL4",
+                      "name": "Room name",
+                      "fill": "$text-primary",
+                      "textGrowth": "fixed-width",
+                      "width": "fill_container",
+                      "content": "Ember Hollow · Art team",
+                      "lineHeight": 1.5,
+                      "fontFamily": "$font",
+                      "fontSize": 14,
+                      "fontWeight": "600"
+                    },
+                    {
+                      "type": "text",
+                      "id": "dxbUi",
+                      "name": "Count",
+                      "fill": "$text-secondary",
+                      "content": "3 new",
+                      "fontFamily": "$font",
+                      "fontSize": 13,
+                      "fontWeight": "normal"
+                    }
+                  ]
+                },
+                {
+                  "type": "frame",
+                  "id": "D6BWr",
+                  "name": "Room · Mira Kovač",
+                  "width": "fill_container",
+                  "stroke": "$border-subtle",
+                  "strokeWidth": {
+                    "bottom": 1
+                  },
+                  "strokeAlignment": "inner",
+                  "gap": 12,
+                  "padding": [
+                    12,
+                    0
+                  ],
+                  "alignItems": "center",
+                  "children": [
+                    {
+                      "type": "ellipse",
+                      "id": "Z4Xm8N",
+                      "name": "Avatar 32",
+                      "fill": {
+                        "type": "image",
+                        "enabled": true,
+                        "url": "https://images.unsplash.com/photo-1604364721460-0cbc5866219d?crop=entropy&cs=tinysrgb&fit=max&fm=jpg&ixid=M3w4NDM0ODN8MHwxfHJhbmRvbXx8fHx8fHx8fDE3OTA3MDY1MTV8&ixlib=rb-4.1.0&q=80&w=1080",
+                        "mode": "cover"
+                      },
+                      "width": 32,
+                      "height": 32
+                    },
+                    {
+                      "type": "text",
+                      "id": "uflni",
+                      "name": "Room name",
+                      "fill": "$text-primary",
+                      "textGrowth": "fixed-width",
+                      "width": "fill_container",
+                      "content": "Mira Kovač",
+                      "lineHeight": 1.5,
+                      "fontFamily": "$font",
+                      "fontSize": 14,
+                      "fontWeight": "600"
+                    },
+                    {
+                      "type": "text",
+                      "id": "qZyYv",
+                      "name": "Count",
+                      "fill": "$text-secondary",
+                      "content": "1 new",
+                      "fontFamily": "$font",
+                      "fontSize": 13,
+                      "fontWeight": "normal"
+                    }
+                  ]
+                },
+                {
+                  "type": "frame",
+                  "id": "Wc4f8",
+                  "name": "Room · Pixel Forge Jam · Organisers",
+                  "width": "fill_container",
+                  "stroke": "$border-subtle",
+                  "strokeAlignment": "inner",
+                  "gap": 12,
+                  "padding": [
+                    12,
+                    0
+                  ],
+                  "alignItems": "center",
+                  "children": [
+                    {
+                      "type": "frame",
+                      "id": "g2RfGm",
+                      "name": "Avatar 32 · initials fallback",
+                      "width": 32,
+                      "height": 32,
+                      "fill": "$neutral-100",
+                      "cornerRadius": 999,
+                      "justifyContent": "center",
+                      "alignItems": "center",
+                      "children": [
+                        {
+                          "type": "text",
+                          "id": "Csvyq",
+                          "name": "Initials",
+                          "fill": "$text-secondary",
+                          "content": "PF",
+                          "fontFamily": "$font",
+                          "fontSize": 13,
+                          "fontWeight": "600"
+                        }
+                      ]
+                    },
+                    {
+                      "type": "text",
+                      "id": "kgCxG",
+                      "name": "Room name",
+                      "fill": "$text-primary",
+                      "textGrowth": "fixed-width",
+                      "width": "fill_container",
+                      "content": "Pixel Forge Jam · Organisers",
+                      "lineHeight": 1.5,
+                      "fontFamily": "$font",
+                      "fontSize": 14,
+                      "fontWeight": "600"
+                    },
+                    {
+                      "type": "text",
+                      "id": "c8OIg",
+                      "name": "Count",
+                      "fill": "$text-secondary",
+                      "content": "1 new",
+                      "fontFamily": "$font",
+                      "fontSize": 13,
+                      "fontWeight": "normal"
+                    }
+                  ]
+                }
+              ]
+            },
+            {
+              "id": "nlUC2",
+              "type": "ref",
+              "ref": "vCuwR",
+              "name": "Email / Button · primary",
+              "descendants": {
+                "H1P4Cj": {
+                  "content": "Open chat"
+                }
+              }
+            }
+          ]
+        },
+        {
+          "id": "L4wEi",
+          "type": "ref",
+          "ref": "DjI1t",
+          "name": "Email / Footer",
+          "width": "fill_container",
+          "descendants": {
+            "dU6cQ": {
+              "content": "You’re getting this because you have unread messages at gdhub.io."
+            }
+          }
+        }
+      ]
     }
   ],
   "variables": {

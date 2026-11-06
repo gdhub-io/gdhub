@@ -43,8 +43,8 @@ never been designed.
 - **Media proxy is not a hole.** Images reach the mail client through an app
   endpoint that accepts only a signed, expiring URL for one media id and size.
   It never serves an unsigned id, so the media store does not become public.
-- Existing translations: every new string is a Tolgee key with an English
-  default; en and ru keep working for the auth emails.
+- **English only.** Every email is in English, whatever the reader's locale;
+  the Brevo ru templates (3, 4) retire with the en ones.
 
 ## Done when
 
@@ -57,7 +57,7 @@ never been designed.
       with images enabled. A sender without an avatar shows initials, not a
       riot.im placeholder.
 - [ ] An unsigned or expired media proxy URL answers 403 or 404.
-- [ ] Sign-in and registration emails (en and ru) come out of the repo in the
+- [ ] Sign-in and registration emails (English only) come out of the repo in the
       same layout, and the magic link signs the reader in.
 - [ ] Every Novu email the app triggers (10 workflows) is rendered from code in
       the same layout, and its links point at real pages.
@@ -73,7 +73,7 @@ never been designed.
   The drawer should open on that room.
 - **Proxy:** `GET /api/chat/media/<id>?…` with the signature removed should
   answer 403.
-- **Auth:** sign out, request a magic link on `/signin` (en, then ru), check the
+- **Auth:** sign out, request a magic link on `/signin`, check the
   email in MailHog and follow the link.
 - **Novu:** the Novu dev studio (`npx novu dev`) previews each workflow. Trigger
   one for real, for example a team invitation from the project team page, and
@@ -92,6 +92,10 @@ never been designed.
 
 - Does Brevo stay the sender for auth, or does Novu take it? *Assumed: Brevo
   stays; only the body moves into the repo.*
+- Chat email decisions (2026-11-06): every room keeps its own primary button,
+  the rooms are equal; message times are server time with the zone shown
+  ("14:32 UTC"); an email without message bodies (for example an encrypted
+  room) is its own state, "you have unread messages", with no text.
 - How long does a signed media URL live? *Assumed: 30 days, long enough for a
   notification to be read.*
 
