@@ -158,6 +158,7 @@ const running: CheckpointDto = {
 	previousVerdictReadAt: day(start + 1),
 	day: 10,
 	daysLeft: 18,
+	upcoming: false,
 };
 
 const closed: CheckpointDto = {

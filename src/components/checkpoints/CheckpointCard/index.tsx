@@ -5,7 +5,7 @@ import { useTranslate } from "@tolgee/react";
 import { Button, Flex, Tag, Typography } from "antd";
 import Link from "next/link";
 import type { ReactNode } from "react";
-import { daysUntil, formatShort } from "@/components/WorkflowPath/dates";
+import { formatShort } from "@/components/WorkflowPath/dates";
 import { CheckpointItemKind, CheckpointStatus } from "@/config/prisma-enums";
 import { checkpointPathHref } from "@/lib/checkpoints/hrefs";
 import type { CallRole } from "@/types/checkpoint-call";
@@ -54,7 +54,7 @@ export function CheckpointCard({
 	let dayLine: string | null = null;
 	if (running) {
 		dayLine =
-			startedAt && daysUntil(startedAt) > 0
+			checkpoint.upcoming && startedAt
 				? t("checkpoints.status.starts", "Starts {date}", {
 						date: formatShort(startedAt),
 					})

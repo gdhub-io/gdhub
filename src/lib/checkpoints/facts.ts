@@ -1,6 +1,5 @@
 import { CheckpointItemKind } from "@/config/prisma-enums";
 import { CHECKPOINT_SCOPE_DAY, scopeState } from "@/lib/checkpoints/scope";
-import { devlogDayOf } from "@/lib/checkpoints/sprints";
 import type {
 	CheckpointDevlogDto,
 	CheckpointDto,
@@ -91,17 +90,4 @@ export const sprintFactsOf = (
 			provedIds.has(item.id),
 		),
 	};
-};
-
-/** The sprint wants something from the author: the dot in the sidebar. */
-export const sprintNeedsYou = (facts: SprintFacts, day: number | null) => {
-	if (facts.scopeOpen) return true;
-
-	const devlogDue = devlogDayOf(facts.sprint.number);
-
-	// A past sprint is not asking for anything: its devlog day is gone and a post
-	// written today would be filed under today's sprint.
-	return (
-		!facts.devlog && facts.sprint.state === "current" && (day ?? 0) >= devlogDue
-	);
 };

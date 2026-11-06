@@ -241,6 +241,8 @@ export type CheckpointDto = {
 	/** Counted in UTC on the server — see `checkpointProgress`. */
 	day: number | null;
 	daysLeft: number | null;
+	/** Day 1 is set but still ahead. */
+	upcoming: boolean;
 };
 
 /**

@@ -55,6 +55,7 @@ const base: CheckpointDto = {
 	items: [],
 	day: 14,
 	daysLeft: 14,
+	upcoming: false,
 };
 
 const meta: Meta = { title: "Checkpoints/Pieces" };

@@ -80,6 +80,7 @@ const CHECKPOINT = {
 	updatedAt: "2026-09-18T00:00:00.000Z",
 	day: null,
 	daysLeft: null,
+	upcoming: false,
 	items: [
 		item(
 			"i1",

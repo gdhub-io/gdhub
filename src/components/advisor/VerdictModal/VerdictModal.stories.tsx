@@ -88,6 +88,7 @@ const checkpoint = (started: number): AdvisorCheckpointDto => ({
 	updatedAt: day(-1),
 	day: null,
 	daysLeft: null,
+	upcoming: false,
 	items: [
 		item(
 			"i1",

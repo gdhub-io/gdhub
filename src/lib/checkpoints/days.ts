@@ -48,16 +48,23 @@ export const dayNumberOn = (startedAt: Date, at: Date) => {
 	return Math.max(elapsed + 1, 1);
 };
 
-/** The day number and days left, or nulls for a checkpoint that has not started. */
+/**
+ * The day number and days left, or nulls for a checkpoint with no start. A day
+ * 1 chosen for later still counts as day 1; `upcoming` says it is not today yet.
+ */
 export const checkpointProgress = (
 	startedAt: Date | null,
 	now = new Date(),
 ) => {
-	if (!startedAt) return { day: null, daysLeft: null };
+	if (!startedAt) return { day: null, daysLeft: null, upcoming: false };
 
 	const day = checkpointDay(startedAt, now);
 
-	return { day, daysLeft: CHECKPOINT_DAYS - day };
+	return {
+		day,
+		daysLeft: CHECKPOINT_DAYS - day,
+		upcoming: utcMidnight(startedAt) > utcMidnight(now),
+	};
 };
 
 /** Session 1 is on day 1, session 5 on day 29. */
