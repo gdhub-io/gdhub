@@ -1442,6 +1442,7 @@
 				"description": "News from the GDHub team will appear here.",
 				"title": "No announcements yet"
 			},
+			"members": "{count, plural, one {# member} other {# members}}",
 			"postingAs": "Posting as GDHub",
 			"preview": "GDHub: {text}",
 			"readOnly": "Only GDHub admins post here",
