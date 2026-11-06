@@ -51,7 +51,6 @@ services:
       - gdhub_postgres_data:/var/lib/postgresql/data
       - ./docker/postgres/postgresql.conf:/etc/postgresql/postgresql.conf
       - ./docker/postgres/pg_hba.conf:/etc/postgresql/pg_hba.conf
-      - ./docker/postgres/init.sql:/docker-entrypoint-initdb.d/init-app.sql
     command: postgres -c config_file=/etc/postgresql/postgresql.conf
     networks:
       - gdhub_network
