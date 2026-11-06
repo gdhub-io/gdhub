@@ -157,6 +157,22 @@ The 28-day checkpoint: landing, purchase, path, calls, reviews, verdict, admin, 
 | 12.17 | The old workflow widget (kept for reference) | 6 |
 | 12.18 | Dev · AI curator lab — `/dev/ai-curator` | 3 |
 
+### 13 · Emails
+
+Every transactional email, in English only: one layout, sent by Synapse (chat), Brevo (sign-in, registration) and Novu (the rest).
+
+| № | Screen | States |
+|---|---|---|
+| 13.01 | Email layout — header, body, footer · desktop 600 (+ mobile 375) | 1 |
+| 13.02 | Chat · missed messages — one room, several rooms with an image, invite to a room, unread without message content (Synapse) | 4 |
+| 13.03 | Sign in (magic link) (Brevo) | — |
+| 13.04 | Registration (magic link, new account) (Brevo) | — |
+| 13.05 | Team invitation | — |
+| 13.06 | Invitation response to the inviter — accepted, waiting for approval, joined, declined | 4 |
+| 13.07 | Default message — short, long (generic Novu notification) | 2 |
+| 13.08 | Events — registered, new member to the organiser, message from the organiser | 3 |
+| 13.09 | Devlog reminder | — |
+
 ## C. Spaces and their features
 
 ### 03 · Hub

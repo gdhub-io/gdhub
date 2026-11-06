@@ -544,11 +544,12 @@ party running a client we do not use. The destination is a homeserver setting,
 
 Templates cannot help: the mailer hands them a finished `link` and no room id.
 
-So `client_base_url` points at `https://gdhub.io/chat` (locally
-`http://localhost:3000/chat`), and [src/app/chat](../src/app/chat) turns that
+So `client_base_url` points at `https://gdhub.io/open-chat` (locally
+`http://localhost:3000/open-chat`; renamed from `/chat` in GDHUB-160 to keep
+`/chat` free for the chat itself), and [src/app/open-chat](../src/app/open-chat) turns that
 shape into `/hub?chat=1&roomId=…`. The room id lives in the URL *fragment*,
 which never reaches the server, so the page is a client-side redirect —
-[deep-link.ts](../src/app/chat/deep-link.ts) holds the mapping and is unit
+[deep-link.ts](../src/lib/chat/deep-link.ts) holds the mapping and is unit
 tested.
 
 `src/proxy.ts` now keeps the query string in `callbackUrl`: without it a
@@ -560,6 +561,34 @@ namespace regex had to widen — seeded dev users are `@user-author-1`, not
 cuids, so a cuid-shaped regex 500'd their `/api/chat/session`. It still
 excludes `@admin` and the appservice's own account.
 
+
+### 7.6 What the notification emails look like (GDHUB-160, 2026-11-06)
+
+The templates in `matrix-chat-server/synapse/templates` draw design frame 13.02:
+`notif_mail.html` and `room.html`, with shared parts in `_gdhub_email.html`.
+Synapse renders them with its own Jinja environment, so they can only use what
+`synapse/push/mailer.py` passes in and the filters in
+`synapse/util/templates.py`.
+
+- **Links.** Emails sent before `client_base_url` moved to `/open-chat` link to
+  `/hub#/room/…`. `useChatDrawerQuery` reads `#/room/<id>` on any page, so those
+  links open the room too.
+- **Images.** Synapse's `mxc_to_http` filter points at the unauthenticated media
+  API, which answers 404 since authenticated media. The templates build
+  `{app}/api/chat/media/{server}/{mediaId}?width=&height=&method=` instead, with
+  the host taken from the room link. That route fetches the thumbnail with the
+  admin token. Jinja cannot sign a URL, so the route is public. It serves only
+  thumbnails, up to 800×600, and only of this homeserver's media
+  ([email-media.ts](../src/lib/chat/email-media.ts)), rate-limited per IP. The
+  random media id is the capability, as it was before authenticated media.
+- **Times** are `format_ts("%H:%M %Z")`, the container's time zone (UTC).
+- **No content.** When nothing in the email is readable (encrypted rooms), it
+  falls back to 13.02.4: a count, the rooms and one "Open chat".
+- **Subjects** come from `email.subjects` in `homeserver.yaml`; the subject is
+  also the heading.
+- **Check before deploying:** run the templates through Synapse's
+  `build_jinja_env` inside the container with sample contexts. An include does
+  not see `loop`, for example, and that only shows up when the template renders.
 
 ## 8. Spaces and chats (design, 2026-08-19)
 
