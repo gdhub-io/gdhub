@@ -1,0 +1,56 @@
+GDHub Source-Available License (View Only)
+
+Copyright (c) 2022-2026 Dzmitry Drynau. All rights reserved.
+
+This repository is made public so that its code can be read and evaluated,
+for example by prospective employers or collaborators reviewing the author's
+work. It is NOT open source.
+
+1. What you may do
+
+   You may view and read the source code in this repository, and run it
+   locally for the sole purpose of evaluating the author's work, provided you
+   do not keep, share or deploy it afterwards.
+
+2. What you may not do
+
+   Without prior written permission from the copyright holder, you may not:
+
+   a. copy, reproduce or redistribute the code, in whole or in part;
+   b. modify the code or create derivative works based on it;
+   c. use the code, in whole or in part, in any other project, product or
+      service, whether commercial or non-commercial;
+   d. deploy, host or operate the code, or offer it as a service;
+   e. sublicense, sell or otherwise transfer any rights to the code;
+   f. use the code, in whole or in part, to train or fine-tune machine
+      learning models.
+
+   Forking this repository on GitHub is permitted only to the extent
+   required by the GitHub Terms of Service; a fork grants no rights beyond
+   those in section 1.
+
+3. Contributing
+
+   If you would like to take part in the development of GDHub, write to
+   info@gdhub.io. Contributions are accepted only under a separate written
+   agreement.
+
+4. Trademarks
+
+   This license grants no rights to the name "GDHub", its logos or other
+   brand assets.
+
+5. Third-party components
+
+   Third-party libraries and assets used by this project remain under their
+   own licenses. This license applies only to the code and materials authored
+   for GDHub.
+
+6. No warranty
+
+   THE CODE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
+   IMPLIED. IN NO EVENT SHALL THE COPYRIGHT HOLDER BE LIABLE FOR ANY CLAIM,
+   DAMAGES OR OTHER LIABILITY ARISING FROM THE CODE OR ITS USE.
+
+Any use not expressly permitted above is prohibited. For permissions,
+write to info@gdhub.io.
