@@ -85,9 +85,7 @@ export function AdvisorCheckpointCard({
 							<Button type="link" onClick={() => setBriefOpen(true)}>
 								{t("advisor.brief.open", "Details")}
 							</Button>
-							<Link
-								href={`/user/project/${checkpoint.project.slug}/checkpoints/${checkpoint.id}`}
-							>
+							<Link href={`/advisor/checkpoints/${checkpoint.id}`}>
 								<Button>{t("checkpoints.open", "Open checkpoint")}</Button>
 							</Link>
 						</>

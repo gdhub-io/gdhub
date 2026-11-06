@@ -1,6 +1,6 @@
 import { describe, expect, it, vi } from "vitest";
 import { CheckpointCuratorKind, CheckpointStatus } from "@/config/prisma-enums";
-import { sprintFactsOf, sprintNeedsYou } from "@/lib/checkpoints/facts";
+import { sprintFactsOf } from "@/lib/checkpoints/facts";
 import type {
 	CheckpointDto,
 	CheckpointPulseRowDto,
@@ -71,6 +71,7 @@ const checkpoint = (over: Partial<CheckpointDto> = {}): CheckpointDto => ({
 	items: [],
 	day: 14,
 	daysLeft: 14,
+	upcoming: false,
 	sprints: [sprint(1, "done"), sprint(2, "current")],
 	...over,
 });
@@ -202,48 +203,5 @@ describe("sprintFactsOf", () => {
 
 		expect(facts.proved).toHaveLength(1);
 		expect(facts.outcomesProved.map((item) => item.id)).toEqual(["i1"]);
-	});
-});
-
-describe("sprintNeedsYou", () => {
-	const facts = (over: Partial<ReturnType<typeof sprintFactsOf>>) =>
-		({
-			sprint: sprint(2, "current"),
-			devlog: null,
-			scopeNote: null,
-			scopeOpen: false,
-			marks: { confirmed: 0, asked: 0, missing: [] },
-			proved: [],
-			outcomesProved: [],
-			...over,
-		}) as ReturnType<typeof sprintFactsOf>;
-
-	it("marks a sprint whose devlog is due and missing", () => {
-		expect(sprintNeedsYou(facts({}), 14)).toBe(true);
-		expect(sprintNeedsYou(facts({}), 13)).toBe(false);
-	});
-
-	it("leaves a sprint alone once its devlog is in", () => {
-		expect(
-			sprintNeedsYou(
-				facts({
-					devlog: {
-						id: "r",
-						publishedAt: "2026-09-13T10:00:00.000Z",
-						sprint: 2,
-					},
-				}),
-				14,
-			),
-		).toBe(false);
-	});
-
-	it("marks a sprint whose scope note can still be answered, whatever the day", () => {
-		expect(sprintNeedsYou(facts({ scopeNote: "…", scopeOpen: true }), 8)).toBe(true);
-		expect(sprintNeedsYou(facts({ scopeNote: "…", scopeOpen: false }), 8)).toBe(false);
-	});
-
-	it("says nothing about a sprint that has not started", () => {
-		expect(sprintNeedsYou(facts({ sprint: sprint(4, "ahead") }), 14)).toBe(false);
 	});
 });

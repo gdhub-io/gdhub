@@ -97,6 +97,8 @@ export function AdvisorCheckpointsClient() {
 							key={row.id}
 							checkpoint={row}
 							projectSlug={row.project.slug}
+							projectName={row.project.name}
+							viewer="curator"
 							href={`/advisor/checkpoints/${row.id}`}
 							action={withVerdict ? verdictAction(row) : undefined}
 						/>

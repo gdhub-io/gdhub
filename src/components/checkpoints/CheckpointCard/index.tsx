@@ -5,7 +5,10 @@ import { useTranslate } from "@tolgee/react";
 import { Button, Flex, Tag, Typography } from "antd";
 import Link from "next/link";
 import type { ReactNode } from "react";
+import { formatShort } from "@/components/WorkflowPath/dates";
 import { CheckpointItemKind, CheckpointStatus } from "@/config/prisma-enums";
+import { checkpointPathHref } from "@/lib/checkpoints/hrefs";
+import type { CallRole } from "@/types/checkpoint-call";
 import type { CheckpointDto } from "@/types/checkpoints";
 import { CheckpointStatusSlot } from "../CheckpointStatusSlot";
 import { CheckpointCurator } from "./Curator";
@@ -20,6 +23,10 @@ export type CheckpointCardProps = {
 	href?: string;
 	/** Placed before the button: what the viewer owes this checkpoint, if anything. */
 	action?: ReactNode;
+	/** Named in the title where the card stands outside its project, as in the curator's list. */
+	projectName?: string;
+	/** The curator reads the card from the other side: their chat is with the team. */
+	viewer?: CallRole;
 };
 
 /**
@@ -31,6 +38,8 @@ export function CheckpointCard({
 	projectSlug,
 	href,
 	action,
+	projectName,
+	viewer = "team",
 }: CheckpointCardProps) {
 	const { t } = useTranslate();
 
@@ -41,11 +50,18 @@ export function CheckpointCard({
 	// While the 28 days run the day belongs to the dates; after that the slot
 	// beside the title says what is being waited for.
 	const running = checkpoint.status === CheckpointStatus.Active;
-	const dayLine = running
-		? t("checkpoints.status.day", "Day {day} of 28", {
-				day: checkpoint.day ?? 1,
-			})
-		: null;
+	const { startedAt } = checkpoint;
+	let dayLine: string | null = null;
+	if (running) {
+		dayLine =
+			checkpoint.upcoming && startedAt
+				? t("checkpoints.status.starts", "Starts {date}", {
+						date: formatShort(startedAt),
+					})
+				: t("checkpoints.status.day", "Day {day} of 28", {
+						day: checkpoint.day ?? 1,
+					});
+	}
 
 	const outcomes = checkpoint.items.filter(
 		(item) => item.kind === CheckpointItemKind.Outcome,
@@ -58,6 +74,7 @@ export function CheckpointCard({
 				<Flex vertical gap={8} className={styles.identity}>
 					<Flex gap={12} align="center" wrap>
 						<Typography.Text className={styles.title}>
+							{projectName && `${projectName} · `}
 							{t("checkpoints.number", "Checkpoint {number}", {
 								number: checkpoint.order,
 							})}
@@ -70,7 +87,11 @@ export function CheckpointCard({
 					</Typography.Text>
 				</Flex>
 
-				<CheckpointCurator checkpoint={checkpoint} projectSlug={projectSlug} />
+				<CheckpointCurator
+					checkpoint={checkpoint}
+					projectSlug={projectSlug}
+					viewer={viewer}
+				/>
 			</Flex>
 
 			{!!checkpoint.sprints?.length && (
@@ -95,11 +116,7 @@ export function CheckpointCard({
 
 			<Flex justify="flex-end" align="center" gap={12} wrap>
 				{action}
-				<Link
-					href={
-						href ?? `/user/project/${projectSlug}/checkpoints/${checkpoint.id}`
-					}
-				>
+				<Link href={href ?? checkpointPathHref(projectSlug, checkpoint.order)}>
 					<Button icon={<IconArrowRight size={16} />} iconPlacement="end">
 						{t("checkpoints.open", "Open checkpoint")}
 					</Button>

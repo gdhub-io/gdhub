@@ -163,20 +163,9 @@ export const useAnswerCheckpoint = (id?: string) => {
 			).data,
 		onSuccess: () => {
 			queryClient.invalidateQueries({ queryKey: ["advisor-checkpoints"] });
-			queryClient.invalidateQueries({ queryKey: ["advisor-checkpoint", id] });
 		},
 	});
 };
-
-/** One of them, opened. Null for a checkpoint this curator does not run. */
-export const useAdvisorCheckpoint = (id?: string) =>
-	useQuery({
-		queryKey: ["advisor-checkpoint", id],
-		queryFn: async () =>
-			(await axios.get<AdvisorCheckpointDto>(`/api/advisor/checkpoints/${id}`))
-				.data,
-		enabled: !!id,
-	});
 
 /** The project behind a checkpoint, fetched when the curator opens its card. */
 export const useAdvisorProject = (checkpointId?: string, enabled = true) =>

@@ -1968,6 +1968,7 @@
 			"title": "Cancel this draft?"
 		},
 		"card": {
+			"chatTeam": "Chat with team",
 			"goal": "Checkpoint goal",
 			"legendCut": "Cut on day {day} · not counted",
 			"legendReworded": "Reworded on day {day}",
@@ -2613,7 +2614,8 @@
 			"awaitingVerdict": "Awaiting verdict",
 			"day": "Day {day} of 28",
 			"daysLeft": "{count} days left",
-			"declined": "Expert unavailable"
+			"declined": "Expert unavailable",
+			"starts": "Starts {date}"
 		},
 		"tab": "Checkpoints",
 		"tab.evidence": "Evidence",

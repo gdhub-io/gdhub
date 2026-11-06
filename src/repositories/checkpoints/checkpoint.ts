@@ -377,7 +377,7 @@ export const withProgress = <
 		...checkpoint,
 		...(running
 			? checkpointProgress(checkpoint.startedAt)
-			: { day: null, daysLeft: null }),
+			: { day: null, daysLeft: null, upcoming: false }),
 	};
 };
 

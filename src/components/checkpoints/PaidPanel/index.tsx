@@ -219,10 +219,6 @@ export function PaidPanel({
 	);
 
 	const number = checkpoint.number ?? checkpoint.order;
-	// A day 1 chosen for later is not today, and "Day 1 of 28" would say it is.
-	const firstDayAhead =
-		!!checkpoint.startedAt &&
-		dayjs.utc(checkpoint.startedAt).isAfter(dayjs.utc(), "day");
 
 	let body: ReactNode;
 
@@ -280,7 +276,7 @@ export function PaidPanel({
 				/>
 				{heading(
 					t("checkpoints.paid.onYourWay", "You're on your way"),
-					firstDayAhead
+					checkpoint.upcoming
 						? t(
 								"checkpoints.paid.onYourWayFrom",
 								"Day 1 on {date} · Checkpoint {number} · AI curator",
