@@ -522969,6 +522969,9 @@
           "descendants": {
             "dU6cQ": {
               "content": "You’re getting this because you have unread messages at gdhub.io."
+            },
+            "ahuYi": {
+              "content": "Unsubscribe from chat emails"
             }
           }
         }
@@ -523477,6 +523480,9 @@
           "descendants": {
             "dU6cQ": {
               "content": "You’re getting this because you have unread messages at gdhub.io."
+            },
+            "ahuYi": {
+              "content": "Unsubscribe from chat emails"
             }
           }
         }
@@ -523650,6 +523656,9 @@
           "descendants": {
             "dU6cQ": {
               "content": "You’re getting this because someone invited you to a chat at gdhub.io."
+            },
+            "ahuYi": {
+              "content": "Unsubscribe from chat emails"
             }
           }
         }
@@ -525328,7 +525337,7 @@
       "name": "13.01 · anatomy — values",
       "width": 375,
       "height": 420,
-      "content": "Email layout — values (resolved to literals at build time)\n\nGround: page-bg (neutral-50), full width. Column 600, centred; outer padding 40 top / 48 bottom (mobile 24 / 32, sides 16).\nHeader: logo PNG 115×31, alt “GDHub”, inset 48 (mobile 24) to the body's text line.\nBody: surface (white), radius 16, padding 48 (mobile 24), gap 32 between blocks (mobile 24).\nHeading 24/600, lh 1.25 (mobile 20). Message 16/400, lh 1.5, text-primary. Paragraph gap 12.\nButton: solid rectangle, 48 high, padding 0 24, radius 10, 16/500. Primary btn-black + text-invert; secondary surface + 1px border-strong + text-primary. Full width on mobile.\nOutlined panel (facts, quote, chat room): 1px border, radius 12, padding 24 (facts 16 24).\nAvatars: 40 room, 32 sender, circles; no image → initials on neutral-100, 13–14/600 text-secondary.\nPosted image: column width, 16:9 crop, radius 12, alt text = file name.\nFooter: on the ground, centred, 13/400 text-secondary, gap 8, stacked: social icons (20, gap 16) · reason · “Notification settings” (underlined; none in auth emails) · “Founder gdhub.io” (legal name for now) · address from hubLegalEntity()."
+      "content": "Email layout — values (resolved to literals at build time)\n\nGround: page-bg (neutral-50), full width. Column 600, centred; outer padding 40 top / 48 bottom (mobile 24 / 32, sides 16).\nHeader: logo PNG 115×31, alt “GDHub”, inset 48 (mobile 24) to the body's text line.\nBody: surface (white), radius 16, padding 48 (mobile 24), gap 32 between blocks (mobile 24).\nHeading 24/600, lh 1.25 (mobile 20). Message 16/400, lh 1.5, text-primary. Paragraph gap 12.\nButton: solid rectangle, 48 high, padding 0 24, radius 10, 16/500. Primary btn-black + text-invert; secondary surface + 1px border-strong + text-primary. Full width on mobile.\nOutlined panel (facts, quote, chat room): 1px border, radius 12, padding 24 (facts 16 24).\nAvatars: 40 room, 32 sender, circles; no image → initials on neutral-100, 13–14/600 text-secondary.\nPosted image: column width, 16:9 crop, radius 12, alt text = file name.\nFooter: on the ground, centred, 13/400 text-secondary, gap 8, stacked: social icons (20, gap 16) · reason · “Notification settings” (underlined; none in auth emails) · “Founder gdhub.io” (legal name for now) · address from hubLegalEntity().\nChat emails (13.02.*): the footer link reads “Unsubscribe from chat emails” — Synapse offers a one-click unsubscribe, no settings page. All other emails keep “Notification settings”."
     },
     {
       "type": "frame",
@@ -525615,6 +525624,9 @@
           "descendants": {
             "dU6cQ": {
               "content": "You’re getting this because you have unread messages at gdhub.io."
+            },
+            "ahuYi": {
+              "content": "Unsubscribe from chat emails"
             }
           }
         }

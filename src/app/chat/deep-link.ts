@@ -6,12 +6,16 @@
  * The room id lives in the URL *fragment*, which never reaches the server, so
  * the translation happens in the browser.
  */
-export function chatDeepLinkFromHash(hash: string): string {
+export function roomIdFromHash(hash: string): string | null {
 	const match = hash.match(/^#\/room\/([^/?]+)/);
-	if (!match) return "/hub?chat=1";
-
 	// Room ids are `!opaque:server` — Synapse leaves them unencoded, mail
 	// clients sometimes do not.
-	const roomId = decodeURIComponent(match[1]);
-	return `/hub?chat=1&roomId=${encodeURIComponent(roomId)}`;
+	return match ? decodeURIComponent(match[1]) : null;
+}
+
+export function chatDeepLinkFromHash(hash: string): string {
+	const roomId = roomIdFromHash(hash);
+	return roomId
+		? `/hub?chat=1&roomId=${encodeURIComponent(roomId)}`
+		: "/hub?chat=1";
 }

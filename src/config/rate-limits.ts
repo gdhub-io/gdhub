@@ -21,6 +21,8 @@ export const RATE_LIMITS = {
 		{ limit: 3, seconds: 10 * MINUTE },
 		{ limit: 10, seconds: DAY },
 	],
+	/** Chat email images from one IP; Gmail fetches through a few shared proxies. */
+	emailMediaPerIp: [{ limit: 600, seconds: MINUTE }],
 	/** Team invitation emails one user may send. */
 	teamInvite: [
 		{ limit: 20, seconds: HOUR },

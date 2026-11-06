@@ -1,5 +1,5 @@
 import { describe, expect, it } from "vitest";
-import { chatDeepLinkFromHash } from "../src/app/chat/deep-link";
+import { chatDeepLinkFromHash, roomIdFromHash } from "../src/app/chat/deep-link";
 
 const ROOM = "!DZYIUPmKlKhhJeIvAa:matrix.gdhub.io";
 
@@ -25,5 +25,16 @@ describe("chatDeepLinkFromHash", () => {
 	it("falls back to the chat drawer when there is no room in the link", () => {
 		expect(chatDeepLinkFromHash("")).toBe("/hub?chat=1");
 		expect(chatDeepLinkFromHash("#/")).toBe("/hub?chat=1");
+	});
+});
+
+describe("roomIdFromHash", () => {
+	it("reads the room from an old /hub#/room/… email link", () => {
+		expect(roomIdFromHash(`#/room/${ROOM}/$J8gTP5278lxBz19j7_v9pQ`)).toBe(ROOM);
+	});
+
+	it("leaves page anchors alone", () => {
+		expect(roomIdFromHash("#faq")).toBeNull();
+		expect(roomIdFromHash("")).toBeNull();
 	});
 });

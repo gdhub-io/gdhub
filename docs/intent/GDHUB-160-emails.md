@@ -40,13 +40,19 @@ never been designed.
   `matrix-chat-server`.
 - **Old links keep working.** Emails already sent link to `/hub#/room/…`; that
   shape opens the right room too, alongside `/chat#/room/…`.
-- **Media proxy is not a hole.** Images reach the mail client through an app
-  endpoint that accepts only a signed, expiring URL for one media id and size.
-  It never serves an unsigned id, so the media store does not become public.
+- **Media proxy is not a hole.** Images reach the mail client through
+  `/api/chat/media`, which serves only thumbnails of our own homeserver's media,
+  never originals, and is rate-limited. Synapse's Jinja cannot sign a URL, so the
+  random media id is the capability (decided 2026-11-06).
 - **English only.** Every email is in English, whatever the reader's locale;
   the Brevo ru templates (3, 4) retire with the en ones.
 
 ## Done when
+
+This pass covers Synapse only (Dmitry, 2026-11-06). Sign-in, registration and
+the Novu emails are designed (13.03–13.09) but not built yet; their two items
+below wait for a later pass.
+
 
 - [ ] A chat notification email shows the GDHub layout, with no Element, Riot
       or matrix.org branding anywhere in it.
@@ -56,7 +62,7 @@ never been designed.
 - [ ] The sender's avatar, the room avatar and a posted image render in Gmail
       with images enabled. A sender without an avatar shows initials, not a
       riot.im placeholder.
-- [ ] An unsigned or expired media proxy URL answers 403 or 404.
+- [ ] The media route answers 404 for an original, an oversized thumbnail or another server's media.
 - [ ] Sign-in and registration emails (English only) come out of the repo in the
       same layout, and the magic link signs the reader in.
 - [ ] Every Novu email the app triggers (10 workflows) is rendered from code in
@@ -71,8 +77,8 @@ never been designed.
   conversation.
 - **Old link:** open `http://localhost:3000/hub#/room/<roomId>` while signed in.
   The drawer should open on that room.
-- **Proxy:** `GET /api/chat/media/<id>?…` with the signature removed should
-  answer 403.
+- **Proxy:** `GET /api/chat/media/<server>/<id>` without `width`, `height` and
+  `method` should answer 404.
 - **Auth:** sign out, request a magic link on `/signin`, check the
   email in MailHog and follow the link.
 - **Novu:** the Novu dev studio (`npx novu dev`) previews each workflow. Trigger
@@ -96,11 +102,12 @@ never been designed.
   the rooms are equal; message times are server time with the zone shown
   ("14:32 UTC"); an email without message bodies (for example an encrypted
   room) is its own state, "you have unread messages", with no text.
-- How long does a signed media URL live? *Assumed: 30 days, long enough for a
-  notification to be read.*
 
 ## Before release — remind Dmitry
 
 - [ ] Production Synapse: `email.client_base_url: "https://gdhub.io/chat"` in
       `homeserver.yaml`, then restart Synapse. Dmitry does this on the server.
-- [ ] Deploy the new Synapse templates from `matrix-chat-server` to the server.
+- [ ] Deploy the app first: the templates load `/images/email/*` and
+      `/api/chat/media` from gdhub.io.
+- [ ] Then deploy the new Synapse templates and the `email.subjects` block from
+      `matrix-chat-server` to the server, and restart Synapse.
