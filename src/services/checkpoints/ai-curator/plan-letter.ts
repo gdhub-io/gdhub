@@ -24,7 +24,7 @@ export type PlanLetterInput = {
 	hint?: string | null;
 };
 
-const letterSchema = z.object({
+export const letterSchema = z.object({
 	message: z
 		.string()
 		.max(600)

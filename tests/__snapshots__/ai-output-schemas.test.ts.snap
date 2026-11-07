@@ -1,0 +1,631 @@
+// Vitest Snapshot v1, https://vitest.dev/guide/snapshot.html
+
+exports[`AI output schemas > call notes 1`] = `
+{
+  "$schema": "http://json-schema.org/draft-07/schema#",
+  "additionalProperties": false,
+  "properties": {
+    "agreed": {
+      "description": "What was agreed for the next call; dueDay is a day of the checkpoint, 1–28, when one was named.",
+      "items": {
+        "additionalProperties": false,
+        "properties": {
+          "dueDay": {
+            "anyOf": [
+              {
+                "type": "integer",
+              },
+              {
+                "type": "null",
+              },
+            ],
+          },
+          "itemId": {
+            "type": [
+              "string",
+              "null",
+            ],
+          },
+          "text": {
+            "type": "string",
+          },
+        },
+        "required": [
+          "text",
+          "itemId",
+          "dueDay",
+        ],
+        "type": "object",
+      },
+      "type": "array",
+    },
+    "direction": {
+      "anyOf": [
+        {
+          "additionalProperties": false,
+          "properties": {
+            "goal": {
+              "additionalProperties": false,
+              "properties": {
+                "value": {
+                  "enum": [
+                    "toward",
+                    "sideways",
+                    "stalled",
+                    "idle",
+                  ],
+                  "type": "string",
+                },
+                "why": {
+                  "description": "One sentence: what was said that shows the direction toward the checkpoint goal.",
+                  "type": "string",
+                },
+              },
+              "required": [
+                "value",
+                "why",
+              ],
+              "type": "object",
+            },
+            "stage": {
+              "additionalProperties": false,
+              "properties": {
+                "value": {
+                  "enum": [
+                    "toward",
+                    "sideways",
+                    "stalled",
+                    "idle",
+                  ],
+                  "type": "string",
+                },
+                "why": {
+                  "description": "One sentence: what was said that shows the direction toward the stage goal.",
+                  "type": "string",
+                },
+              },
+              "required": [
+                "value",
+                "why",
+              ],
+              "type": "object",
+            },
+          },
+          "required": [
+            "goal",
+            "stage",
+          ],
+          "type": "object",
+        },
+        {
+          "type": "null",
+        },
+      ],
+      "description": "On calls 2–5, where the call said the sprint took the project: Where the sprint took the project, read from what changed and what was shown:
+toward — new evidence on a task, or work that plainly moves the goal;
+sideways — work was done, but outside the tasks and not moving the goal;
+stalled — something happened, but no task moved: no new evidence, the same tasks open;
+idle — nothing at all was done; only when the input says nothing changed. Null when the call did not say; never guess.",
+    },
+    "discussed": {
+      "description": "Per task that came up, in plan order: what was said about it.",
+      "items": {
+        "additionalProperties": false,
+        "properties": {
+          "itemId": {
+            "type": "string",
+          },
+          "text": {
+            "type": "string",
+          },
+        },
+        "required": [
+          "itemId",
+          "text",
+        ],
+        "type": "object",
+      },
+      "type": "array",
+    },
+    "inShort": {
+      "description": "Two or three sentences. On calls 2–5: how the sprint just ended went, as the call described it — what landed, what did not, the main risk. On call 1: what the plan settled.",
+      "type": "string",
+    },
+    "lenses": {
+      "additionalProperties": false,
+      "description": "GDHUB-133: the call through three lenses; development is discussed and outsidePlan.",
+      "properties": {
+        "management": {
+          "description": "What was said about the tasks, how they close and the way to the goal; null when the call did not touch it.",
+          "type": [
+            "string",
+            "null",
+          ],
+        },
+        "marketing": {
+          "description": "What was said about what the audience was told and how it answered; null when the call did not touch it.",
+          "type": [
+            "string",
+            "null",
+          ],
+        },
+        "team": {
+          "description": "What was said about the people, their hours and the pace; null when the call did not touch it.",
+          "type": [
+            "string",
+            "null",
+          ],
+        },
+      },
+      "required": [
+        "marketing",
+        "team",
+        "management",
+      ],
+      "type": "object",
+    },
+    "notDiscussed": {
+      "description": "Ids of plan tasks nobody raised.",
+      "items": {
+        "type": "string",
+      },
+      "type": "array",
+    },
+    "outsidePlan": {
+      "description": "Things discussed that belong to no task.",
+      "items": {
+        "type": "string",
+      },
+      "type": "array",
+    },
+    "questions": {
+      "description": "Questions left open.",
+      "items": {
+        "type": "string",
+      },
+      "type": "array",
+    },
+  },
+  "required": [
+    "inShort",
+    "discussed",
+    "notDiscussed",
+    "outsidePlan",
+    "agreed",
+    "questions",
+    "lenses",
+    "direction",
+  ],
+  "type": "object",
+}
+`;
+
+exports[`AI output schemas > curator character sheet 1`] = `
+{
+  "$schema": "http://json-schema.org/draft-07/schema#",
+  "additionalProperties": false,
+  "properties": {
+    "name": {
+      "description": "A short invented name with a title, as in the base role",
+      "maxLength": 40,
+      "type": "string",
+    },
+    "nameRu": {
+      "description": "The same name in Russian: the title translated, the name itself transliterated, never translated word by word",
+      "maxLength": 40,
+      "type": "string",
+    },
+    "road": {
+      "description": "The journey from point A to point B in that world, and its dangers",
+      "maxLength": 280,
+      "type": "string",
+    },
+    "who": {
+      "description": "Who the character is, in one line, as the base role says it",
+      "maxLength": 200,
+      "type": "string",
+    },
+    "world": {
+      "description": "Images from the character's world, a comma-separated list",
+      "maxLength": 240,
+      "type": "string",
+    },
+  },
+  "required": [
+    "name",
+    "nameRu",
+    "who",
+    "world",
+    "road",
+  ],
+  "type": "object",
+}
+`;
+
+exports[`AI output schemas > curator plan letter 1`] = `
+{
+  "$schema": "http://json-schema.org/draft-07/schema#",
+  "additionalProperties": false,
+  "properties": {
+    "message": {
+      "description": "The letter, two to four short sentences",
+      "maxLength": 600,
+      "type": "string",
+    },
+  },
+  "required": [
+    "message",
+  ],
+  "type": "object",
+}
+`;
+
+exports[`AI output schemas > evidence judge 1`] = `
+{
+  "$schema": "http://json-schema.org/draft-07/schema#",
+  "additionalProperties": false,
+  "properties": {
+    "match": {
+      "description": "Matches: it shows all of what the task promised. Partly: some of it — fewer of something than the task counts (players, levels, sheets) is Partly, whatever the evidence claims of itself. DoesNotMatch: it shows something else. CannotTell: too little was readable to say.",
+      "enum": [
+        "Matches",
+        "Partly",
+        "DoesNotMatch",
+        "CannotTell",
+      ],
+      "type": "string",
+    },
+    "note": {
+      "description": "One or two sentences: what you saw, and how it relates to the task.",
+      "type": "string",
+    },
+  },
+  "required": [
+    "match",
+    "note",
+  ],
+  "type": "object",
+}
+`;
+
+exports[`AI output schemas > plan advice 1`] = `
+{
+  "$schema": "http://json-schema.org/draft-07/schema#",
+  "additionalProperties": false,
+  "properties": {
+    "add": {
+      "description": "Up to three tasks worth adding, each ending in something anyone can open. Empty when nothing is missing.",
+      "items": {
+        "type": "string",
+      },
+      "type": "array",
+    },
+    "goal": {
+      "anyOf": [
+        {
+          "additionalProperties": false,
+          "properties": {
+            "fit": {
+              "enum": [
+                "fits",
+                "widen",
+                "narrow",
+              ],
+              "type": "string",
+            },
+            "note": {
+              "description": "One or two sentences: why, and for widen or narrow the goal reworded, ready to use.",
+              "type": "string",
+            },
+            "stage": {
+              "additionalProperties": false,
+              "description": "Whether the goal sits inside the stage goal. It may stop short of the stage goal; it is outside only when it reaches past it or points somewhere else.",
+              "properties": {
+                "inside": {
+                  "type": "boolean",
+                },
+                "note": {
+                  "description": "One or two sentences: for outside, what lies beyond the stage and what the stage ends with; the author may keep the goal, so say that the 28 days will be judged against it. Empty for inside.",
+                  "type": "string",
+                },
+              },
+              "required": [
+                "inside",
+                "note",
+              ],
+              "type": "object",
+            },
+          },
+          "required": [
+            "fit",
+            "note",
+            "stage",
+          ],
+          "type": "object",
+        },
+        {
+          "type": "null",
+        },
+      ],
+      "description": "Day 1 only, null halfway: does the goal as it stands now fit these tasks and 28 days of this team's hours — fits, widen (asks too little), narrow (outruns them).",
+    },
+    "message": {
+      "description": "Day 1: a short letter to the team, three or four sentences, about the tasks as a whole and what to do now. Null halfway: that day's sprint review is the letter.",
+      "type": [
+        "string",
+        "null",
+      ],
+    },
+    "tasks": {
+      "items": {
+        "additionalProperties": false,
+        "properties": {
+          "itemId": {
+            "type": "string",
+          },
+          "kind": {
+            "description": "clear: checkable and fits; risky: may not fit the time left; vague: nobody could check it is done; shorten: keep it smaller; cut: drop it; onTrack: going as planned; offGoal: done or not, it would not bring the goal closer — the note says what the task would have to become to serve it.",
+            "enum": [
+              "clear",
+              "risky",
+              "vague",
+              "shorten",
+              "cut",
+              "onTrack",
+              "offGoal",
+            ],
+            "type": "string",
+          },
+          "note": {
+            "description": "One sentence the author acts on: what to do with the task, then why — "Drop it: …", "Keep it: …", "Move it to sprint 3: …". There are no buttons; this sentence is the whole advice.",
+            "type": "string",
+          },
+          "suggestion": {
+            "description": "For vague and shorten: the task reworded, ready to use. Null otherwise.",
+            "type": [
+              "string",
+              "null",
+            ],
+          },
+        },
+        "required": [
+          "itemId",
+          "kind",
+          "note",
+          "suggestion",
+        ],
+        "type": "object",
+      },
+      "type": "array",
+    },
+  },
+  "required": [
+    "message",
+    "tasks",
+    "add",
+    "goal",
+  ],
+  "type": "object",
+}
+`;
+
+exports[`AI output schemas > review assessment 1`] = `
+{
+  "$schema": "http://json-schema.org/draft-07/schema#",
+  "additionalProperties": false,
+  "properties": {
+    "direction": {
+      "additionalProperties": false,
+      "description": "Where the sprint took the project, read from what changed and what was shown:
+toward — new evidence on a task, or work that plainly moves the goal;
+sideways — work was done, but outside the tasks and not moving the goal;
+stalled — something happened, but no task moved: no new evidence, the same tasks open;
+idle — nothing at all was done; only when the input says nothing changed.",
+      "properties": {
+        "goal": {
+          "additionalProperties": false,
+          "description": "The direction toward the checkpoint goal.",
+          "properties": {
+            "value": {
+              "enum": [
+                "toward",
+                "sideways",
+                "stalled",
+                "idle",
+              ],
+              "type": "string",
+            },
+            "why": {
+              "description": "One sentence: what in the sprint shows this direction toward the checkpoint goal.",
+              "type": "string",
+            },
+          },
+          "required": [
+            "value",
+            "why",
+          ],
+          "type": "object",
+        },
+        "stage": {
+          "additionalProperties": false,
+          "description": "The direction toward the stage goal.",
+          "properties": {
+            "value": {
+              "enum": [
+                "toward",
+                "sideways",
+                "stalled",
+                "idle",
+              ],
+              "type": "string",
+            },
+            "why": {
+              "description": "One sentence: what in the sprint shows this direction toward the stage goal.",
+              "type": "string",
+            },
+          },
+          "required": [
+            "value",
+            "why",
+          ],
+          "type": "object",
+        },
+      },
+      "required": [
+        "goal",
+        "stage",
+      ],
+      "type": "object",
+    },
+    "discussed": {
+      "description": "Per task with something to say, in plan order: what the sprint showed for it.",
+      "items": {
+        "additionalProperties": false,
+        "properties": {
+          "itemId": {
+            "type": "string",
+          },
+          "text": {
+            "type": "string",
+          },
+        },
+        "required": [
+          "itemId",
+          "text",
+        ],
+        "type": "object",
+      },
+      "type": "array",
+    },
+    "inShort": {
+      "description": "Two or three sentences. First where the team stands, in plain words: on course, at risk or behind. Then what landed, what did not, the main risk. When nothing was shown, say that it is unknown what got done, because nothing was shown.",
+      "type": "string",
+    },
+    "lenses": {
+      "additionalProperties": false,
+      "description": "Three of the four lenses; development is discussed and outsidePlan. Each sized by the stage's weight for it.",
+      "properties": {
+        "management": {
+          "description": "Project management: how the tasks close against the 28 days, and the way from them to the goal, the stage goal and the project goal. One or two sentences.",
+          "type": "string",
+        },
+        "marketing": {
+          "description": "Marketing: what the public devlogs told the audience and how it answered, by name with applause and views; one line when the stage weighs it low.",
+          "type": "string",
+        },
+        "team": {
+          "description": "Team: the hours and the pace against the goal; context, not blame. One or two sentences.",
+          "type": "string",
+        },
+      },
+      "required": [
+        "marketing",
+        "team",
+        "management",
+      ],
+      "type": "object",
+    },
+    "notDiscussed": {
+      "description": "Ids of open tasks with nothing to show yet.",
+      "items": {
+        "type": "string",
+      },
+      "type": "array",
+    },
+    "outsidePlan": {
+      "description": "Work shown that belongs to no task.",
+      "items": {
+        "type": "string",
+      },
+      "type": "array",
+    },
+    "questions": {
+      "description": "Questions the team should answer for itself.",
+      "items": {
+        "type": "string",
+      },
+      "type": "array",
+    },
+  },
+  "required": [
+    "inShort",
+    "discussed",
+    "notDiscussed",
+    "outsidePlan",
+    "questions",
+    "direction",
+    "lenses",
+  ],
+  "type": "object",
+}
+`;
+
+exports[`AI output schemas > review letter 1`] = `
+{
+  "$schema": "http://json-schema.org/draft-07/schema#",
+  "additionalProperties": false,
+  "properties": {
+    "agreed": {
+      "description": "The focus for the next sprint, two or three lines that agree with the review and with any advice on the tasks; dueDay stays null. Empty on the final review.",
+      "items": {
+        "additionalProperties": false,
+        "properties": {
+          "dueDay": {
+            "anyOf": [
+              {
+                "type": "integer",
+              },
+              {
+                "type": "null",
+              },
+            ],
+          },
+          "itemId": {
+            "type": [
+              "string",
+              "null",
+            ],
+          },
+          "text": {
+            "type": "string",
+          },
+        },
+        "required": [
+          "text",
+          "itemId",
+          "dueDay",
+        ],
+        "type": "object",
+      },
+      "type": "array",
+    },
+    "message": {
+      "description": "A letter to the team, three or four sentences, built from the review: where the team stands in plain words — on course, at risk or behind; what went well, or, when nothing was shown, that it is unknown what got done because nothing was shown; what worries you; and one thing to do next. On the final review, the whole road instead — four to six sentences that agree with the verdict and say what the next checkpoint starts from.",
+      "type": "string",
+    },
+  },
+  "required": [
+    "message",
+    "agreed",
+  ],
+  "type": "object",
+}
+`;
+
+exports[`AI output schemas > share line 1`] = `
+{
+  "$schema": "http://json-schema.org/draft-07/schema#",
+  "additionalProperties": false,
+  "properties": {
+    "line": {
+      "description": "Two short sentences: the reaction, then the wish",
+      "maxLength": 200,
+      "type": "string",
+    },
+  },
+  "required": [
+    "line",
+  ],
+  "type": "object",
+}
+`;

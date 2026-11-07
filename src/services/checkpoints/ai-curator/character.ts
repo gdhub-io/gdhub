@@ -9,7 +9,7 @@ import type { AiMeter } from "@/services/ai-usage";
 import { runStructured } from "@/services/checkpoints/ai-review";
 import type { CuratorPersona } from "@/types/checkpoint-curator";
 
-const sheetSchema = z.object({
+export const sheetSchema = z.object({
 	name: z
 		.string()
 		.max(40)
