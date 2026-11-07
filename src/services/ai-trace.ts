@@ -1,4 +1,5 @@
 import { AsyncLocalStorage } from "node:async_hooks";
+import { modelId } from "@/services/ai/model";
 
 /** One model call as the AI curator lab shows it: what was sent and what came back. */
 export type AiTrace = {
@@ -58,7 +59,7 @@ export const traceGenerated = (
 ) =>
 	traceAiCall(() => ({
 		name,
-		model,
+		model: modelId(model),
 		system: request.instructions,
 		messages: request.messages?.map((message) => ({
 			...message,

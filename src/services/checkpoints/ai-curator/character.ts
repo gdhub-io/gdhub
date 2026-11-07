@@ -79,18 +79,18 @@ export const createCharacter = async (
 	try {
 		const started = Date.now();
 		const result = await generateText({
-			model: aiModel(AI_MODELS.curatorAssist),
+			model: aiModel(AI_MODELS.curatorReview),
 			output: Output.object({ schema: sheetSchema, name: "character" }),
 			...request,
 		});
 		traceGenerated(
 			"character",
-			AI_MODELS.curatorAssist,
+			AI_MODELS.curatorReview,
 			started,
 			request,
 			result,
 		);
-		await recordAiUsage(meter, AI_MODELS.curatorAssist, result.usage);
+		await recordAiUsage(meter, AI_MODELS.curatorReview, result.usage);
 		return result.output
 			? JSON.stringify({ role: key, ...result.output })
 			: key;

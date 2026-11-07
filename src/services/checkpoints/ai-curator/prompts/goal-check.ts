@@ -88,9 +88,11 @@ export const goalCheckSchema = () => ({
 						note: { type: "string", description: GOAL_STAGE.note },
 					},
 					required: ["inside", "note"],
+					additionalProperties: false,
 				},
 			},
 			required: ["fit", "note", "stage"],
+			additionalProperties: false,
 		},
 		suggestions: {
 			type: "array",
@@ -110,6 +112,7 @@ export const goalCheckSchema = () => ({
 					},
 				},
 				required: ["text", "why"],
+				additionalProperties: false,
 			},
 		},
 		note: {
@@ -118,6 +121,8 @@ export const goalCheckSchema = () => ({
 		},
 	},
 	required: ["goal", "suggestions", "note"],
+	// Structured outputs hold the answer to the schema only when it is closed.
+	additionalProperties: false,
 });
 
 export const goalCheckMessages = (input: GoalCheckInput, locale = "en") => [

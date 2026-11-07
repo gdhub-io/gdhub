@@ -7,8 +7,8 @@
  * A fourth is pressed by the author while the card is a draft — suggested lines
  * for one side of it — and may be pressed twice or never.
  *
- * Shaped like `src/services/ai-validation`: typed in, typed out, prompts in
- * their own folder, a forced tool call, and nothing anywhere that parses prose.
+ * Typed in, typed out, prompts in their own folder, a structured answer held
+ * to the prompt's JSON schema, and nothing anywhere that parses prose.
  * Every call returns `null` when the model fails — what that means is the
  * caller's to decide, and it differs: a missing note is a shrug, a missing
  * report must not close a checkpoint.
@@ -17,10 +17,10 @@
  * author. The verdict it proposes is settled by `settleVerdict`, in code.
  */
 
+import { generateText, jsonSchema, Output } from "ai";
 import { AI_MODELS } from "@/config/ai-models";
-import { isValidJSON } from "@/helpers/format";
-import { withCassette } from "@/services/ai/cassette";
-import { traceAiCall } from "@/services/ai-trace";
+import { aiModel } from "@/services/ai/model";
+import { traceGenerated } from "@/services/ai-trace";
 import {
 	type AiMeter,
 	type AiPurpose,
@@ -53,68 +53,35 @@ const meter = (options: CuratorOptions, purpose: AiPurpose) =>
 
 class CheckpointCuratorService {
 	get model() {
-		return process.env.CHECKPOINT_CURATOR_MODEL || AI_MODELS.curatorAssist;
+		return AI_MODELS.curatorReview;
 	}
 
-	/**
-	 * One forced tool call. The model is given exactly one function and no choice
-	 * about calling it, so there is never a prose answer to fall back to reading.
-	 */
+	/** One structured answer, through the AI SDK like every other checkpoint call. */
 	private async call<T>(
 		name: string,
 		parameters: Record<string, unknown>,
 		messages: Message[],
 		meter?: AiMeter,
 	): Promise<T | null> {
+		const request = {
+			instructions: messages
+				.filter((m) => m.role === "system")
+				.map((m) => m.content)
+				.join("\n\n"),
+			messages: messages.filter((m) => m.role !== "system"),
+		};
 		try {
-			// Lazy: constructing the OpenAI client needs OPENAI_API_KEY, and the
-			// cron route must stay loadable without one.
-			const { openAI } = await import("@/services/openai");
 			const started = Date.now();
-			const completion = await withCassette(
-				name,
-				{ model: this.model, messages, parameters },
-				() =>
-					openAI.openai.chat.completions.create({
-						model: this.model,
-						messages,
-						tools: [{ type: "function", function: { name, parameters } }],
-						tool_choice: { type: "function", function: { name } },
-						// The GPT-6 models refuse function tools on chat completions while
-						// reasoning is on.
-						reasoning_effort: "none",
-						temperature: 0,
-					}),
-			);
-			await recordAiUsage(meter, this.model, {
-				inputTokens: completion.usage?.prompt_tokens,
-				outputTokens: completion.usage?.completion_tokens,
+			const result = await generateText({
+				model: aiModel(this.model),
+				output: Output.object({ schema: jsonSchema<T>(parameters), name }),
+				...request,
 			});
-
-			const toolCall = completion.choices[0]?.message?.tool_calls?.[0];
-			const args =
-				toolCall?.type === "function" ? toolCall.function.arguments : undefined;
-			traceAiCall(() => ({
-				name,
-				model: this.model,
-				system: messages.find((m) => m.role === "system")?.content ?? "",
-				messages: messages.filter((m) => m.role !== "system"),
-				raw: args ?? null,
-				inputTokens: completion.usage?.prompt_tokens ?? 0,
-				outputTokens: completion.usage?.completion_tokens ?? 0,
-				ms: Date.now() - started,
-			}));
-
-			if (!isValidJSON(args)) {
-				console.error(`[checkpoint-curator] ${name} answered no usable JSON`);
-
-				return null;
-			}
-
-			return JSON.parse(args as string) as T;
+			traceGenerated(name, this.model, started, request, result);
+			await recordAiUsage(meter, this.model, result.usage);
+			return (result.output as T | undefined) ?? null;
 		} catch (error) {
 			console.error(`[checkpoint-curator] ${name} failed:`, error);
-
 			return null;
 		}
 	}

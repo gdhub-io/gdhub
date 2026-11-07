@@ -228,7 +228,7 @@ export const writePlanAdvice = async (
 			${HIRING}
 			${TIME_LEFT}
 			${LENSES}
-			${locale ? localeLine(locale) : ""}
+			${localeLine(locale)}
 		`,
 		prompt:
 			stripIndents`
@@ -348,7 +348,7 @@ export const writeSprintReview = async (
 			${final ? `This is the final review: the ${CHECKPOINT_DAYS} days are over. The verdict comes after it and reads it; do not judge here whether the goal was reached.` : ""}
 
 			${AUTHOR_VOICE}
-			${locale ? localeLine(locale) : ""}
+			${localeLine(locale)}
 		`,
 		prompt:
 			stripIndents`
@@ -509,7 +509,7 @@ const writeReviewLetter = async (
 			carries that step. When both are toward, say nothing about direction.
 			${advice ? "Your advice on the tasks is below too; the team reads it under the tasks. The letter and the focus follow it." : ""}
 			${final ? `This is the final review: the ${CHECKPOINT_DAYS} days are over. The verdict follows it; do not say whether the goal was reached.` : ""}
-			${locale ? localeLine(locale) : ""}
+			${localeLine(locale)}
 		`,
 		prompt:
 			stripIndents`
