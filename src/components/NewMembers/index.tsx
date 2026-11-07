@@ -57,7 +57,7 @@ export default function NewMembers() {
 					<LoadError
 						bare
 						title={t(
-							"page.hub.new-members.error",
+							"page.hub.newMembers.error",
 							"Members could not be loaded",
 						)}
 						onRetry={refetch}

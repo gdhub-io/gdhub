@@ -155,7 +155,7 @@ export function EventScheduleTimeline({
 			{error ? (
 				<LoadError
 					title={t(
-						"event.schedule.load-error",
+						"event.timeline.load-error",
 						"The schedule could not be loaded",
 					)}
 					onRetry={onRetry}

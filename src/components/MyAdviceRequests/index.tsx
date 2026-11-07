@@ -273,9 +273,9 @@ const MyAdviceRequests: React.FC<{
 		<EmptyState
 			size={isHubLayout ? "compact" : "default"}
 			icon={IconHeadset}
-			title={t("page.hub.advice-requests.empty", "No advice requests")}
+			title={t("page.hub.advice.empty", "No advice requests")}
 			description={t(
-				"page.hub.advice-requests.empty-hint",
+				"page.hub.advice.empty-hint",
 				"Requests you send to experts, and the ones sent to you, appear here.",
 			)}
 		/>
@@ -295,7 +295,7 @@ const MyAdviceRequests: React.FC<{
 				<LoadError
 					bare={isHubLayout}
 					title={t(
-						"page.hub.advice-requests.error",
+						"page.hub.advice.error",
 						"Advice requests could not be loaded",
 					)}
 					onRetry={refetch}

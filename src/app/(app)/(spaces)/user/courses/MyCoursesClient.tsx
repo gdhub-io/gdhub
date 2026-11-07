@@ -78,9 +78,9 @@ export default function MyCoursesClient() {
 					emptyState={
 						<EmptyState
 							icon={IconSchool}
-							title={t("courses.myCourses.empty", "No courses yet")}
+							title={t("courses.mine.empty", "No courses yet")}
 							description={t(
-								"courses.myCourses.empty-hint",
+								"courses.mine.empty-hint",
 								"Courses you author, teach or study in appear here.",
 							)}
 						/>
