@@ -2,7 +2,13 @@ import { useQuery } from "@tanstack/react-query";
 import { Col, Row } from "antd";
 import axios from "axios";
 import type React from "react";
-import { useEffect } from "react";
+import { type ReactNode, useEffect } from "react";
+import { LoadError } from "@/components/ui";
+import {
+	type CourseColSpan,
+	CourseGridSkeleton,
+	DEFAULT_COURSE_COL_SPAN,
+} from "./CourseSkeleton";
 
 interface CourseSectionProps {
 	title?: string;
@@ -12,11 +18,13 @@ interface CourseSectionProps {
 		token: any;
 	}>;
 	token: any;
-	colSpan?: { xs?: number; sm?: number; md?: number; lg?: number; xl?: number };
+	colSpan?: CourseColSpan;
 	onLoaded?: () => void | Promise<void>;
 	onLoadingChange?: (isLoading: boolean) => void;
 	queryKey?: string[];
 	queryFn?: () => Promise<any[]>;
+	/** Shown once loaded with nothing in it; without it an empty section is left out. */
+	emptyState?: ReactNode;
 }
 
 export const CourseSection = ({
@@ -29,16 +37,22 @@ export const CourseSection = ({
 	onLoadingChange,
 	queryKey = ["courses"],
 	queryFn,
+	emptyState,
 }: CourseSectionProps) => {
 	const {
-		data: courses = [],
+		data,
 		isLoading,
+		isPending,
 		isFetched,
+		isLoadingError: failed,
+		refetch,
 	} = useQuery<any[]>({
 		queryKey,
 		queryFn:
 			queryFn || (() => axios.get("/api/courses").then((res) => res.data)),
 	});
+
+	const courses = data ?? [];
 
 	useEffect(() => {
 		if (isFetched && courses?.length) {
@@ -52,7 +66,7 @@ export const CourseSection = ({
 		}
 	}, [isLoading, onLoadingChange]);
 
-	if (!courses?.length) return null;
+	if (!isPending && !failed && !courses?.length) return emptyState ?? null;
 
 	return (
 		<section style={{ marginBottom: 32 }}>
@@ -80,16 +94,19 @@ export const CourseSection = ({
 					{description}
 				</div>
 			)}
-			<Row gutter={[6, 12]}>
-				{courses?.map((course: any) => (
-					<Col
-						key={course.id}
-						{...(colSpan || { xs: 24, sm: 12, md: 8, lg: 8, xl: 6 })}
-					>
-						<CardComponent course={course} token={token} />
-					</Col>
-				))}
-			</Row>
+			{isPending ? (
+				<CourseGridSkeleton colSpan={colSpan} />
+			) : failed ? (
+				<LoadError onRetry={refetch} />
+			) : (
+				<Row gutter={[6, 12]}>
+					{courses.map((course: any) => (
+						<Col key={course.id} {...(colSpan || DEFAULT_COURSE_COL_SPAN)}>
+							<CardComponent course={course} token={token} />
+						</Col>
+					))}
+				</Row>
+			)}
 		</section>
 	);
 };

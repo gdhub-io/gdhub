@@ -3,3 +3,10 @@
 	height: 776px;
 	margin-top: var(--gd-space-4);
 }
+
+.callSkeleton,
+.callSkeleton :global(.ant-skeleton-node) {
+	width: 100%;
+	height: 100%;
+	border-radius: var(--gd-radius-card);
+}

@@ -32,6 +32,7 @@ import {
 import { getWorkDirection } from "@/components/DirectionBadge";
 import { ProtectedPageHeader } from "@/components/layouts/ProtectedPageHeader";
 import {
+	LoadError,
 	SKILL_LEVEL_STEP,
 	SKILL_LEVEL_STEPS,
 	SkillLevelMeter,
@@ -340,12 +341,20 @@ function SearchInput() {
 
 function Results({ onSelect }: { onSelect: (id: string) => void }) {
 	const { items } = useHits();
-	const { status, results } = useInstantSearch();
+	const { status, results, refresh } = useInstantSearch();
+	const { t } = useTranslate();
 
 	const initialLoading =
 		(results as { __isArtificial?: boolean }).__isArtificial ||
 		(status === "loading" && items.length === 0);
 
+	if (status === "error" && items.length === 0)
+		return (
+			<LoadError
+				title={t("hub.members.error", "Members could not be loaded")}
+				onRetry={refresh}
+			/>
+		);
 	if (initialLoading) return <SkeletonGrid />;
 	if (items.length === 0) return <NoResults query={results.query} />;
 

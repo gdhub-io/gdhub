@@ -1,0 +1,11 @@
+.card {
+	display: block;
+	width: 100%;
+
+	:global(.ant-skeleton-node) {
+		width: 100%;
+		height: auto;
+		aspect-ratio: 1 / 1.1;
+		border-radius: var(--gd-radius-panel);
+	}
+}

@@ -1366,3 +1366,46 @@ button.checklistItem {
 	margin: 0;
 	background: var(--gd-neutral-100);
 }
+
+// PathSkeleton: the same marker column and card outlines as the path, as bars.
+.skeletonNode {
+	display: grid;
+	grid-template-columns: 40px minmax(0, 1fr);
+	gap: var(--gd-space-4);
+	align-items: center;
+
+	> :first-child {
+		justify-self: center;
+	}
+}
+
+.skeletonStage {
+	height: 56px;
+	padding: 0 var(--gd-space-6);
+	border: 1px solid var(--gd-color-border);
+	border-radius: var(--gd-radius-panel);
+}
+
+.skeletonCurrent {
+	padding-bottom: var(--gd-space-4);
+	border: 1px solid var(--gd-color-border);
+	border-radius: var(--gd-radius-panel);
+	background: var(--gd-color-surface);
+}
+
+.skeletonHead {
+	padding: var(--gd-space-4) var(--gd-space-6);
+}
+
+.skeletonRow {
+	height: 40px;
+	padding: 0 var(--gd-space-6);
+
+	> :nth-child(2) {
+		flex: 1;
+	}
+}
+
+.skeletonAsideBody {
+	padding: var(--gd-space-4) var(--gd-space-6) var(--gd-space-6);
+}

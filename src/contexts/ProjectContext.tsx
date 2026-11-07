@@ -1,4 +1,4 @@
-import { createContext, type Dispatch, type SetStateAction } from "react";
+import { createContext } from "react";
 
 export type ContextProject = {
 	id: string;
@@ -9,11 +9,6 @@ export type ContextProject = {
 	archivedAt: Date | string | null;
 };
 
-export const ProjectContext = createContext<
-	| {
-			contextProject?: ContextProject;
-			isLoaded: boolean;
-			setContextProject: Dispatch<SetStateAction<ContextProject | undefined>>;
-	  }
-	| undefined
->(undefined);
+export const ProjectContext = createContext<ContextProject | undefined>(
+	undefined,
+);

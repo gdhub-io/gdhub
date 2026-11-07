@@ -5,16 +5,8 @@ import { ProjectWorkflowEditor } from "@/components/admin/workflow/ProjectWorkfl
 import { AdminSpace } from "@/components/spaces/AdminSpace";
 
 export default function ProjectWorkflowEditPage() {
-	const params = useParams<{ id?: string }>();
-	const id = params?.id;
-
-	if (!id || typeof id !== "string") {
-		return (
-			<AdminSpace>
-				<div>Loading...</div>
-			</AdminSpace>
-		);
-	}
+	// The route segment is `[id]`, so the param is always there.
+	const { id } = useParams<{ id: string }>();
 
 	return (
 		<AdminSpace>

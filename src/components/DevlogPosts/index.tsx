@@ -14,6 +14,7 @@ import {
 	HubSectionBody,
 	HubSectionHeader,
 } from "@/components/hub/HubSection";
+import { LoadError } from "@/components/ui";
 import { AppImage } from "@/components/ui/AppImage";
 import { ViewCount } from "@/components/ViewCount";
 import { DEVLOG_FEED_LIMIT, devlogFeedQueryKey } from "@/config/devlog-feed";
@@ -222,23 +223,31 @@ const DevlogPosts = ({
 	const limit = DEVLOG_FEED_LIMIT;
 	const trackView = useFeedViews("ProjectReport");
 
-	const { data, isLoading, fetchNextPage, hasNextPage, isFetchingNextPage } =
-		useInfiniteQuery({
-			queryKey: devlogFeedQueryKey(projectId),
-			queryFn: async ({ pageParam }) => {
-				const params = new URLSearchParams({ limit: String(limit) });
-				if (projectId) params.set("projectId", projectId);
-				if (pageParam) params.set("after", pageParam);
+	const {
+		data,
+		isLoading,
+		isLoadingError,
+		isFetchNextPageError,
+		refetch,
+		fetchNextPage,
+		hasNextPage,
+		isFetchingNextPage,
+	} = useInfiniteQuery({
+		queryKey: devlogFeedQueryKey(projectId),
+		queryFn: async ({ pageParam }) => {
+			const params = new URLSearchParams({ limit: String(limit) });
+			if (projectId) params.set("projectId", projectId);
+			if (pageParam) params.set("after", pageParam);
 
-				const response = await axios.get<DevlogFeedPage<ProjectReport>>(
-					`/api/devlogs?${params}`,
-				);
+			const response = await axios.get<DevlogFeedPage<ProjectReport>>(
+				`/api/devlogs?${params}`,
+			);
 
-				return response.data;
-			},
-			getNextPageParam: (lastPage) => lastPage.nextCursor,
-			initialPageParam: null as string | null,
-		});
+			return response.data;
+		},
+		getNextPageParam: (lastPage) => lastPage.nextCursor,
+		initialPageParam: null as string | null,
+	});
 
 	const posts = data?.pages.flatMap((page) => page.items || []) || [];
 
@@ -327,6 +336,24 @@ const DevlogPosts = ({
 		);
 	}
 
+	if (isLoadingError) {
+		const error = (
+			<LoadError
+				title={t("hub.activity-feed.error", "Devlog posts could not be loaded")}
+				onRetry={refetch}
+			/>
+		);
+		if (variant === "hub") {
+			return wrapHubShell(<HubSectionBody>{error}</HubSectionBody>);
+		}
+		return (
+			<div className={styles.devlogPostsContainer}>
+				{headerNode}
+				{error}
+			</div>
+		);
+	}
+
 	if (!posts.length) {
 		const empty = (
 			<div className={styles.empty}>{t("No devlog posts yet")}</div>
@@ -365,7 +392,10 @@ const DevlogPosts = ({
 				))}
 			</div>
 
-			{hasNextPage ? (
+			{isFetchNextPageError ? (
+				// Unmounting the sentinel stops the observer from re-firing the failed page in a loop.
+				<LoadError onRetry={fetchNextPage} />
+			) : hasNextPage ? (
 				<div className={styles.loadMore} ref={sentinelRef}>
 					<Spin spinning={isFetchingNextPage} />
 				</div>

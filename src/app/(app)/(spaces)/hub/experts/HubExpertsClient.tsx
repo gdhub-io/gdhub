@@ -6,6 +6,7 @@ import dynamic from "next/dynamic";
 import Link from "next/link";
 import { useState } from "react";
 import { DirectionSelect } from "@/components/DirectionSelect";
+import { ExpertListSkeleton } from "@/components/ExpertList/ExpertListSkeleton";
 import { ProtectedPageHeader } from "@/components/layouts/ProtectedPageHeader";
 import { Language } from "@/config/prisma-enums";
 import { useWorkDirections } from "@/hooks/library";
@@ -17,7 +18,7 @@ const ExpertRequestModal = dynamic(
 );
 const ExpertList = dynamic(
 	() => import("@/components/ExpertList").then((m) => m.default),
-	{ ssr: false },
+	{ ssr: false, loading: () => <ExpertListSkeleton /> },
 );
 
 export default function HubExpertsClient() {
@@ -31,7 +32,8 @@ export default function HubExpertsClient() {
 	const [expertRequestModalOpen, setExpertRequestModalOpen] = useState<
 		string | undefined
 	>(undefined);
-	const { options: workDirectionOptions } = useWorkDirections();
+	const { options: workDirectionOptions, isLoading: directionsLoading } =
+		useWorkDirections();
 
 	const handleExpertClick = async (expertId: string) => {
 		setExpertRequestModalOpen(expertId);
@@ -107,6 +109,8 @@ export default function HubExpertsClient() {
 									allowClear
 									placeholder={t("experts.page.filter", "Filter by direction")}
 									options={workDirectionOptions ?? []}
+									loading={directionsLoading}
+									disabled={directionsLoading}
 									className={styles.filterSelect}
 								/>
 							</Form.Item>

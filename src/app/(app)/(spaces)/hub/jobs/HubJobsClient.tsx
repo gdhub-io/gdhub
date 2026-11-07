@@ -3,10 +3,12 @@
 import { useTranslate } from "@tolgee/react";
 import dynamic from "next/dynamic";
 import { ProtectedPageHeader } from "@/components/layouts/ProtectedPageHeader";
+import { VacanciesListSkeleton } from "@/components/VacanciesList/VacanciesListSkeleton";
 import styles from "./style.module.scss";
 
 const VacanciesList = dynamic(() => import("@/components/VacanciesList"), {
 	ssr: false,
+	loading: () => <VacanciesListSkeleton />,
 });
 
 export default function HubJobsClient() {

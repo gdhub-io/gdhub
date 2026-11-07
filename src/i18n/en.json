@@ -1083,6 +1083,7 @@
 			"decline": "Turn down",
 			"declined": "You could not take these",
 			"empty": "Nothing has been handed to you yet. An author picks a curator when they buy a checkpoint.",
+			"load-error": "Your checkpoints could not be loaded",
 			"missing": "This checkpoint is not one of yours.",
 			"running": "Under way",
 			"subtitle": "Checkpoints assigned to you.",
@@ -2710,7 +2711,9 @@
 		"cancel": "Cancel",
 		"close": "Close",
 		"delete": "Delete",
-		"save": "Save"
+		"load-error": "This could not be loaded",
+		"save": "Save",
+		"try-again": "Try again"
 	},
 	"component": {
 		"heroStats": {
@@ -2746,9 +2749,11 @@
 		"myTeam": {
 			"addInvestor": "Add investor",
 			"cancel": "Cancel",
+			"equity-load-error": "Equity could not be loaded",
 			"findMentors": "Find mentors",
 			"inviteMember": "Invite Member",
 			"makePromise": "Make Promise",
+			"noPendingInvitations": "No pending invitations",
 			"total": "Total"
 		},
 		"stageProjectsSection": {
@@ -2835,6 +2840,7 @@
 				}
 			},
 			"mentorship": {
+				"availability": "Available for advice",
 				"card": {
 					"description": "Turn on if you want other community members to contact you for advice.",
 					"save": "Save",
@@ -2867,6 +2873,7 @@
 			"advanced": "Advanced"
 		},
 		"enroll": "Enroll in course",
+		"error": "This course could not be loaded",
 		"language": {
 			"en": "English",
 			"ru": "Russian"
@@ -2908,8 +2915,13 @@
 	"courses": {
 		"createCourse": "Create course",
 		"list": {
+			"error": "Courses could not be loaded",
 			"noOpenCourses": "There are no open courses at the moment",
 			"validUntil": "Starts at"
+		},
+		"mine": {
+			"empty": "No courses yet",
+			"empty-hint": "Courses you author, teach or study in appear here."
 		},
 		"myCourses": "My courses",
 		"myCoursesDescription": "Courses where you are an author, student, or instructor"
@@ -2979,6 +2991,7 @@
 		"child": "Child",
 		"content": {
 			"hint": "Describe the event in detail.",
+			"load-error": "The content could not be loaded",
 			"placeholder": "Start typing...",
 			"saveButton": "Save",
 			"saveError": "Failed to save content",
@@ -3195,6 +3208,7 @@
 					}
 				},
 				"description": "When enabled, you can issue certificates to event participants from the Members page.",
+				"load-error": "Certificate settings could not be loaded",
 				"organizer": {
 					"description": "Shown in the left signature block of the certificate. Leave blank to use the event creator's profile name and first speciality.",
 					"name": {
@@ -3209,6 +3223,10 @@
 				"preview.download": "Open in a new tab",
 				"preview.fallback": "Your browser cannot display PDFs inline.",
 				"preview.title": "Certificate preview",
+				"template": {
+					"description": "Check how the signature block looks before issuing anything.",
+					"title": "Certificate template"
+				},
 				"title": "Certification",
 				"toggle": {
 					"error": "Failed to update certification setting"
@@ -3235,6 +3253,7 @@
 				"restore.description2": "This will move the event to the draft status and will be visible to the your events list.",
 				"restore.success": "Event restored successfully"
 			},
+			"load-error": "Event settings could not be loaded",
 			"menu": {
 				"certification": "Certification",
 				"danger": "Danger",
@@ -3246,6 +3265,9 @@
 			"closed": "Closed",
 			"draft": "Draft",
 			"published": "Published at {publishedAt}"
+		},
+		"timeline": {
+			"load-error": "The schedule could not be loaded"
 		},
 		"type": {
 			"free": "Free",
@@ -3275,6 +3297,7 @@
 	"experts": {
 		"page": {
 			"description": "On this page, you can find experts who are ready to help with your questions. Click on a expert card to contact them",
+			"error": "Experts could not be loaded",
 			"filter": "Filter by direction",
 			"filter.language": "Answering language",
 			"filter.language.en": "English speaking experts",
@@ -3311,12 +3334,15 @@
 	"hours/week": "hours/week",
 	"hub": {
 		"activity-feed": {
+			"error": "Devlog posts could not be loaded",
 			"title": "Activity Feed"
 		},
 		"hot-vacancies": {
+			"error": "Open positions could not be loaded",
 			"title": "Open positions"
 		},
 		"latest-events": {
+			"error": "Events could not be loaded",
 			"ongoing": "Ongoing",
 			"starts": "Starts",
 			"title": "Upcoming events",
@@ -3327,6 +3353,7 @@
 			"clear": "Clear",
 			"direction": "Direction",
 			"done": "Done",
+			"error": "Members could not be loaded",
 			"level": "Experience",
 			"noResults": "No specialists match your filters.",
 			"noResultsFor": "No specialists match “{query}”.",
@@ -4287,6 +4314,11 @@
 			"advice-requests": "Advice Requests",
 			"advice-requests.accepted": "Advice request accepted successfully. You can chat now.",
 			"advice-to-prefix": "To",
+			"advice": {
+				"empty": "No advice requests",
+				"empty-hint": "Requests you send to experts, and the ones sent to you, appear here.",
+				"error": "Advice requests could not be loaded"
+			},
 			"events": {
 				"empty": {
 					"description": "There are currently no events. Stay tuned for upcoming meetups, workshops, and game jams!",
@@ -4305,12 +4337,17 @@
 				"text3": "Authors of indie projects have access to a database of specialists and can invite them to their projects. For this you need to create a project and and bring your project to the recruiting stage."
 			},
 			"new-members": "New members",
+			"newMembers": {
+				"error": "Members could not be loaded"
+			},
 			"outgoing-requests": "Outgoing",
 			"project-updates": "Project updates",
 			"projects": {
 				"allProjects": "All Projects",
 				"availableOnStores": "Available on Stores",
+				"error": "Projects could not be loaded",
 				"filterByStage": "Filter by stage",
+				"store-error": "Projects on stores could not be loaded",
 				"subtitle": "Projects developed independently by users",
 				"title": "Indie Game Projects"
 			},
@@ -4408,6 +4445,7 @@
 			}
 		},
 		"myEvents": {
+			"error": "Your events could not be loaded",
 			"title": "My Events"
 		},
 		"onboardingError": {
@@ -4569,6 +4607,7 @@
 					"placeholder": "I answer as much as possible"
 				}
 			},
+			"load-error": "Mentorship settings could not be loaded",
 			"update-message": "Mentorship settins is updated"
 		},
 		"resources": {
@@ -4605,7 +4644,8 @@
 				"description": "Specialties allow you to respond to vacancies from existing projects and conduct lectures.",
 				"no-specialities": "You have not added a single specialty yet.",
 				"title": "Specialties"
-			}
+			},
+			"load-error": "Your specialties could not be loaded"
 		}
 	},
 	"profile": {
@@ -4657,6 +4697,7 @@
 					"title": "Export Personal Data"
 				},
 				"preview": {
+					"load-error": "What will be deleted could not be loaded",
 					"noAnonymizeItems": "No data will be anonymized.",
 					"noDeleteItems": "No data will be deleted.",
 					"noDetachItems": "No data will be detached.",
@@ -4671,6 +4712,7 @@
 					"willKeepTooltip": "These records involve other people's rights too — equity agreements, financial transactions, legal events. They stay linked to an anonymous placeholder, not your real identity. The law allows retaining shared history even after a deletion request (GDPR Art. 89)."
 				}
 			},
+			"load-error": "Your profile could not be loaded",
 			"menu": {
 				"connections": "Connections",
 				"danger": "Danger Zone",
@@ -4705,6 +4747,7 @@
 			"addLink": "Add Link",
 			"description": "Add links to your project on various platforms. The primary link will be displayed prominently on your project page.",
 			"invalidUrls": "Please enter valid URLs for all links",
+			"load-error": "Project links could not be loaded",
 			"maxLinks": "Maximum 3 links allowed",
 			"noLinks": "No links added yet. Click \"Add Link\" to add first one.",
 			"platformRequired": "Platform is required",
@@ -4761,6 +4804,7 @@
 					"title": "Restore Project"
 				}
 			},
+			"load-error": "Project settings could not be loaded",
 			"menu": {
 				"danger-zone": "Danger Zone",
 				"general": "General",
@@ -4869,6 +4913,12 @@
 				"closedByCheckpoint": "{stage} closed after the Checkpoint {number} verdict · {curator}",
 				"closedByTasks": "{stage} closed by its own tasks"
 			}
+		},
+		"games": {
+			"load-error": "Projects could not be loaded"
+		},
+		"settings": {
+			"load-error": "Scout settings could not be loaded"
 		}
 	},
 	"season-projects-section": {
@@ -4902,6 +4952,7 @@
 				"reserved": "Reserved {date} · not charged yet",
 				"reservedCharged": "Reserved {reserved} → charged {charged}"
 			},
+			"load-error": "Your payments could not be loaded",
 			"receiptFailed": "The receipt could not be opened",
 			"status": {
 				"notCharged": "Not charged",
@@ -5001,6 +5052,9 @@
 	"sports": "Sports",
 	"start-and-end-dates": "from {fromDate} to {toDate} ",
 	"table": {
+		"empty": {
+			"title": "Nothing here yet"
+		},
 		"investors": {
 			"description": "List of investors, their investments and purchased shares."
 		},
@@ -5045,6 +5099,7 @@
 		},
 		"list": {
 			"description": "Invest your time in the success of new game projects",
+			"error": "Open positions could not be loaded",
 			"noOpenVacancies": "There are no open positions at the moment",
 			"validUntil": "Relevant to"
 		}
@@ -5199,6 +5254,7 @@
 			"joined": "{name} joined the team",
 			"joinedInvited": "{role} · invited by {name}",
 			"left": "{name} left the team",
+			"load-error": "Activity could not be loaded",
 			"loading": "Loading earlier activity…",
 			"reworded": "Task reworded on the day-{day} revision",
 			"sprint": "Sprint {number} started · {date}",
@@ -5363,6 +5419,7 @@
 				"hide": "Hide previous path",
 				"show": "Show previous path"
 			},
+			"load-error": "The workflow could not be loaded",
 			"pulse": {
 				"confirmed": "Checked in",
 				"empty": "Nobody has been asked yet.",

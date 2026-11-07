@@ -1,9 +1,11 @@
 import type { Language, SkillLevel } from "@gdhub-io/gdhub-prisma";
-import { useQuery } from "@tanstack/react-query";
+import { keepPreviousData, useQuery } from "@tanstack/react-query";
 import { useTranslate } from "@tolgee/react";
-import { Button, Col, Row, Space, Spin, Typography } from "antd";
+import { Button, Col, Row, Space, Typography } from "antd";
 import axios from "axios";
+import { LoadError } from "@/components/ui";
 import { avatarImage } from "@/helpers/image";
+import { ExpertListSkeleton } from "./ExpertListSkeleton";
 import styles from "./style.module.scss";
 
 type Expert = {
@@ -38,9 +40,12 @@ const ExpertList = ({
 }) => {
 	const { t } = useTranslate();
 
-	console.log("filter", filter);
-
-	const { data: experts, isLoading } = useQuery<Expert[]>({
+	const {
+		data: experts,
+		isPending,
+		isLoadingError,
+		refetch,
+	} = useQuery<Expert[]>({
 		queryKey: ["experts", JSON.stringify(filter)],
 		queryFn: () =>
 			axios
@@ -52,15 +57,18 @@ const ExpertList = ({
 				})
 				.then((res) => res.data),
 		staleTime: Infinity,
+		// A filter change keeps the current cards on screen until the new list lands.
+		placeholderData: keepPreviousData,
 	});
 
-	if (isLoading) {
+	if (isPending) return <ExpertListSkeleton />;
+	if (isLoadingError)
 		return (
-			<div className={styles.loadingContainer}>
-				<Spin />
-			</div>
+			<LoadError
+				title={t("experts.page.error", "Experts could not be loaded")}
+				onRetry={refetch}
+			/>
 		);
-	}
 
 	return (
 		<>

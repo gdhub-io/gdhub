@@ -2,16 +2,18 @@
 
 import { IconDots, IconPencil, IconTrash } from "@tabler/icons-react";
 import { useTolgee } from "@tolgee/react";
-import { Avatar, Button, Dropdown, Flex, Segmented } from "antd";
+import { Avatar, Button, Dropdown, Flex, Segmented, Skeleton } from "antd";
 import dayjs from "dayjs";
 import { useMemo, useState } from "react";
 import { getWorkDirection } from "@/components/DirectionBadge/directions";
+import { LoadError } from "@/components/ui";
 import { formatEventPeriod } from "@/helpers/format";
 import { useWorkDirections } from "@/hooks/library";
 import { SpeakerAvatars } from "../SpeakerAvatars";
 import styles from "./style.module.scss";
 
 const MAX_VISIBLE_SPEAKERS = 3;
+const SKELETON_ITEMS = [0, 1, 2];
 
 export type TimelineSpeaker = {
 	id?: string;
@@ -76,8 +78,16 @@ export function EventScheduleTimeline({
 	onEdit,
 	onDelete,
 	canEdit,
+	loading,
+	error,
+	onRetry,
 }: {
 	items: TimelineItem[];
+	/** The programme has not arrived yet: rows are drawn as placeholders. */
+	loading?: boolean;
+	/** The programme failed to load: said so in place of the rows, with `onRetry`. */
+	error?: boolean;
+	onRetry?: () => void;
 	onEdit?: (item: TimelineItem) => void;
 	onDelete?: (id: string) => void;
 	canEdit?: boolean;
@@ -142,7 +152,44 @@ export function EventScheduleTimeline({
 				)}
 			</Flex>
 
-			{!sorted.length ? (
+			{error ? (
+				<LoadError
+					title={t(
+						"event.timeline.load-error",
+						"The schedule could not be loaded",
+					)}
+					onRetry={onRetry}
+				/>
+			) : loading ? (
+				<Flex align="stretch" aria-busy>
+					<div className={styles.labelPane}>
+						<div className={`${styles.head} ${styles.headRow}`} />
+						{SKELETON_ITEMS.map((index) => (
+							<Flex key={index} align="center" className={styles.row}>
+								<Flex vertical className={styles.colItem}>
+									<Skeleton.Input active size="small" />
+								</Flex>
+								<Flex align="center" className={styles.colSpeakers}>
+									<Skeleton.Avatar active size={24} />
+								</Flex>
+							</Flex>
+						))}
+					</div>
+					<div className={styles.trackPane}>
+						<div className={`${styles.head} ${styles.headRow}`} />
+						{SKELETON_ITEMS.map((index) => (
+							<Flex
+								key={index}
+								align="center"
+								className={styles.row}
+								style={{ paddingInline: "var(--gd-space-3)" }}
+							>
+								<Skeleton.Button active size="small" block />
+							</Flex>
+						))}
+					</div>
+				</Flex>
+			) : !sorted.length ? (
 				<div className={styles.empty}>
 					{t("event.schedule.empty.admin", "No items yet. Add the first one.")}
 				</div>

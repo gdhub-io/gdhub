@@ -1,6 +1,7 @@
 import { useTranslate } from "@tolgee/react";
-import { Button, Card, Flex, Space, Spin, Typography } from "antd";
+import { Button, Card, Flex, Skeleton, Space, Typography } from "antd";
 import { useState } from "react";
+import { LoadError } from "@/components/ui/LoadError";
 import { ProjectStatus } from "@/config/prisma-enums";
 import { useCurrentProject } from "@/hooks/project";
 import ArchiveProjectModal from "./ArchiveProjectModal";
@@ -11,7 +12,7 @@ const { Text } = Typography;
 
 const DangerProjectForm = () => {
 	const { t } = useTranslate();
-	const { project, refetch, isLoading } = useCurrentProject();
+	const { project, refetch, isLoading, isError } = useCurrentProject();
 	const [isArchiveModalOpen, setIsArchiveModalOpen] = useState(false);
 	const [isDeleteModalOpen, setIsDeleteModalOpen] = useState(false);
 
@@ -22,7 +23,7 @@ const DangerProjectForm = () => {
 	};
 
 	return (
-		<Spin spinning={isLoading}>
+		<>
 			<Space orientation="vertical" size="large" className={styles.container}>
 				<Text type="secondary">
 					{t(
@@ -31,46 +32,61 @@ const DangerProjectForm = () => {
 					)}
 				</Text>
 
-				<Card variant="borderless">
-					<Card.Meta
-						title={
-							<Flex justify="space-between" align="center">
-								{isArchived
-									? t(
-											"project.settings.danger.restore.cardTitle",
-											"Restore Project",
-										)
-									: t(
-											"project.settings.danger.archive.cardTitle",
-											"Archive Project",
-										)}
-
-								<Button
-									type="primary"
-									disabled={!project}
-									onClick={() => setIsArchiveModalOpen(true)}
-								>
-									{isArchived
-										? t("project.settings.danger.restore.button", "Restore")
-										: t("project.settings.danger.archive.button", "Archive")}
-								</Button>
-							</Flex>
-						}
-						description={
-							<Text>
-								{isArchived
-									? t(
-											"project.settings.danger.restore.cardDescription",
-											"Restore the project and return it to active circulation.",
-										)
-									: t(
-											"project.settings.danger.archive.description",
-											"Archive keeps the project data but moves the project out of active circulation.",
-										)}
-							</Text>
-						}
+				{/* Archive or restore is only known once the project has loaded. */}
+				{isError && !project ? (
+					<LoadError
+						title={t(
+							"project.settings.load-error",
+							"Project settings could not be loaded",
+						)}
+						onRetry={refetch}
 					/>
-				</Card>
+				) : isLoading ? (
+					<Card variant="borderless">
+						<Skeleton active title paragraph={{ rows: 1 }} />
+					</Card>
+				) : (
+					<Card variant="borderless">
+						<Card.Meta
+							title={
+								<Flex justify="space-between" align="center">
+									{isArchived
+										? t(
+												"project.settings.danger.restore.cardTitle",
+												"Restore Project",
+											)
+										: t(
+												"project.settings.danger.archive.cardTitle",
+												"Archive Project",
+											)}
+
+									<Button
+										type="primary"
+										disabled={!project}
+										onClick={() => setIsArchiveModalOpen(true)}
+									>
+										{isArchived
+											? t("project.settings.danger.restore.button", "Restore")
+											: t("project.settings.danger.archive.button", "Archive")}
+									</Button>
+								</Flex>
+							}
+							description={
+								<Text>
+									{isArchived
+										? t(
+												"project.settings.danger.restore.cardDescription",
+												"Restore the project and return it to active circulation.",
+											)
+										: t(
+												"project.settings.danger.archive.description",
+												"Archive keeps the project data but moves the project out of active circulation.",
+											)}
+								</Text>
+							}
+						/>
+					</Card>
+				)}
 
 				<Card variant="borderless">
 					<Card.Meta
@@ -113,7 +129,7 @@ const DangerProjectForm = () => {
 				project={project}
 				onClose={() => setIsDeleteModalOpen(false)}
 			/>
-		</Spin>
+		</>
 	);
 };
 

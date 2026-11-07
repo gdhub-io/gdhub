@@ -14,6 +14,7 @@ import {
 } from "antd";
 import axios from "axios";
 import { type ReactNode, useMemo, useState } from "react";
+import { LoadError } from "@/components/ui";
 import { ROLE_META } from "@/config/permissions/role-meta";
 import { SPACE_ROLES, SpaceRole } from "@/config/permissions/roles";
 import { SPACE_TYPES, type SpaceType } from "@/config/spaces";
@@ -113,7 +114,7 @@ export const UserRolesModal = ({ user, onClose }: Props) => {
 	);
 	const [drafts, setDrafts] = useState<Draft[]>([]);
 
-	const { data, isLoading } = useQuery({
+	const { data, isLoading, isLoadingError, refetch } = useQuery({
 		queryKey: ["admin", "user-memberships", user?.id],
 		queryFn: () =>
 			axios
@@ -258,6 +259,8 @@ export const UserRolesModal = ({ user, onClose }: Props) => {
 		>
 			{isLoading ? (
 				<Skeleton active />
+			) : isLoadingError ? (
+				<LoadError onRetry={refetch} />
 			) : (
 				<div className={styles.body}>
 					{readOnly ? (

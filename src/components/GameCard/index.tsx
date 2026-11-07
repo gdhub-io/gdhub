@@ -6,6 +6,7 @@ import { ApplauseButton } from "@/components/ApplauseButton";
 import { AppAvatar } from "@/components/ui/AppAvatar";
 import { AppImage } from "@/components/ui/AppImage";
 import { ProjectStatus } from "@/config/prisma-enums";
+import { projectSpaceHref } from "@/helpers/project-space";
 import DefaultCover from "./DefaultCover";
 import styles from "./styles.module.scss";
 
@@ -56,7 +57,7 @@ const GameCard: React.FC<GameCardProps> = ({
 	if (variant === "hub") {
 		return (
 			<Link
-				href={isUserProject ? `/user/project/${slug}` : `/project/${slug}`}
+				href={isUserProject ? projectSpaceHref(slug) : `/project/${slug}`}
 				className={`${styles.gameCardLink} ${styles.hubLink}`}
 			>
 				<Card
@@ -105,7 +106,7 @@ const GameCard: React.FC<GameCardProps> = ({
 
 	return (
 		<Link
-			href={isUserProject ? `/user/project/${slug}` : `/project/${slug}`}
+			href={isUserProject ? projectSpaceHref(slug) : `/project/${slug}`}
 			className={styles.gameCardLink}
 		>
 			<Card className={styles.gameCard} styles={{ body: { padding: 0 } }}>

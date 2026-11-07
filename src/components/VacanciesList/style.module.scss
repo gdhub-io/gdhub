@@ -6,8 +6,15 @@
 	flex-wrap: wrap;
 }
 
-.loadingContainer {
-	display: flex;
-	justify-content: center;
-	padding: 48px 0;
+
+// Stands in for the card's direction panel, at its minimum height.
+.panelSkeleton {
+	display: block;
+	width: 100%;
+
+	:global(.ant-skeleton-node) {
+		width: 100%;
+		height: 172px;
+		border-radius: var(--gd-radius-chip);
+	}
 }

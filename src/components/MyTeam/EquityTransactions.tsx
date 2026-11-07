@@ -3,7 +3,7 @@ import { useTranslate } from "@tolgee/react";
 import { Card, Table, Typography } from "antd";
 import axios from "axios";
 import dayjs from "dayjs";
-import { StatusDot } from "@/components/ui";
+import { LoadError, StatusDot } from "@/components/ui";
 import { AppAvatar } from "@/components/ui/AppAvatar";
 import { EquityTransactionType } from "@/config/prisma-enums";
 import styles from "./EquityTransactions.module.scss";
@@ -62,7 +62,8 @@ const EquityTransactions: React.FC<EquityTransactionsProps> = ({
 	const {
 		data: transactionsData,
 		isLoading,
-		error,
+		isError,
+		refetch,
 	} = useQuery({
 		queryKey: ["equity-transactions", projectId, userId],
 		queryFn: async () => {
@@ -172,11 +173,12 @@ const EquityTransactions: React.FC<EquityTransactionsProps> = ({
 		);
 	}
 
-	if (error) {
+	if (isError && !transactionsData) {
 		return (
-			<div className={styles.error}>
-				{t("Error loading transaction history")}
-			</div>
+			<LoadError
+				title={t("Error loading transaction history")}
+				onRetry={refetch}
+			/>
 		);
 	}
 

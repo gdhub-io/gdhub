@@ -4,6 +4,7 @@ import { Card, Col, Row, Skeleton, Space, Statistic, Typography } from "antd";
 import axios from "axios";
 import dayjs from "dayjs";
 import React from "react";
+import { LoadError } from "@/components/ui";
 
 const { Text, Title } = Typography;
 
@@ -14,7 +15,12 @@ interface UserEquitySectionProps {
 const UserEquitySection = ({ projectId }: UserEquitySectionProps) => {
 	const { t } = useTranslate();
 
-	const { data: summary, isLoading: isLoadingMemberEquity } = useQuery({
+	const {
+		data: summary,
+		isLoading: isLoadingMemberEquity,
+		isLoadingError,
+		refetch,
+	} = useQuery({
 		queryKey: ["project-equity-member-current", projectId],
 		queryFn: () =>
 			axios.get("/api/user/project/member/summary", {
@@ -74,71 +80,78 @@ const UserEquitySection = ({ projectId }: UserEquitySectionProps) => {
 		>
 			<Title level={4}>{t("Your Participation")}</Title>
 
-			<Row gutter={[16, 16]}>
-				{Boolean(summary?.data.promisedEquity) && (
+			{isLoadingError ? (
+				<LoadError onRetry={refetch} />
+			) : (
+				<Row gutter={[16, 16]}>
+					{Boolean(summary?.data.promisedEquity) && (
+						<Col xs={24} sm={12} md={6}>
+							<Card style={{ height: "100%", textAlign: "center" }}>
+								{renderStatistic(
+									t("Promised Equity"),
+									summary?.data.promisedEquity,
+									"%",
+									summary?.data.workflowStepForVested
+										? `${t("After completing")} "${summary?.data.workflowStepForVested}" ${t("promised equity will become actual")}`
+										: undefined,
+								)}
+								{summary?.data.nextMilestone && (
+									<Text type="secondary" style={{ fontSize: "12px" }}>
+										{t("Next milestone")}:{" "}
+										{isLoadingMemberEquity ? (
+											<Skeleton.Input
+												style={{ width: 60, height: 16 }}
+												active
+											/>
+										) : (
+											summary?.data.nextMilestone
+										)}
+									</Text>
+								)}
+							</Card>
+						</Col>
+					)}
+
+					{Boolean(summary?.data.actualEquity) && (
+						<Col xs={24} sm={12} md={6}>
+							<Card style={{ height: "100%", textAlign: "center" }}>
+								{renderStatistic(
+									t("Actual Equity"),
+									summary?.data.actualEquity,
+									"%",
+									t("Current vested equity"),
+								)}
+							</Card>
+						</Col>
+					)}
+
 					<Col xs={24} sm={12} md={6}>
 						<Card style={{ height: "100%", textAlign: "center" }}>
 							{renderStatistic(
-								t("Promised Equity"),
-								summary?.data.promisedEquity,
-								"%",
-								summary?.data.workflowStepForVested
-									? `${t("After completing")} "${summary?.data.workflowStepForVested}" ${t("promised equity will become actual")}`
+								t("Days on Project"),
+								daysOnProject,
+								t("days"),
+								summary?.data.startedAt
+									? `${t("Since")}: ${dayjs(summary?.data.startedAt).format("DD.MM.YYYY")}`
 									: undefined,
 							)}
-							{summary?.data.nextMilestone && (
-								<Text type="secondary" style={{ fontSize: "12px" }}>
-									{t("Next milestone")}:{" "}
-									{isLoadingMemberEquity ? (
-										<Skeleton.Input style={{ width: 60, height: 16 }} active />
-									) : (
-										summary?.data.nextMilestone
-									)}
-								</Text>
-							)}
 						</Card>
 					</Col>
-				)}
 
-				{Boolean(summary?.data.actualEquity) && (
 					<Col xs={24} sm={12} md={6}>
 						<Card style={{ height: "100%", textAlign: "center" }}>
 							{renderStatistic(
-								t("Actual Equity"),
-								summary?.data.actualEquity,
-								"%",
-								t("Current vested equity"),
+								t("Available Hours"),
+								summary?.data.availableHours[0] +
+									" - " +
+									summary?.data.availableHours[1],
+								t("hours/week"),
+								t("Weekly commitment"),
 							)}
 						</Card>
 					</Col>
-				)}
-
-				<Col xs={24} sm={12} md={6}>
-					<Card style={{ height: "100%", textAlign: "center" }}>
-						{renderStatistic(
-							t("Days on Project"),
-							daysOnProject,
-							t("days"),
-							summary?.data.startedAt
-								? `${t("Since")}: ${dayjs(summary?.data.startedAt).format("DD.MM.YYYY")}`
-								: undefined,
-						)}
-					</Card>
-				</Col>
-
-				<Col xs={24} sm={12} md={6}>
-					<Card style={{ height: "100%", textAlign: "center" }}>
-						{renderStatistic(
-							t("Available Hours"),
-							summary?.data.availableHours[0] +
-								" - " +
-								summary?.data.availableHours[1],
-							t("hours/week"),
-							t("Weekly commitment"),
-						)}
-					</Card>
-				</Col>
-			</Row>
+				</Row>
+			)}
 		</Space>
 	);
 };

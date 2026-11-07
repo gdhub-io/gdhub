@@ -16,6 +16,7 @@ import axios from "axios";
 import { useRouter, useSearchParams } from "next/navigation";
 import { useSession } from "next-auth/react";
 import { useEffect, useMemo, useState } from "react";
+import { LoadError } from "@/components/ui";
 import { resyncSession } from "@/helpers/session";
 import SpecialityModal from "./modals/SpecialityModal";
 
@@ -34,7 +35,12 @@ const SpecialitiesProfileForm = ({ profile }: any) => {
 	const [isModalOpen, setIsModalOpen] = useState(false);
 	const [selectedSpeciality, setSelectedSpeciality] = useState<any>();
 
-	const { data: specialities, isFetching: processing } = useQuery({
+	const {
+		data: specialities,
+		isFetching: processing,
+		isLoadingError,
+		refetch,
+	} = useQuery({
 		queryKey: ["user-specialities"],
 		queryFn: () => axios.get<Speciality[]>("/api/user/specialities"),
 	});
@@ -136,6 +142,15 @@ const SpecialitiesProfileForm = ({ profile }: any) => {
 							"Specialties are how the platform matches you: apply to other teams' openings, be listed among the experts and, as you grow, run your own events and courses.",
 						)}
 					</Text>
+					{isLoadingError && (
+						<LoadError
+							title={t(
+								"profile-forms.specialities.load-error",
+								"Your specialties could not be loaded",
+							)}
+							onRetry={refetch}
+						/>
+					)}
 					{specialities?.data && (
 						<List
 							size="small"

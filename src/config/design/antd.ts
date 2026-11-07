@@ -245,6 +245,8 @@ export function buildAntdTheme({
 				itemSelectedColor: r.text,
 				itemSelectedBg: fills.strong,
 				horizontalItemHoverColor: r.text,
+				// The horizontal menu has its own hover fill; unset, it is transparent.
+				horizontalItemHoverBg: fills.base,
 				horizontalItemSelectedColor: r.text,
 				horizontalItemSelectedBg: r.surfaceSunken,
 				// antd lets a horizontal menu stretch its items to the bar's own

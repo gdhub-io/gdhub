@@ -196,7 +196,12 @@ export default function UsersAdminPage() {
 			setExperts(undefined);
 		});
 
-	const { data: response, isFetching } = useQuery({
+	const {
+		data: response,
+		isFetching,
+		isError,
+		refetch,
+	} = useQuery({
 		queryKey: [
 			"admin",
 			"users",
@@ -624,6 +629,8 @@ export default function UsersAdminPage() {
 				</Row>
 				<ModernTable
 					loading={isFetching}
+					error={isError}
+					onRetry={refetch}
 					rowKey="id"
 					dataSource={response?.data || []}
 					columns={columns}

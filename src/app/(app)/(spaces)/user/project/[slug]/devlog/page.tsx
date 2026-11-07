@@ -88,6 +88,7 @@ export default function MyProjectDevlogPage() {
 		data: projectReports,
 		refetch: refetchProjectReports,
 		isFetching,
+		isError,
 	} = useQuery<ProjectReportWithProject[]>({
 		queryKey: ["project-reports", project?.id],
 		queryFn: () =>
@@ -328,7 +329,9 @@ export default function MyProjectDevlogPage() {
 			}
 		>
 			<ModernTable<ProjectReportWithProject>
-				loading={isFetching}
+				loading={!project || isFetching}
+				error={isError}
+				onRetry={refetchProjectReports}
 				rowKey="id"
 				dataSource={projectReports}
 				columns={columns}

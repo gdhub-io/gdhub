@@ -59,3 +59,14 @@
 
   }
 }
+.coverSkeleton {
+  display: block;
+  width: 100%;
+
+  :global(.ant-skeleton-node) {
+    width: 100%;
+    height: auto;
+    aspect-ratio: 16 / 9;
+    border-radius: var(--gd-radius-chip);
+  }
+}

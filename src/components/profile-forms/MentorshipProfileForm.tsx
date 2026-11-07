@@ -18,6 +18,7 @@ import {
 	Form,
 	Input,
 	message,
+	Skeleton,
 	Space,
 	Spin,
 	Switch,
@@ -35,7 +36,7 @@ import {
 } from "@/components/legal/ClickwrapField";
 import { LegalAcceptModal } from "@/components/legal/LegalAcceptModal";
 import { DynamicRowList } from "@/components/shared/DynamicRowList";
-import { IconTile } from "@/components/ui";
+import { IconTile, LoadError } from "@/components/ui";
 import { resyncSession } from "@/helpers/session";
 import { EXPERT_SKILL_LEVELS } from "@/helpers/speciality";
 import type { LegalAcceptanceInput } from "@/lib/legal/accept";
@@ -76,7 +77,13 @@ const MentorshipProfileForm = ({
 
 	// Read from the server, not from the session: the JWT lags by minutes, so a
 	// switch driven by it shows the previous answer after a save or a reload.
-	const { data: mentorship, refetch: refetchMentorship } = useQuery({
+	const {
+		data: mentorship,
+		refetch: refetchMentorship,
+		// Without the saved setting the switch would read "off" and saving would turn mentorship off.
+		isLoadingError: mentorshipFailed,
+		isPending: isMentorshipPending,
+	} = useQuery({
 		queryKey: ["user-mentorship"],
 		queryFn: () =>
 			axios
@@ -127,6 +134,7 @@ const MentorshipProfileForm = ({
 	const {
 		data: specialities,
 		isLoading: isSpecialityFetching,
+		isLoadingError: isSpecialitiesFailed,
 		refetch: refetchSpecialityList,
 		dataUpdatedAt,
 	} = useQuery({
@@ -297,6 +305,12 @@ const MentorshipProfileForm = ({
 		</div>
 	);
 
+	const specialitiesFailed = enabled && isSpecialitiesFailed;
+	const loadErrorTitle = t(
+		"profile-forms.mentorship.load-error",
+		"Mentorship settings could not be loaded",
+	);
+
 	const specialityListOptions = specialities?.data.map((r: any) => ({
 		label: t(`components.profile-forms.mentorship.card.${r.name}`, r.name),
 		value: r.id,
@@ -311,22 +325,28 @@ const MentorshipProfileForm = ({
 				)}
 				variant="borderless"
 				extra={
-					<Space size={8}>
-						<Text type="secondary">
-							{t(
-								"components.profile-forms.mentorship.availability",
-								"Available for advice",
-							)}
-						</Text>
-						{/* No tooltip on the switch: the label beside it already says what
+					!mentorshipFailed && (
+						<Space size={8}>
+							<Text type="secondary">
+								{t(
+									"components.profile-forms.mentorship.availability",
+									"Available for advice",
+								)}
+							</Text>
+							{/* No tooltip on the switch: the label beside it already says what
 					    the setting does, and hovering a control to find out what it
 					    controls is the worst place to hide an explanation. */}
-						<Switch
-							checked={enabled}
-							loading={isSaving}
-							onChange={switchMentorshipStatus}
-						/>
-					</Space>
+							{isMentorshipPending ? (
+								<Skeleton.Button active size="small" shape="round" />
+							) : (
+								<Switch
+									checked={enabled}
+									loading={isSaving}
+									onChange={switchMentorshipStatus}
+								/>
+							)}
+						</Space>
+					)
 				}
 			>
 				<Spin spinning={isSaving}>
@@ -336,6 +356,15 @@ const MentorshipProfileForm = ({
 							"Allows you to contribute to game development through advising",
 						)}
 					</Paragraph>
+					{(mentorshipFailed || specialitiesFailed) && (
+						<LoadError
+							title={loadErrorTitle}
+							onRetry={() => {
+								if (mentorshipFailed) refetchMentorship();
+								if (specialitiesFailed) refetchSpecialityList();
+							}}
+						/>
+					)}
 					{enabled && agreementRows}
 					{enabled && !!specialities?.data.length && (
 						<Form
@@ -446,7 +475,7 @@ const MentorshipProfileForm = ({
 						</Form>
 					)}
 
-					{enabled && !specialities?.data.length && (
+					{enabled && !specialitiesFailed && !specialities?.data.length && (
 						<Alert
 							title={t(
 								"profile-forms.mentorship.card.no-specialities",
@@ -457,7 +486,9 @@ const MentorshipProfileForm = ({
 				</Spin>
 			</Card>
 
-			<SettingsActions onSave={() => handleForm()} loading={isSaving} />
+			{!mentorshipFailed && !specialitiesFailed && (
+				<SettingsActions onSave={() => handleForm()} loading={isSaving} />
+			)}
 
 			<LegalAcceptModal
 				code="AdvisorAgreement"

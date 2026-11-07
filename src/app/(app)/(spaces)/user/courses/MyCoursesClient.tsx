@@ -1,23 +1,29 @@
 "use client";
 
+import { IconSchool } from "@tabler/icons-react";
 import { useQueryClient } from "@tanstack/react-query";
 import { useTranslate } from "@tolgee/react";
 import { Button, theme } from "antd";
 import axios from "axios";
 import dynamic from "next/dynamic";
 import { useMemo, useState } from "react";
+import {
+	CourseCardSkeleton,
+	CourseGridSkeleton,
+} from "@/components/courses/CourseSkeleton";
 import { ProtectedPageHeader } from "@/components/layouts/ProtectedPageHeader";
 import { useSetSpaceHeader } from "@/components/layouts/SpaceHeader";
+import { EmptyState } from "@/components/ui";
 import styles from "./style.module.scss";
 
 const CourseCard = dynamic(
 	() => import("@/components/courses/CourseCard").then((m) => m.CourseCard),
-	{ ssr: false },
+	{ ssr: false, loading: () => <CourseCardSkeleton /> },
 );
 const CourseSection = dynamic(
 	() =>
 		import("@/components/courses/CourseSection").then((m) => m.CourseSection),
-	{ ssr: false },
+	{ ssr: false, loading: () => <CourseGridSkeleton /> },
 );
 const CreateCourseModal = dynamic(
 	() => import("@/components/modals/CreateCourseModal"),
@@ -69,6 +75,16 @@ export default function MyCoursesClient() {
 					token={token}
 					queryKey={["my-courses"]}
 					queryFn={() => axios.get("/api/user/courses").then((res) => res.data)}
+					emptyState={
+						<EmptyState
+							icon={IconSchool}
+							title={t("courses.mine.empty", "No courses yet")}
+							description={t(
+								"courses.mine.empty-hint",
+								"Courses you author, teach or study in appear here.",
+							)}
+						/>
+					}
 				/>
 			</div>
 

@@ -68,3 +68,11 @@
 	flex-shrink: 0;
 	color: var(--gd-color-text-secondary);
 }
+
+.pillSkeleton {
+	flex: 1 1 calc(50% - 4px);
+
+	:global(.ant-skeleton-button) {
+		height: 36px;
+	}
+}

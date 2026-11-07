@@ -68,7 +68,7 @@ const MyProjectVacancies = () => {
 	const { t } = useTranslate();
 	const params = useParams();
 	const projectSlug = params?.slug as string | undefined;
-	const contextProject = useContext(ProjectContext)?.contextProject;
+	const contextProject = useContext(ProjectContext);
 	const isProjectArchived =
 		!contextProject || !!contextProject.isProjectArchived;
 	const [showVacancyModal, setShowVacancyModal] = useState(false);
@@ -79,6 +79,7 @@ const MyProjectVacancies = () => {
 		data: projectVacancies,
 		refetch: fetchMyProjectVacancies,
 		isLoading: isLoadingMyMyProjectVacancies,
+		isError: isVacanciesError,
 	} = useQuery({
 		queryKey: ["project-team-vacancies", contextProject?.team?.id],
 		queryFn: () =>
@@ -88,6 +89,9 @@ const MyProjectVacancies = () => {
 		enabled: !!contextProject?.team?.id,
 		refetchOnWindowFocus: false,
 	});
+	const vacanciesLoading = !contextProject || isLoadingMyMyProjectVacancies;
+	const vacanciesEmpty =
+		!vacanciesLoading && !isVacanciesError && !projectVacancies?.data.length;
 
 	const { mutateAsync: cancelVacany } = useMutation({
 		mutationFn: (data: { id: string }) =>
@@ -479,10 +483,19 @@ const MyProjectVacancies = () => {
 				)}
 			</Flex>
 
-			{projectVacancies?.data.length > 0 ? (
+			{vacanciesEmpty ? (
+				<p style={{ marginTop: 12, color: "gray" }}>
+					{t(
+						"MyProjectVacancies.thereAreNoOpenVacanciesAtTheMoment",
+						"There are no open positions at the moment",
+					)}
+				</p>
+			) : (
 				<ModernTable
 					showHeader
-					loading={isLoadingMyMyProjectVacancies}
+					loading={vacanciesLoading}
+					error={isVacanciesError}
+					onRetry={fetchMyProjectVacancies}
 					columns={vacanciesColumns.filter((column) => !column.hidden)}
 					dataSource={projectVacancies?.data?.map((m: any) => ({
 						...m,
@@ -490,13 +503,6 @@ const MyProjectVacancies = () => {
 					}))}
 					pagination={false}
 				/>
-			) : (
-				<p style={{ marginTop: 12, color: "gray" }}>
-					{t(
-						"MyProjectVacancies.thereAreNoOpenVacanciesAtTheMoment",
-						"There are no open positions at the moment",
-					)}
-				</p>
 			)}
 
 			{!isProjectArchived && (

@@ -11,6 +11,7 @@ import {
 	Input,
 	type InputRef,
 	Select,
+	Skeleton,
 	Space,
 } from "antd";
 import axios from "axios";
@@ -267,7 +268,12 @@ const ReportsClient = () => {
 						</>
 					)}
 
-					<div ref={callRef} className={styles.callFrame} />
+					{/* Daily mounts its iframe here once the token is in; until then the frame holds its place. */}
+					<div ref={callRef} className={styles.callFrame}>
+						{!callFrame && (
+							<Skeleton.Node active className={styles.callSkeleton} />
+						)}
+					</div>
 				</main>
 			</DailyProvider>
 		</div>

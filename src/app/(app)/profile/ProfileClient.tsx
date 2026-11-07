@@ -25,6 +25,7 @@ import Link from "next/link";
 import { useSession } from "next-auth/react";
 import { ProtectedPageHeader } from "@/components/layouts/ProtectedPageHeader";
 import { SkillCapitalIcon } from "@/components/profile/SkillCapitalIcon";
+import { LoadError } from "@/components/ui";
 import { AppAvatar } from "@/components/ui/AppAvatar";
 import { formatCount } from "@/helpers/format";
 
@@ -111,7 +112,12 @@ const ProfileClient = () => {
 	const { t } = useTranslate();
 	const { data: session } = useSession();
 
-	const { data: skillCapital, isLoading: skillCapitalLoading } = useQuery({
+	const {
+		data: skillCapital,
+		isLoading: skillCapitalLoading,
+		isError: skillCapitalError,
+		refetch: refetchSkillCapital,
+	} = useQuery({
 		queryKey: ["profile-preview-skill-capital", session?.user?.id],
 		queryFn: () =>
 			axios
@@ -173,120 +179,143 @@ const ProfileClient = () => {
 								"radial-gradient(circle at 20% 20%, var(--gd-neutral-25) 0%, var(--gd-color-surface) 45%), radial-gradient(circle at 80% 70%, var(--gd-neutral-25) 0%, var(--gd-color-surface) 50%)",
 						}}
 					>
-						<Flex vertical align="center" gap={8} style={{ paddingTop: 10 }}>
-							<SkillCapitalIcon size={92} />
-							<Title
-								level={1}
-								style={{ margin: 0, fontSize: 88, lineHeight: 1 }}
-							>
-								{formatCount(skillCapital?.scTotal ?? 0)}
-							</Title>
-							<Text style={{ fontSize: 18, fontWeight: 500 }}>
-								Skill Capital
-							</Text>
-							<Tooltip
+						{skillCapitalError && !skillCapital ? (
+							<LoadError
 								title={t(
-									"profile.page.skillCapital.help.sc",
-									"Total of Leadership, Execution, and Mentorship capital.",
+									"profile.page.skillCapital.error",
+									"Your Skill Capital could not be loaded",
 								)}
-							>
-								<Text type="secondary" style={{ textAlign: "center" }}>
-									<IconHelpCircle style={{ marginRight: 6 }} />
-									{t(
-										"profile.page.skillCapital.note",
-										"Metrics are calculated from your project activity and will evolve.",
-									)}
-								</Text>
-							</Tooltip>
-						</Flex>
-
-						<Divider style={{ margin: "18px 0" }} />
-
-						<Card
-							size="small"
-							bordered={false}
-							style={{
-								borderRadius: "var(--gd-radius-panel)",
-								background: "var(--gd-neutral-25)",
-								border: "1px solid var(--gd-color-border)",
-							}}
-							title={
-								<Flex justify="center">
-									<Text strong>Your Statistics</Text>
+								onRetry={refetchSkillCapital}
+							/>
+						) : (
+							<>
+								<Flex
+									vertical
+									align="center"
+									gap={8}
+									style={{ paddingTop: 10 }}
+								>
+									<SkillCapitalIcon size={92} />
+									<Title
+										level={1}
+										style={{ margin: 0, fontSize: 88, lineHeight: 1 }}
+									>
+										{formatCount(skillCapital?.scTotal ?? 0)}
+									</Title>
+									<Text style={{ fontSize: 18, fontWeight: 500 }}>
+										Skill Capital
+									</Text>
+									<Tooltip
+										title={t(
+											"profile.page.skillCapital.help.sc",
+											"Total of Leadership, Execution, and Mentorship capital.",
+										)}
+									>
+										<Text type="secondary" style={{ textAlign: "center" }}>
+											<IconHelpCircle style={{ marginRight: 6 }} />
+											{t(
+												"profile.page.skillCapital.note",
+												"Metrics are calculated from your project activity and will evolve.",
+											)}
+										</Text>
+									</Tooltip>
 								</Flex>
-							}
-						>
-							<Row gutter={[8, 8]}>
-								<Col span={12}>
-									<StatTile
-										label={t("profile.page.skillCapital.lc", "Leadership")}
-										value={formatCount(skillCapital?.leadershipCapital ?? 0)}
-										icon={
-											<IconTrophy
-												style={{ color: "var(--gd-warning-solid)" }}
-											/>
-										}
-										helpText={t(
-											"profile.page.skillCapital.help.lc",
-											"Leadership Capital from projects where you are the author.",
-										)}
-									/>
-								</Col>
-								<Col span={12}>
-									<StatTile
-										label={t("profile.page.skillCapital.ec", "Execution")}
-										value={formatCount(skillCapital?.executionCapital ?? 0)}
-										icon={
-											<IconTrophy
-												style={{ color: "var(--gd-success-solid)" }}
-											/>
-										}
-										helpText={t(
-											"profile.page.skillCapital.help.ec",
-											"Execution Capital from your work as a team member.",
-										)}
-									/>
-								</Col>
-								<Col span={12}>
-									<StatTile
-										label={t("profile.page.skillCapital.mc", "Mentorship")}
-										value={formatCount(skillCapital?.mentorshipCapital ?? 0)}
-										icon={
-											<IconTrophy style={{ color: "var(--gd-info-solid)" }} />
-										}
-										helpText={t(
-											"profile.page.skillCapital.help.mc",
-											"Mentorship Capital from completed advisory sessions.",
-										)}
-									/>
-								</Col>
-								<Col span={12}>
-									<StatTile
-										label="Investor"
-										value="--"
-										disabled
-										icon={
-											<IconUser
-												style={{ color: "var(--gd-color-text-tertiary)" }}
-											/>
-										}
-										helpText="Investor Capital will be added in future releases."
-									/>
-								</Col>
-							</Row>
-						</Card>
 
-						<Paragraph
-							style={{
-								marginTop: 16,
-								marginBottom: 0,
-								fontSize: 15,
-								color: "var(--gd-neutral-700)",
-							}}
-						>
-							Your Skill Capital reflects your leadership, execution, and
-							mentorship contribution in projects.
-						</Paragraph>
+								<Divider style={{ margin: "18px 0" }} />
+
+								<Card
+									size="small"
+									bordered={false}
+									style={{
+										borderRadius: "var(--gd-radius-panel)",
+										background: "var(--gd-neutral-25)",
+										border: "1px solid var(--gd-color-border)",
+									}}
+									title={
+										<Flex justify="center">
+											<Text strong>Your Statistics</Text>
+										</Flex>
+									}
+								>
+									<Row gutter={[8, 8]}>
+										<Col span={12}>
+											<StatTile
+												label={t("profile.page.skillCapital.lc", "Leadership")}
+												value={formatCount(
+													skillCapital?.leadershipCapital ?? 0,
+												)}
+												icon={
+													<IconTrophy
+														style={{ color: "var(--gd-warning-solid)" }}
+													/>
+												}
+												helpText={t(
+													"profile.page.skillCapital.help.lc",
+													"Leadership Capital from projects where you are the author.",
+												)}
+											/>
+										</Col>
+										<Col span={12}>
+											<StatTile
+												label={t("profile.page.skillCapital.ec", "Execution")}
+												value={formatCount(skillCapital?.executionCapital ?? 0)}
+												icon={
+													<IconTrophy
+														style={{ color: "var(--gd-success-solid)" }}
+													/>
+												}
+												helpText={t(
+													"profile.page.skillCapital.help.ec",
+													"Execution Capital from your work as a team member.",
+												)}
+											/>
+										</Col>
+										<Col span={12}>
+											<StatTile
+												label={t("profile.page.skillCapital.mc", "Mentorship")}
+												value={formatCount(
+													skillCapital?.mentorshipCapital ?? 0,
+												)}
+												icon={
+													<IconTrophy
+														style={{ color: "var(--gd-info-solid)" }}
+													/>
+												}
+												helpText={t(
+													"profile.page.skillCapital.help.mc",
+													"Mentorship Capital from completed advisory sessions.",
+												)}
+											/>
+										</Col>
+										<Col span={12}>
+											<StatTile
+												label="Investor"
+												value="--"
+												disabled
+												icon={
+													<IconUser
+														style={{ color: "var(--gd-color-text-tertiary)" }}
+													/>
+												}
+												helpText="Investor Capital will be added in future releases."
+											/>
+										</Col>
+									</Row>
+								</Card>
+
+								<Paragraph
+									style={{
+										marginTop: 16,
+										marginBottom: 0,
+										fontSize: 15,
+										color: "var(--gd-neutral-700)",
+									}}
+								>
+									Your Skill Capital reflects your leadership, execution, and
+									mentorship contribution in projects.
+								</Paragraph>
+							</>
+						)}
 					</Card>
 				</Col>
 			</Row>

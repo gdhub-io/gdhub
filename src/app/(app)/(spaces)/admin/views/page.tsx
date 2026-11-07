@@ -77,7 +77,7 @@ export default function ViewsAdminPage() {
 
 				{isError ? (
 					<section className={styles.statePanel}>
-						<ViewsErrorPanel onRetry={() => refetch()}>
+						<ViewsErrorPanel onRetry={refetch}>
 							<p className={styles.reference}>
 								{t(
 									"admin.views.error.reference",

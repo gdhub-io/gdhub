@@ -95,9 +95,13 @@ export type ProjectWorkflowRow = {
 export function ProjectWorkflowsTable({
 	workflows,
 	loading,
+	error,
+	onRetry,
 }: {
 	workflows: ProjectWorkflowRow[];
 	loading: boolean;
+	error?: boolean;
+	onRetry?: () => void;
 }) {
 	const { message, modal } = App.useApp();
 	const queryClient = useQueryClient();
@@ -467,6 +471,8 @@ export function ProjectWorkflowsTable({
 				columns={columns}
 				dataSource={rows}
 				loading={loading}
+				error={error}
+				onRetry={onRetry}
 				rowSelection={{
 					selectedRowKeys: selected,
 					onChange: (keys) => setSelected(keys as string[]),
