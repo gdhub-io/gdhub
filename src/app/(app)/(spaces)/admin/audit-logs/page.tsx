@@ -127,7 +127,12 @@ export default function AuditLogsAdminPage() {
 		};
 	};
 
-	const { data: response, isFetching } = useQuery({
+	const {
+		data: response,
+		isFetching,
+		isError,
+		refetch,
+	} = useQuery({
 		queryKey: [
 			"admin",
 			"audit-logs",
@@ -433,6 +438,8 @@ export default function AuditLogsAdminPage() {
 				</Row>
 				<ModernTable
 					loading={isFetching || !timezone}
+					error={isError}
+					onRetry={refetch}
 					rowKey="id"
 					dataSource={response?.data || []}
 					columns={columns}

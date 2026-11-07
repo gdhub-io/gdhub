@@ -31,7 +31,7 @@ export function ViewsErrorPanel({ onRetry, children }: ViewsErrorPanelProps) {
 					<Button
 						type="primary"
 						icon={<IconRefresh size={16} />}
-						onClick={onRetry}
+						onClick={() => onRetry()}
 					>
 						{t("admin.views.error.retry", "Try again")}
 					</Button>

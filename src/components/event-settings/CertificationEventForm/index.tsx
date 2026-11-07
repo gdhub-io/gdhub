@@ -8,14 +8,16 @@ import {
 	Input,
 	Modal,
 	message,
+	Skeleton,
 	Space,
-	Spin,
 	Switch,
 	Typography,
 } from "antd";
 import axios from "axios";
 import type React from "react";
 import { useEffect, useState } from "react";
+import { FormSkeleton } from "@/components/ui/FormSkeleton";
+import { LoadError } from "@/components/ui/LoadError";
 import { useEvent } from "@/hooks/event";
 import styles from "./style.module.scss";
 
@@ -53,10 +55,22 @@ const CertificationEventForm: React.FC<CertificationEventFormProps> = ({
 	const [previewOpen, setPreviewOpen] = useState(false);
 	const [configForm] = Form.useForm<CertificationConfigFormValues>();
 
-	const { event, isLoading: isFetchingEvent } = useEvent(eventId);
+	const {
+		event,
+		isLoading: isLoadingEvent,
+		isError: isEventError,
+		refetch: refetchEvent,
+	} = useEvent(eventId);
+	// Without the event the switch would read as "off" whatever the real setting is.
+	const eventFailed = isEventError && !event;
 	const enabled = !!event?.certificationEnabled;
 
-	const { data: certificationConfig, isFetching: isFetchingConfig } = useQuery({
+	const {
+		data: certificationConfig,
+		isPending: isPendingConfig,
+		isLoadingError: configFailed,
+		refetch: refetchConfig,
+	} = useQuery({
 		queryKey: ["event-certification-config", eventId],
 		queryFn: () =>
 			axios
@@ -145,11 +159,15 @@ const CertificationEventForm: React.FC<CertificationEventFormProps> = ({
 				)}
 				variant="borderless"
 				extra={
-					<Switch
-						checked={enabled}
-						loading={isToggling || isFetchingEvent}
-						onChange={(next) => toggleEnabled(next)}
-					/>
+					eventFailed ? null : isLoadingEvent ? (
+						<Skeleton.Button active size="small" shape="round" />
+					) : (
+						<Switch
+							checked={enabled}
+							loading={isToggling}
+							onChange={(next) => toggleEnabled(next)}
+						/>
+					)
 				}
 			>
 				<Typography.Paragraph type="secondary" style={{ marginBottom: 16 }}>
@@ -159,99 +177,102 @@ const CertificationEventForm: React.FC<CertificationEventFormProps> = ({
 					)}
 				</Typography.Paragraph>
 
-				{enabled && (
-					<Spin spinning={isFetchingConfig}>
-						<Space
-							orientation="vertical"
-							size="middle"
-							style={{ width: "100%" }}
-						>
-							<div>
-								<Typography.Title level={5} style={{ marginBottom: 8 }}>
-									{t(
-										"event.settings.certification.organizer.title",
-										"Organizer signer",
+				{(eventFailed || (enabled && configFailed)) && (
+					<LoadError
+						title={t(
+							"event.settings.certification.load-error",
+							"Certificate settings could not be loaded",
+						)}
+						onRetry={eventFailed ? refetchEvent : refetchConfig}
+					/>
+				)}
+				{enabled && isPendingConfig && <FormSkeleton fields={2} />}
+				{enabled && !isPendingConfig && !configFailed && (
+					<Space orientation="vertical" size="middle" style={{ width: "100%" }}>
+						<div>
+							<Typography.Title level={5} style={{ marginBottom: 8 }}>
+								{t(
+									"event.settings.certification.organizer.title",
+									"Organizer signer",
+								)}
+							</Typography.Title>
+							<Typography.Paragraph
+								type="secondary"
+								style={{ fontSize: 12, marginBottom: 12 }}
+							>
+								{t(
+									"event.settings.certification.organizer.description",
+									"Shown in the left signature block of the certificate. Leave blank to use the event creator's profile name and first speciality.",
+								)}
+							</Typography.Paragraph>
+							<Form
+								id={ORGANIZER_FORM_ID}
+								form={configForm}
+								layout="vertical"
+								variant="filled"
+								requiredMark="optional"
+								onFinish={(values) => saveConfig(values)}
+							>
+								<Form.Item
+									name="organizerName"
+									label={t(
+										"event.settings.certification.organizer.name.label",
+										"Name",
 									)}
-								</Typography.Title>
-								<Typography.Paragraph
-									type="secondary"
-									style={{ fontSize: 12, marginBottom: 12 }}
 								>
-									{t(
-										"event.settings.certification.organizer.description",
-										"Shown in the left signature block of the certificate. Leave blank to use the event creator's profile name and first speciality.",
+									<Input
+										placeholder={
+											certificationConfig?.defaults.organizerName || undefined
+										}
+									/>
+								</Form.Item>
+								<Form.Item
+									name="organizerTitle"
+									label={t(
+										"event.settings.certification.organizer.title.label",
+										"Title",
 									)}
-								</Typography.Paragraph>
-								<Form
-									id={ORGANIZER_FORM_ID}
-									form={configForm}
-									layout="vertical"
-									variant="filled"
-									requiredMark="optional"
-									onFinish={(values) => saveConfig(values)}
 								>
-									<Form.Item
-										name="organizerName"
-										label={t(
-											"event.settings.certification.organizer.name.label",
-											"Name",
-										)}
-									>
-										<Input
-											placeholder={
-												certificationConfig?.defaults.organizerName || undefined
-											}
-										/>
-									</Form.Item>
-									<Form.Item
-										name="organizerTitle"
-										label={t(
-											"event.settings.certification.organizer.title.label",
-											"Title",
-										)}
-									>
-										<Input
-											placeholder={
-												certificationConfig?.defaults.organizerTitle ||
-												undefined
-											}
-										/>
-									</Form.Item>
-									{/* The template is a thing to look at, not a field to fill,
+									<Input
+										placeholder={
+											certificationConfig?.defaults.organizerTitle || undefined
+										}
+									/>
+								</Form.Item>
+								{/* The template is a thing to look at, not a field to fill,
 									    so it gets its own row rather than sitting among the
 									    form's actions. */}
-									<Flex
-										align="center"
-										justify="space-between"
-										gap={16}
-										wrap
-										className={styles.templateRow}
-									>
-										<Flex vertical gap={2}>
-											<Typography.Text strong>
-												{t(
-													"event.settings.certification.template.title",
-													"Certificate template",
-												)}
-											</Typography.Text>
-											<Typography.Text type="secondary">
-												{t(
-													"event.settings.certification.template.description",
-													"Check how the signature block looks before issuing anything.",
-												)}
-											</Typography.Text>
-										</Flex>
-										<Button onClick={() => setPreviewOpen(true)}>
-											{t("event.settings.certification.preview", "Preview")}
-										</Button>
+								<Flex
+									align="center"
+									justify="space-between"
+									gap={16}
+									wrap
+									className={styles.templateRow}
+								>
+									<Flex vertical gap={2}>
+										<Typography.Text strong>
+											{t(
+												"event.settings.certification.template.title",
+												"Certificate template",
+											)}
+										</Typography.Text>
+										<Typography.Text type="secondary">
+											{t(
+												"event.settings.certification.template.description",
+												"Check how the signature block looks before issuing anything.",
+											)}
+										</Typography.Text>
 									</Flex>
-								</Form>
-							</div>
-						</Space>
-					</Spin>
+									<Button onClick={() => setPreviewOpen(true)}>
+										{t("event.settings.certification.preview", "Preview")}
+									</Button>
+								</Flex>
+							</Form>
+						</div>
+					</Space>
 				)}
 			</Card>
-			{enabled && (
+			{enabled && !configFailed && (
 				<Flex
 					align="center"
 					justify="space-between"

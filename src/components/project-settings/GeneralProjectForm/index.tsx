@@ -25,6 +25,8 @@ import dynamic from "next/dynamic";
 import { useEffect, useRef, useState } from "react";
 import ReactPlayer from "react-player";
 import { AppImage } from "@/components/ui/AppImage";
+import { FormSkeleton } from "@/components/ui/FormSkeleton";
+import { LoadError } from "@/components/ui/LoadError";
 import { ProjectStatus } from "@/config/prisma-enums";
 import { normUploadFile } from "@/helpers/file";
 import { getVideoPoster, toPlayableVideoUrl } from "@/helpers/video";
@@ -51,7 +53,12 @@ const GeneralProjectForm = ({ projectSlug }: GeneralProjectFormArgs) => {
 	const [coverProcessing, setCoverProcessing] = useState(false);
 	const [videoUrl, setVideoUrl] = useState<string | null>();
 
-	const { data: project, isFetching } = useQuery({
+	const {
+		data: project,
+		isPending,
+		isLoadingError,
+		refetch,
+	} = useQuery({
 		queryKey: ["project", projectSlug],
 		queryFn: () =>
 			axios.get<
@@ -231,8 +238,25 @@ const GeneralProjectForm = ({ projectSlug }: GeneralProjectFormArgs) => {
 		setVideoUrl(undefined);
 	};
 
+	// Saving an unloaded form would overwrite the project with blanks.
+	if (isLoadingError) {
+		return (
+			<LoadError
+				title={t(
+					"project.settings.load-error",
+					"Project settings could not be loaded",
+				)}
+				onRetry={refetch}
+			/>
+		);
+	}
+
+	if (isPending) {
+		return <FormSkeleton media={2} fields={5} aside={1} textarea />;
+	}
+
 	return (
-		<Spin spinning={isFetching || isUpdating}>
+		<Spin spinning={isUpdating}>
 			<Form
 				form={form}
 				layout="vertical"

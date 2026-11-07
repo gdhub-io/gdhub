@@ -98,6 +98,7 @@ export default function DevlogPostsAdminPage() {
 		data: posts,
 		refetch,
 		isFetching,
+		isError,
 	} = useQuery<AdminDevlogPost[]>({
 		queryKey: ["admin", "devlog-posts", selectedProjectId],
 		queryFn: () =>
@@ -348,6 +349,8 @@ export default function DevlogPostsAdminPage() {
 				</Card>
 				<ModernTable<AdminDevlogPost>
 					loading={isFetching}
+					error={isError}
+					onRetry={refetch}
 					rowKey="id"
 					dataSource={posts}
 					columns={columns}

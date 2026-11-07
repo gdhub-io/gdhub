@@ -1,14 +1,16 @@
 import type { TeamVacancy, WorkDirection } from "@gdhub-io/gdhub-prisma";
 import { useQuery } from "@tanstack/react-query";
 import { useTranslate } from "@tolgee/react";
-import { Col, ConfigProvider, Row, Segmented, Spin } from "antd";
+import { Col, Row, Segmented } from "antd";
 import axios from "axios";
 import { useMemo, useState } from "react";
 import { directionSlug } from "@/components/DirectionBadge";
 import { DirectionSelect } from "@/components/DirectionSelect";
 import VacancyPreviewModal from "@/components/modals/VacancyPreviewModal";
+import { LoadError } from "@/components/ui";
 import { VacancyCard, type VacancyRateType } from "@/components/VacancyCard";
 import styles from "./style.module.scss";
+import { VacanciesListSkeleton } from "./VacanciesListSkeleton";
 
 type Vacancy = TeamVacancy & {
 	direction: WorkDirection;
@@ -39,8 +41,9 @@ const VacanciesList = ({ location }: { location?: "hub" }) => {
 
 	const {
 		data: vacancies,
-		isFetched,
-		isLoading,
+		isPending,
+		isLoadingError: failed,
+		refetch,
 	} = useQuery({
 		queryKey: ["vacancies"],
 		queryFn: () => axios.get<Vacancy[]>("/api/vacancies"),
@@ -75,21 +78,15 @@ const VacanciesList = ({ location }: { location?: "hub" }) => {
 		[list, typeFilter, directionFilter],
 	);
 
-	if (isLoading) {
-		return (
-			<div className={styles.loadingContainer}>
-				<Spin />
-			</div>
-		);
-	}
-
 	return (
 		<>
-			{isFetched && list.length > 0 && (
+			{/* Drawn disabled while loading; hidden only once the board is known to be empty. */}
+			{(isPending || failed || list.length > 0) && (
 				<div className={styles.filterBar}>
 					<Segmented<CooperationType | "all">
 						value={typeFilter}
 						onChange={setTypeFilter}
+						disabled={isPending || failed}
 						options={[
 							{ label: t("vacancies.filter.type.all", "All"), value: "all" },
 							{
@@ -113,12 +110,24 @@ const VacanciesList = ({ location }: { location?: "hub" }) => {
 						directions={directionNames}
 						value={directionFilter}
 						onChange={setDirectionFilter}
+						disabled={isPending || failed}
+						loading={isPending}
 						style={{ width: 220 }}
 					/>
 				</div>
 			)}
 
-			{isFetched && filtered.length > 0 ? (
+			{isPending ? (
+				<VacanciesListSkeleton />
+			) : failed ? (
+				<LoadError
+					title={t(
+						"vacancies.list.error",
+						"Open positions could not be loaded",
+					)}
+					onRetry={refetch}
+				/>
+			) : filtered.length > 0 ? (
 				<Row gutter={[16, 16]} wrap>
 					{filtered.map((vacancy, idx) => (
 						<Col span={24} md={12} lg={6} key={`job-${idx.toString()}`}>

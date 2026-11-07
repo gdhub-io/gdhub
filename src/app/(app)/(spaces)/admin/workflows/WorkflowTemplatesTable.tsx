@@ -49,9 +49,13 @@ type SortKey = "updated" | "title" | "used";
 export function WorkflowTemplatesTable({
 	templates,
 	loading,
+	error,
+	onRetry,
 }: {
 	templates: WorkflowTemplateRow[];
 	loading: boolean;
+	error?: boolean;
+	onRetry?: () => void;
 }) {
 	const { message, modal } = App.useApp();
 	const queryClient = useQueryClient();
@@ -303,6 +307,8 @@ export function WorkflowTemplatesTable({
 				columns={columns}
 				dataSource={rows}
 				loading={loading}
+				error={error}
+				onRetry={onRetry}
 				pagination={{ pageSize: 10, hideOnSinglePage: true }}
 				emptyState={{
 					title: "No templates found",

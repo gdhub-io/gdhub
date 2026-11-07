@@ -3,12 +3,13 @@
 import { IconPlus } from "@tabler/icons-react";
 import { useQuery } from "@tanstack/react-query";
 import { useTranslate } from "@tolgee/react";
-import { Button, Flex, Table, Tag, Typography } from "antd";
+import { Button, Flex, Tag, Typography } from "antd";
 import axios from "axios";
 import dayjs from "dayjs";
 import { useState } from "react";
 import { NewScoutModal } from "@/components/admin/NewScoutModal";
 import { ProtectedPageHeader } from "@/components/layouts/ProtectedPageHeader";
+import ModernTable from "@/components/ModernTable";
 import { AdminSpace } from "@/components/spaces/AdminSpace";
 import { AppAvatar } from "@/components/ui/AppAvatar";
 
@@ -37,7 +38,12 @@ export default function AdminScoutsPage() {
 	const { t } = useTranslate();
 	const [creating, setCreating] = useState(false);
 
-	const { data: scouts = [], isFetching } = useQuery<Scout[]>({
+	const {
+		data: scouts = [],
+		isFetching,
+		isError,
+		refetch,
+	} = useQuery<Scout[]>({
 		queryKey: ["admin", "scouts"],
 		queryFn: () => axios.get("/api/admin/scouts").then((res) => res.data),
 	});
@@ -104,9 +110,11 @@ export default function AdminScoutsPage() {
 					}
 				/>
 
-				<Table
+				<ModernTable<Scout>
 					rowKey="id"
 					loading={isFetching}
+					error={isError}
+					onRetry={refetch}
 					columns={columns}
 					dataSource={scouts}
 					pagination={false}

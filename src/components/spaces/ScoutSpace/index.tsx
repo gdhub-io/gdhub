@@ -2,7 +2,6 @@
 
 import { useTranslate } from "@tolgee/react";
 import { Tooltip } from "antd";
-import Link from "next/link";
 import { usePathname } from "next/navigation";
 import { type ReactNode, useMemo } from "react";
 import { useAccess } from "@/components/access/AccessProvider";
@@ -10,6 +9,7 @@ import {
 	type SpaceHeaderConfig,
 	useSetSpaceHeader,
 } from "@/components/layouts/SpaceHeader";
+import { NavLink } from "@/components/ui";
 import type { Permission } from "@/config/spaces";
 
 /**
@@ -59,6 +59,7 @@ export const ScoutSpace = ({ children }: { children: ReactNode }) => {
 			SHIPPED.find((item) => pathname.startsWith(item.key)) ?? SHIPPED[0];
 
 		return {
+			scope: "/scout",
 			trail: {
 				parent: { href: SHIPPED[0].key, label: "Scout" },
 				current: { label: selected.name },
@@ -76,7 +77,14 @@ export const ScoutSpace = ({ children }: { children: ReactNode }) => {
 									</Tooltip>
 								),
 							}
-						: { key, label: <Link href={key}>{name}</Link> },
+						: {
+								key,
+								label: (
+									<NavLink href={key} prefetch>
+										{name}
+									</NavLink>
+								),
+							},
 			),
 			menuSelectedKeys: [selected.key],
 		};

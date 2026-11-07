@@ -26,8 +26,10 @@ import type { Key } from "react";
 import { Fragment, useEffect, useMemo, useState } from "react";
 import { ProtectedPageHeader } from "@/components/layouts/ProtectedPageHeader";
 import { SavedSearches } from "@/components/scout/SavedSearches";
+import { LoadError } from "@/components/ui";
 import { AppAvatar } from "@/components/ui/AppAvatar";
 import { AppImage } from "@/components/ui/AppImage";
+import { skeletonColumns, skeletonRows } from "@/components/ui/table";
 import { formatDollar } from "@/helpers/format";
 import {
 	estimateInputRows,
@@ -212,7 +214,11 @@ export function ScoutGamesClient() {
 	// "Matched to your focus": the list opens on what the cabinet asked for, and
 	// the selects show it, so the scout can widen it without guessing why these
 	// projects are here.
-	const { data: cabinet } = useQuery<ScoutCabinet>({
+	const {
+		data: cabinet,
+		isError: isCabinetError,
+		refetch: refetchCabinet,
+	} = useQuery<ScoutCabinet>({
 		queryKey: ["scout", "cabinet"],
 		queryFn: () => axios.get("/api/scout/cabinet").then((res) => res.data),
 	});
@@ -239,7 +245,13 @@ export function ScoutGamesClient() {
 		staleTime: 5 * 60 * 1000,
 	});
 
-	const { data, isFetching } = useQuery({
+	const {
+		data,
+		isFetching,
+		isPending: isGamesPending,
+		isError: isGamesError,
+		refetch: refetchGames,
+	} = useQuery({
 		// Held until the focus is known, so the list is fetched once with the
 		// scout's filters rather than once empty and again with them.
 		enabled: filters !== null,
@@ -261,6 +273,11 @@ export function ScoutGamesClient() {
 				})
 				.then((res) => res.data),
 	});
+
+	// The games query never runs while the cabinet it waits on has failed.
+	const cabinetFailed = filters === null && isCabinetError;
+	const failed = cabinetFailed || (isGamesError && !data);
+	const isPending = isGamesPending && !failed;
 
 	/** antd hands back the column and the order; the API wants both named. */
 	const applySort = (sorter: {
@@ -541,12 +558,39 @@ export function ScoutGamesClient() {
 				/>
 			</Flex>
 
+			{/* Pending also covers the wait for the cabinet, while the query is still disabled. */}
 			<Table
 				rowKey="id"
-				loading={isFetching}
-				columns={columns}
-				dataSource={data?.data ?? []}
+				loading={!isPending && isFetching}
+				columns={
+					isPending
+						? skeletonColumns<ScoutGame>(
+								columns.map((column) => ({ ...column, sorter: undefined })),
+							)
+						: columns
+				}
+				dataSource={
+					isPending ? skeletonRows<ScoutGame>(8, "id") : (data?.data ?? [])
+				}
 				pagination={false}
+				locale={
+					failed
+						? {
+								emptyText: (
+									<LoadError
+										bare
+										title={t(
+											"scout.games.load-error",
+											"Projects could not be loaded",
+										)}
+										onRetry={() =>
+											cabinetFailed ? refetchCabinet() : refetchGames()
+										}
+									/>
+								),
+							}
+						: undefined
+				}
 				onChange={(_pagination, _filters, sorter) =>
 					applySort(Array.isArray(sorter) ? sorter[0] : sorter)
 				}
@@ -554,7 +598,7 @@ export function ScoutGamesClient() {
 				// the only target.
 				onRow={(game) => ({
 					className: styles.row,
-					onClick: () => setOpenProjectId(game.id),
+					onClick: () => !isPending && setOpenProjectId(game.id),
 				})}
 				// Any `scroll.x` turns on `table-layout: fixed`, which is what makes
 				// the widths above binding; narrower than that, the table scrolls

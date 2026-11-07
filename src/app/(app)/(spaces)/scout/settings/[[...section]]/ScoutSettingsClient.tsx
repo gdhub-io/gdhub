@@ -2,7 +2,7 @@
 
 import { useQuery } from "@tanstack/react-query";
 import { useTranslate } from "@tolgee/react";
-import { Grid, Layout, Menu, Select, Spin } from "antd";
+import { Grid, Layout, Menu, Select } from "antd";
 import axios from "axios";
 import { useParams, useRouter } from "next/navigation";
 import { ProtectedPageHeader } from "@/components/layouts/ProtectedPageHeader";
@@ -10,10 +10,24 @@ import { ScoutAlertsForm } from "@/components/scout/ScoutAlertsForm";
 import { ScoutDangerZone } from "@/components/scout/ScoutDangerZone";
 import { ScoutFocusForm } from "@/components/scout/ScoutFocusForm";
 import { ScoutGeneralForm } from "@/components/scout/ScoutGeneralForm";
+import {
+	FormSkeleton,
+	type FormSkeletonProps,
+} from "@/components/ui/FormSkeleton";
+import { LoadError } from "@/components/ui/LoadError";
 import type { ScoutCabinet } from "@/repositories/scout/scout";
 import styles from "./style.module.scss";
 
 type Section = "general" | "focus" | "alerts" | "danger";
+
+const SECTION_SKELETONS: Record<
+	Exclude<Section, "danger">,
+	FormSkeletonProps
+> = {
+	general: { fields: 5, textarea: true },
+	focus: { fields: 3 },
+	alerts: { fields: 2 },
+};
 
 export function ScoutSettingsClient() {
 	const { t } = useTranslate();
@@ -23,7 +37,12 @@ export function ScoutSettingsClient() {
 	const section = (params?.section?.[0] ?? "general") as Section;
 	const open = (key: string) => router.push(`/scout/settings/${key}`);
 
-	const { data: cabinet, isLoading } = useQuery<ScoutCabinet>({
+	const {
+		data: cabinet,
+		isPending,
+		isLoadingError,
+		refetch,
+	} = useQuery<ScoutCabinet>({
 		queryKey: ["scout", "cabinet"],
 		queryFn: () => axios.get("/api/scout/cabinet").then((res) => res.data),
 	});
@@ -36,6 +55,25 @@ export function ScoutSettingsClient() {
 	];
 
 	const renderSection = () => {
+		if (section === "danger") return <ScoutDangerZone />;
+		if (isLoadingError) {
+			return (
+				<LoadError
+					title={t(
+						"scout.settings.load-error",
+						"Scout settings could not be loaded",
+					)}
+					onRetry={refetch}
+				/>
+			);
+		}
+		if (isPending) {
+			return (
+				<FormSkeleton
+					{...(SECTION_SKELETONS[section] ?? SECTION_SKELETONS.general)}
+				/>
+			);
+		}
 		if (!cabinet) return null;
 
 		switch (section) {
@@ -43,8 +81,6 @@ export function ScoutSettingsClient() {
 				return <ScoutFocusForm cabinet={cabinet} />;
 			case "alerts":
 				return <ScoutAlertsForm cabinet={cabinet} />;
-			case "danger":
-				return <ScoutDangerZone />;
 			default:
 				return <ScoutGeneralForm cabinet={cabinet} />;
 		}
@@ -91,7 +127,7 @@ export function ScoutSettingsClient() {
 				)}
 
 				<Layout.Content className={styles.content}>
-					<Spin spinning={isLoading}>{renderSection()}</Spin>
+					{renderSection()}
 				</Layout.Content>
 			</Layout>
 		</div>

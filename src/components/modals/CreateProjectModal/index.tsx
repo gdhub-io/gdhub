@@ -12,6 +12,7 @@ import {
 	outdatedLegalCode,
 } from "@/components/legal/ClickwrapField";
 import { gtmEventTrigger } from "@/helpers/gtm";
+import { projectSpaceHref } from "@/helpers/project-space";
 import { useRateLimitWarning } from "@/hooks/checkpoint-entry";
 import { useGameGenres } from "@/hooks/library";
 import { genreOptions } from "./genres";
@@ -102,7 +103,7 @@ const CreateProjectModal = ({
 				form.resetFields();
 				onCreated(project.data);
 			}
-			if (!checkpoint) router.push(`/user/project/${project.data.slug}`);
+			if (!checkpoint) router.push(projectSpaceHref(project.data.slug));
 		} catch (error: any) {
 			if (warnRateLimited(error)) return;
 			const outdated = outdatedLegalCode(error);

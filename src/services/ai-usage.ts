@@ -1,4 +1,5 @@
 import { aiCostMicros } from "@/lib/checkpoints/costs";
+import { modelId } from "@/services/ai/model";
 import { prisma } from "@/services/prisma";
 
 /** Every AI task run for a checkpoint, as its usage row names it. */
@@ -30,6 +31,7 @@ export const recordAiUsage = async (
 	usage: { inputTokens?: number | null; outputTokens?: number | null },
 ) => {
 	if (!meter) return;
+	model = modelId(model);
 
 	const inputTokens = usage.inputTokens ?? 0;
 	const outputTokens = usage.outputTokens ?? 0;

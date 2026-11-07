@@ -1,6 +1,6 @@
 "use client";
 
-import { useTolgee } from "@tolgee/react";
+import { useTolgee, useTranslate } from "@tolgee/react";
 import { Alert, Button, Flex, Grid, Space, Typography } from "antd";
 import dynamic from "next/dynamic";
 import Link from "next/link";
@@ -8,34 +8,87 @@ import { useSession } from "next-auth/react";
 import { useMemo, useRef } from "react";
 import { useAccess } from "@/components/access/AccessProvider";
 import DevlogPosts from "@/components/DevlogPosts";
+import { HubQuickCountsSkeleton } from "@/components/hub/HubQuickCounts/HubQuickCountsSkeleton";
 import {
 	getHubSectionShellClass,
 	HubSectionBody,
 } from "@/components/hub/HubSection";
+import { HubSidebarSkeleton } from "@/components/hub/HubSidebarSkeleton";
 import { WelcomeCharacter } from "@/components/hub/WelcomeCharacter";
 import { useScrollAwareSticky } from "@/hooks/useScrollAwareSticky";
 import styles from "./style.module.scss";
 
+// Each loader draws its card's header and placeholder rows, so the sidebar keeps
+// its shape while the chunks download instead of filling in from nothing.
+function SidebarLoading({
+	titleKey,
+	defaultTitle,
+	media,
+}: {
+	titleKey: string;
+	defaultTitle: string;
+	media?: "square" | "circle";
+}) {
+	const { t } = useTranslate();
+	return <HubSidebarSkeleton title={t(titleKey, defaultTitle)} media={media} />;
+}
+
 const MyAdviceRequests = dynamic(
 	() => import("@/components/MyAdviceRequests"),
-	{ ssr: false },
+	{
+		ssr: false,
+		loading: () => (
+			<SidebarLoading
+				titleKey="page.hub.advice-requests"
+				defaultTitle="Advice Requests"
+				media="circle"
+			/>
+		),
+	},
 );
 const MyProjectList = dynamic(() => import("@/components/MyProjectList"), {
 	ssr: false,
+	loading: () => (
+		<SidebarLoading
+			titleKey="page.hub.user-projects"
+			defaultTitle="My projects"
+		/>
+	),
 });
 const NewMembers = dynamic(() => import("@/components/NewMembers"), {
 	ssr: false,
+	loading: () => (
+		<SidebarLoading
+			titleKey="page.hub.new-members"
+			defaultTitle="New members"
+			media="circle"
+		/>
+	),
 });
 const HotTeamVacancies = dynamic(
 	() => import("@/components/HotTeamVacancies"),
-	{ ssr: false },
+	{
+		ssr: false,
+		loading: () => (
+			<SidebarLoading
+				titleKey="hub.hot-vacancies.title"
+				defaultTitle="Open positions"
+			/>
+		),
+	},
 );
 const LatestEvents = dynamic(() => import("@/components/LatestEvents/index"), {
 	ssr: false,
+	loading: () => (
+		<SidebarLoading
+			titleKey="hub.latest-events.title"
+			defaultTitle="Upcoming events"
+		/>
+	),
 });
 const HubQuickCounts = dynamic(
 	() => import("@/components/hub/HubQuickCounts"),
-	{ ssr: false },
+	{ ssr: false, loading: () => <HubQuickCountsSkeleton /> },
 );
 
 const { Title, Text } = Typography;

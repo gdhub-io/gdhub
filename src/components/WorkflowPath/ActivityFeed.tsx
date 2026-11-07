@@ -16,7 +16,7 @@ import { useTranslate } from "@tolgee/react";
 import { Divider, Spin, Typography } from "antd";
 import dayjs from "dayjs";
 import { type ReactNode, useEffect, useRef } from "react";
-import { EmptyState, IconTile } from "@/components/ui";
+import { EmptyState, IconTile, LoadError } from "@/components/ui";
 import { type ActivitySource, useProjectActivity } from "@/hooks/checkpoints";
 import { CHECKPOINT_SCOPE_DAY } from "@/lib/checkpoints/scope";
 import type {
@@ -102,8 +102,15 @@ export type ActivityFeedProps = {
 export function ActivityFeed({ source, sprints = [] }: ActivityFeedProps) {
 	const { t } = useTranslate();
 	const scroller = useRef<HTMLDivElement>(null);
-	const { data, isPending, hasNextPage, isFetchingNextPage, fetchNextPage } =
-		useProjectActivity(source);
+	const {
+		data,
+		isPending,
+		isError,
+		refetch,
+		hasNextPage,
+		isFetchingNextPage,
+		fetchNextPage,
+	} = useProjectActivity(source);
 	const events = data?.pages.flatMap((page) => page.events) ?? [];
 
 	const loadMore = () => {
@@ -238,6 +245,14 @@ export function ActivityFeed({ source, sprints = [] }: ActivityFeedProps) {
 			<div className={styles.asideBody}>
 				{isPending ? (
 					<Spin size="small" />
+				) : isError && !data ? (
+					<LoadError
+						title={t(
+							"workflow.activity.load-error",
+							"Activity could not be loaded",
+						)}
+						onRetry={refetch}
+					/>
 				) : events.length === 0 ? (
 					<EmptyState
 						size="compact"

@@ -6,17 +6,19 @@ import type {
 } from "@gdhub-io/gdhub-prisma";
 import { useQuery } from "@tanstack/react-query";
 import { useTranslate } from "@tolgee/react";
-import { Space, Table, Tag } from "antd";
+import { Skeleton, Space, Table, Tag } from "antd";
 import type { ColumnsType } from "antd/es/table";
 import axios from "axios";
 import dayjs from "dayjs";
 import { useContext, useState } from "react";
 import ProjectCandidatePreviewModal from "@/components/modals/ProjectCandidatePreviewModal";
+import { LoadError } from "@/components/ui";
 import { AppAvatar } from "@/components/ui/AppAvatar";
+import { skeletonColumns, skeletonRows } from "@/components/ui/table";
 import { ProjectContext } from "@/contexts/ProjectContext";
 
 const MyProjectCandidates = () => {
-	const contextProject = useContext(ProjectContext)?.contextProject;
+	const contextProject = useContext(ProjectContext);
 	const { t } = useTranslate();
 	const isProjectArchived =
 		!contextProject || !!contextProject.isProjectArchived;
@@ -28,6 +30,8 @@ const MyProjectCandidates = () => {
 		data: candidates,
 		refetch: refetchCandidates,
 		isFetching: isLoadingCandidates,
+		isPending: isPendingCandidates,
+		isError: isCandidatesError,
 	} = useQuery({
 		queryKey: ["candidates", contextProject?.id],
 		queryFn: () =>
@@ -114,6 +118,9 @@ const MyProjectCandidates = () => {
 		refetchCandidates();
 	};
 
+	const candidatesEmpty =
+		!isPendingCandidates && !isCandidatesError && !candidates?.data.length;
+
 	return (
 		<>
 			<Space align="center" style={{ marginTop: 60 }}>
@@ -123,25 +130,48 @@ const MyProjectCandidates = () => {
 						"Responses on open positions",
 					)}
 				</h3>
-				<Tag color="gray">{candidates?.data.length || 0}</Tag>
+				{isPendingCandidates ? (
+					<Skeleton.Button active size="small" />
+				) : (
+					candidates && <Tag color="gray">{candidates.data.length}</Tag>
+				)}
 			</Space>
 
-			{candidates?.data.length ? (
+			{candidatesEmpty ? (
+				<p style={{ marginTop: 12, color: "gray" }}>
+					{t(
+						"components.my-project-candidates.noApplicationsForParticipation",
+						"There are no applications for participation at the moment",
+					)}
+				</p>
+			) : (
 				<>
 					<Table
-						loading={isLoadingCandidates}
+						loading={!isPendingCandidates && isLoadingCandidates}
 						style={{
 							border: "1px solid var(--gd-color-text-tertiary)",
 							overflow: "hidden",
 							borderRadius: "var(--gd-radius-panel)",
 							marginTop: 16,
 						}}
-						columns={columns}
-						dataSource={candidates?.data?.map((m: any) => ({
-							...m,
-							key: m.id,
-						}))}
+						columns={isPendingCandidates ? skeletonColumns(columns) : columns}
+						rowKey="id"
+						dataSource={
+							isPendingCandidates
+								? skeletonRows<NonNullable<typeof candidates>["data"][number]>(
+										3,
+										"id",
+									)
+								: candidates?.data
+						}
 						pagination={false}
+						locale={
+							isCandidatesError
+								? {
+										emptyText: <LoadError bare onRetry={refetchCandidates} />,
+									}
+								: undefined
+						}
 					/>
 
 					{!isProjectArchived && (
@@ -156,13 +186,6 @@ const MyProjectCandidates = () => {
 						/>
 					)}
 				</>
-			) : (
-				<p style={{ marginTop: 12, color: "gray" }}>
-					{t(
-						"components.my-project-candidates.noApplicationsForParticipation",
-						"There are no applications for participation at the moment",
-					)}
-				</p>
 			)}
 		</>
 	);

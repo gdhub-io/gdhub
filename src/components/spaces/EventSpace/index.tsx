@@ -3,22 +3,20 @@
 import { IconExternalLink } from "@tabler/icons-react";
 import { useMutation, useQueryClient } from "@tanstack/react-query";
 import { useTranslate } from "@tolgee/react";
-import { Button, Flex, Grid, message, Space, Tag, Typography } from "antd";
+import { Button, Flex, message, Space, Tag, Typography } from "antd";
 import type { ItemType } from "antd/es/menu/interface";
 import axios from "axios";
-import Link from "next/link";
 import { useParams, usePathname } from "next/navigation";
-import { useSession } from "next-auth/react";
 import type { CSSProperties } from "react";
-import { type ReactNode, useEffect, useMemo, useState } from "react";
+import { type ReactNode, useMemo } from "react";
 import { useAccess } from "@/components/access/AccessProvider";
 import { Error404 } from "@/components/Error404";
 import {
 	type SpaceHeaderConfig,
 	useSetSpaceHeader,
 } from "@/components/layouts/SpaceHeader";
+import { NavLink } from "@/components/ui";
 import { EventStatus } from "@/config/prisma-enums";
-import { type ContextEvent, EventContext } from "@/contexts/EventContext";
 import { useCurrentEvent } from "@/hooks/event";
 import { useDocumentTitle } from "@/hooks/useDocumentTitle";
 import styles from "./style.module.scss";
@@ -27,8 +25,8 @@ const { Title, Text } = Typography;
 
 /**
  * Event space chrome: publishes the event breadcrumbs and tabs (including the
- * publish / unpublish actions) into the global app header, exposes EventContext
- * to the pages below and renders the per-page hero.
+ * publish / unpublish actions) into the global app header and renders the
+ * per-page hero.
  *
  * Header, chat and theme come from the surrounding ProtectedShell in
  * `app/(app)/layout.tsx` — this component owns no shell of its own.
@@ -55,26 +53,9 @@ export const EventSpace = ({
 	const queryClient = useQueryClient();
 	const eventId = params?.eventId as string;
 	const [messageApi, messageContextHolder] = message.useMessage();
-	const [contextEvent, setContextEvent] = useState<ContextEvent>();
-	const screens = Grid.useBreakpoint();
-	const { data: session } = useSession();
 	const { can } = useAccess();
 
 	const { event, isFetched } = useCurrentEvent();
-	const isEventAuthor = useMemo(
-		() => event?.createdById === session?.user.id,
-		[event, session?.user],
-	);
-
-	useEffect(() => {
-		if (!event) return;
-
-		setContextEvent({
-			id: event.id,
-			title: event.title,
-			isEventAuthor,
-		});
-	}, [event, isEventAuthor]);
 
 	useDocumentTitle(
 		title ? `${title} · ${event?.title ?? "Event"}` : event?.title,
@@ -109,25 +90,25 @@ export const EventSpace = ({
 			{
 				key: `/user/event/${eventId}/schedule`,
 				label: (
-					<Link href={`/user/event/${eventId}/schedule`}>
+					<NavLink href={`/user/event/${eventId}/schedule`} prefetch>
 						{t("app.user-event.menu.schedule", "Schedule")}
-					</Link>
+					</NavLink>
 				),
 			},
 			{
 				key: `/user/event/${eventId}/content`,
 				label: (
-					<Link href={`/user/event/${eventId}/content`}>
+					<NavLink href={`/user/event/${eventId}/content`} prefetch>
 						{t("app.user-event.menu.content", "Content")}
-					</Link>
+					</NavLink>
 				),
 			},
 			{
 				key: `/user/event/${eventId}/members`,
 				label: (
-					<Link href={`/user/event/${eventId}/members`}>
+					<NavLink href={`/user/event/${eventId}/members`} prefetch>
 						{t("app.user-event.menu.members", "Members")}
-					</Link>
+					</NavLink>
 				),
 			},
 			// Hidden rather than greyed out, same rule as everywhere else.
@@ -136,9 +117,12 @@ export const EventSpace = ({
 						{
 							key: `/user/event/${eventId}/settings/general`,
 							label: (
-								<Link href={`/user/event/${eventId}/settings/general`}>
+								<NavLink
+									href={`/user/event/${eventId}/settings/general`}
+									prefetch
+								>
 									{t("app.user.menu.settings", "Settings")}
-								</Link>
+								</NavLink>
 							),
 						},
 					]
@@ -200,6 +184,7 @@ export const EventSpace = ({
 		];
 
 		return {
+			scope: `/user/event/${eventId}`,
 			trail: {
 				parent: {
 					href: "/user/events",
@@ -217,14 +202,11 @@ export const EventSpace = ({
 		event?.slug,
 		event?.status,
 		event?.title,
-		event?.lang,
-		isEventAuthor,
 		isPublishingEvent,
 		isUnpublishingEvent,
 		pathname,
 		publishEvent,
 		unpublishEvent,
-		screens.md,
 		t,
 	]);
 
@@ -242,9 +224,7 @@ export const EventSpace = ({
 	}
 
 	return (
-		<EventContext.Provider
-			value={{ contextEvent, isLoaded: isFetched, setContextEvent }}
-		>
+		<>
 			{messageContextHolder}
 			<div style={customStyles?.contentContainer}>
 				<div style={customStyles?.content}>
@@ -264,6 +244,6 @@ export const EventSpace = ({
 					{children}
 				</div>
 			</div>
-		</EventContext.Provider>
+		</>
 	);
 };

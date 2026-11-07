@@ -1,8 +1,9 @@
 import { useMutation } from "@tanstack/react-query";
 import { useTranslate } from "@tolgee/react";
-import { Button, Flex, Modal, message, Spin, Typography } from "antd";
+import { Button, Flex, Modal, message, Skeleton, Spin, Typography } from "antd";
 import axios from "axios";
 import { useRouter } from "next/navigation";
+import { LoadError } from "@/components/ui/LoadError";
 import { EventStatus } from "@/config/prisma-enums";
 import { useEvent } from "@/hooks/event";
 import styles from "./style.module.scss";
@@ -53,7 +54,12 @@ const DangerEventForm = ({ eventId }: DangerEventFormArgs) => {
 	const [messageApi, messageContextHolder] = message.useMessage();
 	const { t } = useTranslate();
 
-	const { event, isLoading: isFetchingEvent } = useEvent(eventId);
+	const {
+		event,
+		isLoading: isLoadingEvent,
+		isError: isEventError,
+		refetch: refetchEvent,
+	} = useEvent(eventId);
 
 	const { mutateAsync: archiveEvent, isPending: isArchivingEvent } =
 		useMutation({
@@ -149,16 +155,25 @@ const DangerEventForm = ({ eventId }: DangerEventFormArgs) => {
 		<>
 			{modalContextHolder}
 			{messageContextHolder}
-			<Spin
-				spinning={
-					isFetchingEvent ||
-					isArchivingEvent ||
-					isRestoringEvent ||
-					isDeletingEvent
-				}
-			>
+			<Spin spinning={isArchivingEvent || isRestoringEvent || isDeletingEvent}>
 				<Flex vertical gap={16}>
-					{event?.status !== EventStatus.Archived ? (
+					{/* Archive or restore is only known once the event has loaded. */}
+					{isEventError && !event ? (
+						<LoadError
+							title={t(
+								"event.settings.load-error",
+								"Event settings could not be loaded",
+							)}
+							onRetry={refetchEvent}
+						/>
+					) : isLoadingEvent ? (
+						<Skeleton
+							active
+							title
+							paragraph={{ rows: 1 }}
+							className={styles.row}
+						/>
+					) : event?.status !== EventStatus.Archived ? (
 						<DangerRow
 							title={t("event.settings.danger.archive", "Archive Event")}
 							description={t(

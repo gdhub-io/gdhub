@@ -11,7 +11,7 @@ export function AdvisorEarningsClient() {
 			data={data}
 			// A failed refetch keeps the earnings already on screen.
 			status={data ? "success" : status}
-			onRetry={() => refetch()}
+			onRetry={refetch}
 		/>
 	);
 }

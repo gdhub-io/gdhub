@@ -1,0 +1,29 @@
+// antd puts the className on the wrapper and the size on the inner node, so both are set.
+.label.label {
+	display: block;
+
+	:global(.ant-skeleton-node) {
+		height: 16px;
+		border-radius: var(--gd-radius-chip);
+	}
+}
+
+.bar.bar {
+	display: block;
+	width: 100%;
+
+	:global(.ant-skeleton-node) {
+		width: 100%;
+		height: 40px;
+		border-radius: var(--gd-radius-control);
+	}
+}
+
+.textarea.textarea :global(.ant-skeleton-node) {
+	height: 120px;
+}
+
+.media.media :global(.ant-skeleton-node) {
+	height: 180px;
+	border-radius: var(--gd-radius-card);
+}

@@ -1,6 +1,16 @@
 import { IconHistory, IconInfoCircle, IconSettings } from "@tabler/icons-react";
 import { useTranslate } from "@tolgee/react";
-import { Button, Card, Grid, Modal, Popover, Space, Typography } from "antd";
+import {
+	Button,
+	Card,
+	Flex,
+	Grid,
+	Modal,
+	Popover,
+	Skeleton,
+	Space,
+	Typography,
+} from "antd";
 import { useSession } from "next-auth/react";
 import { useState } from "react";
 import EquityTransferModal from "@/components/modals/EquityTransferModal";
@@ -208,5 +218,18 @@ const EquitySection: React.FC<EquitySectionProps> = ({
 		</Card>
 	);
 };
+
+/** The same card while the equity loads, so the tabs below it do not move. */
+export const EquitySectionSkeleton = () => (
+	<Card className={styles.equityCard}>
+		<Flex vertical gap={16}>
+			<Flex justify="space-between" align="center">
+				<Skeleton.Input active size="small" />
+				<Skeleton.Button active />
+			</Flex>
+			<Skeleton.Node active style={{ width: "100%", height: 60 }} />
+		</Flex>
+	</Card>
+);
 
 export default EquitySection;

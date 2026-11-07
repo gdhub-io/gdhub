@@ -1,6 +1,5 @@
 "use client";
 
-import Link from "next/link";
 import { usePathname } from "next/navigation";
 import { type ReactNode, useMemo } from "react";
 import { useAccess } from "@/components/access/AccessProvider";
@@ -8,6 +7,7 @@ import {
 	type SpaceHeaderConfig,
 	useSetSpaceHeader,
 } from "@/components/layouts/SpaceHeader";
+import { NavLink } from "@/components/ui";
 import type { Permission } from "@/config/spaces";
 
 const MENU_ITEMS: {
@@ -52,13 +52,21 @@ export const AdvisorSpace = ({ children }: { children: ReactNode }) => {
 			MENU_ITEMS.find((item) => pathname.startsWith(item.key)) ?? MENU_ITEMS[0];
 
 		return {
+			scope: "/advisor",
 			trail: {
 				parent: { href: MENU_ITEMS[0].key, label: "Advisor" },
 				current: { label: selected.name },
 				space: { kind: "advisor" },
 			},
 			menuItems: MENU_ITEMS.filter((item) => can(item.permission)).map(
-				({ key, name }) => ({ key, label: <Link href={key}>{name}</Link> }),
+				({ key, name }) => ({
+					key,
+					label: (
+						<NavLink href={key} prefetch>
+							{name}
+						</NavLink>
+					),
+				}),
 			),
 			menuSelectedKeys: [selected.key],
 		};

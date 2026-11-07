@@ -216,7 +216,7 @@ export function EarningsPage({ data, status, onRetry }: EarningsPageProps) {
 				"The server did not answer. Try again in a moment.",
 			)}
 			action={
-				<Button icon={<IconRefresh size={16} />} onClick={onRetry}>
+				<Button icon={<IconRefresh size={16} />} onClick={() => onRetry()}>
 					{t("advisor.earnings.error.retry", "Try again")}
 				</Button>
 			}

@@ -1,6 +1,5 @@
 import type { ProjectStatus } from "@gdhub-io/gdhub-prisma";
 import {
-	IconAlertTriangle,
 	IconBriefcase,
 	IconChevronRight,
 	IconDeviceGamepad2,
@@ -20,7 +19,9 @@ import {
 	HubSectionHeader,
 } from "@/components/hub/HubSection";
 import { HubSectionRow } from "@/components/hub/HubSectionRow";
-import { EmptyState } from "@/components/ui";
+import { HubSectionRowsSkeleton } from "@/components/hub/HubSidebarSkeleton";
+import { EmptyState, LoadError } from "@/components/ui";
+import { projectSpaceHref } from "@/helpers/project-space";
 import GameCard from "../GameCard";
 import CreateProjectModal from "../modals/CreateProjectModal";
 import EmptyProjectsState from "./EmptyProjectsState";
@@ -71,14 +72,26 @@ const MyProjectList: React.FC<MyProjectListProps> = ({
 		data: projects,
 		isSuccess,
 		isLoading,
-		error,
+		isPending,
+		isLoadingError: failed,
+		refetch,
 	} = useQuery({
 		queryKey: ["userProjects"],
 		queryFn: () => axios.get("/api/user/projects"),
 		refetchOnWindowFocus: false,
 	});
+	const loadError = (
+		<LoadError
+			bare={variant === "hubSidebar"}
+			title={t(
+				"page.hub.user-projects.load-error",
+				"Failed to load user projects",
+			)}
+			onRetry={refetch}
+		/>
+	);
 
-	if (isLoading) {
+	if (isLoading && variant !== "hubSidebar") {
 		const loading = (
 			<div className={styles.loadingContainer}>
 				<Spin />
@@ -152,25 +165,11 @@ const MyProjectList: React.FC<MyProjectListProps> = ({
 		<>
 			{variant === "default" ? headerRow : null}
 
-			{!isSuccess || !projects?.data || projects.data.length === 0 ? (
+			{failed ? (
+				loadError
+			) : !isSuccess || !projects?.data || projects.data.length === 0 ? (
 				<EmptyProjectsState
 					onCreateProject={() => setOpenCreateProjectModal(true)}
-				/>
-			) : undefined}
-
-			{error ? (
-				<EmptyState
-					icon={IconAlertTriangle}
-					title={t(
-						"page.hub.user-projects.load-error",
-						"Failed to load user projects",
-					)}
-					description={t(
-						"page.hub.user-projects.load-error-hint",
-						"Reload the page — if it keeps failing, the service may be down.",
-					)}
-					tint="var(--gd-danger-tint)"
-					ink="var(--gd-danger-on-tint)"
 				/>
 			) : undefined}
 
@@ -216,7 +215,13 @@ const MyProjectList: React.FC<MyProjectListProps> = ({
 					</Button>
 				</HubSectionHeader>
 
-				{rows.length ? (
+				{isPending ? (
+					<HubSectionBody flush>
+						<HubSectionRowsSkeleton />
+					</HubSectionBody>
+				) : failed ? (
+					<HubSectionBody>{loadError}</HubSectionBody>
+				) : rows.length ? (
 					<HubSectionBody flush>
 						<div className={sidebarStyles.list}>
 							{rows.map((project: UserProjectCard) => (
@@ -226,7 +231,7 @@ const MyProjectList: React.FC<MyProjectListProps> = ({
 									// authored or joined as a team member — so every row opens the
 									// workspace. There is no /hub/projects/<slug> route; linking
 									// there is what 404'd.
-									href={`/user/project/${project.slug}`}
+									href={projectSpaceHref(project.slug)}
 									title={project.name}
 									subtitle={authorLine(project)}
 									media={

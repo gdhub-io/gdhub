@@ -44,6 +44,7 @@ export default function WorkflowsAdminPage() {
 		data: workflowsResponse,
 		refetch: refetchWorkflows,
 		isFetching: isFetchingWorkflows,
+		isError: isWorkflowsError,
 	} = useQuery({
 		queryKey: ["admin", "workflows"],
 		// The cache entry is shared with anything else asking for this key, so it
@@ -60,6 +61,7 @@ export default function WorkflowsAdminPage() {
 		data: projectWorkflowsResponse,
 		refetch: refetchProjectWorkflows,
 		isFetching: isFetchingProjectWorkflows,
+		isError: isProjectWorkflowsError,
 	} = useQuery({
 		queryKey: ["admin", "project-workflows"],
 		queryFn: () =>
@@ -85,6 +87,8 @@ export default function WorkflowsAdminPage() {
 				<WorkflowTemplatesTable
 					templates={templates}
 					loading={isFetchingWorkflows}
+					error={isWorkflowsError}
+					onRetry={refetchWorkflows}
 				/>
 			),
 		},
@@ -97,6 +101,8 @@ export default function WorkflowsAdminPage() {
 				<ProjectWorkflowsTable
 					workflows={projectWorkflows}
 					loading={isFetchingProjectWorkflows}
+					error={isProjectWorkflowsError}
+					onRetry={refetchProjectWorkflows}
 				/>
 			),
 		},

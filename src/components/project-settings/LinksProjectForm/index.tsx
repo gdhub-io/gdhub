@@ -18,8 +18,11 @@ import {
 } from "antd";
 import axios from "axios";
 import { useCallback, useContext, useEffect, useState } from "react";
+import { FormSkeleton } from "@/components/ui/FormSkeleton";
+import { LoadError } from "@/components/ui/LoadError";
 import { ProjectContext } from "@/contexts/ProjectContext";
 import { platformOptions } from "@/helpers/react-content";
+import { useCurrentProject } from "@/hooks/project";
 import type { LinkType, ProjectLink } from "@/types/project";
 
 const { Text } = Typography;
@@ -32,19 +35,26 @@ const LinksProjectForm = ({ projectSlug }: LinksProjectFormArgs) => {
 	const [form] = Form.useForm();
 	const screens = Grid.useBreakpoint();
 	const { t } = useTranslate();
-	const ctx = useContext(ProjectContext);
+	const contextProject = useContext(ProjectContext);
+	const { isError: isProjectError, refetch: refetchProject } =
+		useCurrentProject();
 	const [links, setLinks] = useState<ProjectLink[]>([]);
 	const isProjectArchived =
-		!ctx?.contextProject || !!ctx.contextProject.isProjectArchived;
+		!contextProject || !!contextProject.isProjectArchived;
 
-	const { data: projectLinks, isLoading: isLoadingProjectLinks } = useQuery({
-		queryKey: ["project-links", ctx?.contextProject?.id],
-		enabled: !!ctx?.contextProject?.id,
+	const {
+		data: projectLinks,
+		isPending: isPendingLinks,
+		isLoadingError: isLinksFailed,
+		refetch: refetchLinks,
+	} = useQuery({
+		queryKey: ["project-links", contextProject?.id],
+		enabled: !!contextProject?.id,
 		refetchOnWindowFocus: false,
 		queryFn: () => {
 			return axios
 				.get<ProjectLink[]>(`/api/user/project/links`, {
-					params: { id: ctx?.contextProject?.id },
+					params: { id: contextProject?.id },
 				})
 				.then((res) => {
 					return res.data;
@@ -75,7 +85,7 @@ const LinksProjectForm = ({ projectSlug }: LinksProjectFormArgs) => {
 	const { mutateAsync: saveLinks, isPending: isSavingLinks } = useMutation({
 		mutationFn: (links: ProjectLink[]) =>
 			axios
-				.put(`/api/user/project/link`, { id: ctx?.contextProject?.id, links })
+				.put(`/api/user/project/link`, { id: contextProject?.id, links })
 				.then((res) => res.data),
 	});
 
@@ -243,8 +253,27 @@ const LinksProjectForm = ({ projectSlug }: LinksProjectFormArgs) => {
 		[links, getAvailablePlatformOptions, screens.xs, t, isProjectArchived],
 	);
 
+	const loadErrorTitle = t(
+		"project.links.load-error",
+		"Project links could not be loaded",
+	);
+
+	// The links query waits for the project, so a failed project would leave it pending forever.
+	const projectFailed = isProjectError && !contextProject;
+	// Saving an unloaded list would wipe the project's real links.
+	if (projectFailed || isLinksFailed) {
+		return (
+			<LoadError
+				title={loadErrorTitle}
+				onRetry={projectFailed ? refetchProject : refetchLinks}
+			/>
+		);
+	}
+
+	if (isPendingLinks) return <FormSkeleton fields={3} />;
+
 	return (
-		<Spin spinning={isSavingLinks || isLoadingProjectLinks}>
+		<Spin spinning={isSavingLinks}>
 			<Form
 				form={form}
 				layout="vertical"

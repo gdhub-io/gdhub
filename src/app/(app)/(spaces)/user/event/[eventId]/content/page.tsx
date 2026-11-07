@@ -15,12 +15,13 @@ import {
 } from "@tabler/icons-react";
 import { useMutation } from "@tanstack/react-query";
 import { useTranslate } from "@tolgee/react";
-import { Button, Flex, message, Select, Tooltip } from "antd";
+import { Button, Flex, message, Select, Skeleton, Tooltip } from "antd";
 import axios from "axios";
 import dayjs from "dayjs";
 import { useParams } from "next/navigation";
-import { useCallback, useEffect, useRef } from "react";
+import { useCallback, useEffect, useRef, useState } from "react";
 import { EventSpace } from "@/components/spaces/EventSpace";
+import { LoadError } from "@/components/ui";
 import { useEvent } from "@/hooks/event";
 import styles from "./style.module.scss";
 
@@ -36,8 +37,10 @@ export default function EventContentPage() {
 	const editorHolderRef = useRef<HTMLDivElement>(null);
 	const canvasRef = useRef<HTMLDivElement>(null);
 	const editorInitialized = useRef(false);
+	// Set once: the editor is rebuilt after every save, and that must not flash the placeholder.
+	const [editorShown, setEditorShown] = useState(false);
 
-	const { event, refetch: refetchEvent } = useEvent(eventId);
+	const { event, refetch: refetchEvent, isError } = useEvent(eventId);
 
 	const { mutateAsync: saveContent, isPending: isSaving } = useMutation({
 		mutationFn: (content: OutputData) => {
@@ -89,6 +92,7 @@ export default function EventContentPage() {
 				tools: tools,
 				onReady: () => {
 					editorInitialized.current = true;
+					setEditorShown(true);
 
 					// [for development environment] Remove all codex-editor elements except the first one
 					const children =
@@ -308,6 +312,17 @@ export default function EventContentPage() {
 
 				<div className={styles.canvas} ref={canvasRef}>
 					<div className={styles.sheet}>
+						{isError && !event ? (
+							<LoadError
+								title={t(
+									"event.content.load-error",
+									"The content could not be loaded",
+								)}
+								onRetry={refetchEvent}
+							/>
+						) : (
+							!editorShown && <Skeleton active paragraph={{ rows: 8 }} />
+						)}
 						<div id={editorHolderId} ref={editorHolderRef} />
 					</div>
 				</div>

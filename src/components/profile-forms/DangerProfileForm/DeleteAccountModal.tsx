@@ -16,6 +16,7 @@ import {
 import axios from "axios";
 import { useState } from "react";
 import { signOutWithChat } from "@/components/Chat/session";
+import { LoadError } from "@/components/ui";
 import {
 	getErrorMessage,
 	getUserDeletionPreview,
@@ -58,7 +59,12 @@ const DeleteAccountModal = ({
 	const [confirmationEmail, setConfirmationEmail] = useState("");
 	const [reason, setReason] = useState("");
 
-	const { data: preview, isFetching: isFetchingPreview } = useQuery({
+	const {
+		data: preview,
+		isFetching: isFetchingPreview,
+		isLoadingError: isPreviewFailed,
+		refetch: refetchPreview,
+	} = useQuery({
 		queryKey: ["user-delete-preview"],
 		queryFn: getUserDeletionPreview,
 		enabled: open,
@@ -130,6 +136,16 @@ const DeleteAccountModal = ({
 							"This action is irreversible. Your personal data will be anonymized and you will be signed out.",
 						)}
 					/>
+
+					{isPreviewFailed && (
+						<LoadError
+							title={t(
+								"profile.settings.danger.preview.load-error",
+								"What will be deleted could not be loaded",
+							)}
+							onRetry={refetchPreview}
+						/>
+					)}
 
 					{preview?.willDelete && preview.willDelete.length > 0 ? (
 						<div>

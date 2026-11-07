@@ -14,7 +14,7 @@ import {
 } from "@tabler/icons-react";
 import { useMutation, useQuery } from "@tanstack/react-query";
 import { useTranslate } from "@tolgee/react";
-import { Button, Flex, message, Space, Spin, Typography } from "antd";
+import { Button, Flex, message, Space, Typography } from "antd";
 import axios from "axios";
 import Link from "next/link";
 import { useSession } from "next-auth/react";
@@ -26,13 +26,15 @@ import {
 	HubSectionBody,
 	HubSectionHeader,
 } from "@/components/hub/HubSection";
+import { HubSectionRowsSkeleton } from "@/components/hub/HubSidebarSkeleton";
 import hubSection from "@/components/hub/hubSection.module.scss";
-import { ViewAllLink } from "@/components/ui";
+import { EmptyState, LoadError, ViewAllLink } from "@/components/ui";
 import { AppAvatar } from "@/components/ui/AppAvatar";
 import { AdviceRequestStatus } from "@/config/prisma-enums";
 import { useChat } from "../Chat/useChat";
 import ExpertRequestModal from "../modals/ExpertRequestModal";
 import { TextWithLineBreak } from "../TextWithLineBreak";
+import { AdviceRequestsSkeleton } from "./AdviceRequestsSkeleton";
 import styles from "./styles.module.scss";
 
 const { Title, Text } = Typography;
@@ -65,7 +67,7 @@ const MyAdviceRequests: React.FC<{
 	const { setSelectedRoomId, setSelectedRoomByAlias, setOpenChatModal } =
 		useChat();
 
-	const { data, isLoading, isFetched, refetch } = useQuery({
+	const { data, isPending, isLoadingError, refetch } = useQuery({
 		queryKey: ["advice-requests"],
 		queryFn: () =>
 			axios
@@ -166,12 +168,7 @@ const MyAdviceRequests: React.FC<{
 		[isHubLayout, outgoing],
 	);
 
-	if (
-		!isFetched ||
-		(!isLoading && incoming.length === 0 && outgoing.length === 0)
-	) {
-		return null;
-	}
+	const isEmpty = incoming.length === 0 && outgoing.length === 0;
 
 	const stackGap =
 		incoming.length > 0 && outgoing.length > 0 && !isHubLayout ? 20 : 0;
@@ -181,25 +178,21 @@ const MyAdviceRequests: React.FC<{
 			{incoming.length > 0 && (
 				<div>
 					<Title level={4}>{t("page.hub.incoming-requests", "Incoming")}</Title>
-					{isLoading ? (
-						<Spin />
-					) : (
-						<div className={styles.requestsList}>
-							{incomingShown.map((req) => (
-								<RequestCard
-									key={req.id}
-									req={req}
-									type="incoming"
-									isAccepting={isAccepting}
-									isRejecting={isRejecting}
-									onReply={handleOpenRequestChat}
-									onView={setSelectedAdviceRequestId}
-									onAccept={handleAcceptRequest}
-									onReject={handleRejectRequest}
-								/>
-							))}
-						</div>
-					)}
+					<div className={styles.requestsList}>
+						{incomingShown.map((req) => (
+							<RequestCard
+								key={req.id}
+								req={req}
+								type="incoming"
+								isAccepting={isAccepting}
+								isRejecting={isRejecting}
+								onReply={handleOpenRequestChat}
+								onView={setSelectedAdviceRequestId}
+								onAccept={handleAcceptRequest}
+								onReject={handleRejectRequest}
+							/>
+						))}
+					</div>
 				</div>
 			)}
 			{incoming.length > 0 && outgoing.length > 0 ? (
@@ -208,23 +201,19 @@ const MyAdviceRequests: React.FC<{
 			{outgoing.length > 0 && (
 				<div>
 					<Title level={4}>{t("page.hub.outgoing-requests", "Outgoing")}</Title>
-					{isLoading ? (
-						<Spin />
-					) : (
-						<div className={styles.requestsList}>
-							{outgoingShown.map((req) => (
-								<RequestCard
-									key={req.id}
-									req={req}
-									type="outgoing"
-									isAccepting={isAccepting}
-									isRejecting={isRejecting}
-									onView={setSelectedAdviceRequestId}
-									onReply={handleOpenRequestChat}
-								/>
-							))}
-						</div>
-					)}
+					<div className={styles.requestsList}>
+						{outgoingShown.map((req) => (
+							<RequestCard
+								key={req.id}
+								req={req}
+								type="outgoing"
+								isAccepting={isAccepting}
+								isRejecting={isRejecting}
+								onView={setSelectedAdviceRequestId}
+								onReply={handleOpenRequestChat}
+							/>
+						))}
+					</div>
 				</div>
 			)}
 		</Flex>
@@ -237,25 +226,21 @@ const MyAdviceRequests: React.FC<{
 					<div className={hubSection.sectionSubheading}>
 						{t("page.hub.incoming-requests", "Incoming")}
 					</div>
-					{isLoading ? (
-						<Spin />
-					) : (
-						<div className={`${styles.hubList} ${hubSection.sidebarListBleed}`}>
-							{incomingShown.map((req) => (
-								<AdviceHubListRow
-									key={req.id}
-									req={req}
-									type="incoming"
-									isAccepting={isAccepting}
-									isRejecting={isRejecting}
-									onReply={handleOpenRequestChat}
-									onView={setSelectedAdviceRequestId}
-									onAccept={handleAcceptRequest}
-									onReject={handleRejectRequest}
-								/>
-							))}
-						</div>
-					)}
+					<div className={`${styles.hubList} ${hubSection.sidebarListBleed}`}>
+						{incomingShown.map((req) => (
+							<AdviceHubListRow
+								key={req.id}
+								req={req}
+								type="incoming"
+								isAccepting={isAccepting}
+								isRejecting={isRejecting}
+								onReply={handleOpenRequestChat}
+								onView={setSelectedAdviceRequestId}
+								onAccept={handleAcceptRequest}
+								onReject={handleRejectRequest}
+							/>
+						))}
+					</div>
 				</div>
 			)}
 			{incomingShown.length > 0 && outgoingShown.length > 0 ? (
@@ -266,29 +251,59 @@ const MyAdviceRequests: React.FC<{
 					<div className={hubSection.sectionSubheading}>
 						{t("page.hub.outgoing-requests", "Outgoing")}
 					</div>
-					{isLoading ? (
-						<Spin />
-					) : (
-						<div className={`${styles.hubList} ${hubSection.sidebarListBleed}`}>
-							{outgoingShown.map((req) => (
-								<AdviceHubListRow
-									key={req.id}
-									req={req}
-									type="outgoing"
-									isAccepting={isAccepting}
-									isRejecting={isRejecting}
-									onView={setSelectedAdviceRequestId}
-									onReply={handleOpenRequestChat}
-								/>
-							))}
-						</div>
-					)}
+					<div className={`${styles.hubList} ${hubSection.sidebarListBleed}`}>
+						{outgoingShown.map((req) => (
+							<AdviceHubListRow
+								key={req.id}
+								req={req}
+								type="outgoing"
+								isAccepting={isAccepting}
+								isRejecting={isRejecting}
+								onView={setSelectedAdviceRequestId}
+								onReply={handleOpenRequestChat}
+							/>
+						))}
+					</div>
 				</div>
 			)}
 		</>
 	);
 
-	const stacks = isHubLayout ? stacksHub : stacksDefault;
+	const emptyState = (
+		<EmptyState
+			size={isHubLayout ? "compact" : "default"}
+			icon={IconHeadset}
+			title={t("page.hub.advice.empty", "No advice requests")}
+			description={t(
+				"page.hub.advice.empty-hint",
+				"Requests you send to experts, and the ones sent to you, appear here.",
+			)}
+		/>
+	);
+
+	const renderStacks = () => {
+		if (isPending)
+			return isHubLayout ? (
+				<div className={hubSection.sidebarListBleed}>
+					<HubSectionRowsSkeleton media="circle" />
+				</div>
+			) : (
+				<AdviceRequestsSkeleton />
+			);
+		if (isLoadingError)
+			return (
+				<LoadError
+					bare={isHubLayout}
+					title={t(
+						"page.hub.advice.error",
+						"Advice requests could not be loaded",
+					)}
+					onRetry={refetch}
+				/>
+			);
+		if (isEmpty) return emptyState;
+		return isHubLayout ? stacksHub : stacksDefault;
+	};
 
 	const hubInner = (
 		<>
@@ -304,7 +319,7 @@ const MyAdviceRequests: React.FC<{
 					)}
 				</HubSectionHeader>
 			)}
-			<HubSectionBody>{stacks}</HubSectionBody>
+			<HubSectionBody>{renderStacks()}</HubSectionBody>
 		</>
 	);
 
@@ -336,7 +351,7 @@ const MyAdviceRequests: React.FC<{
 					)}
 				</Flex>
 				<Space orientation="vertical" size={32} style={{ width: "100%" }}>
-					{stacks}
+					{renderStacks()}
 				</Space>
 			</div>
 		);

@@ -21,6 +21,7 @@ import React, { useMemo } from "react";
 import { MyEventCard } from "@/components/events/MyEventCard";
 import { ProtectedPageHeader } from "@/components/layouts/ProtectedPageHeader";
 import { useSetSpaceHeader } from "@/components/layouts/SpaceHeader";
+import { LoadError } from "@/components/ui";
 import { ViewCount } from "@/components/ViewCount";
 import { EventStatus } from "@/config/prisma-enums";
 import styles from "./style.module.scss";
@@ -72,6 +73,7 @@ const MyEventsClient = () => {
 	const {
 		data,
 		isLoading,
+		isLoadingError,
 		refetch: refetchMyEvents,
 	} = useQuery({
 		queryKey: ["my-events"],
@@ -325,6 +327,11 @@ const MyEventsClient = () => {
 							<Card loading style={{ width: 300 }} />
 						</Space>
 					</Flex>
+				) : isLoadingError ? (
+					<LoadError
+						title={t("page.myEvents.error", "Your events could not be loaded")}
+						onRetry={refetchMyEvents}
+					/>
 				) : events.length === 0 ? (
 					<Alert
 						title={t("event.noEvents", "No events found")}

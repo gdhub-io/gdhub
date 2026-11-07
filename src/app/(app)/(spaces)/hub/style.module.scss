@@ -100,6 +100,11 @@
 
 	.wideOnly {
 		display: block;
+
+		// A block with nothing to show renders nothing; its wrapper must not keep the gap.
+		&:empty {
+			display: none;
+		}
 	}
 
 	.narrowOnly {

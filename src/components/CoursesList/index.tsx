@@ -8,10 +8,12 @@ import type {
 import { IconCurrencyEuro } from "@tabler/icons-react";
 import { useQuery } from "@tanstack/react-query";
 import { useTranslate } from "@tolgee/react";
-import { Button, Col, Flex, Row, Space, Spin, Typography } from "antd";
+import { Button, Col, Flex, Row, Space, Typography } from "antd";
 import axios from "axios";
 import dayjs from "dayjs";
 import Link from "next/link";
+import { LoadError } from "@/components/ui";
+import { CoursesListSkeleton } from "./CoursesListSkeleton";
 import styles from "./style.module.scss";
 
 const { Title, Text } = Typography;
@@ -21,8 +23,9 @@ const CoursesList = ({ location }: { location?: "hub" }) => {
 
 	const {
 		data: courses,
-		isFetched,
-		isLoading,
+		isPending,
+		isLoadingError,
+		refetch,
 	} = useQuery({
 		queryKey: ["courses"],
 		queryFn: () =>
@@ -39,17 +42,18 @@ const CoursesList = ({ location }: { location?: "hub" }) => {
 		refetchInterval: 60000,
 	});
 
-	if (isLoading) {
+	if (isPending) return <CoursesListSkeleton />;
+	if (isLoadingError)
 		return (
-			<div className={styles.loadingContainer}>
-				<Spin />
-			</div>
+			<LoadError
+				title={t("courses.list.error", "Courses could not be loaded")}
+				onRetry={refetch}
+			/>
 		);
-	}
 
 	return (
 		<>
-			{!!courses?.data && isFetched ? (
+			{courses?.data?.length ? (
 				<Row gutter={[16, 16]} wrap>
 					{courses.data.map((course, idx) => {
 						return (

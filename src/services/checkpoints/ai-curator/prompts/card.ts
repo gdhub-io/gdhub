@@ -430,8 +430,11 @@ export const CURATOR_STANCE = stripIndents`
 	${AUTHOR_VOICE}
 `;
 
+/** Every curator text is English, whatever the team writes in; another code is for the lab. */
 export const localeLine = (locale = "en") =>
-	`Answer in the language with code "${locale}".`;
+	locale === "en"
+		? "Write in English, whatever language the goal, the tasks, the devlogs and the notes are in."
+		: `Answer in the language with code "${locale}".`;
 
 /**
  * The project around the card (GDHUB-111). It explains what happened; it never

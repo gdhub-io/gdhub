@@ -15,12 +15,8 @@ import {
 	IconCertificate,
 	IconClock,
 	IconLanguage,
-	IconMessageCircle,
-	IconPaperclip,
 	IconPlus,
 	IconSchool,
-	IconStarFilled,
-	IconUsers,
 	IconX,
 } from "@tabler/icons-react";
 import { useQuery } from "@tanstack/react-query";
@@ -41,8 +37,10 @@ import Link from "next/link";
 import { useParams } from "next/navigation";
 import { useMemo } from "react";
 import { ProtectedPageHeader } from "@/components/layouts/ProtectedPageHeader";
+import { LoadError } from "@/components/ui";
 import { AppAvatar } from "@/components/ui/AppAvatar";
 import { AppImage } from "@/components/ui/AppImage";
+import { SkeletonLine } from "@/components/ui/SkeletonLine";
 import styles from "./course.module.scss";
 
 const { Title, Paragraph, Text } = Typography;
@@ -79,14 +77,20 @@ const CourseClient = () => {
 	const params = useParams<{ slug: string }>();
 	const slug = params?.slug;
 
-	const { data, isLoading, isError } = useQuery({
-		queryKey: ["course", slug],
-		queryFn: () =>
-			axios.get<CourseDetail>(`/api/courses/${slug}`).then((res) => res.data),
-		enabled: typeof slug === "string" && slug.length > 0,
-		refetchOnWindowFocus: false,
-	});
+	const { data, isPending, isError, isLoadingError, error, refetch } = useQuery(
+		{
+			queryKey: ["course", slug],
+			queryFn: () =>
+				axios.get<CourseDetail>(`/api/courses/${slug}`).then((res) => res.data),
+			enabled: typeof slug === "string" && slug.length > 0,
+			refetchOnWindowFocus: false,
+		},
+	);
 
+	const languageLabel =
+		data?.language === "ru"
+			? t("course.language.ru", "Russian")
+			: t("course.language.en", "English");
 	const curriculum = data?.curriculums?.[0];
 	const group = data?.groups?.[0];
 
@@ -134,29 +138,35 @@ const CourseClient = () => {
 		),
 	}));
 
-	const breadcrumbs = data
-		? [
-				{
-					title: (
-						<Link href="/hub/courses">{t("hub.menu.courses", "Courses")}</Link>
-					),
-				},
-				{ title: data.direction?.name },
-				{ title: data.name },
-			]
-		: undefined;
+	const breadcrumbs = [
+		{
+			title: (
+				<Link href="/hub/courses">{t("hub.menu.courses", "Courses")}</Link>
+			),
+		},
+		...(data
+			? [{ title: data.direction?.name }, { title: data.name }]
+			: [{ title: <SkeletonLine width={160} height={14} /> }]),
+	];
 
-	if (isLoading) {
+	// Only a 404 means the course is gone; any other failure is a load error with a retry.
+	const isNotFound =
+		axios.isAxiosError(error) && error.response?.status === 404;
+	if (isLoadingError && !isNotFound) {
 		return (
 			<div className="layout-background">
+				<ProtectedPageHeader breadcrumbs={breadcrumbs.slice(0, 1)} />
 				<div className={styles.container}>
-					<Skeleton active paragraph={{ rows: 8 }} />
+					<LoadError
+						title={t("course.error", "This course could not be loaded")}
+						onRetry={refetch}
+					/>
 				</div>
 			</div>
 		);
 	}
 
-	if (isError || !data) {
+	if (!isPending && (isError || !data)) {
 		return (
 			<div className="layout-background">
 				<ProtectedPageHeader
@@ -186,10 +196,12 @@ const CourseClient = () => {
 						<div
 							className={[
 								styles.hero,
-								directionBgClass(data.direction?.name),
+								directionBgClass(data?.direction?.name),
 							].join(" ")}
 						>
-							{data.image ? (
+							{isPending ? (
+								<Skeleton.Node active className={styles.heroSkeleton} />
+							) : data?.image ? (
 								<AppImage
 									src={data.image}
 									alt={data.name}
@@ -244,17 +256,26 @@ const CourseClient = () => {
 							</div>
 						) : null}
 
-						<Title level={1} className={styles.title}>
-							{data.name}
-						</Title>
+						{isPending ? (
+							<Flex vertical gap={12} className={styles.title}>
+								<SkeletonLine width={"70%"} height={36} />
+								<SkeletonLine width={"100%"} height={14} />
+								<SkeletonLine width={"100%"} height={14} />
+								<SkeletonLine width={"60%"} height={14} />
+							</Flex>
+						) : (
+							<Title level={1} className={styles.title}>
+								{data?.name}
+							</Title>
+						)}
 
-						{data.shortLine ? (
+						{data?.shortLine ? (
 							<Paragraph className={styles.shortLine}>
 								{data.shortLine}
 							</Paragraph>
 						) : null}
 
-						{data.description ? (
+						{data?.description ? (
 							<Paragraph className={styles.description}>
 								{data.description}
 							</Paragraph>
@@ -323,12 +344,18 @@ const CourseClient = () => {
 					<Col xs={24} lg={9}>
 						<div className={styles.sidebar}>
 							<Flex align="baseline" gap={8} justify="flex-end">
-								<Title level={2} className={styles.price}>
-									{price != null
-										? Number(price).toFixed(2)
-										: t("course.priceFree", "Free")}
-								</Title>
-								{price != null ? <Text type="secondary">EUR</Text> : null}
+								{isPending ? (
+									<SkeletonLine width={120} height={32} />
+								) : (
+									<>
+										<Title level={2} className={styles.price}>
+											{price != null
+												? Number(price).toFixed(2)
+												: t("course.priceFree", "Free")}
+										</Title>
+										{price != null ? <Text type="secondary">EUR</Text> : null}
+									</>
+								)}
 							</Flex>
 
 							<Row gutter={12} className={styles.metaRow}>
@@ -340,7 +367,11 @@ const CourseClient = () => {
 												{t("course.meta.lessons", "Lessons")}
 											</Text>
 											<Text className={styles.metaValue}>
-												{lessonsCount || "—"}
+												{isPending ? (
+													<SkeletonLine width={32} height={14} />
+												) : (
+													lessonsCount || "—"
+												)}
 											</Text>
 										</div>
 									</div>
@@ -361,11 +392,17 @@ const CourseClient = () => {
 							</Row>
 
 							<div className={styles.infoList}>
-								{startDate ? (
+								{isPending || startDate ? (
 									<InfoRow
 										icon={<IconClock size={16} stroke={1.5} />}
 										label={t("course.meta.startsAt", "Starts at")}
-										value={dayjs(startDate).format("ll")}
+										value={
+											isPending ? (
+												<SkeletonLine width={90} height={14} />
+											) : (
+												dayjs(startDate).format("ll")
+											)
+										}
 									/>
 								) : null}
 								{/* <InfoRow
@@ -377,9 +414,11 @@ const CourseClient = () => {
 									icon={<IconLanguage size={16} stroke={1.5} />}
 									label={t("course.meta.language", "Language")}
 									value={
-										data.language === "ru"
-											? t("course.language.ru", "Russian")
-											: t("course.language.en", "English")
+										isPending ? (
+											<SkeletonLine width={70} height={14} />
+										) : (
+											languageLabel
+										)
 									}
 								/>
 								{/* {totalDurationHours ? (

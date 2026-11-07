@@ -15,7 +15,7 @@ import dayjs from "dayjs";
 import Link from "next/link";
 import { useState } from "react";
 import SpecialistPreviewModal from "@/components/modals/SpecialistPreviewModal";
-import { StatusDot, type StatusTone } from "@/components/ui";
+import { LoadError, StatusDot, type StatusTone } from "@/components/ui";
 import { AppAvatar } from "@/components/ui/AppAvatar";
 import { skillLevelsList } from "@/components/ui/skillLevel";
 import { VacancyApplicationStatus } from "@/config/prisma-enums";
@@ -79,7 +79,7 @@ export function PositionApplicationsModal({
 	onClose: () => void;
 }) {
 	const [talent, setTalent] = useState<string>();
-	const { data, isLoading } = useQuery({
+	const { data, isLoading, isError, isLoadingError, refetch } = useQuery({
 		queryKey: ["admin", "open-positions", id],
 		queryFn: () =>
 			axios
@@ -129,6 +129,8 @@ export function PositionApplicationsModal({
 							</Text>
 						</Flex>
 					</Flex>
+				) : isError ? (
+					<Flex />
 				) : (
 					<Skeleton
 						active
@@ -156,7 +158,9 @@ export function PositionApplicationsModal({
 					/>
 				</Flex>
 			</Flex>
-			{isLoading || !data ? (
+			{isLoadingError ? (
+				<LoadError onRetry={refetch} />
+			) : isLoading || !data ? (
 				<Skeleton active title={false} paragraph={{ rows: 6 }} />
 			) : (
 				<Flex vertical gap={12}>

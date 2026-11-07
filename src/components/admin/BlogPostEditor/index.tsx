@@ -8,6 +8,7 @@ import {
 	Flex,
 	message,
 	Popover,
+	Skeleton,
 	Space,
 	Switch,
 	Typography,
@@ -18,6 +19,7 @@ import dayjs from "dayjs";
 import trim from "lodash/trim";
 import Link from "next/link";
 import { useCallback, useEffect, useRef, useState } from "react";
+import { LoadError } from "@/components/ui";
 import { BlogPostStatus } from "@/config/prisma-enums";
 import styles from "./style.module.scss";
 import { tools } from "./tools";
@@ -41,7 +43,12 @@ export default function BlogPostEditor({ id }: { id?: string }) {
 	const editorHolderRef = useRef<HTMLDivElement>(null);
 	const editorInitialized = useRef(false);
 
-	const { data: post, refetch: refetchPost } = useQuery({
+	const {
+		data: post,
+		refetch: refetchPost,
+		isPending,
+		isLoadingError,
+	} = useQuery({
 		queryKey: ["blog-post-editor", "document", id],
 		queryFn: () => {
 			return axios.get(`/api/admin/post/${id}`);
@@ -53,6 +60,9 @@ export default function BlogPostEditor({ id }: { id?: string }) {
 		refetchInterval: false,
 		refetchIntervalInBackground: false,
 	});
+	// Without an id there is nothing to load: the editor opens a new post at once.
+	const loadingPost = !!id && isPending;
+	const failed = !!id && isLoadingError;
 
 	const { mutateAsync: changeStatus, isPending: isChangingStatus } =
 		useMutation({
@@ -299,41 +309,56 @@ export default function BlogPostEditor({ id }: { id?: string }) {
 			<div>
 				<Flex justify="space-between" align="center">
 					<div>
-						<Title
-							level={1}
-							className={styles.postTitle}
-							editable={{
-								triggerType: ["text"],
-								maxLength: 150,
+						{loadingPost ? (
+							<Flex vertical gap="small" className={styles.postTitle}>
+								<Skeleton.Input active size="large" />
+								<Skeleton.Input active size="small" />
+							</Flex>
+						) : failed ? null : (
+							<>
+								<Title
+									level={1}
+									className={styles.postTitle}
+									editable={{
+										triggerType: ["text"],
+										maxLength: 150,
 
-								onChange: (value) => setPostTitle(value),
-							}}
-						>
-							{postTitle}
-						</Title>
-						<p className={styles.postSubtitle}>
-							Last updated on{" "}
-							{dayjs(post?.data?.updatedAt).format("DD/MM/YYYY")}
-						</p>
+										onChange: (value) => setPostTitle(value),
+									}}
+								>
+									{postTitle}
+								</Title>
+								{post?.data?.updatedAt && (
+									<p className={styles.postSubtitle}>
+										Last updated on{" "}
+										{dayjs(post.data.updatedAt).format("DD/MM/YYYY")}
+									</p>
+								)}
+							</>
+						)}
 					</div>
 					<Space>
-						<Space>
-							<Text type="secondary">{post?.data?.status}</Text>
-							<Popover
-								content={
-									hasUnsavedChanges
-										? "You should save the post first"
-										: "Change status"
-								}
-							>
-								<Switch
-									title="Change status"
-									disabled={hasUnsavedChanges}
-									checked={post?.data?.status === BlogPostStatus.Published}
-									onChange={handleChangeStatus}
-								/>
-							</Popover>
-						</Space>
+						{loadingPost ? (
+							<Skeleton.Button active size="small" />
+						) : failed ? null : (
+							<Space>
+								<Text type="secondary">{post?.data?.status}</Text>
+								<Popover
+									content={
+										hasUnsavedChanges
+											? "You should save the post first"
+											: "Change status"
+									}
+								>
+									<Switch
+										title="Change status"
+										disabled={hasUnsavedChanges}
+										checked={post?.data?.status === BlogPostStatus.Published}
+										onChange={handleChangeStatus}
+									/>
+								</Popover>
+							</Space>
+						)}
 						<Button
 							type="primary"
 							onClick={handleSaveBlogPost}
@@ -346,6 +371,10 @@ export default function BlogPostEditor({ id }: { id?: string }) {
 				</Flex>
 			</div>
 			<div className={styles.postContainer}>
+				{loadingPost && (
+					<Skeleton active title={false} paragraph={{ rows: 8 }} />
+				)}
+				{failed && <LoadError onRetry={refetchPost} />}
 				<div id={editorHolderId} ref={editorHolderRef} />
 			</div>
 		</div>

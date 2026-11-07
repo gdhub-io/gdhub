@@ -35,6 +35,7 @@ const ProjectAdviceArchiveModal: React.FC<ProjectAdviceArchiveModalProps> = ({
 	const {
 		data: advisorAdviceRequests,
 		isLoading: isLoadingAdvisorAdviceRequests,
+		isError: isAdviceRequestsError,
 		refetch: fetchProjectAdviceRequests,
 	} = useQuery({
 		queryKey: ["project-advice-requests", projectId, advisor?.id],
@@ -161,6 +162,8 @@ const ProjectAdviceArchiveModal: React.FC<ProjectAdviceArchiveModalProps> = ({
 		>
 			<ModernTable
 				loading={isLoadingAdvisorAdviceRequests}
+				error={isAdviceRequestsError}
+				onRetry={fetchProjectAdviceRequests}
 				columns={adviceArchiveColumns}
 				dataSource={
 					advisorAdviceRequests?.data?.map((r: any) => ({

@@ -10,6 +10,7 @@ import { Alert, Button, Divider, Flex, Modal, Typography } from "antd";
 import axios from "axios";
 import { type ReactNode, useEffect, useState } from "react";
 import { useAccess } from "@/components/access/AccessProvider";
+import { LoadError } from "@/components/ui";
 import { CheckpointStatus, CheckpointVerdict } from "@/config/prisma-enums";
 import { gtmEventTrigger, trackCheckpoint } from "@/helpers/gtm";
 import { useCheckpoint, useCheckpoints } from "@/hooks/checkpoints";
@@ -21,6 +22,7 @@ import { ClosedCheckpoint } from "./ClosedCheckpoint";
 import { CuratorAccepted } from "./CuratorAccepted";
 import { formatDay, formatDayRange, formatShort } from "./dates";
 import { PathBranch, PathNode } from "./PathNode";
+import { PathSkeleton } from "./PathSkeleton";
 import { RunningCheckpoint } from "./RunningCheckpoint";
 import { StageCard } from "./StageCard";
 import styles from "./style.module.scss";
@@ -48,7 +50,12 @@ export function WorkflowPath({ project }: WorkflowPathProps) {
 	const [confirm, setConfirm] = useState<{ afterVerdict: boolean }>();
 	const [earlierOpen, setEarlierOpen] = useState(false);
 
-	const { data: workflow, refetch } = useProjectWorkflow(project.id);
+	const {
+		data: workflow,
+		isPending: workflowPending,
+		isError: workflowError,
+		refetch,
+	} = useProjectWorkflow(project.id);
 	const { data: list } = useCheckpoints(
 		can("project.checkpoints.view") ? project.id : undefined,
 	);
@@ -87,7 +94,18 @@ export function WorkflowPath({ project }: WorkflowPathProps) {
 		},
 	});
 
-	if (!workflow) return null;
+	if (workflowPending) return <PathSkeleton />;
+	if (!workflow) {
+		return workflowError ? (
+			<LoadError
+				title={t(
+					"workflow.path.load-error",
+					"The workflow could not be loaded",
+				)}
+				onRetry={refetch}
+			/>
+		) : null;
+	}
 
 	const steps = [...workflow.steps].sort((a, b) => a.order - b.order);
 	const current = workflow.currentStep;

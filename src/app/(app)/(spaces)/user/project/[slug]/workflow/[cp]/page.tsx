@@ -33,14 +33,16 @@ export default async function CheckpointPathPage({
 	const index = sessionOfSprintParam(sprint);
 	const checkpointId = await checkpointIdByNumber(slug, number);
 	if (!checkpointId) notFound();
-	const kind = await curatorKindOf(checkpointId);
+	// Read together: the session index is only used for a pro, but waiting for
+	// the kind first cost the page a second round trip.
+	const [kind, current] = await Promise.all([
+		curatorKindOf(checkpointId),
+		index ?? currentSessionIndex(checkpointId),
+	]);
 	if (!kind) notFound();
 	// A pro's page is a call, so it needs one; the AI's review opens on its own moment.
 	const session =
-		index ??
-		(kind === CheckpointCuratorKind.AI
-			? undefined
-			: await currentSessionIndex(checkpointId));
+		index ?? (kind === CheckpointCuratorKind.AI ? undefined : current);
 
 	return (
 		<ProjectSpace>

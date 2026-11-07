@@ -25,6 +25,7 @@ import { Header as AppHeader } from "@/components/layouts/Header";
 import { HeaderActions } from "@/components/layouts/HeaderActions";
 import { useSpaceHeader } from "@/components/layouts/SpaceHeader";
 import { SpaceSwitcher } from "@/components/layouts/SpaceTrail";
+import { NavLink } from "@/components/ui";
 import { AppAvatar } from "@/components/ui/AppAvatar";
 import { productTheme } from "@/config/design";
 import { isAvailableLocale } from "@/config/locale";
@@ -245,49 +246,59 @@ export function ProtectedShell({ children }: { children: ReactNode }) {
 		[
 			{
 				key: "/hub",
-				label: <Link href="/hub">{t("hub.menu.overview", "Overview")}</Link>,
+				label: (
+					<NavLink href="/hub">{t("hub.menu.overview", "Overview")}</NavLink>
+				),
 			},
 			{
 				key: "/hub/jobs",
 				permission: "hub.jobs.view",
 				label: (
-					<Link href="/hub/jobs">{t("hub.menu.jobs", "Open positions")}</Link>
+					<NavLink href="/hub/jobs">
+						{t("hub.menu.jobs", "Open positions")}
+					</NavLink>
 				),
 			},
 			{
 				key: "/hub/members",
 				permission: "hub.talent_pool.view",
 				label: (
-					<Link href="/hub/members">
+					<NavLink href="/hub/members">
 						{t("hub.menu.talentPool", "Talent Pool")}
-					</Link>
+					</NavLink>
 				),
 			},
 			{
 				key: "/hub/projects",
 				permission: "hub.projects.view",
 				label: (
-					<Link href="/hub/projects">{t("hub.menu.projects", "Projects")}</Link>
+					<NavLink href="/hub/projects">
+						{t("hub.menu.projects", "Projects")}
+					</NavLink>
 				),
 			},
 			{
 				key: "/hub/events",
 				permission: "hub.events.view",
-				label: <Link href="/hub/events">{t("hub.menu.events", "Events")}</Link>,
+				label: (
+					<NavLink href="/hub/events">{t("hub.menu.events", "Events")}</NavLink>
+				),
 			},
 			{
 				key: "/hub/experts",
 				permission: "hub.experts.view",
 				label: (
-					<Link href="/hub/experts">{t("hub.menu.experts", "Experts")}</Link>
+					<NavLink href="/hub/experts">
+						{t("hub.menu.experts", "Experts")}
+					</NavLink>
 				),
 			},
 			{
 				key: "/user/settings/general",
 				label: (
-					<Link href="/user/settings/general">
+					<NavLink href="/user/settings/general">
 						{t("hub.menu.settings", "Settings")}
-					</Link>
+					</NavLink>
 				),
 			},
 		] satisfies (NonNullable<MenuProps["items"]>[number] & {

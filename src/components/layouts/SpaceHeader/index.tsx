@@ -1,6 +1,7 @@
 "use client";
 
 import type { MenuProps } from "antd";
+import { usePathname } from "next/navigation";
 import {
 	createContext,
 	type ReactNode,
@@ -30,14 +31,15 @@ export type SpaceHeaderConfig = {
 	 * actions and the navigation is dropped, so the only exit is this one.
 	 */
 	exit?: ReactNode;
+	/** The space's root path: the header stays while the path is under it. */
+	scope?: string;
 };
 
-type SpaceHeaderStore = {
-	config: SpaceHeaderConfig | null;
-	setConfig: (config: SpaceHeaderConfig | null) => void;
-};
+type SetSpaceHeader = (config: SpaceHeaderConfig | null) => void;
 
-const SpaceHeaderContext = createContext<SpaceHeaderStore | null>(null);
+const SpaceHeaderContext = createContext<SpaceHeaderConfig | null>(null);
+// Apart from the config, so publishing a header does not re-render every publisher.
+const SetSpaceHeaderContext = createContext<SetSpaceHeader | null>(null);
 
 /**
  * Lets nested spaces configure the single header rendered by ProtectedShell —
@@ -46,32 +48,54 @@ const SpaceHeaderContext = createContext<SpaceHeaderStore | null>(null);
  */
 export function SpaceHeaderProvider({ children }: { children: ReactNode }) {
 	const [config, setConfig] = useState<SpaceHeaderConfig | null>(null);
-	const store = useMemo(() => ({ config, setConfig }), [config]);
+	const pathname = usePathname() ?? "";
+
+	// A scoped header outlives its page: while the next tab of the same space
+	// loads, the tabs stay put instead of dropping to the default navigation.
+	const visible = useMemo(
+		() => headerForPath(config, pathname),
+		[config, pathname],
+	);
 
 	return (
-		<SpaceHeaderContext.Provider value={store}>
-			{children}
-		</SpaceHeaderContext.Provider>
+		<SetSpaceHeaderContext.Provider value={setConfig}>
+			<SpaceHeaderContext.Provider value={visible}>
+				{children}
+			</SpaceHeaderContext.Provider>
+		</SetSpaceHeaderContext.Provider>
 	);
+}
+
+/** The header to keep at `pathname`: a scoped one only while the path is under its scope. */
+export function headerForPath(
+	config: SpaceHeaderConfig | null,
+	pathname: string,
+): SpaceHeaderConfig | null {
+	if (!config?.scope) return config;
+
+	return pathname === config.scope || pathname.startsWith(`${config.scope}/`)
+		? config
+		: null;
 }
 
 /** Header config of the current space; `null` on ordinary app pages. */
 export function useSpaceHeader(): SpaceHeaderConfig | null {
-	return useContext(SpaceHeaderContext)?.config ?? null;
+	return useContext(SpaceHeaderContext);
 }
 
 /**
  * Publish this space's breadcrumbs and top navigation to the app header. The
- * header falls back to the default app navigation once the space unmounts, so
- * callers must memoise `config` to avoid re-publishing on every render.
+ * header falls back to the default app navigation once the space unmounts (or,
+ * with a `scope`, once the path leaves it), so callers must memoise `config`
+ * to avoid re-publishing on every render.
  */
 export function useSetSpaceHeader(config: SpaceHeaderConfig): void {
-	const setConfig = useContext(SpaceHeaderContext)?.setConfig;
+	const setConfig = useContext(SetSpaceHeaderContext);
 
 	useEffect(() => {
 		if (!setConfig) return;
 
 		setConfig(config);
-		return () => setConfig(null);
+		if (!config.scope) return () => setConfig(null);
 	}, [setConfig, config]);
 }
