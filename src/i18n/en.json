@@ -464,6 +464,19 @@
 				},
 				"title": "Assign a curator"
 			},
+			"delete": {
+				"content": "{project} · {stage}. The checkpoint and its journal are deleted for good. The author is told a platform administrator deleted it.",
+				"done": "Checkpoint deleted",
+				"failed": "Couldn't delete the checkpoint",
+				"ok": "Delete",
+				"title": "Delete checkpoint {number}?"
+			},
+			"free": {
+				"stage": "Stage",
+				"stageCurrent": "{stage} · now",
+				"stageHelp": "The stage the project is on now. Pick another to move the project there before the checkpoint starts.",
+				"stageInvalid": "A checkpoint cannot run on this stage."
+			},
 			"journal": {
 				"addedBy": "added by {who}",
 				"aiFound": "What the AI found",
@@ -645,6 +658,7 @@
 			},
 			"menu": {
 				"assign": "Assign a curator",
+				"delete": "Delete checkpoint",
 				"journal": "Curator journal",
 				"writeVerdict": "Write the verdict"
 			},

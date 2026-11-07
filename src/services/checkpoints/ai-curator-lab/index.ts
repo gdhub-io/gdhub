@@ -19,6 +19,7 @@ import {
 } from "@/lib/checkpoints/verdict";
 import { reportEvidence } from "@/repositories/checkpoints/ai-curator";
 import { mediaLine } from "@/repositories/checkpoints/evidence-seen";
+import { withModel } from "@/services/ai/model";
 import { type AiTrace, traced } from "@/services/ai-trace";
 import { checkpointCurator } from "@/services/checkpoints/ai-curator";
 import { createCharacter } from "@/services/checkpoints/ai-curator/character";
@@ -191,7 +192,7 @@ const CALLS: LabCall[] = [
 			ru: "Проверка цели и предложения задач",
 		},
 		when: { en: "After payment", ru: "После оплаты" },
-		model: checkpointCurator.model,
+		model: AI_MODELS.curatorReview,
 		schema: goalCheckInput,
 		situations: goalCheckSituations,
 		run: async (input, locale) => ({
@@ -224,7 +225,7 @@ const CALLS: LabCall[] = [
 		},
 		label: { en: "The plan approved", ru: "План утверждён" },
 		when: { en: "Day 1, after approval", ru: "День 1, после утверждения" },
-		model: AI_MODELS.curatorAssist,
+		model: AI_MODELS.curatorReview,
 		schema: planLetterInput,
 		situations: (language) => [
 			{
@@ -237,9 +238,13 @@ const CALLS: LabCall[] = [
 				input: e2eCheckpoint(3).planLetter(),
 			},
 		],
-		run: async ({ journal, ...input }) => ({
+		run: async ({ journal, ...input }, locale) => ({
 			answer: {
-				message: await composePlanLetter({ ...input, journal: journal ?? [] }),
+				message: await composePlanLetter(
+					{ ...input, journal: journal ?? [] },
+					undefined,
+					locale,
+				),
 			},
 		}),
 	}),
@@ -361,7 +366,7 @@ const CALLS: LabCall[] = [
 		},
 		label: { en: "Final report and verdict", ru: "Итоговый отчёт и вердикт" },
 		when: { en: "Day 29", ru: "День 29" },
-		model: checkpointCurator.model,
+		model: AI_MODELS.curatorReview,
 		schema: reportInput,
 		situations: reportSituations,
 		run: async ({ goal, items: rows, ...rest }, locale) => {
@@ -541,21 +546,24 @@ export const runLab = async (
 	input: unknown,
 	language: LabLanguage,
 	personaId?: string,
+	model?: string,
 ) => {
 	const found = CALLS.find((each) => each.id === id);
 	if (!found) return { error: `No call "${id}"` };
 	const persona = LAB_PERSONAS.find((each) => each.id === personaId)?.persona;
 	const started = Date.now();
 	let character: string | null = null;
-	const { result, traces } = await traced(async () => {
-		// The character the picked profile gives, made as a checkpoint makes it at its start.
-		if (persona) character = await createCharacter(persona);
-		const shown =
-			character && input && typeof input === "object"
-				? { ...input, character }
-				: input;
-		return found.run(shown, language);
-	});
+	const { result, traces } = await traced(() =>
+		withModel(model, async () => {
+			// The character the picked profile gives, made as a checkpoint makes it at its start.
+			if (persona) character = await createCharacter(persona);
+			const shown =
+				character && input && typeof input === "object"
+					? { ...input, character }
+					: input;
+			return found.run(shown, language);
+		}),
+	);
 
 	if ("error" in result) return result;
 
@@ -687,20 +695,24 @@ CALLS.push(
 				input: { checkpoint: number },
 			})),
 		// The road's own verdict and its reason stand in for the report, so only the line costs a call.
-		run: async ({ character, checkpoint: number }) => {
+		run: async ({ character, checkpoint: number }, locale) => {
 			const cp = e2eCheckpoint(number);
 			return {
 				answer: {
-					line: await writeShareLine({
-						character,
-						project: { name: E2E_PROJECT.name, pitch: E2E_PROJECT.pitch },
-						number,
-						stage: cp.checkpoint.stage,
-						goal: cp.checkpoint.goal,
-						verdict: cp.checkpoint.verdict,
-						verdictNote: cp.checkpoint.because,
-						devlogs: cp.devlogs().map((post) => post.content),
-					}),
+					line: await writeShareLine(
+						{
+							character,
+							project: { name: E2E_PROJECT.name, pitch: E2E_PROJECT.pitch },
+							number,
+							stage: cp.checkpoint.stage,
+							goal: cp.checkpoint.goal,
+							verdict: cp.checkpoint.verdict,
+							verdictNote: cp.checkpoint.because,
+							devlogs: cp.devlogs().map((post) => post.content),
+						},
+						undefined,
+						locale,
+					),
 				},
 			};
 		},

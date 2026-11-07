@@ -4,6 +4,6 @@
  */
 export const AI_MODELS = {
 	callNotes: "gpt-6.1-sol",
+	// Every text in the curator's voice: the letters are what the author pays for.
 	curatorReview: "gpt-6.1-sol",
-	curatorAssist: "gpt-6-luna",
 } as const;

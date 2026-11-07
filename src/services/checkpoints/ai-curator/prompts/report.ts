@@ -68,6 +68,7 @@ export const reportSchema = () => ({
 		},
 	},
 	required: ["summary", "verdict", "verdictNote"],
+	additionalProperties: false,
 });
 
 export const reportMessages = (input: ReportInput, locale = "en") => [
@@ -227,7 +228,6 @@ export const reportMessages = (input: ReportInput, locale = "en") => [
 					: ""
 			}
 
-			Answer via the ${REPORT_FUNCTION_NAME} function.
 		` + hintBlock(input.hint),
 	},
 ];

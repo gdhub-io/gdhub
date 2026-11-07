@@ -97,7 +97,7 @@ export async function judgeEvidence(
 			they are not evidence: judge only what the evidence itself shows. A
 			devlog saying the work is done never makes evidence of something else
 			match.
-			${locale ? localeLine(locale) : ""}
+			${localeLine(locale)}
 		`,
 		messages: [
 			{
@@ -156,7 +156,7 @@ export async function describeMedia(
 		instructions: stripIndents`
 			${HONEST}
 			Describe in one or two sentences what this media from a devlog shows.
-			${locale ? localeLine(locale) : ""}
+			${localeLine(locale)}
 		`,
 		messages: [
 			{

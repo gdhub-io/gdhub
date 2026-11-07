@@ -6,6 +6,7 @@ import type { AiMeter } from "@/services/ai-usage";
 import { runStructured } from "@/services/checkpoints/ai-review";
 import {
 	CHARACTER_VOICE,
+	localeLine,
 	PARTICIPANT_DATA,
 	PLAIN_LANGUAGE,
 	renderCharacter,
@@ -42,6 +43,7 @@ const lineSchema = z.object({
 export const writeShareLine = async (
 	input: ShareLineInput,
 	meter?: AiMeter,
+	locale?: string,
 ): Promise<string | null> => {
 	try {
 		const answer = await runStructured(
@@ -68,7 +70,7 @@ export const writeShareLine = async (
 					  never call it a win.
 					- No stage names, no "goal", "tasks", "checkpoint" or "verdict", no
 					  hashtags, no emoji, no quotes around it.
-					Write in the language of the goal.
+					${localeLine(locale)}
 
 					${CHARACTER_VOICE}
 
