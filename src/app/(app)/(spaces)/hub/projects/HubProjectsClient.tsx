@@ -24,7 +24,7 @@ import {
 } from "@/components/project/cards";
 import cardStyles from "@/components/project/cards/ProjectCard.module.scss";
 import storeCardStyles from "@/components/project/cards/ProjectStoreCard.module.scss";
-import { EmptyState } from "@/components/ui";
+import { EmptyState, LoadError } from "@/components/ui";
 import styles from "./style.module.scss";
 
 const line = (width: string, height: number) => (
@@ -94,6 +94,8 @@ export default function HubProjectsClient() {
 		data: projects,
 		isSuccess,
 		isPending,
+		isError,
+		refetch,
 	} = useQuery({
 		queryKey: ["projects"],
 		queryFn: () => axios.get<ProjectListItem[]>("/api/projects"),
@@ -106,7 +108,12 @@ export default function HubProjectsClient() {
 		enabled: isAuthenticated,
 	});
 
-	const { data: publishedProjects, isPending: isStorePending } = useQuery({
+	const {
+		data: publishedProjects,
+		isPending: isStorePending,
+		isError: isStoreError,
+		refetch: refetchStore,
+	} = useQuery({
 		queryKey: ["projects", "published"],
 		queryFn: () => axios.get<StoreProjectListItem[]>("/api/projects/published"),
 		enabled: isAuthenticated,
@@ -125,6 +132,8 @@ export default function HubProjectsClient() {
 	const isListLoading = isSessionLoading || (isAuthenticated && isPending);
 	const isStoreLoading =
 		isSessionLoading || (isAuthenticated && isStorePending);
+	const listFailed = isError && !projects;
+	const storeFailed = isStoreError && !publishedProjects;
 
 	return (
 		<div className="layout-background">
@@ -136,7 +145,7 @@ export default function HubProjectsClient() {
 				)}
 			/>
 			<div className={styles.container}>
-				{!isListLoading && !isSuccess && (
+				{!isListLoading && !isSuccess && !listFailed && (
 					<Paragraph type="secondary">
 						{t(
 							"page.hub.projects.unavailable",
@@ -145,7 +154,7 @@ export default function HubProjectsClient() {
 					</Paragraph>
 				)}
 
-				{(isStoreLoading || storeProjects.length > 0) && (
+				{(isStoreLoading || storeFailed || storeProjects.length > 0) && (
 					<div className={styles.storeProjectsSection}>
 						<div className={styles.sectionHeader}>
 							<Typography.Title level={3} className={styles.sectionTitle}>
@@ -156,6 +165,15 @@ export default function HubProjectsClient() {
 							</Typography.Title>
 						</div>
 
+						{storeFailed && (
+							<LoadError
+								title={t(
+									"page.hub.projects.store-error",
+									"Projects on stores could not be loaded",
+								)}
+								onRetry={() => refetchStore()}
+							/>
+						)}
 						<Row gutter={[16, 16]}>
 							{isStoreLoading &&
 								[0, 1].map((index) => (
@@ -223,6 +241,14 @@ export default function HubProjectsClient() {
 								</Col>
 							))}
 						</Row>
+					) : listFailed ? (
+						<LoadError
+							title={t(
+								"page.hub.projects.error",
+								"Projects could not be loaded",
+							)}
+							onRetry={() => refetch()}
+						/>
 					) : filteredProjects.length > 0 ? (
 						<Row gutter={[16, 16]}>
 							{filteredProjects.map((project) => (

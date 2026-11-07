@@ -12,6 +12,7 @@ import { Button, Col, Flex, Row, Space, Typography } from "antd";
 import axios from "axios";
 import dayjs from "dayjs";
 import Link from "next/link";
+import { LoadError } from "@/components/ui";
 import { CoursesListSkeleton } from "./CoursesListSkeleton";
 import styles from "./style.module.scss";
 
@@ -20,7 +21,12 @@ const { Title, Text } = Typography;
 const CoursesList = ({ location }: { location?: "hub" }) => {
 	const { t } = useTranslate();
 
-	const { data: courses, isPending } = useQuery({
+	const {
+		data: courses,
+		isPending,
+		isError,
+		refetch,
+	} = useQuery({
 		queryKey: ["courses"],
 		queryFn: () =>
 			axios.get<
@@ -37,6 +43,13 @@ const CoursesList = ({ location }: { location?: "hub" }) => {
 	});
 
 	if (isPending) return <CoursesListSkeleton />;
+	if (isError && !courses)
+		return (
+			<LoadError
+				title={t("courses.list.error", "Courses could not be loaded")}
+				onRetry={() => refetch()}
+			/>
+		);
 
 	return (
 		<>

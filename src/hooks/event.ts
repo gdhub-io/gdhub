@@ -45,6 +45,7 @@ export const useEvent = (eventId?: string | null) => {
 		refetch: query.refetch,
 		isLoading: query.isLoading,
 		isFetched: query.isFetched,
+		isError: query.isError,
 	};
 };
 

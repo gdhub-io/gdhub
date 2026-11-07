@@ -79,6 +79,7 @@ const MyProjectVacancies = () => {
 		data: projectVacancies,
 		refetch: fetchMyProjectVacancies,
 		isLoading: isLoadingMyMyProjectVacancies,
+		isError: isVacanciesError,
 	} = useQuery({
 		queryKey: ["project-team-vacancies", contextProject?.team?.id],
 		queryFn: () =>
@@ -481,10 +482,13 @@ const MyProjectVacancies = () => {
 
 			{!contextProject ||
 			isLoadingMyMyProjectVacancies ||
+			isVacanciesError ||
 			projectVacancies?.data.length > 0 ? (
 				<ModernTable
 					showHeader
 					loading={!contextProject || isLoadingMyMyProjectVacancies}
+					error={isVacanciesError}
+					onRetry={() => fetchMyProjectVacancies()}
 					columns={vacanciesColumns.filter((column) => !column.hidden)}
 					dataSource={projectVacancies?.data?.map((m: any) => ({
 						...m,

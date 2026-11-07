@@ -45,7 +45,7 @@ export default function AdminOpenPositionsPage() {
 	const [pageSize, setPageSize] = useState(20);
 	const [openId, setOpenId] = useState<string | null>(null);
 
-	const { data, isFetching } = useQuery({
+	const { data, isFetching, isError, refetch } = useQuery({
 		queryKey: [
 			"admin",
 			"open-positions",
@@ -237,6 +237,8 @@ export default function AdminOpenPositionsPage() {
 				</Flex>
 				<ModernTable
 					loading={isFetching}
+					error={isError}
+					onRetry={() => refetch()}
 					rowKey="id"
 					dataSource={data?.rows ?? []}
 					columns={columns}

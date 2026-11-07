@@ -1,6 +1,5 @@
 import type { ProjectStatus } from "@gdhub-io/gdhub-prisma";
 import {
-	IconAlertTriangle,
 	IconBriefcase,
 	IconChevronRight,
 	IconDeviceGamepad2,
@@ -21,7 +20,7 @@ import {
 } from "@/components/hub/HubSection";
 import { HubSectionRow } from "@/components/hub/HubSectionRow";
 import { HubSectionRowsSkeleton } from "@/components/hub/HubSidebarSkeleton";
-import { EmptyState } from "@/components/ui";
+import { EmptyState, LoadError } from "@/components/ui";
 import { projectSpaceHref } from "@/helpers/project-space";
 import GameCard from "../GameCard";
 import CreateProjectModal from "../modals/CreateProjectModal";
@@ -74,12 +73,24 @@ const MyProjectList: React.FC<MyProjectListProps> = ({
 		isSuccess,
 		isLoading,
 		isPending,
-		error,
+		isError,
+		refetch,
 	} = useQuery({
 		queryKey: ["userProjects"],
 		queryFn: () => axios.get("/api/user/projects"),
 		refetchOnWindowFocus: false,
 	});
+	const failed = isError && !projects;
+	const loadError = (
+		<LoadError
+			bare={variant === "hubSidebar"}
+			title={t(
+				"page.hub.user-projects.load-error",
+				"Failed to load user projects",
+			)}
+			onRetry={() => refetch()}
+		/>
+	);
 
 	if (isLoading && variant !== "hubSidebar") {
 		const loading = (
@@ -155,25 +166,11 @@ const MyProjectList: React.FC<MyProjectListProps> = ({
 		<>
 			{variant === "default" ? headerRow : null}
 
-			{!isSuccess || !projects?.data || projects.data.length === 0 ? (
+			{failed ? (
+				loadError
+			) : !isSuccess || !projects?.data || projects.data.length === 0 ? (
 				<EmptyProjectsState
 					onCreateProject={() => setOpenCreateProjectModal(true)}
-				/>
-			) : undefined}
-
-			{error ? (
-				<EmptyState
-					icon={IconAlertTriangle}
-					title={t(
-						"page.hub.user-projects.load-error",
-						"Failed to load user projects",
-					)}
-					description={t(
-						"page.hub.user-projects.load-error-hint",
-						"Reload the page — if it keeps failing, the service may be down.",
-					)}
-					tint="var(--gd-danger-tint)"
-					ink="var(--gd-danger-on-tint)"
 				/>
 			) : undefined}
 
@@ -223,6 +220,8 @@ const MyProjectList: React.FC<MyProjectListProps> = ({
 					<HubSectionBody flush>
 						<HubSectionRowsSkeleton />
 					</HubSectionBody>
+				) : failed ? (
+					<HubSectionBody>{loadError}</HubSectionBody>
 				) : rows.length ? (
 					<HubSectionBody flush>
 						<div className={sidebarStyles.list}>

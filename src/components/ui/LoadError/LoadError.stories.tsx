@@ -3,7 +3,7 @@ import { LoadError } from "./index";
 
 /** The error rows of frames `ZssMc` and `P5Bfq`. */
 const meta: Meta<typeof LoadError> = {
-	title: "Legal/LoadError",
+	title: "Design system/LoadError",
 	component: LoadError,
 	parameters: { layout: "padded" },
 };

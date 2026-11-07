@@ -3,6 +3,7 @@ import { keepPreviousData, useQuery } from "@tanstack/react-query";
 import { useTranslate } from "@tolgee/react";
 import { Button, Col, Row, Space, Typography } from "antd";
 import axios from "axios";
+import { LoadError } from "@/components/ui";
 import { avatarImage } from "@/helpers/image";
 import { ExpertListSkeleton } from "./ExpertListSkeleton";
 import styles from "./style.module.scss";
@@ -39,7 +40,12 @@ const ExpertList = ({
 }) => {
 	const { t } = useTranslate();
 
-	const { data: experts, isPending } = useQuery<Expert[]>({
+	const {
+		data: experts,
+		isPending,
+		isError,
+		refetch,
+	} = useQuery<Expert[]>({
 		queryKey: ["experts", JSON.stringify(filter)],
 		queryFn: () =>
 			axios
@@ -56,6 +62,13 @@ const ExpertList = ({
 	});
 
 	if (isPending) return <ExpertListSkeleton />;
+	if (isError && !experts)
+		return (
+			<LoadError
+				title={t("experts.page.error", "Experts could not be loaded")}
+				onRetry={() => refetch()}
+			/>
+		);
 
 	return (
 		<>

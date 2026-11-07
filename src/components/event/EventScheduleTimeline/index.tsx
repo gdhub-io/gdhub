@@ -6,6 +6,7 @@ import { Avatar, Button, Dropdown, Flex, Segmented, Skeleton } from "antd";
 import dayjs from "dayjs";
 import { useMemo, useState } from "react";
 import { getWorkDirection } from "@/components/DirectionBadge/directions";
+import { LoadError } from "@/components/ui";
 import { formatEventPeriod } from "@/helpers/format";
 import { useWorkDirections } from "@/hooks/library";
 import { SpeakerAvatars } from "../SpeakerAvatars";
@@ -78,10 +79,15 @@ export function EventScheduleTimeline({
 	onDelete,
 	canEdit,
 	loading,
+	error,
+	onRetry,
 }: {
 	items: TimelineItem[];
 	/** The programme has not arrived yet: rows are drawn as placeholders. */
 	loading?: boolean;
+	/** The programme failed to load: said so in place of the rows, with `onRetry`. */
+	error?: boolean;
+	onRetry?: () => void;
 	onEdit?: (item: TimelineItem) => void;
 	onDelete?: (id: string) => void;
 	canEdit?: boolean;
@@ -146,7 +152,15 @@ export function EventScheduleTimeline({
 				)}
 			</Flex>
 
-			{loading ? (
+			{error ? (
+				<LoadError
+					title={t(
+						"event.schedule.load-error",
+						"The schedule could not be loaded",
+					)}
+					onRetry={onRetry}
+				/>
+			) : loading ? (
 				<Flex align="stretch" aria-busy>
 					<div className={styles.labelPane}>
 						<div className={`${styles.head} ${styles.headRow}`} />

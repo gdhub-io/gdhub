@@ -47,7 +47,7 @@ import tableStyles from "@/components/ModernTable/ModernTable.module.scss";
 import EquityShareModal from "@/components/modals/EquityShareModal";
 import InviteMemberModal from "@/components/modals/InviteMemberModal";
 import TeamMemberCard from "@/components/TeamMemberCard";
-import { EmptyState } from "@/components/ui";
+import { EmptyState, LoadError } from "@/components/ui";
 import { AppAvatar } from "@/components/ui/AppAvatar";
 import { TeamMemberStatus } from "@/config/prisma-enums";
 import { ProjectContext } from "@/contexts/ProjectContext";
@@ -103,6 +103,7 @@ const MyTeam = () => {
 	const {
 		data: team,
 		refetch: fetchMyTeam,
+		isError: isMyTeamError,
 		isLoading: isLoadingMyTeam,
 	} = useQuery({
 		queryKey: ["user-project-team", contextProject?.team?.id],
@@ -120,6 +121,7 @@ const MyTeam = () => {
 	const {
 		data: pendingInvitations,
 		refetch: fetchPendingInvitations,
+		isError: isPendingInvitationsError,
 		isLoading: isLoadingPendingInvitations,
 	} = useQuery({
 		queryKey: ["team-pending-invitations", contextProject?.team?.id],
@@ -137,6 +139,7 @@ const MyTeam = () => {
 	const {
 		data: advisors,
 		refetch: fetchAdvisors,
+		isError: isAdvisorsError,
 		isLoading: isLoadingAdvisors,
 	} = useQuery({
 		queryKey: ["team-advisors", contextProject?.team?.id],
@@ -155,6 +158,7 @@ const MyTeam = () => {
 	const {
 		data: investors,
 		refetch: fetchInvestors,
+		isError: isInvestorsError,
 		isLoading: isLoadingInvestors,
 	} = useQuery({
 		queryKey: ["team-investors", contextProject?.team?.id],
@@ -169,6 +173,7 @@ const MyTeam = () => {
 		data: projectEquity,
 		refetch: fetchProjectEquity,
 		isPending: isPendingEquity,
+		isError: isEquityError,
 	} = useQuery({
 		queryKey: ["project-equity", contextProject?.id],
 		queryFn: () =>
@@ -849,7 +854,17 @@ const MyTeam = () => {
 	return (
 		<>
 			{/* The project's equity breakdown */}
-			{isPendingEquity && <EquitySectionSkeleton />}
+			{isEquityError && !projectEquity ? (
+				<LoadError
+					title={t(
+						"component.myTeam.equity-load-error",
+						"Equity could not be loaded",
+					)}
+					onRetry={() => fetchProjectEquity()}
+				/>
+			) : (
+				isPendingEquity && <EquitySectionSkeleton />
+			)}
 			{projectEquity?.data && contextProject?.id && (
 				<EquitySection
 					projectId={contextProject.id}
@@ -969,6 +984,8 @@ const MyTeam = () => {
 				<Tabs.TabPane tab={t("Members")} key="members">
 					<ModernTable
 						loading={projectLoading || isLoadingMyTeam || isFiring}
+						error={isMyTeamError}
+						onRetry={() => fetchMyTeam()}
 						columns={columns}
 						dataSource={team?.data.members?.map((m: any) => ({
 							...m,
@@ -987,6 +1004,8 @@ const MyTeam = () => {
 							loading={
 								projectLoading || isLoadingPendingInvitations || isCanceling
 							}
+							error={isPendingInvitationsError}
+							onRetry={() => fetchPendingInvitations()}
 							columns={pendingInvitationsColumns}
 							dataSource={pendingInvitations?.data?.map((invitation) => ({
 								...invitation,
@@ -1004,9 +1023,14 @@ const MyTeam = () => {
 					</Tabs.TabPane>
 				)}
 				<Tabs.TabPane tab={t("Advisors")} key="advisors">
-					{projectLoading || isLoadingAdvisors || advisors?.data?.length ? (
+					{projectLoading ||
+					isLoadingAdvisors ||
+					isAdvisorsError ||
+					advisors?.data?.length ? (
 						<ModernTable
 							loading={projectLoading || isLoadingAdvisors}
+							error={isAdvisorsError}
+							onRetry={() => fetchAdvisors()}
 							columns={advisorsColumns}
 							dataSource={advisors?.data?.map((advisor) => ({
 								...advisor,
@@ -1031,7 +1055,10 @@ const MyTeam = () => {
 				</Tabs.TabPane>
 				{can("project.equity.view") && (
 					<Tabs.TabPane tab={t("Investors")} key="investors">
-						{projectLoading || isLoadingInvestors || investors?.data?.length ? (
+						{projectLoading ||
+						isLoadingInvestors ||
+						isInvestorsError ||
+						investors?.data?.length ? (
 							<>
 								<Paragraph type="secondary" style={{ marginTop: 16 }}>
 									{t("table.investors.description")}
@@ -1039,6 +1066,8 @@ const MyTeam = () => {
 
 								<ModernTable
 									loading={projectLoading || isLoadingInvestors}
+									error={isInvestorsError}
+									onRetry={() => fetchInvestors()}
 									columns={investorsColumns}
 									dataSource={investors?.data?.map((investor) => ({
 										...investor,

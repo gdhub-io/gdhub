@@ -3,7 +3,6 @@
 import { IconCalendar } from "@tabler/icons-react";
 import { useTranslate } from "@tolgee/react";
 import {
-	Alert,
 	App,
 	Button,
 	Card,
@@ -24,7 +23,7 @@ import { Suspense, useMemo, useState } from "react";
 import { AvailabilityPeriods } from "@/components/advisor/AvailabilityPeriods";
 import { PaidWorkSection } from "@/components/advisor/PaidWorkSection";
 import { ProtectedPageHeader } from "@/components/layouts/ProtectedPageHeader";
-import { SectionHeading } from "@/components/ui";
+import { LoadError, SectionHeading } from "@/components/ui";
 import { AVAILABILITY_REMIND_DAYS } from "@/config/checkpoint";
 import { AdvisorAvailabilityStatus } from "@/config/prisma-enums";
 import {
@@ -120,20 +119,15 @@ function Availability() {
 	const { t } = useTranslate();
 	const { data, isLoading, isError, refetch } = useAvailability();
 
-	if (isError)
+	// `null` is a real answer (no hours set yet); only a missing answer means the load failed.
+	if (isError && data === undefined)
 		return (
-			<Alert
-				type="error"
-				showIcon
+			<LoadError
 				title={t(
 					"advisor.availability.error.load",
 					"Your hours could not be loaded.",
 				)}
-				action={
-					<Button size="small" onClick={() => refetch()}>
-						{t("advisor.availability.error.retry", "Try again")}
-					</Button>
-				}
+				onRetry={() => refetch()}
 			/>
 		);
 
@@ -162,26 +156,17 @@ function PaidWork() {
 		return saved;
 	};
 
-	if (isError || (curation.isError && !curation.data))
+	if ((isError && !data) || (curation.isError && !curation.data))
 		return (
-			<Alert
-				type="error"
-				showIcon
+			<LoadError
 				title={t(
 					"advisor.settings.paid-work.loadFailed",
 					"Your payout details could not be loaded.",
 				)}
-				action={
-					<Button
-						size="small"
-						onClick={() => {
-							refetch();
-							curation.refetch();
-						}}
-					>
-						{t("advisor.settings.paid-work.retry", "Try again")}
-					</Button>
-				}
+				onRetry={() => {
+					refetch();
+					curation.refetch();
+				}}
 			/>
 		);
 

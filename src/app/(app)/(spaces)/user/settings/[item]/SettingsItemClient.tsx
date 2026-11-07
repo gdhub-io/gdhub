@@ -2,12 +2,13 @@
 
 import type { Profile, User } from "@gdhub-io/gdhub-prisma";
 import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
+import { useTranslate } from "@tolgee/react";
 import axios from "axios";
 import dynamic from "next/dynamic";
 import { useParams } from "next/navigation";
 import { useSession } from "next-auth/react";
 import { useCallback } from "react";
-import { PageLoading } from "@/components/ui";
+import { LoadError, PageLoading } from "@/components/ui";
 import {
 	FormSkeleton,
 	type FormSkeletonProps,
@@ -91,10 +92,16 @@ const PaymentsList = dynamic(
 export function SettingsItemClient() {
 	const params = useParams<{ item?: string }>();
 	const currentItem = params?.item || "general";
+	const { t } = useTranslate();
 	const queryClient = useQueryClient();
 	const { data: session } = useSession();
 
-	const { data: profile, isPending } = useQuery({
+	const {
+		data: profile,
+		isPending,
+		isError,
+		refetch,
+	} = useQuery({
 		queryKey: ["profile-setting", session?.user.id],
 		queryFn: () =>
 			axios.get<Profile & { user: Partial<User> }>("/api/user/profile"),
@@ -120,6 +127,19 @@ export function SettingsItemClient() {
 	if (currentItem === "payments") return <PaymentsList />;
 	if (currentItem === "documents") return <MyDocuments />;
 	if (currentItem === "danger") return <DangerProfileForm />;
+
+	// Saving an unloaded form would overwrite the profile with blanks.
+	if (isError && !profile) {
+		return (
+			<LoadError
+				title={t(
+					"profile.settings.load-error",
+					"Your profile could not be loaded",
+				)}
+				onRetry={() => refetch()}
+			/>
+		);
+	}
 
 	if (isPending) {
 		return (

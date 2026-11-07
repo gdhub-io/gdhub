@@ -8,7 +8,12 @@ import { AdvisorCheckpointCard } from "@/components/advisor/AdvisorCheckpointCar
 import { VerdictModal } from "@/components/advisor/VerdictModal";
 import { CheckpointCard } from "@/components/checkpoints/CheckpointCard";
 import { ProtectedPageHeader } from "@/components/layouts/ProtectedPageHeader";
-import { EmptyState, SectionHeading, StatusDot } from "@/components/ui";
+import {
+	EmptyState,
+	LoadError,
+	SectionHeading,
+	StatusDot,
+} from "@/components/ui";
 import { formatShort } from "@/components/WorkflowPath/dates";
 import { CheckpointStatus } from "@/config/prisma-enums";
 import { useAdvisorCheckpoints } from "@/hooks/checkpoints";
@@ -30,7 +35,7 @@ import styles from "./style.module.scss";
  */
 export function AdvisorCheckpointsClient() {
 	const { t } = useTranslate();
-	const { data, isPending } = useAdvisorCheckpoints();
+	const { data, isPending, isError, refetch } = useAdvisorCheckpoints();
 	const [verdictId, setVerdictId] = useState<string | null>(null);
 
 	// The curator's notification links here with `?verdict=<id>`.
@@ -107,8 +112,10 @@ export function AdvisorCheckpointsClient() {
 			</Flex>
 		);
 
+	const failed = isError && !data;
 	const empty =
 		!isPending &&
+		!failed &&
 		!data?.asked.length &&
 		!data?.running.length &&
 		!data?.closed.length &&
@@ -126,6 +133,16 @@ export function AdvisorCheckpointsClient() {
 
 			<div className={styles.page}>
 				{isPending && <Skeleton active paragraph={{ rows: 6 }} />}
+
+				{failed && (
+					<LoadError
+						title={t(
+							"advisor.checkpoints.load-error",
+							"Your checkpoints could not be loaded",
+						)}
+						onRetry={() => refetch()}
+					/>
+				)}
 
 				{empty && (
 					<EmptyState

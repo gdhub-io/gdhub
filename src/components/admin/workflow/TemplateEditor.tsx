@@ -35,6 +35,7 @@ import { EditorJsField } from "@/components/admin/EditorJsField";
 import StepEditModal from "@/components/admin/WorkflowEditor/StepEditModal";
 import TaskEditModal from "@/components/admin/WorkflowEditor/TaskEditModal";
 import WorkflowSettingsModal from "@/components/admin/WorkflowEditor/WorkflowSettingsModal";
+import { LoadError } from "@/components/ui";
 import {
 	nextKey,
 	type StepDraft,
@@ -61,7 +62,7 @@ export function TemplateEditor({ id }: { id: string }) {
 	const { message, modal } = App.useApp();
 	const queryClient = useQueryClient();
 
-	const { data, isError } = useQuery({
+	const { data, isError, refetch } = useQuery({
 		queryKey: ["admin", "workflow", id],
 		queryFn: () => axios.get(`/api/admin/workflow/${id}`),
 	});
@@ -221,6 +222,8 @@ export function TemplateEditor({ id }: { id: string }) {
 
 	// `loaded`, not the query's state: the drafts land one render after the data does.
 	const pending = !loaded && !isError;
+	// Without the template the drafts are empty, and saving them would wipe it.
+	const failed = !loaded && isError;
 
 	return (
 		<Flex vertical gap={16}>
@@ -250,6 +253,8 @@ export function TemplateEditor({ id }: { id: string }) {
 						<Skeleton.Input active size="large" />
 						<Skeleton.Input active size="small" />
 					</Flex>
+				) : failed ? (
+					<Flex vertical className={styles.titles} />
 				) : (
 					<Flex vertical gap={6} className={styles.titles}>
 						{/* The pencil renames the template and nothing else. Everything a
@@ -290,14 +295,14 @@ export function TemplateEditor({ id }: { id: string }) {
 					)}
 					<Button
 						icon={<IconSettings size={16} />}
-						disabled={pending}
+						disabled={pending || failed}
 						onClick={() => setSettingsOpen(true)}
 					>
 						Settings
 					</Button>
 					<Button
 						type="primary"
-						disabled={pending}
+						disabled={pending || failed}
 						loading={isSaving}
 						onClick={handleSave}
 					>
@@ -337,7 +342,9 @@ export function TemplateEditor({ id }: { id: string }) {
 				}
 			/>
 
-			{pending ? (
+			{failed ? (
+				<LoadError onRetry={() => refetch()} />
+			) : pending ? (
 				<div className={styles.panes} aria-busy>
 					<Card className={styles.rail} styles={{ body: { padding: 0 } }}>
 						<div className={styles.railHeader}>

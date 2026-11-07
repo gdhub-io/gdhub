@@ -42,6 +42,7 @@ export default function BlogPostsAdminPage() {
 		data: response,
 		refetch: refetchPosts,
 		isFetching,
+		isError,
 	} = useQuery({
 		queryKey: ["admin", "posts"],
 		queryFn: () => axios.get("/api/admin/posts"),
@@ -209,6 +210,8 @@ export default function BlogPostsAdminPage() {
 				</Row>
 				<ModernTable
 					loading={isFetching}
+					error={isError}
+					onRetry={() => refetchPosts()}
 					dataSource={response?.data}
 					columns={columns}
 				/>

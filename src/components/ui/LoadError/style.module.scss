@@ -1,5 +1,6 @@
 .error {
 	display: flex;
+	flex-wrap: wrap;
 	align-items: center;
 	gap: var(--gd-space-3);
 	padding: var(--gd-space-4) var(--gd-space-6);
@@ -7,8 +8,16 @@
 	border-radius: var(--gd-radius-card);
 }
 
+// Wide enough for a short sentence before the button drops below it in a narrow card.
 .title {
-	flex: 1;
+	flex: 1 1 160px;
+	min-width: 0;
 	font-weight: 500;
 	color: var(--gd-color-text);
+}
+
+.bare {
+	padding-inline: 0;
+	border: none;
+	text-align: start;
 }

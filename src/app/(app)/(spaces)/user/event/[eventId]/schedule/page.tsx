@@ -29,7 +29,12 @@ export default function EventSchedulePage() {
 	const { can } = useAccess();
 	const canEditSchedule = can("event.schedule.edit");
 
-	const { event, refetch: refetchEvent, isFetched } = useEvent(eventId);
+	const {
+		event,
+		refetch: refetchEvent,
+		isFetched,
+		isError,
+	} = useEvent(eventId);
 
 	// Derived, not copied into state: a copy is empty for one render after the
 	// event lands, which flashed the empty state.
@@ -146,6 +151,8 @@ export default function EventSchedulePage() {
 			<EventScheduleTimeline
 				items={schedule as TimelineItem[]}
 				loading={!isFetched}
+				error={isError && !event}
+				onRetry={() => refetchEvent()}
 				canEdit={canEditSchedule}
 				onEdit={(item) => {
 					const row = schedule.find((candidate) => candidate.id === item.id);

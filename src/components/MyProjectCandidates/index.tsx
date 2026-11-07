@@ -12,6 +12,7 @@ import axios from "axios";
 import dayjs from "dayjs";
 import { useContext, useState } from "react";
 import ProjectCandidatePreviewModal from "@/components/modals/ProjectCandidatePreviewModal";
+import { LoadError } from "@/components/ui";
 import { AppAvatar } from "@/components/ui/AppAvatar";
 import { skeletonColumns, skeletonRows } from "@/components/ui/table";
 import { ProjectContext } from "@/contexts/ProjectContext";
@@ -30,6 +31,7 @@ const MyProjectCandidates = () => {
 		refetch: refetchCandidates,
 		isFetching: isLoadingCandidates,
 		isPending: isPendingCandidates,
+		isError: isCandidatesError,
 	} = useQuery({
 		queryKey: ["candidates", contextProject?.id],
 		queryFn: () =>
@@ -128,11 +130,11 @@ const MyProjectCandidates = () => {
 				{isPendingCandidates ? (
 					<Skeleton.Button active size="small" />
 				) : (
-					<Tag color="gray">{candidates?.data.length || 0}</Tag>
+					candidates && <Tag color="gray">{candidates.data.length}</Tag>
 				)}
 			</Space>
 
-			{isPendingCandidates || candidates?.data.length ? (
+			{isPendingCandidates || isCandidatesError || candidates?.data.length ? (
 				<>
 					<Table
 						loading={!isPendingCandidates && isLoadingCandidates}
@@ -153,6 +155,15 @@ const MyProjectCandidates = () => {
 								: candidates?.data
 						}
 						pagination={false}
+						locale={
+							isCandidatesError
+								? {
+										emptyText: (
+											<LoadError bare onRetry={() => refetchCandidates()} />
+										),
+									}
+								: undefined
+						}
 					/>
 
 					{!isProjectArchived && (

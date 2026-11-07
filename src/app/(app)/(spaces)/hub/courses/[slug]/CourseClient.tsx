@@ -41,6 +41,7 @@ import Link from "next/link";
 import { useParams } from "next/navigation";
 import { useMemo } from "react";
 import { ProtectedPageHeader } from "@/components/layouts/ProtectedPageHeader";
+import { LoadError } from "@/components/ui";
 import { AppAvatar } from "@/components/ui/AppAvatar";
 import { AppImage } from "@/components/ui/AppImage";
 import styles from "./course.module.scss";
@@ -79,7 +80,7 @@ const CourseClient = () => {
 	const params = useParams<{ slug: string }>();
 	const slug = params?.slug;
 
-	const { data, isPending, isError } = useQuery({
+	const { data, isPending, isError, error, refetch } = useQuery({
 		queryKey: ["course", slug],
 		queryFn: () =>
 			axios.get<CourseDetail>(`/api/courses/${slug}`).then((res) => res.data),
@@ -144,6 +145,23 @@ const CourseClient = () => {
 			? [{ title: data.direction?.name }, { title: data.name }]
 			: [{ title: line(160, 14) }]),
 	];
+
+	// Only a 404 means the course is gone; any other failure is a load error with a retry.
+	const isNotFound =
+		axios.isAxiosError(error) && error.response?.status === 404;
+	if (isError && !data && !isNotFound) {
+		return (
+			<div className="layout-background">
+				<ProtectedPageHeader breadcrumbs={breadcrumbs.slice(0, 1)} />
+				<div className={styles.container}>
+					<LoadError
+						title={t("course.error", "This course could not be loaded")}
+						onRetry={() => refetch()}
+					/>
+				</div>
+			</div>
+		);
+	}
 
 	if (!isPending && (isError || !data)) {
 		return (

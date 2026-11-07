@@ -21,6 +21,7 @@ import dayjs from "dayjs";
 import { useParams } from "next/navigation";
 import { useCallback, useEffect, useRef, useState } from "react";
 import { EventSpace } from "@/components/spaces/EventSpace";
+import { LoadError } from "@/components/ui";
 import { useEvent } from "@/hooks/event";
 import styles from "./style.module.scss";
 
@@ -39,7 +40,7 @@ export default function EventContentPage() {
 	// Set once: the editor is rebuilt after every save, and that must not flash the placeholder.
 	const [editorShown, setEditorShown] = useState(false);
 
-	const { event, refetch: refetchEvent } = useEvent(eventId);
+	const { event, refetch: refetchEvent, isError } = useEvent(eventId);
 
 	const { mutateAsync: saveContent, isPending: isSaving } = useMutation({
 		mutationFn: (content: OutputData) => {
@@ -311,7 +312,17 @@ export default function EventContentPage() {
 
 				<div className={styles.canvas} ref={canvasRef}>
 					<div className={styles.sheet}>
-						{!editorShown && <Skeleton active paragraph={{ rows: 8 }} />}
+						{isError && !event ? (
+							<LoadError
+								title={t(
+									"event.content.load-error",
+									"The content could not be loaded",
+								)}
+								onRetry={() => refetchEvent()}
+							/>
+						) : (
+							!editorShown && <Skeleton active paragraph={{ rows: 8 }} />
+						)}
 						<div id={editorHolderId} ref={editorHolderRef} />
 					</div>
 				</div>

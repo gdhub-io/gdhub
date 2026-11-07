@@ -8,6 +8,7 @@ import Link from "next/link";
 import { useSession } from "next-auth/react";
 import qs from "qs";
 import { useAccess } from "@/components/access/AccessProvider";
+import { LoadError } from "@/components/ui";
 import { AdviceRequestStatus } from "@/config/prisma-enums";
 import { HubQuickCountsSkeleton } from "./HubQuickCountsSkeleton";
 import styles from "./styles.module.scss";
@@ -35,9 +36,7 @@ export function HubQuickCounts({ className }: { className?: string }) {
 	const { can } = useAccess();
 	const userId = session?.user?.id;
 
-	const { data: adviceRequests, isPending: advicePending } = useQuery<
-		AdviceRequest[]
-	>({
+	const adviceQuery = useQuery<AdviceRequest[]>({
 		queryKey: ["advice-requests"],
 		queryFn: () =>
 			axios
@@ -52,22 +51,20 @@ export function HubQuickCounts({ className }: { className?: string }) {
 		enabled: !!userId && can("hub.experts.request"),
 	});
 
-	const { data: latestUsers, isPending: usersPending } = useQuery<unknown[]>({
+	const usersQuery = useQuery<unknown[]>({
 		queryKey: ["latest-users"],
 		queryFn: () =>
 			axios.get<unknown[]>("/api/users/latest").then((r) => r.data),
 	});
 
-	const { data: hotVacancies, isPending: vacanciesPending } = useQuery<
-		unknown[]
-	>({
+	const vacanciesQuery = useQuery<unknown[]>({
 		queryKey: ["hot-team-vacancies"],
 		queryFn: () =>
 			axios.get<unknown[]>("/api/vacancies/hot").then((r) => r.data),
 		enabled: can("hub.jobs.view"),
 	});
 
-	const { data: latestEvents, isPending: eventsPending } = useQuery<unknown[]>({
+	const eventsQuery = useQuery<unknown[]>({
 		queryKey: ["latest-events"],
 		queryFn: () =>
 			axios
@@ -78,6 +75,14 @@ export function HubQuickCounts({ className }: { className?: string }) {
 		staleTime: 1000 * 60 * 3,
 		enabled: can("hub.events.view"),
 	});
+
+	const { data: adviceRequests, isPending: advicePending } = adviceQuery;
+	const { data: latestUsers, isPending: usersPending } = usersQuery;
+	const { data: hotVacancies, isPending: vacanciesPending } = vacanciesQuery;
+	const { data: latestEvents, isPending: eventsPending } = eventsQuery;
+	const failed = [adviceQuery, usersQuery, vacanciesQuery, eventsQuery].filter(
+		(query) => query.isError && !query.data,
+	);
 
 	// Only incoming: an outgoing request is one the user already sent, so it is
 	// not waiting on them and does not belong in a "needs you" counter.
@@ -129,25 +134,40 @@ export function HubQuickCounts({ className }: { className?: string }) {
 		(can("hub.events.view") && eventsPending);
 
 	if (isPending) return <HubQuickCountsSkeleton />;
-	if (!counts.length) return null;
+	const loadError = failed.length > 0 && (
+		<LoadError
+			onRetry={() => {
+				for (const query of failed) query.refetch();
+			}}
+		/>
+	);
+	if (!counts.length) return loadError || null;
 
 	return (
-		<nav className={`${styles.counts}${className ? ` ${className}` : ""}`}>
-			{counts.map((item) => (
-				<Link
-					key={item.key}
-					href={item.href}
-					className={styles.pill}
-					data-awaiting={item.awaiting ? "true" : "false"}
-				>
-					<span className={styles.text}>
-						<span className={styles.count}>{item.count}</span>
-						<span className={styles.label}>{item.label}</span>
-					</span>
-					<IconChevronRight size={14} className={styles.chevron} aria-hidden />
-				</Link>
-			))}
-		</nav>
+		<>
+			<nav className={`${styles.counts}${className ? ` ${className}` : ""}`}>
+				{counts.map((item) => (
+					<Link
+						key={item.key}
+						href={item.href}
+						className={styles.pill}
+						data-awaiting={item.awaiting ? "true" : "false"}
+					>
+						<span className={styles.text}>
+							<span className={styles.count}>{item.count}</span>
+							<span className={styles.label}>{item.label}</span>
+						</span>
+						<IconChevronRight
+							size={14}
+							className={styles.chevron}
+							aria-hidden
+						/>
+					</Link>
+				))}
+			</nav>
+			{/* A failed counter would otherwise just vanish among the ones that loaded. */}
+			{loadError}
+		</>
 	);
 }
 

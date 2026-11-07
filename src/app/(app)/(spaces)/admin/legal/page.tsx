@@ -24,11 +24,11 @@ import axios from "axios";
 import dayjs, { type Dayjs } from "dayjs";
 import debounce from "lodash/debounce";
 import { useMemo, useState } from "react";
-import { LoadError } from "@/components/legal/LoadError";
 import ModernTable from "@/components/ModernTable";
 import { AdminSpace } from "@/components/spaces/AdminSpace";
 import { StatusDot } from "@/components/ui";
 import { AppAvatar } from "@/components/ui/AppAvatar";
+import { LoadError } from "@/components/ui/LoadError";
 import {
 	LEGAL_CODES,
 	LEGAL_CONTEXTS,

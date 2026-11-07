@@ -7,6 +7,7 @@ import classNames from "classnames";
 import {
 	EmptyState,
 	type EmptyStateProps,
+	LoadError,
 	skeletonColumns,
 } from "@/components/ui";
 import styles from "./ModernTable.module.scss";
@@ -49,6 +50,9 @@ interface ModernTableProps<T> extends TableProps<T> {
 	 * straight on the page ground with its paging outside the outline.
 	 */
 	surface?: "card" | "page";
+	/** The query failed: the body says so, with `onRetry`, instead of reading as empty. */
+	error?: boolean;
+	onRetry?: () => void;
 }
 
 export function ModernTable<T extends object>({
@@ -61,6 +65,8 @@ export function ModernTable<T extends object>({
 	surface = "card",
 	locale,
 	scroll,
+	error,
+	onRetry,
 	...props
 }: ModernTableProps<T>) {
 	const { t } = useTranslate();
@@ -68,7 +74,7 @@ export function ModernTable<T extends object>({
 	// Loading with no rows yet draws the table's own columns as bars; a refetch
 	// keeps the spinner over the rows it has. `loading` stays explicit: a missing
 	// `dataSource` is also what a disabled or failed query leaves behind.
-	const skeleton = !!props.loading && !props.dataSource?.length;
+	const skeleton = !error && !!props.loading && !props.dataSource?.length;
 	const skeletonProps: Partial<TableProps<T>> = skeleton
 		? {
 				columns: skeletonColumns(
@@ -88,13 +94,17 @@ export function ModernTable<T extends object>({
 
 	// antd's default is a grey illustration reading "No data", which the
 	// guidelines rule out. A caller-supplied `locale.emptyText` still wins.
-	const emptyText = locale?.emptyText ?? (
-		<EmptyState
-			icon={emptyState?.icon ?? IconInbox}
-			title={emptyState?.title ?? t("table.empty.title", "Nothing here yet")}
-			description={emptyState?.description}
-			action={emptyState?.action}
-		/>
+	const emptyText = error ? (
+		<LoadError bare onRetry={onRetry} />
+	) : (
+		(locale?.emptyText ?? (
+			<EmptyState
+				icon={emptyState?.icon ?? IconInbox}
+				title={emptyState?.title ?? t("table.empty.title", "Nothing here yet")}
+				description={emptyState?.description}
+				action={emptyState?.action}
+			/>
+		))
 	);
 
 	return (

@@ -3,6 +3,7 @@
 import { useTranslate } from "@tolgee/react";
 import { Skeleton } from "antd";
 import { useAccess } from "@/components/access/AccessProvider";
+import { LoadError } from "@/components/ui";
 import { SPRINTS_PER_CHECKPOINT } from "@/config/checkpoint";
 import { useCheckpoint } from "@/hooks/checkpoints";
 import { formatShort } from "./dates";
@@ -25,8 +26,14 @@ export function SprintTab({
 }) {
 	const { t } = useTranslate();
 	const { can } = useAccess();
-	const { data: checkpoint, isPending } = useCheckpoint(checkpointId);
+	const {
+		data: checkpoint,
+		isPending,
+		isError,
+		refetch,
+	} = useCheckpoint(checkpointId);
 	if (isPending) return <Skeleton active paragraph={{ rows: 4 }} />;
+	if (isError && !checkpoint) return <LoadError onRetry={() => refetch()} />;
 
 	const number = Math.min(index, SPRINTS_PER_CHECKPOINT);
 	const sprint = checkpoint?.sprints?.find((row) => row.number === number);

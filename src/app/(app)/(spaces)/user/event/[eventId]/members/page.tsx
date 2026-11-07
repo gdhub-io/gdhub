@@ -172,7 +172,7 @@ export default function EventMembersPage() {
 		string | null
 	>(null);
 
-	const { data, isLoading, refetch } = useQuery({
+	const { data, isLoading, isError, refetch } = useQuery({
 		queryKey: ["event-members", eventId],
 		queryFn: () =>
 			axios.get<EventMember[]>(`/api/user/event/${eventId}/members`),
@@ -548,6 +548,8 @@ export default function EventMembersPage() {
 			<ModernTable
 				rowKey="id"
 				loading={isLoading}
+				error={isError}
+				onRetry={() => refetch()}
 				dataSource={members}
 				rowSelection={{
 					selectedRowKeys,

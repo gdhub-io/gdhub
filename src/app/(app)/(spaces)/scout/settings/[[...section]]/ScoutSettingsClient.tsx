@@ -14,6 +14,7 @@ import {
 	FormSkeleton,
 	type FormSkeletonProps,
 } from "@/components/ui/FormSkeleton";
+import { LoadError } from "@/components/ui/LoadError";
 import type { ScoutCabinet } from "@/repositories/scout/scout";
 import styles from "./style.module.scss";
 
@@ -36,7 +37,12 @@ export function ScoutSettingsClient() {
 	const section = (params?.section?.[0] ?? "general") as Section;
 	const open = (key: string) => router.push(`/scout/settings/${key}`);
 
-	const { data: cabinet, isPending } = useQuery<ScoutCabinet>({
+	const {
+		data: cabinet,
+		isPending,
+		isError,
+		refetch,
+	} = useQuery<ScoutCabinet>({
 		queryKey: ["scout", "cabinet"],
 		queryFn: () => axios.get("/api/scout/cabinet").then((res) => res.data),
 	});
@@ -50,6 +56,17 @@ export function ScoutSettingsClient() {
 
 	const renderSection = () => {
 		if (section === "danger") return <ScoutDangerZone />;
+		if (isError && !cabinet) {
+			return (
+				<LoadError
+					title={t(
+						"scout.settings.load-error",
+						"Scout settings could not be loaded",
+					)}
+					onRetry={() => refetch()}
+				/>
+			);
+		}
 		if (isPending) {
 			return (
 				<FormSkeleton

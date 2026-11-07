@@ -16,6 +16,7 @@ import {
 	HubSectionBody,
 	HubSectionHeader,
 } from "@/components/hub/HubSection";
+import { LoadError } from "@/components/ui";
 import styles from "./styles.module.scss";
 
 type LatestEvent = Event & {
@@ -96,6 +97,8 @@ export default function LatestEvents() {
 		data: events,
 		isLoading,
 		isFetched,
+		isError,
+		refetch,
 	} = useQuery<LatestEvent[]>({
 		queryKey: ["latest-events"],
 		queryFn: () =>
@@ -132,6 +135,23 @@ export default function LatestEvents() {
 		})
 		.slice(0, 5);
 
+	const title = t("hub.latest-events.title", "Upcoming events");
+
+	if (isError && !events)
+		return (
+			<section
+				className={`${styles.container} ${getHubSectionShellClass("sidebar")}`}
+			>
+				<HubSectionHeader title={title} />
+				<HubSectionBody>
+					<LoadError
+						bare
+						title={t("hub.latest-events.error", "Events could not be loaded")}
+						onRetry={() => refetch()}
+					/>
+				</HubSectionBody>
+			</section>
+		);
 	if (!candidates.length && isFetched) return null;
 
 	return (
@@ -140,7 +160,7 @@ export default function LatestEvents() {
 				className={`${styles.container} ${getHubSectionShellClass("sidebar")}`}
 			>
 				<HubSectionHeader
-					title={t("hub.latest-events.title", "Upcoming events")}
+					title={title}
 					linkHref="/hub/events"
 					linkLabel={t("hub.view-all", "View all")}
 				/>

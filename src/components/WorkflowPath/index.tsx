@@ -10,6 +10,7 @@ import { Alert, Button, Divider, Flex, Modal, Typography } from "antd";
 import axios from "axios";
 import { type ReactNode, useEffect, useState } from "react";
 import { useAccess } from "@/components/access/AccessProvider";
+import { LoadError } from "@/components/ui";
 import { CheckpointStatus, CheckpointVerdict } from "@/config/prisma-enums";
 import { gtmEventTrigger, trackCheckpoint } from "@/helpers/gtm";
 import { useCheckpoint, useCheckpoints } from "@/hooks/checkpoints";
@@ -52,6 +53,7 @@ export function WorkflowPath({ project }: WorkflowPathProps) {
 	const {
 		data: workflow,
 		isPending: workflowPending,
+		isError: workflowError,
 		refetch,
 	} = useProjectWorkflow(project.id);
 	const { data: list } = useCheckpoints(
@@ -93,7 +95,17 @@ export function WorkflowPath({ project }: WorkflowPathProps) {
 	});
 
 	if (workflowPending) return <PathSkeleton />;
-	if (!workflow) return null;
+	if (!workflow) {
+		return workflowError ? (
+			<LoadError
+				title={t(
+					"workflow.path.load-error",
+					"The workflow could not be loaded",
+				)}
+				onRetry={() => refetch()}
+			/>
+		) : null;
+	}
 
 	const steps = [...workflow.steps].sort((a, b) => a.order - b.order);
 	const current = workflow.currentStep;

@@ -67,6 +67,7 @@ export default function EventsAdminPage() {
 		data: events,
 		refetch,
 		isFetching,
+		isError,
 	} = useQuery<AdminEvent[]>({
 		queryKey: ["admin", "events", status, type],
 		queryFn: () =>
@@ -353,6 +354,8 @@ export default function EventsAdminPage() {
 				</Card>
 				<ModernTable<AdminEvent>
 					loading={isFetching}
+					error={isError}
+					onRetry={() => refetch()}
 					rowKey="id"
 					dataSource={events}
 					columns={columns}

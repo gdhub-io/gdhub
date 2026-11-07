@@ -150,6 +150,11 @@ export const FirstLoad: Story = {
 	args: { loading: true, dataSource: undefined },
 };
 
+/** The query failed before any rows arrived. */
+export const LoadFailed: Story = {
+	args: { error: true, onRetry: () => {}, dataSource: undefined },
+};
+
 /** Paged tables are the norm on admin screens, so check the footer sits right. */
 /** `DS · 11 Tables`, "On the page": outlined, with the paging outside. */
 export const OnPage: Story = {

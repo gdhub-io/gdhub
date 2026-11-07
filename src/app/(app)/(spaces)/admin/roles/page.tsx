@@ -21,6 +21,7 @@ import {
 	type RoleTarget,
 } from "@/components/admin/RolePermissionsModal";
 import { AdminSpace } from "@/components/spaces/AdminSpace";
+import { LoadError } from "@/components/ui";
 import { ROLE_META } from "@/config/permissions/role-meta";
 import type { SpaceRole } from "@/config/permissions/roles";
 import styles from "./style.module.scss";
@@ -60,7 +61,7 @@ export default function RolesAdminPage() {
 	const [target, setTarget] = useState<RoleTarget | null>(null);
 	const [creating, setCreating] = useState(false);
 
-	const { data, isLoading } = useQuery({
+	const { data, isLoading, isError, refetch } = useQuery({
 		queryKey: ["admin", "roles", space],
 		queryFn: () =>
 			axios
@@ -175,7 +176,9 @@ export default function RolesAdminPage() {
 					onChange={setSpace}
 				/>
 
-				{isLoading || !data ? (
+				{isError && !data ? (
+					<LoadError onRetry={() => refetch()} />
+				) : isLoading || !data ? (
 					<Skeleton active />
 				) : (
 					<Space orientation="vertical" size={16} className={styles.sections}>

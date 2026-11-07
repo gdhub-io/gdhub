@@ -10,7 +10,7 @@ import {
 } from "@/components/hub/HubSection";
 import { HubSectionRow } from "@/components/hub/HubSectionRow";
 import { HubSidebarSkeleton } from "@/components/hub/HubSidebarSkeleton";
-import { SKILL_LEVEL_STEP } from "@/components/ui";
+import { LoadError, SKILL_LEVEL_STEP } from "@/components/ui";
 import { AppAvatar } from "@/components/ui/AppAvatar";
 import type { SkillLevel } from "@/config/prisma-enums";
 import styles from "./styles.module.scss";
@@ -26,7 +26,12 @@ interface LatestUser {
 export default function NewMembers() {
 	const { t } = useTranslate();
 
-	const { data: latestUsers, isPending } = useQuery<LatestUser[]>({
+	const {
+		data: latestUsers,
+		isPending,
+		isError,
+		refetch,
+	} = useQuery<LatestUser[]>({
 		queryKey: ["latest-users"],
 		queryFn: () =>
 			axios.get<LatestUser[]>("/api/users/latest").then((r) => r.data),
@@ -36,6 +41,24 @@ export default function NewMembers() {
 	const title = t("page.hub.new-members", "New members");
 
 	if (isPending) return <HubSidebarSkeleton title={title} media="circle" />;
+	if (isError && !latestUsers)
+		return (
+			<section
+				className={`${styles.container} ${getHubSectionShellClass("sidebar")}`}
+			>
+				<HubSectionHeader title={title} />
+				<HubSectionBody>
+					<LoadError
+						bare
+						title={t(
+							"page.hub.new-members.error",
+							"Members could not be loaded",
+						)}
+						onRetry={() => refetch()}
+					/>
+				</HubSectionBody>
+			</section>
+		);
 	if (!latestUsers?.length) return null;
 
 	return (

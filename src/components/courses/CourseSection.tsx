@@ -3,6 +3,7 @@ import { Col, Row } from "antd";
 import axios from "axios";
 import type React from "react";
 import { type ReactNode, useEffect } from "react";
+import { LoadError } from "@/components/ui";
 import {
 	type CourseColSpan,
 	CourseGridSkeleton,
@@ -38,16 +39,16 @@ export const CourseSection = ({
 	queryFn,
 	emptyState,
 }: CourseSectionProps) => {
-	const {
-		data: courses = [],
-		isLoading,
-		isPending,
-		isFetched,
-	} = useQuery<any[]>({
+	const { data, isLoading, isPending, isFetched, isError, refetch } = useQuery<
+		any[]
+	>({
 		queryKey,
 		queryFn:
 			queryFn || (() => axios.get("/api/courses").then((res) => res.data)),
 	});
+
+	const courses = data ?? [];
+	const failed = isError && !data;
 
 	useEffect(() => {
 		if (isFetched && courses?.length) {
@@ -61,7 +62,7 @@ export const CourseSection = ({
 		}
 	}, [isLoading, onLoadingChange]);
 
-	if (!isPending && !courses?.length) return emptyState ?? null;
+	if (!isPending && !failed && !courses?.length) return emptyState ?? null;
 
 	return (
 		<section style={{ marginBottom: 32 }}>
@@ -91,6 +92,8 @@ export const CourseSection = ({
 			)}
 			{isPending ? (
 				<CourseGridSkeleton colSpan={colSpan} />
+			) : failed ? (
+				<LoadError onRetry={() => refetch()} />
 			) : (
 				<Row gutter={[6, 12]}>
 					{courses.map((course: any) => (

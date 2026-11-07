@@ -20,7 +20,12 @@ const UserTeam = () => {
 	const contextProject = useContext(ProjectContext)?.contextProject;
 	const archivedAt = contextProject?.archivedAt;
 
-	const { data: team, isLoading: isLoadingMyTeam } = useQuery({
+	const {
+		data: team,
+		isLoading: isLoadingMyTeam,
+		isError,
+		refetch,
+	} = useQuery({
 		queryKey: ["user-project-team", contextProject?.team?.id],
 		queryFn: () =>
 			axios.get<
@@ -133,6 +138,8 @@ const UserTeam = () => {
 
 			<ModernTable
 				loading={!contextProject || isLoadingMyTeam}
+				error={isError}
+				onRetry={() => refetch()}
 				columns={columns}
 				dataSource={team?.data.members?.map((m: any) => ({ ...m, key: m.id }))}
 				pagination={false}

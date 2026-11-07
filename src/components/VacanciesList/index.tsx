@@ -7,6 +7,7 @@ import { useMemo, useState } from "react";
 import { directionSlug } from "@/components/DirectionBadge";
 import { DirectionSelect } from "@/components/DirectionSelect";
 import VacancyPreviewModal from "@/components/modals/VacancyPreviewModal";
+import { LoadError } from "@/components/ui";
 import { VacancyCard, type VacancyRateType } from "@/components/VacancyCard";
 import styles from "./style.module.scss";
 import { VacanciesListSkeleton } from "./VacanciesListSkeleton";
@@ -38,7 +39,12 @@ const VacanciesList = ({ location }: { location?: "hub" }) => {
 	const [typeFilter, setTypeFilter] = useState<CooperationType | "all">("all");
 	const [directionFilter, setDirectionFilter] = useState<string>("all");
 
-	const { data: vacancies, isPending } = useQuery({
+	const {
+		data: vacancies,
+		isPending,
+		isError,
+		refetch,
+	} = useQuery({
 		queryKey: ["vacancies"],
 		queryFn: () => axios.get<Vacancy[]>("/api/vacancies"),
 		refetchOnWindowFocus: false,
@@ -46,6 +52,7 @@ const VacanciesList = ({ location }: { location?: "hub" }) => {
 	});
 
 	const list = vacancies?.data ?? [];
+	const failed = isError && !vacancies;
 
 	/** Direction names actually present in the list, for the Select options. */
 	const directionNames = useMemo(() => {
@@ -75,12 +82,12 @@ const VacanciesList = ({ location }: { location?: "hub" }) => {
 	return (
 		<>
 			{/* Drawn disabled while loading; hidden only once the board is known to be empty. */}
-			{(isPending || list.length > 0) && (
+			{(isPending || failed || list.length > 0) && (
 				<div className={styles.filterBar}>
 					<Segmented<CooperationType | "all">
 						value={typeFilter}
 						onChange={setTypeFilter}
-						disabled={isPending}
+						disabled={isPending || failed}
 						options={[
 							{ label: t("vacancies.filter.type.all", "All"), value: "all" },
 							{
@@ -104,7 +111,7 @@ const VacanciesList = ({ location }: { location?: "hub" }) => {
 						directions={directionNames}
 						value={directionFilter}
 						onChange={setDirectionFilter}
-						disabled={isPending}
+						disabled={isPending || failed}
 						loading={isPending}
 						style={{ width: 220 }}
 					/>
@@ -113,6 +120,14 @@ const VacanciesList = ({ location }: { location?: "hub" }) => {
 
 			{isPending ? (
 				<VacanciesListSkeleton />
+			) : failed ? (
+				<LoadError
+					title={t(
+						"vacancies.list.error",
+						"Open positions could not be loaded",
+					)}
+					onRetry={() => refetch()}
+				/>
 			) : filtered.length > 0 ? (
 				<Row gutter={[16, 16]} wrap>
 					{filtered.map((vacancy, idx) => (

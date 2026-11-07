@@ -34,6 +34,7 @@ import { useEffect, useMemo, useState } from "react";
 import { EditorJsField } from "@/components/admin/EditorJsField";
 import StepEditModal from "@/components/admin/WorkflowEditor/StepEditModal";
 import TaskEditModal from "@/components/admin/WorkflowEditor/TaskEditModal";
+import { LoadError } from "@/components/ui";
 import WorkflowStepContent from "@/components/WorkflowContent/WorkflowStepContent";
 import { templateStepFor } from "@/lib/workflow/matchKey";
 import { describeCondition } from "@/services/workflow/describeCondition";
@@ -82,7 +83,7 @@ export function ProjectWorkflowEditor({ id }: { id: string }) {
 	const { message, modal } = App.useApp();
 	const queryClient = useQueryClient();
 
-	const { data, isLoading } = useQuery({
+	const { data, isLoading, isError, refetch } = useQuery({
 		queryKey: ["admin", "project-workflow", id],
 		queryFn: () =>
 			axios
@@ -308,6 +309,24 @@ export function ProjectWorkflowEditor({ id }: { id: string }) {
 				<Card>
 					<Skeleton active title={false} paragraph={{ rows: 4 }} />
 				</Card>
+			</Flex>
+		);
+	if (isError && !data)
+		return (
+			<Flex vertical gap={16}>
+				<Breadcrumb
+					items={[
+						{ title: <Link href="/admin/workflows">Workflows</Link> },
+						{
+							title: (
+								<Link href="/admin/workflows?tab=projects">
+									Project workflows
+								</Link>
+							),
+						},
+					]}
+				/>
+				<LoadError onRetry={() => refetch()} />
 			</Flex>
 		);
 	if (!data)

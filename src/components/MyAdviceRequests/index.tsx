@@ -28,7 +28,7 @@ import {
 } from "@/components/hub/HubSection";
 import { HubSectionRowsSkeleton } from "@/components/hub/HubSidebarSkeleton";
 import hubSection from "@/components/hub/hubSection.module.scss";
-import { EmptyState, ViewAllLink } from "@/components/ui";
+import { EmptyState, LoadError, ViewAllLink } from "@/components/ui";
 import { AppAvatar } from "@/components/ui/AppAvatar";
 import { AdviceRequestStatus } from "@/config/prisma-enums";
 import { useChat } from "../Chat/useChat";
@@ -67,7 +67,7 @@ const MyAdviceRequests: React.FC<{
 	const { setSelectedRoomId, setSelectedRoomByAlias, setOpenChatModal } =
 		useChat();
 
-	const { data, isPending, refetch } = useQuery({
+	const { data, isPending, isError, refetch } = useQuery({
 		queryKey: ["advice-requests"],
 		queryFn: () =>
 			axios
@@ -289,6 +289,15 @@ const MyAdviceRequests: React.FC<{
 		) : (
 			<AdviceRequestsSkeleton />
 		)
+	) : isError && !data ? (
+		<LoadError
+			bare={isHubLayout}
+			title={t(
+				"page.hub.advice-requests.error",
+				"Advice requests could not be loaded",
+			)}
+			onRetry={() => refetch()}
+		/>
 	) : isEmpty ? (
 		emptyState
 	) : isHubLayout ? (

@@ -7,8 +7,8 @@ import { Flex, Skeleton, type TableProps, Tag, Typography } from "antd";
 import axios from "axios";
 import dayjs from "dayjs";
 import Link from "next/link";
-import { LoadError } from "@/components/legal/LoadError";
 import { ModernTable } from "@/components/ModernTable";
+import { LoadError } from "@/components/ui/LoadError";
 import type {
 	MyAcceptance,
 	MyCertificate,

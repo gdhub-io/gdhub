@@ -19,8 +19,10 @@ import {
 import axios from "axios";
 import { useCallback, useContext, useEffect, useState } from "react";
 import { FormSkeleton } from "@/components/ui/FormSkeleton";
+import { LoadError } from "@/components/ui/LoadError";
 import { ProjectContext } from "@/contexts/ProjectContext";
 import { platformOptions } from "@/helpers/react-content";
+import { useCurrentProject } from "@/hooks/project";
 import type { LinkType, ProjectLink } from "@/types/project";
 
 const { Text } = Typography;
@@ -34,11 +36,18 @@ const LinksProjectForm = ({ projectSlug }: LinksProjectFormArgs) => {
 	const screens = Grid.useBreakpoint();
 	const { t } = useTranslate();
 	const ctx = useContext(ProjectContext);
+	const { isError: isProjectError, refetch: refetchProject } =
+		useCurrentProject();
 	const [links, setLinks] = useState<ProjectLink[]>([]);
 	const isProjectArchived =
 		!ctx?.contextProject || !!ctx.contextProject.isProjectArchived;
 
-	const { data: projectLinks, isPending: isPendingLinks } = useQuery({
+	const {
+		data: projectLinks,
+		isPending: isPendingLinks,
+		isError: isLinksError,
+		refetch: refetchLinks,
+	} = useQuery({
 		queryKey: ["project-links", ctx?.contextProject?.id],
 		enabled: !!ctx?.contextProject?.id,
 		refetchOnWindowFocus: false,
@@ -243,6 +252,23 @@ const LinksProjectForm = ({ projectSlug }: LinksProjectFormArgs) => {
 		},
 		[links, getAvailablePlatformOptions, screens.xs, t, isProjectArchived],
 	);
+
+	const loadErrorTitle = t(
+		"project.links.load-error",
+		"Project links could not be loaded",
+	);
+
+	// The links query waits for the project, so a failed project would leave it pending forever.
+	if (isProjectError && !ctx?.contextProject) {
+		return (
+			<LoadError title={loadErrorTitle} onRetry={() => refetchProject()} />
+		);
+	}
+
+	// Saving an unloaded list would wipe the project's real links.
+	if (isLinksError && !projectLinks) {
+		return <LoadError title={loadErrorTitle} onRetry={() => refetchLinks()} />;
+	}
 
 	if (isPendingLinks) return <FormSkeleton fields={3} />;
 

@@ -17,6 +17,7 @@ import axios from "axios";
 import type React from "react";
 import { useEffect, useState } from "react";
 import { FormSkeleton } from "@/components/ui/FormSkeleton";
+import { LoadError } from "@/components/ui/LoadError";
 import { useEvent } from "@/hooks/event";
 import styles from "./style.module.scss";
 
@@ -54,10 +55,22 @@ const CertificationEventForm: React.FC<CertificationEventFormProps> = ({
 	const [previewOpen, setPreviewOpen] = useState(false);
 	const [configForm] = Form.useForm<CertificationConfigFormValues>();
 
-	const { event, isLoading: isLoadingEvent } = useEvent(eventId);
+	const {
+		event,
+		isLoading: isLoadingEvent,
+		isError: isEventError,
+		refetch: refetchEvent,
+	} = useEvent(eventId);
+	// Without the event the switch would read as "off" whatever the real setting is.
+	const eventFailed = isEventError && !event;
 	const enabled = !!event?.certificationEnabled;
 
-	const { data: certificationConfig, isPending: isPendingConfig } = useQuery({
+	const {
+		data: certificationConfig,
+		isPending: isPendingConfig,
+		isError: isConfigError,
+		refetch: refetchConfig,
+	} = useQuery({
 		queryKey: ["event-certification-config", eventId],
 		queryFn: () =>
 			axios
@@ -68,6 +81,7 @@ const CertificationEventForm: React.FC<CertificationEventFormProps> = ({
 		enabled: !!eventId && enabled,
 		refetchOnWindowFocus: false,
 	});
+	const configFailed = isConfigError && !certificationConfig;
 
 	useEffect(() => {
 		if (!certificationConfig) return;
@@ -146,7 +160,7 @@ const CertificationEventForm: React.FC<CertificationEventFormProps> = ({
 				)}
 				variant="borderless"
 				extra={
-					isLoadingEvent ? (
+					eventFailed ? null : isLoadingEvent ? (
 						<Skeleton.Button active size="small" shape="round" />
 					) : (
 						<Switch
@@ -164,8 +178,26 @@ const CertificationEventForm: React.FC<CertificationEventFormProps> = ({
 					)}
 				</Typography.Paragraph>
 
+				{eventFailed && (
+					<LoadError
+						title={t(
+							"event.settings.certification.load-error",
+							"Certificate settings could not be loaded",
+						)}
+						onRetry={() => refetchEvent()}
+					/>
+				)}
+				{enabled && configFailed && (
+					<LoadError
+						title={t(
+							"event.settings.certification.load-error",
+							"Certificate settings could not be loaded",
+						)}
+						onRetry={() => refetchConfig()}
+					/>
+				)}
 				{enabled && isPendingConfig && <FormSkeleton fields={2} />}
-				{enabled && !isPendingConfig && (
+				{enabled && !isPendingConfig && !configFailed && (
 					<Space orientation="vertical" size="middle" style={{ width: "100%" }}>
 						<div>
 							<Typography.Title level={5} style={{ marginBottom: 8 }}>
@@ -250,7 +282,7 @@ const CertificationEventForm: React.FC<CertificationEventFormProps> = ({
 					</Space>
 				)}
 			</Card>
-			{enabled && (
+			{enabled && !configFailed && (
 				<Flex
 					align="center"
 					justify="space-between"

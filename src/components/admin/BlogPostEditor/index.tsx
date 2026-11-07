@@ -19,6 +19,7 @@ import dayjs from "dayjs";
 import trim from "lodash/trim";
 import Link from "next/link";
 import { useCallback, useEffect, useRef, useState } from "react";
+import { LoadError } from "@/components/ui";
 import { BlogPostStatus } from "@/config/prisma-enums";
 import styles from "./style.module.scss";
 import { tools } from "./tools";
@@ -46,6 +47,7 @@ export default function BlogPostEditor({ id }: { id?: string }) {
 		data: post,
 		refetch: refetchPost,
 		isPending,
+		isError,
 	} = useQuery({
 		queryKey: ["blog-post-editor", "document", id],
 		queryFn: () => {
@@ -60,6 +62,7 @@ export default function BlogPostEditor({ id }: { id?: string }) {
 	});
 	// Without an id there is nothing to load: the editor opens a new post at once.
 	const loadingPost = !!id && isPending;
+	const failed = !!id && isError && !post;
 
 	const { mutateAsync: changeStatus, isPending: isChangingStatus } =
 		useMutation({
@@ -311,7 +314,7 @@ export default function BlogPostEditor({ id }: { id?: string }) {
 								<Skeleton.Input active size="large" />
 								<Skeleton.Input active size="small" />
 							</Flex>
-						) : (
+						) : failed ? null : (
 							<>
 								<Title
 									level={1}
@@ -337,7 +340,7 @@ export default function BlogPostEditor({ id }: { id?: string }) {
 					<Space>
 						{loadingPost ? (
 							<Skeleton.Button active size="small" />
-						) : (
+						) : failed ? null : (
 							<Space>
 								<Text type="secondary">{post?.data?.status}</Text>
 								<Popover
@@ -371,6 +374,7 @@ export default function BlogPostEditor({ id }: { id?: string }) {
 				{loadingPost && (
 					<Skeleton active title={false} paragraph={{ rows: 8 }} />
 				)}
+				{failed && <LoadError onRetry={() => refetchPost()} />}
 				<div id={editorHolderId} ref={editorHolderRef} />
 			</div>
 		</div>

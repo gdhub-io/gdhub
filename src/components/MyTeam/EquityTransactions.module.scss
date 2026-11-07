@@ -34,14 +34,10 @@
   width: 100%;
 }
 
-.loading, .error, .noData {
+.loading, .noData {
   text-align: center;
   padding: 32px;
   color: rgba(0, 0, 0, 0.45);
-}
-
-.error {
-  color: var(--gd-danger-solid);
 }
 
 // Styles for the share transfer modal

@@ -21,6 +21,7 @@ import axios from "axios";
 import { useEffect, useMemo, useState } from "react";
 import { AppImage } from "@/components/ui/AppImage";
 import { FormSkeleton } from "@/components/ui/FormSkeleton";
+import { LoadError } from "@/components/ui/LoadError";
 import { EventType, Language } from "@/config/prisma-enums";
 import { useEvent } from "@/hooks/event";
 import styles from "./style.module.scss";
@@ -38,7 +39,7 @@ const GeneralProjectForm = ({ eventId }: GeneralProjectFormArgs) => {
 	const [cover, setCover] = useState<string | null>();
 	const [coverProcessing, setCoverProcessing] = useState(false);
 
-	const { event, isLoading } = useEvent(eventId);
+	const { event, isLoading, isError, refetch } = useEvent(eventId);
 
 	const isBigEvent = useMemo(() => {
 		return (
@@ -166,6 +167,19 @@ const GeneralProjectForm = ({ eventId }: GeneralProjectFormArgs) => {
 		form.setFieldValue("image", undefined);
 		setCover(undefined);
 	};
+
+	// Saving an unloaded form would overwrite the event with blanks.
+	if (isError && !event) {
+		return (
+			<LoadError
+				title={t(
+					"event.settings.load-error",
+					"Event settings could not be loaded",
+				)}
+				onRetry={() => refetch()}
+			/>
+		);
+	}
 
 	if (isLoading) return <FormSkeleton media={1} fields={4} textarea />;
 

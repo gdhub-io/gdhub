@@ -1,6 +1,7 @@
 import { useTranslate } from "@tolgee/react";
 import { Button, Card, Flex, Skeleton, Space, Typography } from "antd";
 import { useState } from "react";
+import { LoadError } from "@/components/ui/LoadError";
 import { ProjectStatus } from "@/config/prisma-enums";
 import { useCurrentProject } from "@/hooks/project";
 import ArchiveProjectModal from "./ArchiveProjectModal";
@@ -11,7 +12,7 @@ const { Text } = Typography;
 
 const DangerProjectForm = () => {
 	const { t } = useTranslate();
-	const { project, refetch, isLoading } = useCurrentProject();
+	const { project, refetch, isLoading, isError } = useCurrentProject();
 	const [isArchiveModalOpen, setIsArchiveModalOpen] = useState(false);
 	const [isDeleteModalOpen, setIsDeleteModalOpen] = useState(false);
 
@@ -32,7 +33,15 @@ const DangerProjectForm = () => {
 				</Text>
 
 				{/* Archive or restore is only known once the project has loaded. */}
-				{isLoading ? (
+				{isError && !project ? (
+					<LoadError
+						title={t(
+							"project.settings.load-error",
+							"Project settings could not be loaded",
+						)}
+						onRetry={() => refetch()}
+					/>
+				) : isLoading ? (
 					<Card variant="borderless">
 						<Skeleton active title paragraph={{ rows: 1 }} />
 					</Card>

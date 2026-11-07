@@ -23,6 +23,7 @@ export const useCurrentProject = () => {
 		refetch,
 		isLoading,
 		isFetched,
+		isError,
 	} = useQuery({
 		queryKey: ["project-data", slug, session?.user.id],
 		queryFn: () =>
@@ -33,5 +34,5 @@ export const useCurrentProject = () => {
 		refetchOnWindowFocus: false,
 	});
 
-	return { project: project?.data, refetch, isLoading, isFetched };
+	return { project: project?.data, refetch, isLoading, isFetched, isError };
 };

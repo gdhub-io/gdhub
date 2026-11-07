@@ -12,6 +12,7 @@ import axios from "axios";
 import dayjs from "dayjs";
 import { useState } from "react";
 import {
+	LoadError,
 	StatusDot,
 	type StatusTone,
 	skeletonColumns,
@@ -63,7 +64,7 @@ export default function PaymentsList() {
 	const { message } = App.useApp();
 	const [invoiceLoadingId, setInvoiceLoadingId] = useState<string>();
 
-	const { data, isPending } = useQuery({
+	const { data, isPending, isError, refetch } = useQuery({
 		queryKey: ["user-payments"],
 		queryFn: () => axios.get<UserPayment[]>("/api/user/payments"),
 		refetchOnWindowFocus: false,
@@ -251,7 +252,19 @@ export default function PaymentsList() {
 				}
 				pagination={false}
 				locale={{
-					emptyText: t("settings.payments.empty", "No payments yet"),
+					emptyText:
+						isError && !data ? (
+							<LoadError
+								bare
+								title={t(
+									"settings.payments.load-error",
+									"Your payments could not be loaded",
+								)}
+								onRetry={() => refetch()}
+							/>
+						) : (
+							t("settings.payments.empty", "No payments yet")
+						),
 				}}
 			/>
 		</div>
