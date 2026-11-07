@@ -79,7 +79,7 @@ export function PositionApplicationsModal({
 	onClose: () => void;
 }) {
 	const [talent, setTalent] = useState<string>();
-	const { data, isLoading, isError, refetch } = useQuery({
+	const { data, isLoading, isError, isLoadingError, refetch } = useQuery({
 		queryKey: ["admin", "open-positions", id],
 		queryFn: () =>
 			axios
@@ -158,8 +158,8 @@ export function PositionApplicationsModal({
 					/>
 				</Flex>
 			</Flex>
-			{isError && !data ? (
-				<LoadError onRetry={() => refetch()} />
+			{isLoadingError ? (
+				<LoadError onRetry={refetch} />
 			) : isLoading || !data ? (
 				<Skeleton active title={false} paragraph={{ rows: 6 }} />
 			) : (

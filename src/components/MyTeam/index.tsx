@@ -77,7 +77,7 @@ const MyTeam = () => {
 	const screens = Grid.useBreakpoint();
 	const { t } = useTranslate();
 	const [modal, contextHolder] = Modal.useModal();
-	const contextProject = useContext(ProjectContext)?.contextProject;
+	const contextProject = useContext(ProjectContext);
 	// Until the project arrives its team-scoped queries are idle, not empty.
 	const projectLoading = !contextProject;
 	const { can } = useAccess();
@@ -169,11 +169,18 @@ const MyTeam = () => {
 		enabled: !!contextProject?.team?.id,
 	});
 
+	const advisorsLoading = projectLoading || isLoadingAdvisors;
+	const advisorsEmpty =
+		!advisorsLoading && !isAdvisorsError && !advisors?.data?.length;
+	const investorsLoading = projectLoading || isLoadingInvestors;
+	const investorsEmpty =
+		!investorsLoading && !isInvestorsError && !investors?.data?.length;
+
 	const {
 		data: projectEquity,
 		refetch: fetchProjectEquity,
 		isPending: isPendingEquity,
-		isError: isEquityError,
+		isLoadingError: isEquityFailed,
 	} = useQuery({
 		queryKey: ["project-equity", contextProject?.id],
 		queryFn: () =>
@@ -854,13 +861,13 @@ const MyTeam = () => {
 	return (
 		<>
 			{/* The project's equity breakdown */}
-			{isEquityError && !projectEquity ? (
+			{isEquityFailed ? (
 				<LoadError
 					title={t(
 						"component.myTeam.equity-load-error",
 						"Equity could not be loaded",
 					)}
-					onRetry={() => fetchProjectEquity()}
+					onRetry={fetchProjectEquity}
 				/>
 			) : (
 				isPendingEquity && <EquitySectionSkeleton />
@@ -985,7 +992,7 @@ const MyTeam = () => {
 					<ModernTable
 						loading={projectLoading || isLoadingMyTeam || isFiring}
 						error={isMyTeamError}
-						onRetry={() => fetchMyTeam()}
+						onRetry={fetchMyTeam}
 						columns={columns}
 						dataSource={team?.data.members?.map((m: any) => ({
 							...m,
@@ -1005,7 +1012,7 @@ const MyTeam = () => {
 								projectLoading || isLoadingPendingInvitations || isCanceling
 							}
 							error={isPendingInvitationsError}
-							onRetry={() => fetchPendingInvitations()}
+							onRetry={fetchPendingInvitations}
 							columns={pendingInvitationsColumns}
 							dataSource={pendingInvitations?.data?.map((invitation) => ({
 								...invitation,
@@ -1023,22 +1030,7 @@ const MyTeam = () => {
 					</Tabs.TabPane>
 				)}
 				<Tabs.TabPane tab={t("Advisors")} key="advisors">
-					{projectLoading ||
-					isLoadingAdvisors ||
-					isAdvisorsError ||
-					advisors?.data?.length ? (
-						<ModernTable
-							loading={projectLoading || isLoadingAdvisors}
-							error={isAdvisorsError}
-							onRetry={() => fetchAdvisors()}
-							columns={advisorsColumns}
-							dataSource={advisors?.data?.map((advisor) => ({
-								...advisor,
-								key: advisor.id,
-							}))}
-							pagination={false}
-						/>
-					) : (
+					{advisorsEmpty ? (
 						<EmptyState
 							icon={IconUserSearch}
 							title={t("Does not have any advisors yet.")}
@@ -1051,23 +1043,40 @@ const MyTeam = () => {
 								</Link>
 							}
 						/>
+					) : (
+						<ModernTable
+							loading={advisorsLoading}
+							error={isAdvisorsError}
+							onRetry={fetchAdvisors}
+							columns={advisorsColumns}
+							dataSource={advisors?.data?.map((advisor) => ({
+								...advisor,
+								key: advisor.id,
+							}))}
+							pagination={false}
+						/>
 					)}
 				</Tabs.TabPane>
 				{can("project.equity.view") && (
 					<Tabs.TabPane tab={t("Investors")} key="investors">
-						{projectLoading ||
-						isLoadingInvestors ||
-						isInvestorsError ||
-						investors?.data?.length ? (
+						{investorsEmpty ? (
+							<EmptyState
+								icon={IconCoin}
+								title={t("Does not have any investors yet")}
+								description={t(
+									"Investors who back this project will be listed here.",
+								)}
+							/>
+						) : (
 							<>
 								<Paragraph type="secondary" style={{ marginTop: 16 }}>
 									{t("table.investors.description")}
 								</Paragraph>
 
 								<ModernTable
-									loading={projectLoading || isLoadingInvestors}
+									loading={investorsLoading}
 									error={isInvestorsError}
-									onRetry={() => fetchInvestors()}
+									onRetry={fetchInvestors}
 									columns={investorsColumns}
 									dataSource={investors?.data?.map((investor) => ({
 										...investor,
@@ -1120,14 +1129,6 @@ const MyTeam = () => {
 									}}
 								/>
 							</>
-						) : (
-							<EmptyState
-								icon={IconCoin}
-								title={t("Does not have any investors yet")}
-								description={t(
-									"Investors who back this project will be listed here.",
-								)}
-							/>
 						)}
 					</Tabs.TabPane>
 				)}

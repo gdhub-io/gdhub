@@ -3,16 +3,15 @@
 import { IconPlus } from "@tabler/icons-react";
 import { useQuery } from "@tanstack/react-query";
 import { useTranslate } from "@tolgee/react";
-import { Button, Flex, Table, Tag, Typography } from "antd";
+import { Button, Flex, Tag, Typography } from "antd";
 import axios from "axios";
 import dayjs from "dayjs";
 import { useState } from "react";
 import { NewScoutModal } from "@/components/admin/NewScoutModal";
 import { ProtectedPageHeader } from "@/components/layouts/ProtectedPageHeader";
+import ModernTable from "@/components/ModernTable";
 import { AdminSpace } from "@/components/spaces/AdminSpace";
-import { LoadError } from "@/components/ui";
 import { AppAvatar } from "@/components/ui/AppAvatar";
-import { skeletonColumns, skeletonRows } from "@/components/ui/table";
 
 const { Text } = Typography;
 
@@ -42,7 +41,6 @@ export default function AdminScoutsPage() {
 	const {
 		data: scouts = [],
 		isFetching,
-		isPending,
 		isError,
 		refetch,
 	} = useQuery<Scout[]>({
@@ -112,17 +110,14 @@ export default function AdminScoutsPage() {
 					}
 				/>
 
-				<Table
+				<ModernTable<Scout>
 					rowKey="id"
-					loading={!isPending && isFetching}
-					columns={isPending ? skeletonColumns<Scout>(columns) : columns}
-					dataSource={isPending ? skeletonRows<Scout>(5, "id") : scouts}
+					loading={isFetching}
+					error={isError}
+					onRetry={refetch}
+					columns={columns}
+					dataSource={scouts}
 					pagination={false}
-					locale={
-						isError
-							? { emptyText: <LoadError bare onRetry={() => refetch()} /> }
-							: undefined
-					}
 				/>
 
 				<NewScoutModal open={creating} onCancel={() => setCreating(false)} />

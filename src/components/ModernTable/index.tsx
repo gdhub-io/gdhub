@@ -9,15 +9,12 @@ import {
 	type EmptyStateProps,
 	LoadError,
 	skeletonColumns,
+	skeletonRows,
 } from "@/components/ui";
 import styles from "./ModernTable.module.scss";
 
 /** A row that is in a state worth spotting before reading it. */
 export type RowTone = "danger" | "warning" | "success";
-
-const SKELETON_ROWS: object[] = Array.from({ length: 5 }, (_, index) => ({
-	key: `skeleton-${index}`,
-}));
 
 const TONE_CLASS: Record<RowTone | "none", string | undefined> = {
 	danger: styles.toneDanger,
@@ -52,7 +49,7 @@ interface ModernTableProps<T> extends TableProps<T> {
 	surface?: "card" | "page";
 	/** The query failed: the body says so, with `onRetry`, instead of reading as empty. */
 	error?: boolean;
-	onRetry?: () => void;
+	onRetry?: () => unknown;
 }
 
 export function ModernTable<T extends object>({
@@ -82,7 +79,7 @@ export function ModernTable<T extends object>({
 						({ onCell, sorter, filters, ...column }) => column,
 					),
 				),
-				dataSource: SKELETON_ROWS as T[],
+				dataSource: skeletonRows<T>(5, "key" as keyof T),
 				rowKey: "key",
 				loading: false,
 				pagination: false,

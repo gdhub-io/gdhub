@@ -163,7 +163,7 @@ const ProjectAdviceArchiveModal: React.FC<ProjectAdviceArchiveModalProps> = ({
 			<ModernTable
 				loading={isLoadingAdvisorAdviceRequests}
 				error={isAdviceRequestsError}
-				onRetry={() => fetchProjectAdviceRequests()}
+				onRetry={fetchProjectAdviceRequests}
 				columns={adviceArchiveColumns}
 				dataSource={
 					advisorAdviceRequests?.data?.map((r: any) => ({

@@ -39,16 +39,20 @@ export const CourseSection = ({
 	queryFn,
 	emptyState,
 }: CourseSectionProps) => {
-	const { data, isLoading, isPending, isFetched, isError, refetch } = useQuery<
-		any[]
-	>({
+	const {
+		data,
+		isLoading,
+		isPending,
+		isFetched,
+		isLoadingError: failed,
+		refetch,
+	} = useQuery<any[]>({
 		queryKey,
 		queryFn:
 			queryFn || (() => axios.get("/api/courses").then((res) => res.data)),
 	});
 
 	const courses = data ?? [];
-	const failed = isError && !data;
 
 	useEffect(() => {
 		if (isFetched && courses?.length) {
@@ -93,7 +97,7 @@ export const CourseSection = ({
 			{isPending ? (
 				<CourseGridSkeleton colSpan={colSpan} />
 			) : failed ? (
-				<LoadError onRetry={() => refetch()} />
+				<LoadError onRetry={refetch} />
 			) : (
 				<Row gutter={[6, 12]}>
 					{courses.map((course: any) => (

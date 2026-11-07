@@ -56,7 +56,7 @@ const GeneralProjectForm = ({ projectSlug }: GeneralProjectFormArgs) => {
 	const {
 		data: project,
 		isPending,
-		isError,
+		isLoadingError,
 		refetch,
 	} = useQuery({
 		queryKey: ["project", projectSlug],
@@ -239,14 +239,14 @@ const GeneralProjectForm = ({ projectSlug }: GeneralProjectFormArgs) => {
 	};
 
 	// Saving an unloaded form would overwrite the project with blanks.
-	if (isError && !project) {
+	if (isLoadingError) {
 		return (
 			<LoadError
 				title={t(
 					"project.settings.load-error",
 					"Project settings could not be loaded",
 				)}
-				onRetry={() => refetch()}
+				onRetry={refetch}
 			/>
 		);
 	}

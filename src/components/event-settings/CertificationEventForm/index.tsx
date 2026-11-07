@@ -68,7 +68,7 @@ const CertificationEventForm: React.FC<CertificationEventFormProps> = ({
 	const {
 		data: certificationConfig,
 		isPending: isPendingConfig,
-		isError: isConfigError,
+		isLoadingError: configFailed,
 		refetch: refetchConfig,
 	} = useQuery({
 		queryKey: ["event-certification-config", eventId],
@@ -81,7 +81,6 @@ const CertificationEventForm: React.FC<CertificationEventFormProps> = ({
 		enabled: !!eventId && enabled,
 		refetchOnWindowFocus: false,
 	});
-	const configFailed = isConfigError && !certificationConfig;
 
 	useEffect(() => {
 		if (!certificationConfig) return;
@@ -178,22 +177,13 @@ const CertificationEventForm: React.FC<CertificationEventFormProps> = ({
 					)}
 				</Typography.Paragraph>
 
-				{eventFailed && (
+				{(eventFailed || (enabled && configFailed)) && (
 					<LoadError
 						title={t(
 							"event.settings.certification.load-error",
 							"Certificate settings could not be loaded",
 						)}
-						onRetry={() => refetchEvent()}
-					/>
-				)}
-				{enabled && configFailed && (
-					<LoadError
-						title={t(
-							"event.settings.certification.load-error",
-							"Certificate settings could not be loaded",
-						)}
-						onRetry={() => refetchConfig()}
+						onRetry={eventFailed ? refetchEvent : refetchConfig}
 					/>
 				)}
 				{enabled && isPendingConfig && <FormSkeleton fields={2} />}

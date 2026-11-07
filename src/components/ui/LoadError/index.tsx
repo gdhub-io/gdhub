@@ -17,7 +17,8 @@ export function LoadError({
 }: {
 	/** Already-translated; names what failed. */
 	title?: string;
-	onRetry?: () => void;
+	/** Called with no arguments, so a query's `refetch` can be passed as is. */
+	onRetry?: () => unknown;
 	/** Inside a table or card that is already outlined: no frame of its own. */
 	bare?: boolean;
 }) {
@@ -35,7 +36,7 @@ export function LoadError({
 				{title ?? t("common.load-error", "This could not be loaded")}
 			</Typography.Text>
 			{onRetry && (
-				<Button icon={<IconRefresh size={16} />} onClick={onRetry}>
+				<Button icon={<IconRefresh size={16} />} onClick={() => onRetry()}>
 					{t("common.try-again", "Try again")}
 				</Button>
 			)}

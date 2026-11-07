@@ -1,7 +1,6 @@
 import type { Event } from "@gdhub-io/gdhub-prisma";
 import { useQuery } from "@tanstack/react-query";
 import { useTranslate } from "@tolgee/react";
-import { Skeleton } from "antd";
 import axios from "axios";
 import dayjs from "dayjs";
 import Link from "next/link";
@@ -12,10 +11,10 @@ import {
 } from "@/components/events/EventCardParts";
 import {
 	getHubSectionShellClass,
-	HubSectionBleed,
 	HubSectionBody,
 	HubSectionHeader,
 } from "@/components/hub/HubSection";
+import { HubSidebarSkeleton } from "@/components/hub/HubSidebarSkeleton";
 import { LoadError } from "@/components/ui";
 import styles from "./styles.module.scss";
 
@@ -95,9 +94,8 @@ export default function LatestEvents() {
 
 	const {
 		data: events,
-		isLoading,
-		isFetched,
-		isError,
+		isPending,
+		isLoadingError,
 		refetch,
 	} = useQuery<LatestEvent[]>({
 		queryKey: ["latest-events"],
@@ -137,36 +135,28 @@ export default function LatestEvents() {
 
 	const title = t("hub.latest-events.title", "Upcoming events");
 
-	if (isError && !events)
-		return (
-			<section
-				className={`${styles.container} ${getHubSectionShellClass("sidebar")}`}
-			>
-				<HubSectionHeader title={title} />
-				<HubSectionBody>
+	if (isPending) return <HubSidebarSkeleton title={title} />;
+	if (!isLoadingError && !candidates.length) return null;
+
+	return (
+		<section
+			className={`${styles.container} ${getHubSectionShellClass("sidebar")}`}
+		>
+			<HubSectionHeader
+				title={title}
+				linkHref={isLoadingError ? undefined : "/hub/events"}
+				linkLabel={t("hub.view-all", "View all")}
+			/>
+
+			<HubSectionBody flush={!isLoadingError}>
+				{isLoadingError ? (
 					<LoadError
 						bare
 						title={t("hub.latest-events.error", "Events could not be loaded")}
-						onRetry={() => refetch()}
+						onRetry={refetch}
 					/>
-				</HubSectionBody>
-			</section>
-		);
-	if (!candidates.length && isFetched) return null;
-
-	return (
-		<Skeleton active loading={isLoading}>
-			<section
-				className={`${styles.container} ${getHubSectionShellClass("sidebar")}`}
-			>
-				<HubSectionHeader
-					title={title}
-					linkHref="/hub/events"
-					linkLabel={t("hub.view-all", "View all")}
-				/>
-
-				<HubSectionBody flush>
-					{candidates.map(({ e, isOngoing, nextStart, nearestEnd }) => (
+				) : (
+					candidates.map(({ e, isOngoing, nextStart, nearestEnd }) => (
 						<Link
 							key={e.id}
 							href={`/event/${e.slug}`}
@@ -174,16 +164,16 @@ export default function LatestEvents() {
 							className={styles.tile}
 						>
 							{/* The same cover the catalogue draws, so the two upload formats
-							    keep their shapes here too: the tile gives the width and the
-							    ratio decides the height. No chips — the kind and the dates
-							    are already in the line below. */}
+								    keep their shapes here too: the tile gives the width and the
+								    ratio decides the height. No chips — the kind and the dates
+								    are already in the line below. */}
 							<EventTileCover event={e} />
 
 							<div className={styles.text}>
 								<div className={styles.meta}>
 									{/* No "Ongoing" label: the row already says when the event
-									    ends, which is the useful half, and the word only
-									    repeated what the date implies. */}
+										    ends, which is the useful half, and the word only
+										    repeated what the date implies. */}
 									{[
 										typeLabel(e.type),
 										isOngoing
@@ -196,9 +186,9 @@ export default function LatestEvents() {
 								<div className={styles.name}>{e.title}</div>
 							</div>
 						</Link>
-					))}
-				</HubSectionBody>
-			</section>
-		</Skeleton>
+					))
+				)}
+			</HubSectionBody>
+		</section>
 	);
 }

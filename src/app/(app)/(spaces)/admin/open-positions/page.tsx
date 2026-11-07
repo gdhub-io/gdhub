@@ -238,7 +238,7 @@ export default function AdminOpenPositionsPage() {
 				<ModernTable
 					loading={isFetching}
 					error={isError}
-					onRetry={() => refetch()}
+					onRetry={refetch}
 					rowKey="id"
 					dataSource={data?.rows ?? []}
 					columns={columns}

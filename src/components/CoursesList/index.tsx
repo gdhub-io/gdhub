@@ -24,7 +24,7 @@ const CoursesList = ({ location }: { location?: "hub" }) => {
 	const {
 		data: courses,
 		isPending,
-		isError,
+		isLoadingError,
 		refetch,
 	} = useQuery({
 		queryKey: ["courses"],
@@ -43,11 +43,11 @@ const CoursesList = ({ location }: { location?: "hub" }) => {
 	});
 
 	if (isPending) return <CoursesListSkeleton />;
-	if (isError && !courses)
+	if (isLoadingError)
 		return (
 			<LoadError
 				title={t("courses.list.error", "Courses could not be loaded")}
-				onRetry={() => refetch()}
+				onRetry={refetch}
 			/>
 		);
 

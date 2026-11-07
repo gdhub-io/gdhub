@@ -76,6 +76,13 @@ type StepDraft = {
 let keySeed = 0;
 const nextKey = () => `draft-${++keySeed}`;
 
+const BREADCRUMB = [
+	{ title: <Link href="/admin/workflows">Workflows</Link> },
+	{
+		title: <Link href="/admin/workflows?tab=projects">Project workflows</Link>,
+	},
+];
+
 const norm = (value: string | null | undefined) =>
 	(value ?? "").trim().toLowerCase();
 
@@ -263,14 +270,7 @@ export function ProjectWorkflowEditor({ id }: { id: string }) {
 			<Flex vertical gap={16} aria-busy>
 				<Breadcrumb
 					items={[
-						{ title: <Link href="/admin/workflows">Workflows</Link> },
-						{
-							title: (
-								<Link href="/admin/workflows?tab=projects">
-									Project workflows
-								</Link>
-							),
-						},
+						...BREADCRUMB,
 						{ title: <Skeleton.Input active size="small" /> },
 					]}
 				/>
@@ -314,19 +314,8 @@ export function ProjectWorkflowEditor({ id }: { id: string }) {
 	if (isError && !data)
 		return (
 			<Flex vertical gap={16}>
-				<Breadcrumb
-					items={[
-						{ title: <Link href="/admin/workflows">Workflows</Link> },
-						{
-							title: (
-								<Link href="/admin/workflows?tab=projects">
-									Project workflows
-								</Link>
-							),
-						},
-					]}
-				/>
-				<LoadError onRetry={() => refetch()} />
+				<Breadcrumb items={BREADCRUMB} />
+				<LoadError onRetry={refetch} />
 			</Flex>
 		);
 	if (!data)
@@ -334,19 +323,7 @@ export function ProjectWorkflowEditor({ id }: { id: string }) {
 
 	return (
 		<Flex vertical gap={16}>
-			<Breadcrumb
-				items={[
-					{ title: <Link href="/admin/workflows">Workflows</Link> },
-					{
-						title: (
-							<Link href="/admin/workflows?tab=projects">
-								Project workflows
-							</Link>
-						),
-					},
-					{ title: data.project.name },
-				]}
-			/>
+			<Breadcrumb items={[...BREADCRUMB, { title: data.project.name }]} />
 
 			<Flex
 				component="header"

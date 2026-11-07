@@ -102,7 +102,7 @@ export function WorkflowPath({ project }: WorkflowPathProps) {
 					"workflow.path.load-error",
 					"The workflow could not be loaded",
 				)}
-				onRetry={() => refetch()}
+				onRetry={refetch}
 			/>
 		) : null;
 	}

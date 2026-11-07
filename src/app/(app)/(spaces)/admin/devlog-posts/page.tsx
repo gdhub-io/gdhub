@@ -350,7 +350,7 @@ export default function DevlogPostsAdminPage() {
 				<ModernTable<AdminDevlogPost>
 					loading={isFetching}
 					error={isError}
-					onRetry={() => refetch()}
+					onRetry={refetch}
 					rowKey="id"
 					dataSource={posts}
 					columns={columns}

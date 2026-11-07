@@ -318,7 +318,7 @@ export default function EventContentPage() {
 									"event.content.load-error",
 									"The content could not be loaded",
 								)}
-								onRetry={() => refetchEvent()}
+								onRetry={refetchEvent}
 							/>
 						) : (
 							!editorShown && <Skeleton active paragraph={{ rows: 8 }} />

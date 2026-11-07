@@ -114,7 +114,7 @@ export const UserRolesModal = ({ user, onClose }: Props) => {
 	);
 	const [drafts, setDrafts] = useState<Draft[]>([]);
 
-	const { data, isLoading, isError, refetch } = useQuery({
+	const { data, isLoading, isLoadingError, refetch } = useQuery({
 		queryKey: ["admin", "user-memberships", user?.id],
 		queryFn: () =>
 			axios
@@ -259,8 +259,8 @@ export const UserRolesModal = ({ user, onClose }: Props) => {
 		>
 			{isLoading ? (
 				<Skeleton active />
-			) : isError && !data ? (
-				<LoadError onRetry={() => refetch()} />
+			) : isLoadingError ? (
+				<LoadError onRetry={refetch} />
 			) : (
 				<div className={styles.body}>
 					{readOnly ? (

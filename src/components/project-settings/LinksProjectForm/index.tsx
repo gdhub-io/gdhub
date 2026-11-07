@@ -35,26 +35,26 @@ const LinksProjectForm = ({ projectSlug }: LinksProjectFormArgs) => {
 	const [form] = Form.useForm();
 	const screens = Grid.useBreakpoint();
 	const { t } = useTranslate();
-	const ctx = useContext(ProjectContext);
+	const contextProject = useContext(ProjectContext);
 	const { isError: isProjectError, refetch: refetchProject } =
 		useCurrentProject();
 	const [links, setLinks] = useState<ProjectLink[]>([]);
 	const isProjectArchived =
-		!ctx?.contextProject || !!ctx.contextProject.isProjectArchived;
+		!contextProject || !!contextProject.isProjectArchived;
 
 	const {
 		data: projectLinks,
 		isPending: isPendingLinks,
-		isError: isLinksError,
+		isLoadingError: isLinksFailed,
 		refetch: refetchLinks,
 	} = useQuery({
-		queryKey: ["project-links", ctx?.contextProject?.id],
-		enabled: !!ctx?.contextProject?.id,
+		queryKey: ["project-links", contextProject?.id],
+		enabled: !!contextProject?.id,
 		refetchOnWindowFocus: false,
 		queryFn: () => {
 			return axios
 				.get<ProjectLink[]>(`/api/user/project/links`, {
-					params: { id: ctx?.contextProject?.id },
+					params: { id: contextProject?.id },
 				})
 				.then((res) => {
 					return res.data;
@@ -85,7 +85,7 @@ const LinksProjectForm = ({ projectSlug }: LinksProjectFormArgs) => {
 	const { mutateAsync: saveLinks, isPending: isSavingLinks } = useMutation({
 		mutationFn: (links: ProjectLink[]) =>
 			axios
-				.put(`/api/user/project/link`, { id: ctx?.contextProject?.id, links })
+				.put(`/api/user/project/link`, { id: contextProject?.id, links })
 				.then((res) => res.data),
 	});
 
@@ -259,15 +259,15 @@ const LinksProjectForm = ({ projectSlug }: LinksProjectFormArgs) => {
 	);
 
 	// The links query waits for the project, so a failed project would leave it pending forever.
-	if (isProjectError && !ctx?.contextProject) {
-		return (
-			<LoadError title={loadErrorTitle} onRetry={() => refetchProject()} />
-		);
-	}
-
+	const projectFailed = isProjectError && !contextProject;
 	// Saving an unloaded list would wipe the project's real links.
-	if (isLinksError && !projectLinks) {
-		return <LoadError title={loadErrorTitle} onRetry={() => refetchLinks()} />;
+	if (projectFailed || isLinksFailed) {
+		return (
+			<LoadError
+				title={loadErrorTitle}
+				onRetry={projectFailed ? refetchProject : refetchLinks}
+			/>
+		);
 	}
 
 	if (isPendingLinks) return <FormSkeleton fields={3} />;

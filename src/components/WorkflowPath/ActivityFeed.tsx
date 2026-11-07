@@ -251,7 +251,7 @@ export function ActivityFeed({ source, sprints = [] }: ActivityFeedProps) {
 							"workflow.activity.load-error",
 							"Activity could not be loaded",
 						)}
-						onRetry={() => refetch()}
+						onRetry={refetch}
 					/>
 				) : events.length === 0 ? (
 					<EmptyState

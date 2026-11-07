@@ -177,7 +177,7 @@ const EquityTransactions: React.FC<EquityTransactionsProps> = ({
 		return (
 			<LoadError
 				title={t("Error loading transaction history")}
-				onRetry={() => refetch()}
+				onRetry={refetch}
 			/>
 		);
 	}

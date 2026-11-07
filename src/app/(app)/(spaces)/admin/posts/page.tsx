@@ -211,7 +211,7 @@ export default function BlogPostsAdminPage() {
 				<ModernTable
 					loading={isFetching}
 					error={isError}
-					onRetry={() => refetchPosts()}
+					onRetry={refetchPosts}
 					dataSource={response?.data}
 					columns={columns}
 				/>

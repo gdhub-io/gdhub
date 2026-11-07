@@ -226,7 +226,7 @@ const DevlogPosts = ({
 	const {
 		data,
 		isLoading,
-		isError,
+		isLoadingError,
 		isFetchNextPageError,
 		refetch,
 		fetchNextPage,
@@ -336,11 +336,11 @@ const DevlogPosts = ({
 		);
 	}
 
-	if (isError && !data) {
+	if (isLoadingError) {
 		const error = (
 			<LoadError
 				title={t("hub.activity-feed.error", "Devlog posts could not be loaded")}
-				onRetry={() => refetch()}
+				onRetry={refetch}
 			/>
 		);
 		if (variant === "hub") {
@@ -394,7 +394,7 @@ const DevlogPosts = ({
 
 			{isFetchNextPageError ? (
 				// Unmounting the sentinel stops the observer from re-firing the failed page in a loop.
-				<LoadError onRetry={() => fetchNextPage()} />
+				<LoadError onRetry={fetchNextPage} />
 			) : hasNextPage ? (
 				<div className={styles.loadMore} ref={sentinelRef}>
 					<Spin spinning={isFetchingNextPage} />

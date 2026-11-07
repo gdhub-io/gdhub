@@ -175,7 +175,7 @@ export function MyDocuments() {
 			data={data}
 			loading={isLoading}
 			error={isError}
-			onRetry={() => refetch()}
+			onRetry={refetch}
 		/>
 	);
 }

@@ -42,7 +42,7 @@ const VacanciesList = ({ location }: { location?: "hub" }) => {
 	const {
 		data: vacancies,
 		isPending,
-		isError,
+		isLoadingError: failed,
 		refetch,
 	} = useQuery({
 		queryKey: ["vacancies"],
@@ -52,7 +52,6 @@ const VacanciesList = ({ location }: { location?: "hub" }) => {
 	});
 
 	const list = vacancies?.data ?? [];
-	const failed = isError && !vacancies;
 
 	/** Direction names actually present in the list, for the Select options. */
 	const directionNames = useMemo(() => {
@@ -126,7 +125,7 @@ const VacanciesList = ({ location }: { location?: "hub" }) => {
 						"vacancies.list.error",
 						"Open positions could not be loaded",
 					)}
-					onRetry={() => refetch()}
+					onRetry={refetch}
 				/>
 			) : filtered.length > 0 ? (
 				<Row gutter={[16, 16]} wrap>

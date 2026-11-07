@@ -7,22 +7,14 @@ import axios from "axios";
 import dynamic from "next/dynamic";
 import { useParams } from "next/navigation";
 import { useSession } from "next-auth/react";
-import { useCallback } from "react";
+import { useCallback, useEffect } from "react";
 import { LoadError, PageLoading } from "@/components/ui";
 import {
 	FormSkeleton,
 	type FormSkeletonProps,
 } from "@/components/ui/FormSkeleton";
 
-type ProfileItem =
-	| "general"
-	| "specialities"
-	| "mentorship"
-	| "resources"
-	| "connections"
-	| "interests";
-
-const SKELETONS: Record<ProfileItem, FormSkeletonProps> = {
+const SKELETONS: Record<string, FormSkeletonProps> = {
 	general: { fields: 7 },
 	specialities: { fields: 3 },
 	mentorship: { fields: 3, textarea: true },
@@ -31,46 +23,39 @@ const SKELETONS: Record<ProfileItem, FormSkeletonProps> = {
 	interests: { fields: 5, textarea: true },
 };
 
+// Shared by `dynamic()` and the mount effect, so a form's chunk downloads alongside the profile query.
+const FORM_IMPORTS = {
+	general: () => import("@/components/profile-forms/GeneralProfileForm"),
+	specialities: () =>
+		import("@/components/profile-forms/SpecialitiesProfileForm"),
+	mentorship: () => import("@/components/profile-forms/MentorshipProfileForm"),
+	resources: () => import("@/components/profile-forms/ResourcesProfileForm"),
+	connections: () => import("@/components/profile-forms/ConnectProfileForm"),
+	interests: () => import("@/components/profile-forms/InterestsProfileForm"),
+};
+
 const ConnectProfileForm = dynamic(
-	() =>
-		import("@/components/profile-forms/ConnectProfileForm").then(
-			(m) => m.default,
-		),
+	() => FORM_IMPORTS.connections().then((m) => m.default),
 	{ ssr: false, loading: () => <FormSkeleton {...SKELETONS.connections} /> },
 );
 const GeneralProfileForm = dynamic(
-	() =>
-		import("@/components/profile-forms/GeneralProfileForm").then(
-			(m) => m.default,
-		),
+	() => FORM_IMPORTS.general().then((m) => m.default),
 	{ ssr: false, loading: () => <FormSkeleton {...SKELETONS.general} /> },
 );
 const InterestsProfileForm = dynamic(
-	() =>
-		import("@/components/profile-forms/InterestsProfileForm").then(
-			(m) => m.default,
-		),
+	() => FORM_IMPORTS.interests().then((m) => m.default),
 	{ ssr: false, loading: () => <FormSkeleton {...SKELETONS.interests} /> },
 );
 const MentorshipProfileForm = dynamic(
-	() =>
-		import("@/components/profile-forms/MentorshipProfileForm").then(
-			(m) => m.default,
-		),
+	() => FORM_IMPORTS.mentorship().then((m) => m.default),
 	{ ssr: false, loading: () => <FormSkeleton {...SKELETONS.mentorship} /> },
 );
 const ResourcesProfileForm = dynamic(
-	() =>
-		import("@/components/profile-forms/ResourcesProfileForm").then(
-			(m) => m.default,
-		),
+	() => FORM_IMPORTS.resources().then((m) => m.default),
 	{ ssr: false, loading: () => <FormSkeleton {...SKELETONS.resources} /> },
 );
 const SpecialitiesProfileForm = dynamic(
-	() =>
-		import("@/components/profile-forms/SpecialitiesProfileForm").then(
-			(m) => m.default,
-		),
+	() => FORM_IMPORTS.specialities().then((m) => m.default),
 	{ ssr: false, loading: () => <FormSkeleton {...SKELETONS.specialities} /> },
 );
 const DangerProfileForm = dynamic(
@@ -96,10 +81,15 @@ export function SettingsItemClient() {
 	const queryClient = useQueryClient();
 	const { data: session } = useSession();
 
+	useEffect(() => {
+		const imports: Record<string, () => unknown> = FORM_IMPORTS;
+		if (Object.hasOwn(imports, currentItem)) imports[currentItem]();
+	}, [currentItem]);
+
 	const {
 		data: profile,
 		isPending,
-		isError,
+		isLoadingError,
 		refetch,
 	} = useQuery({
 		queryKey: ["profile-setting", session?.user.id],
@@ -129,24 +119,20 @@ export function SettingsItemClient() {
 	if (currentItem === "danger") return <DangerProfileForm />;
 
 	// Saving an unloaded form would overwrite the profile with blanks.
-	if (isError && !profile) {
+	if (isLoadingError) {
 		return (
 			<LoadError
 				title={t(
 					"profile.settings.load-error",
 					"Your profile could not be loaded",
 				)}
-				onRetry={() => refetch()}
+				onRetry={refetch}
 			/>
 		);
 	}
 
 	if (isPending) {
-		return (
-			<FormSkeleton
-				{...(SKELETONS[currentItem as ProfileItem] ?? SKELETONS.general)}
-			/>
-		);
+		return <FormSkeleton {...(SKELETONS[currentItem] ?? SKELETONS.general)} />;
 	}
 	if (!profile?.data) return null;
 

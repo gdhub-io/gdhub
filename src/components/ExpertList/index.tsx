@@ -43,7 +43,7 @@ const ExpertList = ({
 	const {
 		data: experts,
 		isPending,
-		isError,
+		isLoadingError,
 		refetch,
 	} = useQuery<Expert[]>({
 		queryKey: ["experts", JSON.stringify(filter)],
@@ -62,11 +62,11 @@ const ExpertList = ({
 	});
 
 	if (isPending) return <ExpertListSkeleton />;
-	if (isError && !experts)
+	if (isLoadingError)
 		return (
 			<LoadError
 				title={t("experts.page.error", "Experts could not be loaded")}
-				onRetry={() => refetch()}
+				onRetry={refetch}
 			/>
 		);
 

@@ -4,7 +4,6 @@ import axios from "axios";
 import dayjs from "dayjs";
 import {
 	getHubSectionShellClass,
-	HubSectionBleed,
 	HubSectionBody,
 	HubSectionHeader,
 } from "@/components/hub/HubSection";
@@ -29,7 +28,7 @@ export default function NewMembers() {
 	const {
 		data: latestUsers,
 		isPending,
-		isError,
+		isLoadingError,
 		refetch,
 	} = useQuery<LatestUser[]>({
 		queryKey: ["latest-users"],
@@ -41,25 +40,7 @@ export default function NewMembers() {
 	const title = t("page.hub.new-members", "New members");
 
 	if (isPending) return <HubSidebarSkeleton title={title} media="circle" />;
-	if (isError && !latestUsers)
-		return (
-			<section
-				className={`${styles.container} ${getHubSectionShellClass("sidebar")}`}
-			>
-				<HubSectionHeader title={title} />
-				<HubSectionBody>
-					<LoadError
-						bare
-						title={t(
-							"page.hub.new-members.error",
-							"Members could not be loaded",
-						)}
-						onRetry={() => refetch()}
-					/>
-				</HubSectionBody>
-			</section>
-		);
-	if (!latestUsers?.length) return null;
+	if (!isLoadingError && !latestUsers?.length) return null;
 
 	return (
 		<section
@@ -67,35 +48,46 @@ export default function NewMembers() {
 		>
 			<HubSectionHeader
 				title={title}
-				linkHref="/hub/members"
+				linkHref={isLoadingError ? undefined : "/hub/members"}
 				linkLabel={t("hub.view-all", "View all")}
 			/>
 
-			<HubSectionBody flush>
-				{latestUsers.slice(0, 5).map((user) => (
-					<HubSectionRow
-						key={user.id}
-						href="/hub/members"
-						title={user.speciality || t("page.hub.member", "Member")}
-						// "Recently joined" said the same thing on every row of a list
-						// whose whole premise is that everyone here joined recently.
-						// The level is the word only: a filled meter next to five names
-						// in a sidebar column pulls the eye away from the names.
-						subtitle={[
-							user.level && SKILL_LEVEL_STEP[user.level]
-								? t(user.level, user.level)
-								: null,
-							user.joinedAt ? dayjs(user.joinedAt).fromNow() : null,
-						]
-							.filter(Boolean)
-							.join(" · ")}
-						media={
-							<AppAvatar src={user.image} size={32} className={styles.avatar}>
-								{user.speciality?.charAt(0)?.toUpperCase()}
-							</AppAvatar>
-						}
+			<HubSectionBody flush={!isLoadingError}>
+				{isLoadingError ? (
+					<LoadError
+						bare
+						title={t(
+							"page.hub.new-members.error",
+							"Members could not be loaded",
+						)}
+						onRetry={refetch}
 					/>
-				))}
+				) : (
+					latestUsers?.slice(0, 5).map((user) => (
+						<HubSectionRow
+							key={user.id}
+							href="/hub/members"
+							title={user.speciality || t("page.hub.member", "Member")}
+							// "Recently joined" said the same thing on every row of a list
+							// whose whole premise is that everyone here joined recently.
+							// The level is the word only: a filled meter next to five names
+							// in a sidebar column pulls the eye away from the names.
+							subtitle={[
+								user.level && SKILL_LEVEL_STEP[user.level]
+									? t(user.level, user.level)
+									: null,
+								user.joinedAt ? dayjs(user.joinedAt).fromNow() : null,
+							]
+								.filter(Boolean)
+								.join(" · ")}
+							media={
+								<AppAvatar src={user.image} size={32} className={styles.avatar}>
+									{user.speciality?.charAt(0)?.toUpperCase()}
+								</AppAvatar>
+							}
+						/>
+					))
+				)}
 			</HubSectionBody>
 		</section>
 	);

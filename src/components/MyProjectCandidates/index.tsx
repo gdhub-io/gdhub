@@ -18,7 +18,7 @@ import { skeletonColumns, skeletonRows } from "@/components/ui/table";
 import { ProjectContext } from "@/contexts/ProjectContext";
 
 const MyProjectCandidates = () => {
-	const contextProject = useContext(ProjectContext)?.contextProject;
+	const contextProject = useContext(ProjectContext);
 	const { t } = useTranslate();
 	const isProjectArchived =
 		!contextProject || !!contextProject.isProjectArchived;
@@ -118,6 +118,9 @@ const MyProjectCandidates = () => {
 		refetchCandidates();
 	};
 
+	const candidatesEmpty =
+		!isPendingCandidates && !isCandidatesError && !candidates?.data.length;
+
 	return (
 		<>
 			<Space align="center" style={{ marginTop: 60 }}>
@@ -134,7 +137,14 @@ const MyProjectCandidates = () => {
 				)}
 			</Space>
 
-			{isPendingCandidates || isCandidatesError || candidates?.data.length ? (
+			{candidatesEmpty ? (
+				<p style={{ marginTop: 12, color: "gray" }}>
+					{t(
+						"components.my-project-candidates.noApplicationsForParticipation",
+						"There are no applications for participation at the moment",
+					)}
+				</p>
+			) : (
 				<>
 					<Table
 						loading={!isPendingCandidates && isLoadingCandidates}
@@ -158,9 +168,7 @@ const MyProjectCandidates = () => {
 						locale={
 							isCandidatesError
 								? {
-										emptyText: (
-											<LoadError bare onRetry={() => refetchCandidates()} />
-										),
+										emptyText: <LoadError bare onRetry={refetchCandidates} />,
 									}
 								: undefined
 						}
@@ -178,13 +186,6 @@ const MyProjectCandidates = () => {
 						/>
 					)}
 				</>
-			) : (
-				<p style={{ marginTop: 12, color: "gray" }}>
-					{t(
-						"components.my-project-candidates.noApplicationsForParticipation",
-						"There are no applications for participation at the moment",
-					)}
-				</p>
 			)}
 		</>
 	);

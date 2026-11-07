@@ -9,9 +9,6 @@ export type ContextProject = {
 	archivedAt: Date | string | null;
 };
 
-export const ProjectContext = createContext<
-	| {
-			contextProject?: ContextProject;
-	  }
-	| undefined
->(undefined);
+export const ProjectContext = createContext<ContextProject | undefined>(
+	undefined,
+);

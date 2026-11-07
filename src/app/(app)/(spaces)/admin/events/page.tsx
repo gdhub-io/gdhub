@@ -355,7 +355,7 @@ export default function EventsAdminPage() {
 				<ModernTable<AdminEvent>
 					loading={isFetching}
 					error={isError}
-					onRetry={() => refetch()}
+					onRetry={refetch}
 					rowKey="id"
 					dataSource={events}
 					columns={columns}

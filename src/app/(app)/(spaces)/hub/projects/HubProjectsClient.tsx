@@ -25,18 +25,15 @@ import {
 import cardStyles from "@/components/project/cards/ProjectCard.module.scss";
 import storeCardStyles from "@/components/project/cards/ProjectStoreCard.module.scss";
 import { EmptyState, LoadError } from "@/components/ui";
+import { SkeletonLine } from "@/components/ui/SkeletonLine";
 import styles from "./style.module.scss";
-
-const line = (width: string, height: number) => (
-	<Skeleton.Input active block style={{ width, height, minWidth: 0 }} />
-);
 
 /** A card shell from the real card's own styles, cover and text as placeholders. */
 function CardSkeleton({ store = false }: { store?: boolean }) {
 	const card = store ? storeCardStyles : cardStyles;
 	const foot = (
 		<div className={card.foot}>
-			{line("35%", 14)}
+			<SkeletonLine width={"35%"} height={14} />
 			<Skeleton.Button active size="small" />
 		</div>
 	);
@@ -48,9 +45,9 @@ function CardSkeleton({ store = false }: { store?: boolean }) {
 			</div>
 			<div className={card.body}>
 				<Flex vertical gap={6}>
-					{line("40%", 14)}
-					{line("75%", 24)}
-					{line("100%", 14)}
+					<SkeletonLine width={"40%"} height={14} />
+					<SkeletonLine width={"75%"} height={24} />
+					<SkeletonLine width={"100%"} height={14} />
 				</Flex>
 				{store && foot}
 			</div>
@@ -93,8 +90,8 @@ export default function HubProjectsClient() {
 	const {
 		data: projects,
 		isSuccess,
-		isPending,
-		isError,
+		isLoading,
+		isLoadingError: listFailed,
 		refetch,
 	} = useQuery({
 		queryKey: ["projects"],
@@ -110,8 +107,8 @@ export default function HubProjectsClient() {
 
 	const {
 		data: publishedProjects,
-		isPending: isStorePending,
-		isError: isStoreError,
+		isLoading: isStoreQueryLoading,
+		isLoadingError: storeFailed,
 		refetch: refetchStore,
 	} = useQuery({
 		queryKey: ["projects", "published"],
@@ -128,12 +125,8 @@ export default function HubProjectsClient() {
 	}, [projects?.data, selectedStage]);
 
 	const storeProjects = publishedProjects?.data ?? [];
-	// Disabled queries stay pending, so a signed-out viewer is not "loading".
-	const isListLoading = isSessionLoading || (isAuthenticated && isPending);
-	const isStoreLoading =
-		isSessionLoading || (isAuthenticated && isStorePending);
-	const listFailed = isError && !projects;
-	const storeFailed = isStoreError && !publishedProjects;
+	const isListLoading = isSessionLoading || isLoading;
+	const isStoreLoading = isSessionLoading || isStoreQueryLoading;
 
 	return (
 		<div className="layout-background">
@@ -171,7 +164,7 @@ export default function HubProjectsClient() {
 									"page.hub.projects.store-error",
 									"Projects on stores could not be loaded",
 								)}
-								onRetry={() => refetchStore()}
+								onRetry={refetchStore}
 							/>
 						)}
 						<Row gutter={[16, 16]}>
@@ -247,7 +240,7 @@ export default function HubProjectsClient() {
 								"page.hub.projects.error",
 								"Projects could not be loaded",
 							)}
-							onRetry={() => refetch()}
+							onRetry={refetch}
 						/>
 					) : filteredProjects.length > 0 ? (
 						<Row gutter={[16, 16]}>

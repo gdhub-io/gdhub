@@ -154,7 +154,7 @@ export function ViewsTopTable({ range }: ViewsTopTableProps) {
 
 			{isError ? (
 				<div className={styles.state}>
-					<ViewsErrorPanel onRetry={() => refetch()} />
+					<ViewsErrorPanel onRetry={refetch} />
 				</div>
 			) : (
 				<div

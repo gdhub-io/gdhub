@@ -67,7 +67,7 @@ const MyAdviceRequests: React.FC<{
 	const { setSelectedRoomId, setSelectedRoomByAlias, setOpenChatModal } =
 		useChat();
 
-	const { data, isPending, isError, refetch } = useQuery({
+	const { data, isPending, isLoadingError, refetch } = useQuery({
 		queryKey: ["advice-requests"],
 		queryFn: () =>
 			axios
@@ -281,30 +281,29 @@ const MyAdviceRequests: React.FC<{
 		/>
 	);
 
-	const stacks = isPending ? (
-		isHubLayout ? (
-			<div className={hubSection.sidebarListBleed}>
-				<HubSectionRowsSkeleton media="circle" />
-			</div>
-		) : (
-			<AdviceRequestsSkeleton />
-		)
-	) : isError && !data ? (
-		<LoadError
-			bare={isHubLayout}
-			title={t(
-				"page.hub.advice-requests.error",
-				"Advice requests could not be loaded",
-			)}
-			onRetry={() => refetch()}
-		/>
-	) : isEmpty ? (
-		emptyState
-	) : isHubLayout ? (
-		stacksHub
-	) : (
-		stacksDefault
-	);
+	const renderStacks = () => {
+		if (isPending)
+			return isHubLayout ? (
+				<div className={hubSection.sidebarListBleed}>
+					<HubSectionRowsSkeleton media="circle" />
+				</div>
+			) : (
+				<AdviceRequestsSkeleton />
+			);
+		if (isLoadingError)
+			return (
+				<LoadError
+					bare={isHubLayout}
+					title={t(
+						"page.hub.advice-requests.error",
+						"Advice requests could not be loaded",
+					)}
+					onRetry={refetch}
+				/>
+			);
+		if (isEmpty) return emptyState;
+		return isHubLayout ? stacksHub : stacksDefault;
+	};
 
 	const hubInner = (
 		<>
@@ -320,7 +319,7 @@ const MyAdviceRequests: React.FC<{
 					)}
 				</HubSectionHeader>
 			)}
-			<HubSectionBody>{stacks}</HubSectionBody>
+			<HubSectionBody>{renderStacks()}</HubSectionBody>
 		</>
 	);
 
@@ -352,7 +351,7 @@ const MyAdviceRequests: React.FC<{
 					)}
 				</Flex>
 				<Space orientation="vertical" size={32} style={{ width: "100%" }}>
-					{stacks}
+					{renderStacks()}
 				</Space>
 			</div>
 		);

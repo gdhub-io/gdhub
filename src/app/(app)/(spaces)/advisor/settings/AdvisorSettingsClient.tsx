@@ -117,17 +117,17 @@ function AdvisorSettings() {
 
 function Availability() {
 	const { t } = useTranslate();
-	const { data, isLoading, isError, refetch } = useAvailability();
+	const { data, isLoading, isLoadingError, refetch } = useAvailability();
 
-	// `null` is a real answer (no hours set yet); only a missing answer means the load failed.
-	if (isError && data === undefined)
+	// `null` is a real answer (no hours set yet), so the failure is read from the query, not the data.
+	if (isLoadingError)
 		return (
 			<LoadError
 				title={t(
 					"advisor.availability.error.load",
 					"Your hours could not be loaded.",
 				)}
-				onRetry={() => refetch()}
+				onRetry={refetch}
 			/>
 		);
 
@@ -143,7 +143,7 @@ function Availability() {
 
 function PaidWork() {
 	const { t } = useTranslate();
-	const { data, isLoading, isError, refetch } = usePaidWork();
+	const { data, isLoading, isLoadingError, refetch } = usePaidWork();
 	const curation = useCuration();
 	const save = useSavePaidWork();
 	const saveCuration = useSaveCuration();
@@ -156,7 +156,7 @@ function PaidWork() {
 		return saved;
 	};
 
-	if ((isError && !data) || (curation.isError && !curation.data))
+	if (isLoadingError || curation.isLoadingError)
 		return (
 			<LoadError
 				title={t(

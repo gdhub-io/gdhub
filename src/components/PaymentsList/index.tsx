@@ -64,7 +64,7 @@ export default function PaymentsList() {
 	const { message } = App.useApp();
 	const [invoiceLoadingId, setInvoiceLoadingId] = useState<string>();
 
-	const { data, isPending, isError, refetch } = useQuery({
+	const { data, isPending, isLoadingError, refetch } = useQuery({
 		queryKey: ["user-payments"],
 		queryFn: () => axios.get<UserPayment[]>("/api/user/payments"),
 		refetchOnWindowFocus: false,
@@ -252,19 +252,18 @@ export default function PaymentsList() {
 				}
 				pagination={false}
 				locale={{
-					emptyText:
-						isError && !data ? (
-							<LoadError
-								bare
-								title={t(
-									"settings.payments.load-error",
-									"Your payments could not be loaded",
-								)}
-								onRetry={() => refetch()}
-							/>
-						) : (
-							t("settings.payments.empty", "No payments yet")
-						),
+					emptyText: isLoadingError ? (
+						<LoadError
+							bare
+							title={t(
+								"settings.payments.load-error",
+								"Your payments could not be loaded",
+							)}
+							onRetry={refetch}
+						/>
+					) : (
+						t("settings.payments.empty", "No payments yet")
+					),
 				}}
 			/>
 		</div>

@@ -38,7 +38,7 @@ const SpecialitiesProfileForm = ({ profile }: any) => {
 	const {
 		data: specialities,
 		isFetching: processing,
-		isError,
+		isLoadingError,
 		refetch,
 	} = useQuery({
 		queryKey: ["user-specialities"],
@@ -142,13 +142,13 @@ const SpecialitiesProfileForm = ({ profile }: any) => {
 							"Specialties are how the platform matches you: apply to other teams' openings, be listed among the experts and, as you grow, run your own events and courses.",
 						)}
 					</Text>
-					{isError && !specialities && (
+					{isLoadingError && (
 						<LoadError
 							title={t(
 								"profile-forms.specialities.load-error",
 								"Your specialties could not be loaded",
 							)}
-							onRetry={() => refetch()}
+							onRetry={refetch}
 						/>
 					)}
 					{specialities?.data && (

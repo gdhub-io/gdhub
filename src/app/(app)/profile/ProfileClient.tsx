@@ -185,7 +185,7 @@ const ProfileClient = () => {
 									"profile.page.skillCapital.error",
 									"Your Skill Capital could not be loaded",
 								)}
-								onRetry={() => refetchSkillCapital()}
+								onRetry={refetchSkillCapital}
 							/>
 						) : (
 							<>

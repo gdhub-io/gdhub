@@ -35,7 +35,7 @@ import styles from "./style.module.scss";
  */
 export function AdvisorCheckpointsClient() {
 	const { t } = useTranslate();
-	const { data, isPending, isError, refetch } = useAdvisorCheckpoints();
+	const { data, isPending, isLoadingError, refetch } = useAdvisorCheckpoints();
 	const [verdictId, setVerdictId] = useState<string | null>(null);
 
 	// The curator's notification links here with `?verdict=<id>`.
@@ -112,7 +112,7 @@ export function AdvisorCheckpointsClient() {
 			</Flex>
 		);
 
-	const failed = isError && !data;
+	const failed = isLoadingError;
 	const empty =
 		!isPending &&
 		!failed &&
@@ -140,7 +140,7 @@ export function AdvisorCheckpointsClient() {
 							"advisor.checkpoints.load-error",
 							"Your checkpoints could not be loaded",
 						)}
-						onRetry={() => refetch()}
+						onRetry={refetch}
 					/>
 				)}
 

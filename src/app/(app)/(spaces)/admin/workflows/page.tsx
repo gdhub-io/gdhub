@@ -88,7 +88,7 @@ export default function WorkflowsAdminPage() {
 					templates={templates}
 					loading={isFetchingWorkflows}
 					error={isWorkflowsError}
-					onRetry={() => refetchWorkflows()}
+					onRetry={refetchWorkflows}
 				/>
 			),
 		},
@@ -102,7 +102,7 @@ export default function WorkflowsAdminPage() {
 					workflows={projectWorkflows}
 					loading={isFetchingProjectWorkflows}
 					error={isProjectWorkflowsError}
-					onRetry={() => refetchProjectWorkflows()}
+					onRetry={refetchProjectWorkflows}
 				/>
 			),
 		},

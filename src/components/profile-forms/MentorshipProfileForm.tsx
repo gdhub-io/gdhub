@@ -80,7 +80,8 @@ const MentorshipProfileForm = ({
 	const {
 		data: mentorship,
 		refetch: refetchMentorship,
-		isError: isMentorshipError,
+		// Without the saved setting the switch would read "off" and saving would turn mentorship off.
+		isLoadingError: mentorshipFailed,
 		isPending: isMentorshipPending,
 	} = useQuery({
 		queryKey: ["user-mentorship"],
@@ -95,8 +96,6 @@ const MentorshipProfileForm = ({
 				.then((response) => response.data),
 	});
 
-	// Without the saved setting the switch would read "off" and saving would turn mentorship off.
-	const mentorshipFailed = isMentorshipError && !mentorship;
 	const savedEnabled = mentorship?.enabled ?? false;
 	const needsAgreement = mentorship?.agreementAccepted === false;
 	const [agreementStale, setAgreementStale] = useState(false);
@@ -135,7 +134,7 @@ const MentorshipProfileForm = ({
 	const {
 		data: specialities,
 		isLoading: isSpecialityFetching,
-		isError: isSpecialitiesError,
+		isLoadingError: isSpecialitiesFailed,
 		refetch: refetchSpecialityList,
 		dataUpdatedAt,
 	} = useQuery({
@@ -306,7 +305,7 @@ const MentorshipProfileForm = ({
 		</div>
 	);
 
-	const specialitiesFailed = enabled && isSpecialitiesError && !specialities;
+	const specialitiesFailed = enabled && isSpecialitiesFailed;
 	const loadErrorTitle = t(
 		"profile-forms.mentorship.load-error",
 		"Mentorship settings could not be loaded",
@@ -357,16 +356,13 @@ const MentorshipProfileForm = ({
 							"Allows you to contribute to game development through advising",
 						)}
 					</Paragraph>
-					{mentorshipFailed && (
+					{(mentorshipFailed || specialitiesFailed) && (
 						<LoadError
 							title={loadErrorTitle}
-							onRetry={() => refetchMentorship()}
-						/>
-					)}
-					{specialitiesFailed && (
-						<LoadError
-							title={loadErrorTitle}
-							onRetry={() => refetchSpecialityList()}
+							onRetry={() => {
+								if (mentorshipFailed) refetchMentorship();
+								if (specialitiesFailed) refetchSpecialityList();
+							}}
 						/>
 					)}
 					{enabled && agreementRows}

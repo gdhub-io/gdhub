@@ -630,7 +630,7 @@ export default function UsersAdminPage() {
 				<ModernTable
 					loading={isFetching}
 					error={isError}
-					onRetry={() => refetch()}
+					onRetry={refetch}
 					rowKey="id"
 					dataSource={response?.data || []}
 					columns={columns}

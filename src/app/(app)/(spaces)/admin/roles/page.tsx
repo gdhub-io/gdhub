@@ -61,7 +61,7 @@ export default function RolesAdminPage() {
 	const [target, setTarget] = useState<RoleTarget | null>(null);
 	const [creating, setCreating] = useState(false);
 
-	const { data, isLoading, isError, refetch } = useQuery({
+	const { data, isLoading, isLoadingError, refetch } = useQuery({
 		queryKey: ["admin", "roles", space],
 		queryFn: () =>
 			axios
@@ -176,8 +176,8 @@ export default function RolesAdminPage() {
 					onChange={setSpace}
 				/>
 
-				{isError && !data ? (
-					<LoadError onRetry={() => refetch()} />
+				{isLoadingError ? (
+					<LoadError onRetry={refetch} />
 				) : isLoading || !data ? (
 					<Skeleton active />
 				) : (

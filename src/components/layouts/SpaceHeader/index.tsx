@@ -7,6 +7,7 @@ import {
 	type ReactNode,
 	useContext,
 	useEffect,
+	useMemo,
 	useState,
 } from "react";
 import type { SpaceTrailConfig } from "@/components/layouts/SpaceTrail/types";
@@ -51,14 +52,14 @@ export function SpaceHeaderProvider({ children }: { children: ReactNode }) {
 
 	// A scoped header outlives its page: while the next tab of the same space
 	// loads, the tabs stay put instead of dropping to the default navigation.
-	// Functional: a page entering another space may have published in this same commit.
-	useEffect(() => {
-		setConfig((current) => headerForPath(current, pathname));
-	}, [pathname]);
+	const visible = useMemo(
+		() => headerForPath(config, pathname),
+		[config, pathname],
+	);
 
 	return (
 		<SetSpaceHeaderContext.Provider value={setConfig}>
-			<SpaceHeaderContext.Provider value={config}>
+			<SpaceHeaderContext.Provider value={visible}>
 				{children}
 			</SpaceHeaderContext.Provider>
 		</SetSpaceHeaderContext.Provider>

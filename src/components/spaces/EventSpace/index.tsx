@@ -6,7 +6,6 @@ import { useTranslate } from "@tolgee/react";
 import { Button, Flex, message, Space, Tag, Typography } from "antd";
 import type { ItemType } from "antd/es/menu/interface";
 import axios from "axios";
-import Link from "next/link";
 import { useParams, usePathname } from "next/navigation";
 import type { CSSProperties } from "react";
 import { type ReactNode, useMemo } from "react";
@@ -16,7 +15,7 @@ import {
 	type SpaceHeaderConfig,
 	useSetSpaceHeader,
 } from "@/components/layouts/SpaceHeader";
-import { PendingLabel } from "@/components/ui";
+import { NavLink } from "@/components/ui";
 import { EventStatus } from "@/config/prisma-enums";
 import { useCurrentEvent } from "@/hooks/event";
 import { useDocumentTitle } from "@/hooks/useDocumentTitle";
@@ -91,31 +90,25 @@ export const EventSpace = ({
 			{
 				key: `/user/event/${eventId}/schedule`,
 				label: (
-					<Link href={`/user/event/${eventId}/schedule`} prefetch>
-						<PendingLabel>
-							{t("app.user-event.menu.schedule", "Schedule")}
-						</PendingLabel>
-					</Link>
+					<NavLink href={`/user/event/${eventId}/schedule`} prefetch>
+						{t("app.user-event.menu.schedule", "Schedule")}
+					</NavLink>
 				),
 			},
 			{
 				key: `/user/event/${eventId}/content`,
 				label: (
-					<Link href={`/user/event/${eventId}/content`} prefetch>
-						<PendingLabel>
-							{t("app.user-event.menu.content", "Content")}
-						</PendingLabel>
-					</Link>
+					<NavLink href={`/user/event/${eventId}/content`} prefetch>
+						{t("app.user-event.menu.content", "Content")}
+					</NavLink>
 				),
 			},
 			{
 				key: `/user/event/${eventId}/members`,
 				label: (
-					<Link href={`/user/event/${eventId}/members`} prefetch>
-						<PendingLabel>
-							{t("app.user-event.menu.members", "Members")}
-						</PendingLabel>
-					</Link>
+					<NavLink href={`/user/event/${eventId}/members`} prefetch>
+						{t("app.user-event.menu.members", "Members")}
+					</NavLink>
 				),
 			},
 			// Hidden rather than greyed out, same rule as everywhere else.
@@ -124,11 +117,12 @@ export const EventSpace = ({
 						{
 							key: `/user/event/${eventId}/settings/general`,
 							label: (
-								<Link href={`/user/event/${eventId}/settings/general`} prefetch>
-									<PendingLabel>
-										{t("app.user.menu.settings", "Settings")}
-									</PendingLabel>
-								</Link>
+								<NavLink
+									href={`/user/event/${eventId}/settings/general`}
+									prefetch
+								>
+									{t("app.user.menu.settings", "Settings")}
+								</NavLink>
 							),
 						},
 					]

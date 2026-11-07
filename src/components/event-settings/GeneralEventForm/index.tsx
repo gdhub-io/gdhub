@@ -176,7 +176,7 @@ const GeneralProjectForm = ({ eventId }: GeneralProjectFormArgs) => {
 					"event.settings.load-error",
 					"Event settings could not be loaded",
 				)}
-				onRetry={() => refetch()}
+				onRetry={refetch}
 			/>
 		);
 	}

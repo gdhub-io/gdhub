@@ -76,13 +76,12 @@ export function HubQuickCounts({ className }: { className?: string }) {
 		enabled: can("hub.events.view"),
 	});
 
-	const { data: adviceRequests, isPending: advicePending } = adviceQuery;
-	const { data: latestUsers, isPending: usersPending } = usersQuery;
-	const { data: hotVacancies, isPending: vacanciesPending } = vacanciesQuery;
-	const { data: latestEvents, isPending: eventsPending } = eventsQuery;
-	const failed = [adviceQuery, usersQuery, vacanciesQuery, eventsQuery].filter(
-		(query) => query.isError && !query.data,
-	);
+	const queries = [adviceQuery, usersQuery, vacanciesQuery, eventsQuery];
+	const { data: adviceRequests } = adviceQuery;
+	const { data: latestUsers } = usersQuery;
+	const { data: hotVacancies } = vacanciesQuery;
+	const { data: latestEvents } = eventsQuery;
+	const failed = queries.filter((query) => query.isLoadingError);
 
 	// Only incoming: an outgoing request is one the user already sent, so it is
 	// not waiting on them and does not belong in a "needs you" counter.
@@ -125,15 +124,8 @@ export function HubQuickCounts({ className }: { className?: string }) {
 		// user may not see stays at 0 and the pill never appears.
 	].filter((item) => item.count > 0);
 
-	// A disabled query stays pending forever, so only the ones allowed to run count.
-	const isPending =
-		usersPending ||
-		(can("hub.experts.request") &&
-			(status === "loading" || (!!userId && advicePending))) ||
-		(can("hub.jobs.view") && vacanciesPending) ||
-		(can("hub.events.view") && eventsPending);
-
-	if (isPending) return <HubQuickCountsSkeleton />;
+	if (status === "loading" || queries.some((query) => query.isLoading))
+		return <HubQuickCountsSkeleton />;
 	const loadError = failed.length > 0 && (
 		<LoadError
 			onRetry={() => {

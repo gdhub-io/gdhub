@@ -73,7 +73,7 @@ const MyEventsClient = () => {
 	const {
 		data,
 		isLoading,
-		isError,
+		isLoadingError,
 		refetch: refetchMyEvents,
 	} = useQuery({
 		queryKey: ["my-events"],
@@ -327,10 +327,10 @@ const MyEventsClient = () => {
 							<Card loading style={{ width: 300 }} />
 						</Space>
 					</Flex>
-				) : isError && !data ? (
+				) : isLoadingError ? (
 					<LoadError
 						title={t("page.myEvents.error", "Your events could not be loaded")}
-						onRetry={() => refetchMyEvents()}
+						onRetry={refetchMyEvents}
 					/>
 				) : events.length === 0 ? (
 					<Alert

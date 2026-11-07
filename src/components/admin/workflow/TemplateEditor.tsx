@@ -343,7 +343,7 @@ export function TemplateEditor({ id }: { id: string }) {
 			/>
 
 			{failed ? (
-				<LoadError onRetry={() => refetch()} />
+				<LoadError onRetry={refetch} />
 			) : pending ? (
 				<div className={styles.panes} aria-busy>
 					<Card className={styles.rail} styles={{ body: { padding: 0 } }}>

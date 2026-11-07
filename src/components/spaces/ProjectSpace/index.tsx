@@ -15,7 +15,7 @@ import {
 	type SpaceHeaderConfig,
 	useSetSpaceHeader,
 } from "@/components/layouts/SpaceHeader";
-import { PendingLabel } from "@/components/ui";
+import { NavLink } from "@/components/ui";
 import { ProjectStatus } from "@/config/prisma-enums";
 import { type ContextProject, ProjectContext } from "@/contexts/ProjectContext";
 import { useCurrentProject } from "@/hooks/project";
@@ -99,41 +99,33 @@ export const ProjectSpace = ({
 			{
 				key: `/user/project/${projectSlug}/workflow`,
 				label: (
-					<Link href={`/user/project/${projectSlug}/workflow`} prefetch>
-						<PendingLabel>
-							{t("app.user-project.menu.workflow", "Workflow")}
-						</PendingLabel>
-					</Link>
+					<NavLink href={`/user/project/${projectSlug}/workflow`} prefetch>
+						{t("app.user-project.menu.workflow", "Workflow")}
+					</NavLink>
 				),
 			},
 			{
 				key: `/user/project/${projectSlug}/artifacts`,
 				label: (
-					<Link href={`/user/project/${projectSlug}/artifacts`} prefetch>
-						<PendingLabel>
-							{t("app.user-project.menu.artifacts", "Artifacts")}
-						</PendingLabel>
-					</Link>
+					<NavLink href={`/user/project/${projectSlug}/artifacts`} prefetch>
+						{t("app.user-project.menu.artifacts", "Artifacts")}
+					</NavLink>
 				),
 			},
 			{
 				key: `/user/project/${projectSlug}/devlog`,
 				label: (
-					<Link href={`/user/project/${projectSlug}/devlog`} prefetch>
-						<PendingLabel>
-							{t("app.user-project.menu.overview", "Devlog")}
-						</PendingLabel>
-					</Link>
+					<NavLink href={`/user/project/${projectSlug}/devlog`} prefetch>
+						{t("app.user-project.menu.overview", "Devlog")}
+					</NavLink>
 				),
 			},
 			{
 				key: `/user/project/${projectSlug}/team`,
 				label: (
-					<Link href={`/user/project/${projectSlug}/team`} prefetch>
-						<PendingLabel>
-							{t("app.user-project.menu.team", "Team")}
-						</PendingLabel>
-					</Link>
+					<NavLink href={`/user/project/${projectSlug}/team`} prefetch>
+						{t("app.user-project.menu.team", "Team")}
+					</NavLink>
 				),
 			},
 			// Shown to whoever may open it, rather than shown greyed out: a tab you
@@ -143,17 +135,12 @@ export const ProjectSpace = ({
 						{
 							key: `/user/project/${projectSlug}/open-positions`,
 							label: (
-								<Link
+								<NavLink
 									href={`/user/project/${projectSlug}/open-positions`}
 									prefetch
 								>
-									<PendingLabel>
-										{t(
-											"app.user-project.menu.open-positions",
-											"Open positions",
-										)}
-									</PendingLabel>
-								</Link>
+									{t("app.user-project.menu.open-positions", "Open positions")}
+								</NavLink>
 							),
 						},
 					]
@@ -163,14 +150,12 @@ export const ProjectSpace = ({
 						{
 							key: `/user/project/${projectSlug}/settings/general`,
 							label: (
-								<Link
+								<NavLink
 									href={`/user/project/${projectSlug}/settings/general`}
 									prefetch
 								>
-									<PendingLabel>
-										{t("app.user.menu.settings", "Settings")}
-									</PendingLabel>
-								</Link>
+									{t("app.user.menu.settings", "Settings")}
+								</NavLink>
 							),
 						},
 					]
@@ -230,7 +215,7 @@ export const ProjectSpace = ({
 	}
 
 	return (
-		<ProjectContext.Provider value={{ contextProject }}>
+		<ProjectContext.Provider value={contextProject}>
 			{isProjectArchived && (
 				<div className={styles.archivedBanner}>
 					{t("project.archived.banner", "Project archived since {date}", {

@@ -62,7 +62,7 @@ const DeleteAccountModal = ({
 	const {
 		data: preview,
 		isFetching: isFetchingPreview,
-		isError: isPreviewError,
+		isLoadingError: isPreviewFailed,
 		refetch: refetchPreview,
 	} = useQuery({
 		queryKey: ["user-delete-preview"],
@@ -137,13 +137,13 @@ const DeleteAccountModal = ({
 						)}
 					/>
 
-					{isPreviewError && !preview && (
+					{isPreviewFailed && (
 						<LoadError
 							title={t(
 								"profile.settings.danger.preview.load-error",
 								"What will be deleted could not be loaded",
 							)}
-							onRetry={() => refetchPreview()}
+							onRetry={refetchPreview}
 						/>
 					)}
 

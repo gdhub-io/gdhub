@@ -39,7 +39,7 @@ const DangerProjectForm = () => {
 							"project.settings.load-error",
 							"Project settings could not be loaded",
 						)}
-						onRetry={() => refetch()}
+						onRetry={refetch}
 					/>
 				) : isLoading ? (
 					<Card variant="borderless">

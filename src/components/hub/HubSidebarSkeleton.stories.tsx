@@ -17,5 +17,5 @@ const meta: Meta<typeof HubSidebarSkeleton> = {
 export default meta;
 
 export const Loading: StoryObj<typeof HubSidebarSkeleton> = {
-	args: { title: "Open positions", rows: 3 },
+	args: { title: "Open positions" },
 };

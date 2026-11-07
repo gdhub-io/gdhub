@@ -17,7 +17,7 @@ const { Text } = Typography;
 const UserTeam = () => {
 	const screens = Grid.useBreakpoint();
 	const { t } = useTranslate();
-	const contextProject = useContext(ProjectContext)?.contextProject;
+	const contextProject = useContext(ProjectContext);
 	const archivedAt = contextProject?.archivedAt;
 
 	const {
@@ -139,7 +139,7 @@ const UserTeam = () => {
 			<ModernTable
 				loading={!contextProject || isLoadingMyTeam}
 				error={isError}
-				onRetry={() => refetch()}
+				onRetry={refetch}
 				columns={columns}
 				dataSource={team?.data.members?.map((m: any) => ({ ...m, key: m.id }))}
 				pagination={false}

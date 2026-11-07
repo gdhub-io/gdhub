@@ -18,7 +18,7 @@ const UserEquitySection = ({ projectId }: UserEquitySectionProps) => {
 	const {
 		data: summary,
 		isLoading: isLoadingMemberEquity,
-		isError,
+		isLoadingError,
 		refetch,
 	} = useQuery({
 		queryKey: ["project-equity-member-current", projectId],
@@ -80,8 +80,8 @@ const UserEquitySection = ({ projectId }: UserEquitySectionProps) => {
 		>
 			<Title level={4}>{t("Your Participation")}</Title>
 
-			{isError && !summary ? (
-				<LoadError onRetry={() => refetch()} />
+			{isLoadingError ? (
+				<LoadError onRetry={refetch} />
 			) : (
 				<Row gutter={[16, 16]}>
 					{Boolean(summary?.data.promisedEquity) && (

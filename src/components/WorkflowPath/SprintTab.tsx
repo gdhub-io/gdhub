@@ -33,7 +33,7 @@ export function SprintTab({
 		refetch,
 	} = useCheckpoint(checkpointId);
 	if (isPending) return <Skeleton active paragraph={{ rows: 4 }} />;
-	if (isError && !checkpoint) return <LoadError onRetry={() => refetch()} />;
+	if (isError && !checkpoint) return <LoadError onRetry={refetch} />;
 
 	const number = Math.min(index, SPRINTS_PER_CHECKPOINT);
 	const sprint = checkpoint?.sprints?.find((row) => row.number === number);

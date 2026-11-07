@@ -1,6 +1,5 @@
 "use client";
 
-import Link from "next/link";
 import { usePathname } from "next/navigation";
 import { type ReactNode, useMemo } from "react";
 import { useAccess } from "@/components/access/AccessProvider";
@@ -8,7 +7,7 @@ import {
 	type SpaceHeaderConfig,
 	useSetSpaceHeader,
 } from "@/components/layouts/SpaceHeader";
-import { PendingLabel } from "@/components/ui";
+import { NavLink } from "@/components/ui";
 import type { Permission } from "@/config/spaces";
 
 const resolveSelectedMenuKey = (pathname: string) => {
@@ -112,9 +111,9 @@ export const AdminSpace = ({ children }: { children: ReactNode }) => {
 				({ key, name }) => ({
 					key,
 					label: (
-						<Link href={key} prefetch>
-							<PendingLabel>{name}</PendingLabel>
-						</Link>
+						<NavLink href={key} prefetch>
+							{name}
+						</NavLink>
 					),
 				}),
 			),

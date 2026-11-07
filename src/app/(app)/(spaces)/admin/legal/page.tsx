@@ -304,7 +304,7 @@ export default function AdminLegalPage() {
 			{isError ? (
 				<LoadError
 					title={t("admin.legal.error", "Acceptances could not be loaded")}
-					onRetry={() => refetch()}
+					onRetry={refetch}
 				/>
 			) : (
 				<ModernTable<AcceptanceRow>

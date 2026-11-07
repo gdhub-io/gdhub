@@ -22,17 +22,17 @@ export function CourseCardSkeleton() {
 	return <Skeleton.Node active className={styles.card} />;
 }
 
+const CARD_COUNT = 4;
+
 /** `CourseSection`'s grid of cards while it loads. */
 export function CourseGridSkeleton({
-	count = 4,
 	colSpan = DEFAULT_COURSE_COL_SPAN,
 }: {
-	count?: number;
 	colSpan?: CourseColSpan;
 }) {
 	return (
 		<Row gutter={[6, 12]} aria-busy>
-			{Array.from({ length: count }, (_, index) => (
+			{Array.from({ length: CARD_COUNT }, (_, index) => (
 				// biome-ignore lint/suspicious/noArrayIndexKey: placeholders carry no identity
 				<Col key={index} {...colSpan}>
 					<CourseCardSkeleton />

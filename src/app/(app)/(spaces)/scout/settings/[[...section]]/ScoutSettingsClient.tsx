@@ -40,7 +40,7 @@ export function ScoutSettingsClient() {
 	const {
 		data: cabinet,
 		isPending,
-		isError,
+		isLoadingError,
 		refetch,
 	} = useQuery<ScoutCabinet>({
 		queryKey: ["scout", "cabinet"],
@@ -56,14 +56,14 @@ export function ScoutSettingsClient() {
 
 	const renderSection = () => {
 		if (section === "danger") return <ScoutDangerZone />;
-		if (isError && !cabinet) {
+		if (isLoadingError) {
 			return (
 				<LoadError
 					title={t(
 						"scout.settings.load-error",
 						"Scout settings could not be loaded",
 					)}
-					onRetry={() => refetch()}
+					onRetry={refetch}
 				/>
 			);
 		}

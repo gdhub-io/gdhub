@@ -1,4 +1,5 @@
-import { Skeleton } from "antd";
+import { Flex, Skeleton } from "antd";
+import { SkeletonLine } from "@/components/ui/SkeletonLine";
 import {
 	getHubSectionShellClass,
 	HubSectionBody,
@@ -6,18 +7,18 @@ import {
 } from "./HubSection";
 import rowStyles from "./sidebarRow.module.scss";
 
+const ROW_COUNT = 3;
+
 type HubSectionRowsSkeletonProps = {
-	rows?: number;
 	/** `circle` for avatar rows (members, people); `square` for tiles and covers. */
 	media?: "square" | "circle";
 };
 
 /** Placeholder rows with the exact geometry of `HubSectionRow`. */
 export function HubSectionRowsSkeleton({
-	rows = 3,
 	media = "square",
 }: HubSectionRowsSkeletonProps) {
-	return Array.from({ length: rows }, (_, index) => (
+	return Array.from({ length: ROW_COUNT }, (_, index) => (
 		<div
 			// biome-ignore lint/suspicious/noArrayIndexKey: static placeholder rows
 			key={index}
@@ -26,49 +27,27 @@ export function HubSectionRowsSkeleton({
 		>
 			<div className={rowStyles.left}>
 				<Skeleton.Avatar active shape={media} size={32} />
-				<div className={rowStyles.text}>
-					<Skeleton.Input
-						active
-						size="small"
-						style={{ width: 140, minWidth: 0, height: 14 }}
-					/>
-					<Skeleton.Input
-						active
-						size="small"
-						style={{ width: 90, minWidth: 0, height: 11, marginTop: 4 }}
-					/>
-				</div>
+				<Flex vertical gap={4} className={rowStyles.text}>
+					<SkeletonLine width={140} height={14} />
+					<SkeletonLine width={90} height={11} />
+				</Flex>
 			</div>
 		</div>
 	));
 }
 
 type HubSidebarSkeletonProps = HubSectionRowsSkeletonProps & {
-	/** Already-translated. Without it the title is a bar too. */
-	title?: string;
+	/** Already-translated. */
+	title: string;
 };
 
 /** A hub sidebar card while its data loads: the real header, rows as placeholders. */
-export function HubSidebarSkeleton({
-	title,
-	rows,
-	media,
-}: HubSidebarSkeletonProps) {
+export function HubSidebarSkeleton({ title, media }: HubSidebarSkeletonProps) {
 	return (
 		<section className={getHubSectionShellClass("sidebar")} aria-busy>
-			<HubSectionHeader
-				title={
-					title ?? (
-						<Skeleton.Input
-							active
-							size="small"
-							style={{ width: 120, minWidth: 0 }}
-						/>
-					)
-				}
-			/>
+			<HubSectionHeader title={title} />
 			<HubSectionBody flush>
-				<HubSectionRowsSkeleton rows={rows} media={media} />
+				<HubSectionRowsSkeleton media={media} />
 			</HubSectionBody>
 		</section>
 	);

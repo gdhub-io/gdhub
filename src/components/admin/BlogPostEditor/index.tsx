@@ -47,7 +47,7 @@ export default function BlogPostEditor({ id }: { id?: string }) {
 		data: post,
 		refetch: refetchPost,
 		isPending,
-		isError,
+		isLoadingError,
 	} = useQuery({
 		queryKey: ["blog-post-editor", "document", id],
 		queryFn: () => {
@@ -62,7 +62,7 @@ export default function BlogPostEditor({ id }: { id?: string }) {
 	});
 	// Without an id there is nothing to load: the editor opens a new post at once.
 	const loadingPost = !!id && isPending;
-	const failed = !!id && isError && !post;
+	const failed = !!id && isLoadingError;
 
 	const { mutateAsync: changeStatus, isPending: isChangingStatus } =
 		useMutation({
@@ -374,7 +374,7 @@ export default function BlogPostEditor({ id }: { id?: string }) {
 				{loadingPost && (
 					<Skeleton active title={false} paragraph={{ rows: 8 }} />
 				)}
-				{failed && <LoadError onRetry={() => refetchPost()} />}
+				{failed && <LoadError onRetry={refetchPost} />}
 				<div id={editorHolderId} ref={editorHolderRef} />
 			</div>
 		</div>

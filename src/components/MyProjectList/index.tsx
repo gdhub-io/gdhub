@@ -73,14 +73,13 @@ const MyProjectList: React.FC<MyProjectListProps> = ({
 		isSuccess,
 		isLoading,
 		isPending,
-		isError,
+		isLoadingError: failed,
 		refetch,
 	} = useQuery({
 		queryKey: ["userProjects"],
 		queryFn: () => axios.get("/api/user/projects"),
 		refetchOnWindowFocus: false,
 	});
-	const failed = isError && !projects;
 	const loadError = (
 		<LoadError
 			bare={variant === "hubSidebar"}
@@ -88,7 +87,7 @@ const MyProjectList: React.FC<MyProjectListProps> = ({
 				"page.hub.user-projects.load-error",
 				"Failed to load user projects",
 			)}
-			onRetry={() => refetch()}
+			onRetry={refetch}
 		/>
 	);
 

@@ -164,7 +164,7 @@ const DangerEventForm = ({ eventId }: DangerEventFormArgs) => {
 								"event.settings.load-error",
 								"Event settings could not be loaded",
 							)}
-							onRetry={() => refetchEvent()}
+							onRetry={refetchEvent}
 						/>
 					) : isLoadingEvent ? (
 						<Skeleton

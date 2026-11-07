@@ -439,7 +439,7 @@ export default function AuditLogsAdminPage() {
 				<ModernTable
 					loading={isFetching || !timezone}
 					error={isError}
-					onRetry={() => refetch()}
+					onRetry={refetch}
 					rowKey="id"
 					dataSource={response?.data || []}
 					columns={columns}

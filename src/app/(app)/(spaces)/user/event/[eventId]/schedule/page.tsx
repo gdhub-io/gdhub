@@ -152,7 +152,7 @@ export default function EventSchedulePage() {
 				items={schedule as TimelineItem[]}
 				loading={!isFetched}
 				error={isError && !event}
-				onRetry={() => refetchEvent()}
+				onRetry={refetchEvent}
 				canEdit={canEditSchedule}
 				onEdit={(item) => {
 					const row = schedule.find((candidate) => candidate.id === item.id);

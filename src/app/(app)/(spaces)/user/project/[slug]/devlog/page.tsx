@@ -331,7 +331,7 @@ export default function MyProjectDevlogPage() {
 			<ModernTable<ProjectReportWithProject>
 				loading={!project || isFetching}
 				error={isError}
-				onRetry={() => refetchProjectReports()}
+				onRetry={refetchProjectReports}
 				rowKey="id"
 				dataSource={projectReports}
 				columns={columns}

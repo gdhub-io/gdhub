@@ -549,7 +549,7 @@ export default function EventMembersPage() {
 				rowKey="id"
 				loading={isLoading}
 				error={isError}
-				onRetry={() => refetch()}
+				onRetry={refetch}
 				dataSource={members}
 				rowSelection={{
 					selectedRowKeys,
