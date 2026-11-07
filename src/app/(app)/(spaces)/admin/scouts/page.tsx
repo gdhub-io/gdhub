@@ -11,6 +11,7 @@ import { NewScoutModal } from "@/components/admin/NewScoutModal";
 import { ProtectedPageHeader } from "@/components/layouts/ProtectedPageHeader";
 import { AdminSpace } from "@/components/spaces/AdminSpace";
 import { AppAvatar } from "@/components/ui/AppAvatar";
+import { skeletonColumns, skeletonRows } from "@/components/ui/table";
 
 const { Text } = Typography;
 
@@ -37,7 +38,11 @@ export default function AdminScoutsPage() {
 	const { t } = useTranslate();
 	const [creating, setCreating] = useState(false);
 
-	const { data: scouts = [], isFetching } = useQuery<Scout[]>({
+	const {
+		data: scouts = [],
+		isFetching,
+		isPending,
+	} = useQuery<Scout[]>({
 		queryKey: ["admin", "scouts"],
 		queryFn: () => axios.get("/api/admin/scouts").then((res) => res.data),
 	});
@@ -106,9 +111,9 @@ export default function AdminScoutsPage() {
 
 				<Table
 					rowKey="id"
-					loading={isFetching}
-					columns={columns}
-					dataSource={scouts}
+					loading={!isPending && isFetching}
+					columns={isPending ? skeletonColumns<Scout>(columns) : columns}
+					dataSource={isPending ? skeletonRows<Scout>(5, "id") : scouts}
 					pagination={false}
 				/>
 

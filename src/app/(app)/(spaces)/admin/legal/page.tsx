@@ -7,7 +7,7 @@ import {
 	IconDownload,
 	IconSearch,
 } from "@tabler/icons-react";
-import { useQuery } from "@tanstack/react-query";
+import { keepPreviousData, useQuery } from "@tanstack/react-query";
 import { useTranslate } from "@tolgee/react";
 import {
 	Button,
@@ -16,7 +16,6 @@ import {
 	Input,
 	Row,
 	Select,
-	Skeleton,
 	Tag,
 	Typography,
 } from "antd";
@@ -96,7 +95,7 @@ export default function AdminLegalPage() {
 		setFilters((f) => ({ ...f, ...patch }));
 	};
 
-	const { data, isLoading, isError, refetch } = useQuery({
+	const { data, isFetching, isError, refetch } = useQuery({
 		queryKey: ["admin-legal-acceptances", filters, page],
 		queryFn: () =>
 			axios
@@ -104,6 +103,8 @@ export default function AdminLegalPage() {
 					`/api/admin/legal/acceptances?${toParams(filters, page)}`,
 				)
 				.then((r) => r.data),
+		// A filter change keeps the current rows under a spinner instead of blanking the table.
+		placeholderData: keepPreviousData,
 	});
 
 	const contextLabel = (context: string) =>
@@ -305,12 +306,11 @@ export default function AdminLegalPage() {
 					title={t("admin.legal.error", "Acceptances could not be loaded")}
 					onRetry={() => refetch()}
 				/>
-			) : isLoading ? (
-				<Skeleton active title={false} paragraph={{ rows: 6 }} />
 			) : (
 				<ModernTable<AcceptanceRow>
 					rowKey="id"
 					surface="page"
+					loading={isFetching}
 					columns={columns}
 					dataSource={data?.rows}
 					scroll={{ x: scrollX }}

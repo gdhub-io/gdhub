@@ -6,7 +6,7 @@ import { useTranslate } from "@tolgee/react";
 import { App, Button } from "antd";
 import axios from "axios";
 import { useParams } from "next/navigation";
-import { useEffect, useState } from "react";
+import { useMemo, useState } from "react";
 import { useAccess } from "@/components/access/AccessProvider";
 import {
 	EventScheduleTimeline,
@@ -23,20 +23,20 @@ export default function EventSchedulePage() {
 	const params = useParams<{ eventId?: string }>();
 	const eventId = params?.eventId as string;
 
-	const [schedule, setSchedule] = useState<ScheduleItemFormValues[]>([]);
 	// `null` closes the modal; an item with no id is a new one.
 	const [editing, setEditing] = useState<ScheduleItemFormValues | null>(null);
 
 	const { can } = useAccess();
 	const canEditSchedule = can("event.schedule.edit");
 
-	const { event, refetch: refetchEvent } = useEvent(eventId);
+	const { event, refetch: refetchEvent, isFetched } = useEvent(eventId);
 
-	// Load schedule from event data
-	useEffect(() => {
-		if (event?.schedule) {
+	// Derived, not copied into state: a copy is empty for one render after the
+	// event lands, which flashed the empty state.
+	const schedule = useMemo<ScheduleItemFormValues[]>(
+		() =>
 			// The form works in optional strings; the row carries nullable ones.
-			const scheduleData = event.schedule.map((item) => ({
+			(event?.schedule ?? []).map((item) => ({
 				id: item.id,
 				title: item.title ?? undefined,
 				description: item.description ?? undefined,
@@ -54,11 +54,9 @@ export default function EventSchedulePage() {
 						speciality: speaker.name || "",
 						image: speaker.user?.image ?? undefined,
 					})) ?? [],
-			}));
-
-			setSchedule(scheduleData);
-		}
-	}, [event?.schedule]);
+			})),
+		[event?.schedule],
+	);
 
 	const { mutateAsync: updateScheduleItem } = useMutation({
 		mutationFn: (item: ScheduleItemFormValues) => {
@@ -147,6 +145,7 @@ export default function EventSchedulePage() {
 		>
 			<EventScheduleTimeline
 				items={schedule as TimelineItem[]}
+				loading={!isFetched}
 				canEdit={canEditSchedule}
 				onEdit={(item) => {
 					const row = schedule.find((candidate) => candidate.id === item.id);

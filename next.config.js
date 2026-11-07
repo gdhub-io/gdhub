@@ -88,9 +88,12 @@ const nextConfig = {
 	distDir: process.env.NEXT_DIST_DIR || ".next",
 	// The stand opens every page in one session: without dropping what the disk
 	// cache already holds, its dev server grew past 20 GB (GDHUB-130).
-	experimental: process.env.NEXT_DIST_DIR
-		? { turbopackMemoryEviction: "full" }
-		: {},
+	experimental: {
+		// Every (app) route is dynamic, so without this each tab switch is a server
+		// round trip, including a tab opened seconds ago.
+		staleTimes: { dynamic: 30 },
+		...(process.env.NEXT_DIST_DIR && { turbopackMemoryEviction: "full" }),
+	},
 	// Legal texts are read from disk at request time; without this they are not
 	// in the serverless bundle and every legal page renders empty in production.
 	outputFileTracingIncludes: {

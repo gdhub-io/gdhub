@@ -6,13 +6,14 @@ import type {
 } from "@gdhub-io/gdhub-prisma";
 import { useQuery } from "@tanstack/react-query";
 import { useTranslate } from "@tolgee/react";
-import { Space, Table, Tag } from "antd";
+import { Skeleton, Space, Table, Tag } from "antd";
 import type { ColumnsType } from "antd/es/table";
 import axios from "axios";
 import dayjs from "dayjs";
 import { useContext, useState } from "react";
 import ProjectCandidatePreviewModal from "@/components/modals/ProjectCandidatePreviewModal";
 import { AppAvatar } from "@/components/ui/AppAvatar";
+import { skeletonColumns, skeletonRows } from "@/components/ui/table";
 import { ProjectContext } from "@/contexts/ProjectContext";
 
 const MyProjectCandidates = () => {
@@ -28,6 +29,7 @@ const MyProjectCandidates = () => {
 		data: candidates,
 		refetch: refetchCandidates,
 		isFetching: isLoadingCandidates,
+		isPending: isPendingCandidates,
 	} = useQuery({
 		queryKey: ["candidates", contextProject?.id],
 		queryFn: () =>
@@ -123,24 +125,33 @@ const MyProjectCandidates = () => {
 						"Responses on open positions",
 					)}
 				</h3>
-				<Tag color="gray">{candidates?.data.length || 0}</Tag>
+				{isPendingCandidates ? (
+					<Skeleton.Button active size="small" />
+				) : (
+					<Tag color="gray">{candidates?.data.length || 0}</Tag>
+				)}
 			</Space>
 
-			{candidates?.data.length ? (
+			{isPendingCandidates || candidates?.data.length ? (
 				<>
 					<Table
-						loading={isLoadingCandidates}
+						loading={!isPendingCandidates && isLoadingCandidates}
 						style={{
 							border: "1px solid var(--gd-color-text-tertiary)",
 							overflow: "hidden",
 							borderRadius: "var(--gd-radius-panel)",
 							marginTop: 16,
 						}}
-						columns={columns}
-						dataSource={candidates?.data?.map((m: any) => ({
-							...m,
-							key: m.id,
-						}))}
+						columns={isPendingCandidates ? skeletonColumns(columns) : columns}
+						rowKey="id"
+						dataSource={
+							isPendingCandidates
+								? skeletonRows<NonNullable<typeof candidates>["data"][number]>(
+										3,
+										"id",
+									)
+								: candidates?.data
+						}
 						pagination={false}
 					/>
 

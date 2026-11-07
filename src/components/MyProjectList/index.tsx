@@ -20,7 +20,9 @@ import {
 	HubSectionHeader,
 } from "@/components/hub/HubSection";
 import { HubSectionRow } from "@/components/hub/HubSectionRow";
+import { HubSectionRowsSkeleton } from "@/components/hub/HubSidebarSkeleton";
 import { EmptyState } from "@/components/ui";
+import { projectSpaceHref } from "@/helpers/project-space";
 import GameCard from "../GameCard";
 import CreateProjectModal from "../modals/CreateProjectModal";
 import EmptyProjectsState from "./EmptyProjectsState";
@@ -71,6 +73,7 @@ const MyProjectList: React.FC<MyProjectListProps> = ({
 		data: projects,
 		isSuccess,
 		isLoading,
+		isPending,
 		error,
 	} = useQuery({
 		queryKey: ["userProjects"],
@@ -78,7 +81,7 @@ const MyProjectList: React.FC<MyProjectListProps> = ({
 		refetchOnWindowFocus: false,
 	});
 
-	if (isLoading) {
+	if (isLoading && variant !== "hubSidebar") {
 		const loading = (
 			<div className={styles.loadingContainer}>
 				<Spin />
@@ -216,7 +219,11 @@ const MyProjectList: React.FC<MyProjectListProps> = ({
 					</Button>
 				</HubSectionHeader>
 
-				{rows.length ? (
+				{isPending ? (
+					<HubSectionBody flush>
+						<HubSectionRowsSkeleton />
+					</HubSectionBody>
+				) : rows.length ? (
 					<HubSectionBody flush>
 						<div className={sidebarStyles.list}>
 							{rows.map((project: UserProjectCard) => (
@@ -226,7 +233,7 @@ const MyProjectList: React.FC<MyProjectListProps> = ({
 									// authored or joined as a team member — so every row opens the
 									// workspace. There is no /hub/projects/<slug> route; linking
 									// there is what 404'd.
-									href={`/user/project/${project.slug}`}
+									href={projectSpaceHref(project.slug)}
 									title={project.name}
 									subtitle={authorLine(project)}
 									media={

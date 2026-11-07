@@ -132,7 +132,7 @@ const UserTeam = () => {
 			</h3>
 
 			<ModernTable
-				loading={isLoadingMyTeam}
+				loading={!contextProject || isLoadingMyTeam}
 				columns={columns}
 				dataSource={team?.data.members?.map((m: any) => ({ ...m, key: m.id }))}
 				pagination={false}

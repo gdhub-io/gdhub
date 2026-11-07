@@ -1,0 +1,16 @@
+.pending {
+	animation: pulse 1s ease-in-out infinite;
+}
+
+@keyframes pulse {
+	50% {
+		opacity: 0.4;
+	}
+}
+
+@media (prefers-reduced-motion: reduce) {
+	.pending {
+		animation: none;
+		opacity: 0.6;
+	}
+}

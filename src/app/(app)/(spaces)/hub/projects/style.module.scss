@@ -64,3 +64,15 @@
 		min-width: 0;
 	}
 }
+
+// Fills a project card's cover box; the box itself keeps the card's height.
+.coverSkeleton {
+	display: block;
+	width: 100%;
+	height: 100%;
+
+	:global(.ant-skeleton-node) {
+		width: 100%;
+		height: 100%;
+	}
+}

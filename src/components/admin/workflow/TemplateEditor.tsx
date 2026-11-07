@@ -61,7 +61,7 @@ export function TemplateEditor({ id }: { id: string }) {
 	const { message, modal } = App.useApp();
 	const queryClient = useQueryClient();
 
-	const { data, isLoading } = useQuery({
+	const { data, isError } = useQuery({
 		queryKey: ["admin", "workflow", id],
 		queryFn: () => axios.get(`/api/admin/workflow/${id}`),
 	});
@@ -219,9 +219,8 @@ export function TemplateEditor({ id }: { id: string }) {
 		save();
 	};
 
-	if (isLoading) {
-		return <Skeleton active paragraph={{ rows: 8 }} />;
-	}
+	// `loaded`, not the query's state: the drafts land one render after the data does.
+	const pending = !loaded && !isError;
 
 	return (
 		<Flex vertical gap={16}>
@@ -229,7 +228,13 @@ export function TemplateEditor({ id }: { id: string }) {
 				items={[
 					{ title: <Link href="/admin/workflows">Workflows</Link> },
 					{ title: <Link href="/admin/workflows">Templates</Link> },
-					{ title: meta.title || meta.name },
+					{
+						title: pending ? (
+							<Skeleton.Input active size="small" />
+						) : (
+							meta.title || meta.name
+						),
+					},
 				]}
 			/>
 
@@ -240,34 +245,41 @@ export function TemplateEditor({ id }: { id: string }) {
 				gap={24}
 				wrap
 			>
-				<Flex vertical gap={6} className={styles.titles}>
-					{/* The pencil renames the template and nothing else. Everything a
-					    rename is not — slug, description — lives behind Settings. */}
-					<Title
-						level={1}
-						className={styles.title}
-						editable={{
-							icon: <IconPencil size={16} />,
-							tooltip: "Rename template",
-							triggerType: ["icon", "text"],
-							maxLength: 120,
-							onChange: renameTemplate,
-						}}
-					>
-						{meta.title || meta.name}
-					</Title>
-					<Flex align="center" gap={10} wrap>
-						<Tag variant="filled" className={styles.slugChip}>
-							{meta.name}
-						</Tag>
-						<Text type="secondary" className={styles.meta}>
-							{totals.steps} steps · {totals.tasks} tasks
-							{data?.data?.updatedAt
-								? ` · updated ${dayjs(data.data.updatedAt).fromNow()}`
-								: ""}
-						</Text>
+				{pending ? (
+					<Flex vertical gap={6} className={styles.titles}>
+						<Skeleton.Input active size="large" />
+						<Skeleton.Input active size="small" />
 					</Flex>
-				</Flex>
+				) : (
+					<Flex vertical gap={6} className={styles.titles}>
+						{/* The pencil renames the template and nothing else. Everything a
+					    rename is not — slug, description — lives behind Settings. */}
+						<Title
+							level={1}
+							className={styles.title}
+							editable={{
+								icon: <IconPencil size={16} />,
+								tooltip: "Rename template",
+								triggerType: ["icon", "text"],
+								maxLength: 120,
+								onChange: renameTemplate,
+							}}
+						>
+							{meta.title || meta.name}
+						</Title>
+						<Flex align="center" gap={10} wrap>
+							<Tag variant="filled" className={styles.slugChip}>
+								{meta.name}
+							</Tag>
+							<Text type="secondary" className={styles.meta}>
+								{totals.steps} steps · {totals.tasks} tasks
+								{data?.data?.updatedAt
+									? ` · updated ${dayjs(data.data.updatedAt).fromNow()}`
+									: ""}
+							</Text>
+						</Flex>
+					</Flex>
+				)}
 
 				<Flex align="center" gap={10}>
 					{dirty && (
@@ -278,11 +290,17 @@ export function TemplateEditor({ id }: { id: string }) {
 					)}
 					<Button
 						icon={<IconSettings size={16} />}
+						disabled={pending}
 						onClick={() => setSettingsOpen(true)}
 					>
 						Settings
 					</Button>
-					<Button type="primary" loading={isSaving} onClick={handleSave}>
+					<Button
+						type="primary"
+						disabled={pending}
+						loading={isSaving}
+						onClick={handleSave}
+					>
 						Save
 					</Button>
 				</Flex>
@@ -319,335 +337,358 @@ export function TemplateEditor({ id }: { id: string }) {
 				}
 			/>
 
-			<div className={styles.panes}>
-				<Card className={styles.rail} styles={{ body: { padding: 0 } }}>
-					<Flex
-						align="center"
-						justify="space-between"
-						gap={12}
-						className={styles.railHeader}
-					>
-						<Flex align="center" gap={8} className={styles.railTitle}>
-							Steps <span className={styles.count}>{steps.length}</span>
-						</Flex>
-						<Text type="secondary" className={styles.hint}>
-							Drag to reorder
-						</Text>
-					</Flex>
-
-					<DragDropContext
-						onDragEnd={(result) => {
-							if (!result.destination) return;
-							patchSteps(
-								move(steps, result.source.index, result.destination.index),
-							);
-						}}
-					>
-						<Droppable droppableId="steps">
-							{(dropProvided) => (
-								<div
-									className={styles.stepList}
-									ref={dropProvided.innerRef}
-									{...dropProvided.droppableProps}
-								>
-									{steps.map((step, index) => {
-										const required = step.tasks.filter(
-											(task) => task.required,
-										).length;
-										return (
-											<Draggable
-												key={step.key}
-												draggableId={step.key}
-												index={index}
-											>
-												{(dragProvided) => (
-													<button
-														type="button"
-														ref={dragProvided.innerRef}
-														{...dragProvided.draggableProps}
-														className={`${styles.stepRow} ${
-															step.key === selectedKey
-																? styles.stepRowActive
-																: ""
-														}`}
-														onClick={() => setSelectedKey(step.key)}
-													>
-														<span
-															className={styles.grip}
-															{...dragProvided.dragHandleProps}
-														>
-															<IconGripVertical size={16} />
-														</span>
-														<span className={styles.index}>{index + 1}</span>
-														<span className={styles.stepTexts}>
-															<span className={styles.stepName}>
-																{step.name || "Untitled step"}
-															</span>
-															<span className={styles.stepSub}>
-																{step.tasks.length} tasks
-																{required ? ` · ${required} required` : ""}
-															</span>
-														</span>
-													</button>
-												)}
-											</Draggable>
-										);
-									})}
-									{dropProvided.placeholder}
-								</div>
-							)}
-						</Droppable>
-					</DragDropContext>
-
-					<div className={styles.railFooter}>
-						<Button
-							block
-							icon={<IconPlus size={14} />}
-							onClick={() => setStepModal({ open: true, step: null })}
-						>
-							Add step
-						</Button>
-					</div>
-				</Card>
-
-				<Card className={styles.detail} styles={{ body: { padding: 0 } }}>
-					{!selected ? (
-						<div className={styles.emptyDetail}>
-							Add a step to start describing the path.
+			{pending ? (
+				<div className={styles.panes} aria-busy>
+					<Card className={styles.rail} styles={{ body: { padding: 0 } }}>
+						<div className={styles.railHeader}>
+							<span className={styles.railTitle}>Steps</span>
 						</div>
-					) : (
-						<>
-							<Flex
-								align="flex-start"
-								justify="space-between"
-								gap={16}
-								wrap
-								className={styles.detailHeader}
+						{[0, 1, 2, 3].map((index) => (
+							<div key={index} className={styles.stepRow}>
+								<Skeleton.Input active size="small" block />
+							</div>
+						))}
+					</Card>
+					<Card className={styles.detail} styles={{ body: { padding: 0 } }}>
+						<div className={styles.detailHeader}>
+							<Skeleton.Input active size="large" />
+						</div>
+						<div className={styles.detailBody}>
+							<Skeleton active title={false} paragraph={{ rows: 6 }} />
+						</div>
+					</Card>
+				</div>
+			) : (
+				<div className={styles.panes}>
+					<Card className={styles.rail} styles={{ body: { padding: 0 } }}>
+						<Flex
+							align="center"
+							justify="space-between"
+							gap={12}
+							className={styles.railHeader}
+						>
+							<Flex align="center" gap={8} className={styles.railTitle}>
+								Steps <span className={styles.count}>{steps.length}</span>
+							</Flex>
+							<Text type="secondary" className={styles.hint}>
+								Drag to reorder
+							</Text>
+						</Flex>
+
+						<DragDropContext
+							onDragEnd={(result) => {
+								if (!result.destination) return;
+								patchSteps(
+									move(steps, result.source.index, result.destination.index),
+								);
+							}}
+						>
+							<Droppable droppableId="steps">
+								{(dropProvided) => (
+									<div
+										className={styles.stepList}
+										ref={dropProvided.innerRef}
+										{...dropProvided.droppableProps}
+									>
+										{steps.map((step, index) => {
+											const required = step.tasks.filter(
+												(task) => task.required,
+											).length;
+											return (
+												<Draggable
+													key={step.key}
+													draggableId={step.key}
+													index={index}
+												>
+													{(dragProvided) => (
+														<button
+															type="button"
+															ref={dragProvided.innerRef}
+															{...dragProvided.draggableProps}
+															className={`${styles.stepRow} ${
+																step.key === selectedKey
+																	? styles.stepRowActive
+																	: ""
+															}`}
+															onClick={() => setSelectedKey(step.key)}
+														>
+															<span
+																className={styles.grip}
+																{...dragProvided.dragHandleProps}
+															>
+																<IconGripVertical size={16} />
+															</span>
+															<span className={styles.index}>{index + 1}</span>
+															<span className={styles.stepTexts}>
+																<span className={styles.stepName}>
+																	{step.name || "Untitled step"}
+																</span>
+																<span className={styles.stepSub}>
+																	{step.tasks.length} tasks
+																	{required ? ` · ${required} required` : ""}
+																</span>
+															</span>
+														</button>
+													)}
+												</Draggable>
+											);
+										})}
+										{dropProvided.placeholder}
+									</div>
+								)}
+							</Droppable>
+						</DragDropContext>
+
+						<div className={styles.railFooter}>
+							<Button
+								block
+								icon={<IconPlus size={14} />}
+								onClick={() => setStepModal({ open: true, step: null })}
 							>
-								<Flex vertical gap={6} className={styles.titles}>
-									<Flex align="center" gap={8}>
-										<span className={styles.index}>
-											{steps.indexOf(selected) + 1}
-										</span>
-										{/* The step has exactly two editable things, and the
+								Add step
+							</Button>
+						</div>
+					</Card>
+
+					<Card className={styles.detail} styles={{ body: { padding: 0 } }}>
+						{!selected ? (
+							<div className={styles.emptyDetail}>
+								Add a step to start describing the path.
+							</div>
+						) : (
+							<>
+								<Flex
+									align="flex-start"
+									justify="space-between"
+									gap={16}
+									wrap
+									className={styles.detailHeader}
+								>
+									<Flex vertical gap={6} className={styles.titles}>
+										<Flex align="center" gap={8}>
+											<span className={styles.index}>
+												{steps.indexOf(selected) + 1}
+											</span>
+											{/* The step has exactly two editable things, and the
 										    description is already a field below — so the pencil
 										    can only mean the name. */}
-										<Title
-											level={2}
-											className={styles.stepTitle}
-											editable={{
-												icon: <IconPencil size={16} />,
-												tooltip: "Rename step",
-												triggerType: ["icon", "text"],
-												maxLength: 120,
-												onChange: renameStep,
-											}}
+											<Title
+												level={2}
+												className={styles.stepTitle}
+												editable={{
+													icon: <IconPencil size={16} />,
+													tooltip: "Rename step",
+													triggerType: ["icon", "text"],
+													maxLength: 120,
+													onChange: renameStep,
+												}}
+											>
+												{selected.name}
+											</Title>
+										</Flex>
+										<Text type="secondary" className={styles.meta}>
+											{selected.tasks.length} tasks ·{" "}
+											{selected.tasks.filter((task) => task.required).length}{" "}
+											required ·{" "}
+											{selected.tasks.filter((task) => task.condition).length}{" "}
+											auto-checked
+										</Text>
+									</Flex>
+									<Flex align="center" gap={8}>
+										<Button
+											size="small"
+											icon={<IconCopy size={16} />}
+											onClick={() => duplicateStep(selected)}
 										>
-											{selected.name}
-										</Title>
-									</Flex>
-									<Text type="secondary" className={styles.meta}>
-										{selected.tasks.length} tasks ·{" "}
-										{selected.tasks.filter((task) => task.required).length}{" "}
-										required ·{" "}
-										{selected.tasks.filter((task) => task.condition).length}{" "}
-										auto-checked
-									</Text>
-								</Flex>
-								<Flex align="center" gap={8}>
-									<Button
-										size="small"
-										icon={<IconCopy size={16} />}
-										onClick={() => duplicateStep(selected)}
-									>
-										Duplicate
-									</Button>
-									<Button
-										size="small"
-										danger
-										icon={<IconTrash size={16} />}
-										onClick={() =>
-											modal.confirm({
-												title: `Delete “${selected.name}”?`,
-												content:
-													"Projects already created from this template keep the step.",
-												okText: "Delete",
-												okButtonProps: { danger: true },
-												onOk: () => deleteStep(selected.key),
-											})
-										}
-									>
-										Delete
-									</Button>
-								</Flex>
-							</Flex>
-
-							<Flex vertical gap={12} className={styles.detailBody}>
-								{/* Frame 10.09 (`rr9n1`, `ouuf4`): the goal right above the text, so each is in sight while the other is edited (GDHUB-97). */}
-								<Form layout="vertical">
-									<Form.Item label="Goal" tooltip={GOAL_TOOLTIP}>
-										<Input.TextArea
-											value={selected.goal ?? ""}
-											autoSize={{ minRows: 2 }}
-											placeholder="The result this stage must leave the project at, in a sentence or two."
-											onChange={(event) =>
-												patchSelected({ goal: event.target.value })
+											Duplicate
+										</Button>
+										<Button
+											size="small"
+											danger
+											icon={<IconTrash size={16} />}
+											onClick={() =>
+												modal.confirm({
+													title: `Delete “${selected.name}”?`,
+													content:
+														"Projects already created from this template keep the step.",
+													okText: "Delete",
+													okButtonProps: { danger: true },
+													onOk: () => deleteStep(selected.key),
+												})
 											}
-										/>
-									</Form.Item>
-									<Form.Item label="Stage text" style={{ marginBottom: 0 }}>
-										<EditorJsField
-											key={selected.key}
-											value={selected.content}
-											placeholder="Write the stage text…"
-											onChange={(content) => patchSelected({ content })}
-										/>
-									</Form.Item>
-								</Form>
-
-								<Flex
-									align="center"
-									justify="space-between"
-									gap={12}
-									className={styles.tasksHeader}
-								>
-									<Flex align="center" gap={8} className={styles.railTitle}>
-										Tasks{" "}
-										<span className={styles.count}>
-											{selected.tasks.length}
-										</span>
+										>
+											Delete
+										</Button>
 									</Flex>
+								</Flex>
+
+								<Flex vertical gap={12} className={styles.detailBody}>
+									{/* Frame 10.09 (`rr9n1`, `ouuf4`): the goal right above the text, so each is in sight while the other is edited (GDHUB-97). */}
+									<Form layout="vertical">
+										<Form.Item label="Goal" tooltip={GOAL_TOOLTIP}>
+											<Input.TextArea
+												value={selected.goal ?? ""}
+												autoSize={{ minRows: 2 }}
+												placeholder="The result this stage must leave the project at, in a sentence or two."
+												onChange={(event) =>
+													patchSelected({ goal: event.target.value })
+												}
+											/>
+										</Form.Item>
+										<Form.Item label="Stage text" style={{ marginBottom: 0 }}>
+											<EditorJsField
+												key={selected.key}
+												value={selected.content}
+												placeholder="Write the stage text…"
+												onChange={(content) => patchSelected({ content })}
+											/>
+										</Form.Item>
+									</Form>
+
+									<Flex
+										align="center"
+										justify="space-between"
+										gap={12}
+										className={styles.tasksHeader}
+									>
+										<Flex align="center" gap={8} className={styles.railTitle}>
+											Tasks{" "}
+											<span className={styles.count}>
+												{selected.tasks.length}
+											</span>
+										</Flex>
+										<Button
+											size="small"
+											icon={<IconPlus size={14} />}
+											onClick={() => setTaskModal({ open: true, task: null })}
+										>
+											Add task
+										</Button>
+									</Flex>
+
+									<DragDropContext
+										onDragEnd={(result) => {
+											if (!result.destination) return;
+											patchSelected({
+												tasks: move(
+													selected.tasks,
+													result.source.index,
+													result.destination.index,
+												),
+											});
+										}}
+									>
+										<Droppable droppableId="tasks">
+											{(dropProvided) => (
+												<div
+													className={styles.taskList}
+													ref={dropProvided.innerRef}
+													{...dropProvided.droppableProps}
+												>
+													{selected.tasks.map((task, index) => (
+														<Draggable
+															key={task.key}
+															draggableId={task.key}
+															index={index}
+														>
+															{(dragProvided) => (
+																<div
+																	ref={dragProvided.innerRef}
+																	{...dragProvided.draggableProps}
+																	className={styles.taskRow}
+																>
+																	<span
+																		className={styles.grip}
+																		{...dragProvided.dragHandleProps}
+																	>
+																		<IconGripVertical size={16} />
+																	</span>
+																	<Flex
+																		vertical
+																		gap={4}
+																		className={styles.taskTexts}
+																	>
+																		<Flex align="center" gap={8} wrap>
+																			<span className={styles.taskName}>
+																				{task.name}
+																			</span>
+																			{task.required && (
+																				<Tag color="orange" variant="outlined">
+																					Required
+																				</Tag>
+																			)}
+																		</Flex>
+																		{task.description && (
+																			<span className={styles.taskDesc}>
+																				{task.description}
+																			</span>
+																		)}
+																	</Flex>
+																	<Flex align="center" gap={4} flex="0 0 auto">
+																		{/* Auto-checked or not is the thing an admin
+																	    scans for: the platform proves it, or a
+																	    human has to. */}
+																		<Tag
+																			variant="outlined"
+																			className={styles.conditionTag}
+																			icon={
+																				task.condition ? (
+																					<IconBolt size={12} />
+																				) : (
+																					<IconHandStop size={12} />
+																				)
+																			}
+																		>
+																			{task.condition
+																				? describeCondition(task.condition)
+																				: "Manual"}
+																		</Tag>
+																		<Button
+																			type="text"
+																			size="small"
+																			icon={<IconPencil size={16} />}
+																			onClick={() =>
+																				setTaskModal({ open: true, task })
+																			}
+																		/>
+																		<Button
+																			type="text"
+																			size="small"
+																			danger
+																			icon={<IconTrash size={16} />}
+																			onClick={() =>
+																				patchSelected({
+																					tasks: selected.tasks.filter(
+																						(item) => item.key !== task.key,
+																					),
+																				})
+																			}
+																		/>
+																	</Flex>
+																</div>
+															)}
+														</Draggable>
+													))}
+													{dropProvided.placeholder}
+												</div>
+											)}
+										</Droppable>
+									</DragDropContext>
+
 									<Button
-										size="small"
+										block
+										type="dashed"
 										icon={<IconPlus size={14} />}
 										onClick={() => setTaskModal({ open: true, task: null })}
 									>
-										Add task
+										Add task to this step
 									</Button>
 								</Flex>
-
-								<DragDropContext
-									onDragEnd={(result) => {
-										if (!result.destination) return;
-										patchSelected({
-											tasks: move(
-												selected.tasks,
-												result.source.index,
-												result.destination.index,
-											),
-										});
-									}}
-								>
-									<Droppable droppableId="tasks">
-										{(dropProvided) => (
-											<div
-												className={styles.taskList}
-												ref={dropProvided.innerRef}
-												{...dropProvided.droppableProps}
-											>
-												{selected.tasks.map((task, index) => (
-													<Draggable
-														key={task.key}
-														draggableId={task.key}
-														index={index}
-													>
-														{(dragProvided) => (
-															<div
-																ref={dragProvided.innerRef}
-																{...dragProvided.draggableProps}
-																className={styles.taskRow}
-															>
-																<span
-																	className={styles.grip}
-																	{...dragProvided.dragHandleProps}
-																>
-																	<IconGripVertical size={16} />
-																</span>
-																<Flex
-																	vertical
-																	gap={4}
-																	className={styles.taskTexts}
-																>
-																	<Flex align="center" gap={8} wrap>
-																		<span className={styles.taskName}>
-																			{task.name}
-																		</span>
-																		{task.required && (
-																			<Tag color="orange" variant="outlined">
-																				Required
-																			</Tag>
-																		)}
-																	</Flex>
-																	{task.description && (
-																		<span className={styles.taskDesc}>
-																			{task.description}
-																		</span>
-																	)}
-																</Flex>
-																<Flex align="center" gap={4} flex="0 0 auto">
-																	{/* Auto-checked or not is the thing an admin
-																	    scans for: the platform proves it, or a
-																	    human has to. */}
-																	<Tag
-																		variant="outlined"
-																		className={styles.conditionTag}
-																		icon={
-																			task.condition ? (
-																				<IconBolt size={12} />
-																			) : (
-																				<IconHandStop size={12} />
-																			)
-																		}
-																	>
-																		{task.condition
-																			? describeCondition(task.condition)
-																			: "Manual"}
-																	</Tag>
-																	<Button
-																		type="text"
-																		size="small"
-																		icon={<IconPencil size={16} />}
-																		onClick={() =>
-																			setTaskModal({ open: true, task })
-																		}
-																	/>
-																	<Button
-																		type="text"
-																		size="small"
-																		danger
-																		icon={<IconTrash size={16} />}
-																		onClick={() =>
-																			patchSelected({
-																				tasks: selected.tasks.filter(
-																					(item) => item.key !== task.key,
-																				),
-																			})
-																		}
-																	/>
-																</Flex>
-															</div>
-														)}
-													</Draggable>
-												))}
-												{dropProvided.placeholder}
-											</div>
-										)}
-									</Droppable>
-								</DragDropContext>
-
-								<Button
-									block
-									type="dashed"
-									icon={<IconPlus size={14} />}
-									onClick={() => setTaskModal({ open: true, task: null })}
-								>
-									Add task to this step
-								</Button>
-							</Flex>
-						</>
-					)}
-				</Card>
-			</div>
+							</>
+						)}
+					</Card>
+				</div>
+			)}
 
 			<WorkflowSettingsModal
 				visible={settingsOpen}

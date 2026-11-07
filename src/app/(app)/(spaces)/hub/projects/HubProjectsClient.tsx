@@ -3,7 +3,15 @@
 import { IconDeviceGamepad2 } from "@tabler/icons-react";
 import { useQuery } from "@tanstack/react-query";
 import { useTranslate } from "@tolgee/react";
-import { Col, ConfigProvider, Flex, Row, Select, Typography } from "antd";
+import {
+	Col,
+	ConfigProvider,
+	Flex,
+	Row,
+	Select,
+	Skeleton,
+	Typography,
+} from "antd";
 import axios from "axios";
 import { useSession } from "next-auth/react";
 import { useMemo, useState } from "react";
@@ -14,8 +22,42 @@ import {
 	ProjectStoreCard,
 	type StorefrontLink,
 } from "@/components/project/cards";
+import cardStyles from "@/components/project/cards/ProjectCard.module.scss";
+import storeCardStyles from "@/components/project/cards/ProjectStoreCard.module.scss";
 import { EmptyState } from "@/components/ui";
 import styles from "./style.module.scss";
+
+const line = (width: string, height: number) => (
+	<Skeleton.Input active block style={{ width, height, minWidth: 0 }} />
+);
+
+/** A card shell from the real card's own styles, cover and text as placeholders. */
+function CardSkeleton({ store = false }: { store?: boolean }) {
+	const card = store ? storeCardStyles : cardStyles;
+	const foot = (
+		<div className={card.foot}>
+			{line("35%", 14)}
+			<Skeleton.Button active size="small" />
+		</div>
+	);
+	// The store card keeps its foot inside the body, the plain card below it.
+	return (
+		<div className={card.card} aria-busy>
+			<div className={card.cover}>
+				<Skeleton.Node active className={styles.coverSkeleton} />
+			</div>
+			<div className={card.body}>
+				<Flex vertical gap={6}>
+					{line("40%", 14)}
+					{line("75%", 24)}
+					{line("100%", 14)}
+				</Flex>
+				{store && foot}
+			</div>
+			{!store && foot}
+		</div>
+	);
+}
 
 const { Paragraph } = Typography;
 
@@ -51,7 +93,7 @@ export default function HubProjectsClient() {
 	const {
 		data: projects,
 		isSuccess,
-		isLoading,
+		isPending,
 	} = useQuery({
 		queryKey: ["projects"],
 		queryFn: () => axios.get<ProjectListItem[]>("/api/projects"),
@@ -64,7 +106,7 @@ export default function HubProjectsClient() {
 		enabled: isAuthenticated,
 	});
 
-	const { data: publishedProjects } = useQuery({
+	const { data: publishedProjects, isPending: isStorePending } = useQuery({
 		queryKey: ["projects", "published"],
 		queryFn: () => axios.get<StoreProjectListItem[]>("/api/projects/published"),
 		enabled: isAuthenticated,
@@ -79,7 +121,10 @@ export default function HubProjectsClient() {
 	}, [projects?.data, selectedStage]);
 
 	const storeProjects = publishedProjects?.data ?? [];
-	const isListLoading = isSessionLoading || isLoading;
+	// Disabled queries stay pending, so a signed-out viewer is not "loading".
+	const isListLoading = isSessionLoading || (isAuthenticated && isPending);
+	const isStoreLoading =
+		isSessionLoading || (isAuthenticated && isStorePending);
 
 	return (
 		<div className="layout-background">
@@ -91,7 +136,7 @@ export default function HubProjectsClient() {
 				)}
 			/>
 			<div className={styles.container}>
-				{!isSessionLoading && !isLoading && !isSuccess && (
+				{!isListLoading && !isSuccess && (
 					<Paragraph type="secondary">
 						{t(
 							"page.hub.projects.unavailable",
@@ -100,7 +145,7 @@ export default function HubProjectsClient() {
 					</Paragraph>
 				)}
 
-				{storeProjects.length > 0 && (
+				{(isStoreLoading || storeProjects.length > 0) && (
 					<div className={styles.storeProjectsSection}>
 						<div className={styles.sectionHeader}>
 							<Typography.Title level={3} className={styles.sectionTitle}>
@@ -112,6 +157,12 @@ export default function HubProjectsClient() {
 						</div>
 
 						<Row gutter={[16, 16]}>
+							{isStoreLoading &&
+								[0, 1].map((index) => (
+									<Col key={index} xs={24} md={12}>
+										<CardSkeleton store />
+									</Col>
+								))}
 							{storeProjects.map((project) => (
 								<Col key={project.id} xs={24} md={12}>
 									<ProjectStoreCard
@@ -164,7 +215,15 @@ export default function HubProjectsClient() {
 						</ConfigProvider>
 					</Flex>
 
-					{isListLoading ? null : filteredProjects.length > 0 ? (
+					{isListLoading ? (
+						<Row gutter={[16, 16]}>
+							{[0, 1, 2, 3].map((index) => (
+								<Col key={index} xs={24} sm={12} lg={8} xl={6}>
+									<CardSkeleton />
+								</Col>
+							))}
+						</Row>
+					) : filteredProjects.length > 0 ? (
 						<Row gutter={[16, 16]}>
 							{filteredProjects.map((project) => (
 								<Col key={project.id} xs={24} sm={12} lg={8} xl={6}>

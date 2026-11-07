@@ -256,7 +256,60 @@ export function ProjectWorkflowEditor({ id }: { id: string }) {
 		save();
 	};
 
-	if (isLoading) return <Skeleton active paragraph={{ rows: 10 }} />;
+	// The frame and its actions stand at once; only what the workflow fills in waits.
+	if (isLoading)
+		return (
+			<Flex vertical gap={16} aria-busy>
+				<Breadcrumb
+					items={[
+						{ title: <Link href="/admin/workflows">Workflows</Link> },
+						{
+							title: (
+								<Link href="/admin/workflows?tab=projects">
+									Project workflows
+								</Link>
+							),
+						},
+						{ title: <Skeleton.Input active size="small" /> },
+					]}
+				/>
+				<Flex
+					component="header"
+					align="flex-start"
+					justify="space-between"
+					gap={24}
+					wrap
+				>
+					<Flex vertical gap={6} className={styles.titles}>
+						<Skeleton.Input active size="large" />
+						<Skeleton.Input active size="small" />
+					</Flex>
+					<Flex align="center" gap={10} wrap>
+						<Button icon={<IconExternalLink size={16} />} disabled>
+							Open project
+						</Button>
+						<Button type="primary" disabled>
+							Save
+						</Button>
+					</Flex>
+				</Flex>
+				<Card className={styles.card} styles={{ body: { padding: 0 } }}>
+					<Flex vertical gap={2} className={styles.cardHeader}>
+						<span className={styles.cardTitle}>Overall progress</span>
+						<Text type="secondary" className={styles.hint}>
+							The whole path at a glance — steps are edited below
+						</Text>
+					</Flex>
+					<div className={styles.cardBody}>
+						<Skeleton active title={false} paragraph={{ rows: 3 }} />
+					</div>
+				</Card>
+				<span className={styles.sectionHeading}>Project steps</span>
+				<Card>
+					<Skeleton active title={false} paragraph={{ rows: 4 }} />
+				</Card>
+			</Flex>
+		);
 	if (!data)
 		return <Text type="secondary">This workflow no longer exists.</Text>;
 

@@ -11,7 +11,12 @@ import { App, Button, Table, type TableProps, Typography } from "antd";
 import axios from "axios";
 import dayjs from "dayjs";
 import { useState } from "react";
-import { StatusDot, type StatusTone } from "@/components/ui";
+import {
+	StatusDot,
+	type StatusTone,
+	skeletonColumns,
+	skeletonRows,
+} from "@/components/ui";
 
 const { Title, Text } = Typography;
 
@@ -58,7 +63,7 @@ export default function PaymentsList() {
 	const { message } = App.useApp();
 	const [invoiceLoadingId, setInvoiceLoadingId] = useState<string>();
 
-	const { data, isLoading } = useQuery({
+	const { data, isPending } = useQuery({
 		queryKey: ["user-payments"],
 		queryFn: () => axios.get<UserPayment[]>("/api/user/payments"),
 		refetchOnWindowFocus: false,
@@ -240,9 +245,10 @@ export default function PaymentsList() {
 			<Table<UserPayment>
 				style={{ marginTop: 16 }}
 				rowKey="id"
-				loading={isLoading}
-				columns={columns}
-				dataSource={data?.data ?? []}
+				columns={isPending ? skeletonColumns(columns) : columns}
+				dataSource={
+					isPending ? skeletonRows<UserPayment>(3, "id") : (data?.data ?? [])
+				}
 				pagination={false}
 				locale={{
 					emptyText: t("settings.payments.empty", "No payments yet"),

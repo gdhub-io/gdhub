@@ -140,8 +140,14 @@ export const EmptyWithCopy: Story = {
 	},
 };
 
+/** A refetch: the rows stay, under antd's spinner. */
 export const Loading: Story = {
 	args: { loading: true },
+};
+
+/** The first load: no rows yet, so the columns are drawn as bars. */
+export const FirstLoad: Story = {
+	args: { loading: true, dataSource: undefined },
 };
 
 /** Paged tables are the norm on admin screens, so check the footer sits right. */

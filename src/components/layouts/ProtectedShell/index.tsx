@@ -25,6 +25,7 @@ import { Header as AppHeader } from "@/components/layouts/Header";
 import { HeaderActions } from "@/components/layouts/HeaderActions";
 import { useSpaceHeader } from "@/components/layouts/SpaceHeader";
 import { SpaceSwitcher } from "@/components/layouts/SpaceTrail";
+import { PendingLabel } from "@/components/ui";
 import { AppAvatar } from "@/components/ui/AppAvatar";
 import { productTheme } from "@/config/design";
 import { isAvailableLocale } from "@/config/locale";
@@ -245,13 +246,19 @@ export function ProtectedShell({ children }: { children: ReactNode }) {
 		[
 			{
 				key: "/hub",
-				label: <Link href="/hub">{t("hub.menu.overview", "Overview")}</Link>,
+				label: (
+					<Link href="/hub">
+						<PendingLabel>{t("hub.menu.overview", "Overview")}</PendingLabel>
+					</Link>
+				),
 			},
 			{
 				key: "/hub/jobs",
 				permission: "hub.jobs.view",
 				label: (
-					<Link href="/hub/jobs">{t("hub.menu.jobs", "Open positions")}</Link>
+					<Link href="/hub/jobs">
+						<PendingLabel>{t("hub.menu.jobs", "Open positions")}</PendingLabel>
+					</Link>
 				),
 			},
 			{
@@ -259,7 +266,9 @@ export function ProtectedShell({ children }: { children: ReactNode }) {
 				permission: "hub.talent_pool.view",
 				label: (
 					<Link href="/hub/members">
-						{t("hub.menu.talentPool", "Talent Pool")}
+						<PendingLabel>
+							{t("hub.menu.talentPool", "Talent Pool")}
+						</PendingLabel>
 					</Link>
 				),
 			},
@@ -267,26 +276,34 @@ export function ProtectedShell({ children }: { children: ReactNode }) {
 				key: "/hub/projects",
 				permission: "hub.projects.view",
 				label: (
-					<Link href="/hub/projects">{t("hub.menu.projects", "Projects")}</Link>
+					<Link href="/hub/projects">
+						<PendingLabel>{t("hub.menu.projects", "Projects")}</PendingLabel>
+					</Link>
 				),
 			},
 			{
 				key: "/hub/events",
 				permission: "hub.events.view",
-				label: <Link href="/hub/events">{t("hub.menu.events", "Events")}</Link>,
+				label: (
+					<Link href="/hub/events">
+						<PendingLabel>{t("hub.menu.events", "Events")}</PendingLabel>
+					</Link>
+				),
 			},
 			{
 				key: "/hub/experts",
 				permission: "hub.experts.view",
 				label: (
-					<Link href="/hub/experts">{t("hub.menu.experts", "Experts")}</Link>
+					<Link href="/hub/experts">
+						<PendingLabel>{t("hub.menu.experts", "Experts")}</PendingLabel>
+					</Link>
 				),
 			},
 			{
 				key: "/user/settings/general",
 				label: (
 					<Link href="/user/settings/general">
-						{t("hub.menu.settings", "Settings")}
+						<PendingLabel>{t("hub.menu.settings", "Settings")}</PendingLabel>
 					</Link>
 				),
 			},

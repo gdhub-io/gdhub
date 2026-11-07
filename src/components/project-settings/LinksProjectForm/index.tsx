@@ -18,6 +18,7 @@ import {
 } from "antd";
 import axios from "axios";
 import { useCallback, useContext, useEffect, useState } from "react";
+import { FormSkeleton } from "@/components/ui/FormSkeleton";
 import { ProjectContext } from "@/contexts/ProjectContext";
 import { platformOptions } from "@/helpers/react-content";
 import type { LinkType, ProjectLink } from "@/types/project";
@@ -37,7 +38,7 @@ const LinksProjectForm = ({ projectSlug }: LinksProjectFormArgs) => {
 	const isProjectArchived =
 		!ctx?.contextProject || !!ctx.contextProject.isProjectArchived;
 
-	const { data: projectLinks, isLoading: isLoadingProjectLinks } = useQuery({
+	const { data: projectLinks, isPending: isPendingLinks } = useQuery({
 		queryKey: ["project-links", ctx?.contextProject?.id],
 		enabled: !!ctx?.contextProject?.id,
 		refetchOnWindowFocus: false,
@@ -243,8 +244,10 @@ const LinksProjectForm = ({ projectSlug }: LinksProjectFormArgs) => {
 		[links, getAvailablePlatformOptions, screens.xs, t, isProjectArchived],
 	);
 
+	if (isPendingLinks) return <FormSkeleton fields={3} />;
+
 	return (
-		<Spin spinning={isSavingLinks || isLoadingProjectLinks}>
+		<Spin spinning={isSavingLinks}>
 			<Form
 				form={form}
 				layout="vertical"

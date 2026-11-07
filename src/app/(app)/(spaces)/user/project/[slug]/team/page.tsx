@@ -1,24 +1,18 @@
 "use client";
 
 import { useTranslate } from "@tolgee/react";
-import { useContext } from "react";
 import { useAccess } from "@/components/access/AccessProvider";
 import MyTeam from "@/components/MyTeam";
 import { ProjectSpace } from "@/components/spaces/ProjectSpace";
 import UserTeam from "@/components/UserTeam";
-import { ProjectContext } from "@/contexts/ProjectContext";
 
 const RenderTeam = () => {
-	const contextProject = useContext(ProjectContext);
 	const { can } = useAccess();
 
 	// An archived project revokes `*.invite` server-side, so this single check
-	// covers both "may manage the team" and "the project is not frozen".
-	return can("project.members.invite") && contextProject?.isLoaded ? (
-		<MyTeam />
-	) : (
-		<UserTeam />
-	);
+	// covers both "may manage the team" and "the project is not frozen". It comes
+	// with the page, so the layout is chosen before the project loads.
+	return can("project.members.invite") ? <MyTeam /> : <UserTeam />;
 };
 
 export default function MyProjectTeamPage() {

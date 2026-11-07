@@ -2,19 +2,20 @@
 
 import { IconArrowLeft, IconExternalLink } from "@tabler/icons-react";
 import { useTranslate } from "@tolgee/react";
-import { Button, Flex, Grid, Space, Typography } from "antd";
+import { Button, Flex, Space, Typography } from "antd";
 import type { ItemType } from "antd/es/menu/interface";
 import dayjs from "dayjs";
 import Link from "next/link";
 import { useParams, usePathname } from "next/navigation";
 import { useSession } from "next-auth/react";
-import { type ReactNode, useEffect, useMemo, useState } from "react";
+import { type ReactNode, useMemo } from "react";
 import { useAccess } from "@/components/access/AccessProvider";
 import { Error404 } from "@/components/Error404";
 import {
 	type SpaceHeaderConfig,
 	useSetSpaceHeader,
 } from "@/components/layouts/SpaceHeader";
+import { PendingLabel } from "@/components/ui";
 import { ProjectStatus } from "@/config/prisma-enums";
 import { type ContextProject, ProjectContext } from "@/contexts/ProjectContext";
 import { useCurrentProject } from "@/hooks/project";
@@ -52,10 +53,8 @@ export const ProjectSpace = ({
 	const params = useParams<{ slug?: string }>();
 	const pathname = usePathname() ?? "";
 	const projectSlug = params?.slug as string;
-	const screens = Grid.useBreakpoint();
 	const { data: session } = useSession();
 	const { can } = useAccess();
-	const [contextProject, setContextProject] = useState<ContextProject>();
 
 	const { project, isFetched } = useCurrentProject();
 
@@ -73,18 +72,20 @@ export const ProjectSpace = ({
 		return dayjs(project.archivedAt).format("LL");
 	}, [project?.archivedAt]);
 
-	useEffect(() => {
-		if (!project) return;
-
-		setContextProject({
-			id: project.id,
-			name: project.name,
-			team: project.team,
-			isProjectAuthor,
-			isProjectArchived,
-			archivedAt: project.archivedAt,
-		});
-	}, [project, isProjectAuthor, isProjectArchived]);
+	// Derived during render: set from an effect, it reached the tabs a render
+	// late, and their queries waited on it.
+	const contextProject = useMemo<ContextProject | undefined>(
+		() =>
+			project && {
+				id: project.id,
+				name: project.name,
+				team: project.team,
+				isProjectAuthor,
+				isProjectArchived,
+				archivedAt: project.archivedAt,
+			},
+		[project, isProjectAuthor, isProjectArchived],
+	);
 
 	useDocumentTitle(
 		title ? `${title} · ${project?.name ?? "Project"}` : project?.name,
@@ -92,36 +93,46 @@ export const ProjectSpace = ({
 
 	const spaceHeader: SpaceHeaderConfig = useMemo(() => {
 		const menuItems: (ItemType & { disabled?: boolean })[] = [
+			// Tabs prefetch in full (`prefetch`): their pages are client components, so
+			// the payload is small and a click opens the tab without a server round trip.
 			// Checkpoints live on the workflow path now; their old tab is gone.
 			{
 				key: `/user/project/${projectSlug}/workflow`,
 				label: (
-					<Link href={`/user/project/${projectSlug}/workflow`}>
-						{t("app.user-project.menu.workflow", "Workflow")}
+					<Link href={`/user/project/${projectSlug}/workflow`} prefetch>
+						<PendingLabel>
+							{t("app.user-project.menu.workflow", "Workflow")}
+						</PendingLabel>
 					</Link>
 				),
 			},
 			{
 				key: `/user/project/${projectSlug}/artifacts`,
 				label: (
-					<Link href={`/user/project/${projectSlug}/artifacts`}>
-						{t("app.user-project.menu.artifacts", "Artifacts")}
+					<Link href={`/user/project/${projectSlug}/artifacts`} prefetch>
+						<PendingLabel>
+							{t("app.user-project.menu.artifacts", "Artifacts")}
+						</PendingLabel>
 					</Link>
 				),
 			},
 			{
 				key: `/user/project/${projectSlug}/devlog`,
 				label: (
-					<Link href={`/user/project/${projectSlug}/devlog`}>
-						{t("app.user-project.menu.overview", "Devlog")}
+					<Link href={`/user/project/${projectSlug}/devlog`} prefetch>
+						<PendingLabel>
+							{t("app.user-project.menu.overview", "Devlog")}
+						</PendingLabel>
 					</Link>
 				),
 			},
 			{
 				key: `/user/project/${projectSlug}/team`,
 				label: (
-					<Link href={`/user/project/${projectSlug}/team`}>
-						{t("app.user-project.menu.team", "Team")}
+					<Link href={`/user/project/${projectSlug}/team`} prefetch>
+						<PendingLabel>
+							{t("app.user-project.menu.team", "Team")}
+						</PendingLabel>
 					</Link>
 				),
 			},
@@ -132,8 +143,16 @@ export const ProjectSpace = ({
 						{
 							key: `/user/project/${projectSlug}/open-positions`,
 							label: (
-								<Link href={`/user/project/${projectSlug}/open-positions`}>
-									{t("app.user-project.menu.open-positions", "Open positions")}
+								<Link
+									href={`/user/project/${projectSlug}/open-positions`}
+									prefetch
+								>
+									<PendingLabel>
+										{t(
+											"app.user-project.menu.open-positions",
+											"Open positions",
+										)}
+									</PendingLabel>
 								</Link>
 							),
 						},
@@ -144,8 +163,13 @@ export const ProjectSpace = ({
 						{
 							key: `/user/project/${projectSlug}/settings/general`,
 							label: (
-								<Link href={`/user/project/${projectSlug}/settings/general`}>
-									{t("app.user.menu.settings", "Settings")}
+								<Link
+									href={`/user/project/${projectSlug}/settings/general`}
+									prefetch
+								>
+									<PendingLabel>
+										{t("app.user.menu.settings", "Settings")}
+									</PendingLabel>
 								</Link>
 							),
 						},
@@ -167,6 +191,7 @@ export const ProjectSpace = ({
 		];
 
 		return {
+			scope: `/user/project/${projectSlug}`,
 			// The parent crumb points at the hub: there is no "My projects" page,
 			// and the hub home is where a person's projects actually are. Point it
 			// elsewhere the day such a page exists.
@@ -189,7 +214,7 @@ export const ProjectSpace = ({
 					.sort((a, b) => b.length - a.length)[0] ?? pathname,
 			],
 		};
-	}, [projectSlug, can, project?.name, pathname, screens.md, t]);
+	}, [projectSlug, can, project?.name, project?.id, pathname, t]);
 
 	useSetSpaceHeader(spaceHeader);
 
@@ -205,9 +230,7 @@ export const ProjectSpace = ({
 	}
 
 	return (
-		<ProjectContext.Provider
-			value={{ contextProject, isLoaded: isFetched, setContextProject }}
-		>
+		<ProjectContext.Provider value={{ contextProject }}>
 			{isProjectArchived && (
 				<div className={styles.archivedBanner}>
 					{t("project.archived.banner", "Project archived since {date}", {

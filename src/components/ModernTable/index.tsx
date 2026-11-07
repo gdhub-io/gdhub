@@ -4,11 +4,19 @@ import { IconInbox } from "@tabler/icons-react";
 import { useTranslate } from "@tolgee/react";
 import { Table, type TableProps } from "antd";
 import classNames from "classnames";
-import { EmptyState, type EmptyStateProps } from "@/components/ui";
+import {
+	EmptyState,
+	type EmptyStateProps,
+	skeletonColumns,
+} from "@/components/ui";
 import styles from "./ModernTable.module.scss";
 
 /** A row that is in a state worth spotting before reading it. */
 export type RowTone = "danger" | "warning" | "success";
+
+const SKELETON_ROWS: object[] = Array.from({ length: 5 }, (_, index) => ({
+	key: `skeleton-${index}`,
+}));
 
 const TONE_CLASS: Record<RowTone | "none", string | undefined> = {
 	danger: styles.toneDanger,
@@ -57,6 +65,27 @@ export function ModernTable<T extends object>({
 }: ModernTableProps<T>) {
 	const { t } = useTranslate();
 
+	// Loading with no rows yet draws the table's own columns as bars; a refetch
+	// keeps the spinner over the rows it has. `loading` stays explicit: a missing
+	// `dataSource` is also what a disabled or failed query leaves behind.
+	const skeleton = !!props.loading && !props.dataSource?.length;
+	const skeletonProps: Partial<TableProps<T>> = skeleton
+		? {
+				columns: skeletonColumns(
+					(props.columns ?? []).map(
+						({ onCell, sorter, filters, ...column }) => column,
+					),
+				),
+				dataSource: SKELETON_ROWS as T[],
+				rowKey: "key",
+				loading: false,
+				pagination: false,
+				rowSelection: undefined,
+				expandable: undefined,
+				onRow: undefined,
+			}
+		: {};
+
 	// antd's default is a grey illustration reading "No data", which the
 	// guidelines rule out. A caller-supplied `locale.emptyText` still wins.
 	const emptyText = locale?.emptyText ?? (
@@ -81,6 +110,8 @@ export function ModernTable<T extends object>({
 			<div className={styles.modernTableWrapper}>
 				<Table<T>
 					{...props}
+					{...skeletonProps}
+					aria-busy={skeleton || undefined}
 					locale={{ ...locale, emptyText }}
 					showHeader={showHeader}
 					// `max-content` sizes the table to its content, which leaves
@@ -95,8 +126,9 @@ export function ModernTable<T extends object>({
 					rowClassName={(record, index) =>
 						classNames(
 							"table-row",
-							TONE_CLASS[rowTone?.(record, index) ?? "none"],
-							typeof rowClassName === "function" &&
+							!skeleton && TONE_CLASS[rowTone?.(record, index) ?? "none"],
+							!skeleton &&
+								typeof rowClassName === "function" &&
 								rowClassName(record, index, 0),
 						)
 					}

@@ -20,6 +20,7 @@ import {
 import axios from "axios";
 import { useEffect, useMemo, useState } from "react";
 import { AppImage } from "@/components/ui/AppImage";
+import { FormSkeleton } from "@/components/ui/FormSkeleton";
 import { EventType, Language } from "@/config/prisma-enums";
 import { useEvent } from "@/hooks/event";
 import styles from "./style.module.scss";
@@ -37,7 +38,7 @@ const GeneralProjectForm = ({ eventId }: GeneralProjectFormArgs) => {
 	const [cover, setCover] = useState<string | null>();
 	const [coverProcessing, setCoverProcessing] = useState(false);
 
-	const { event, isLoading: isFetching } = useEvent(eventId);
+	const { event, isLoading } = useEvent(eventId);
 
 	const isBigEvent = useMemo(() => {
 		return (
@@ -166,8 +167,10 @@ const GeneralProjectForm = ({ eventId }: GeneralProjectFormArgs) => {
 		setCover(undefined);
 	};
 
+	if (isLoading) return <FormSkeleton media={1} fields={4} textarea />;
+
 	return (
-		<Spin spinning={isFetching || isUpdating}>
+		<Spin spinning={isUpdating}>
 			<Form
 				form={form}
 				variant="filled"

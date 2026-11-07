@@ -8,10 +8,11 @@ import type {
 import { IconCurrencyEuro } from "@tabler/icons-react";
 import { useQuery } from "@tanstack/react-query";
 import { useTranslate } from "@tolgee/react";
-import { Button, Col, Flex, Row, Space, Spin, Typography } from "antd";
+import { Button, Col, Flex, Row, Space, Typography } from "antd";
 import axios from "axios";
 import dayjs from "dayjs";
 import Link from "next/link";
+import { CoursesListSkeleton } from "./CoursesListSkeleton";
 import styles from "./style.module.scss";
 
 const { Title, Text } = Typography;
@@ -19,11 +20,7 @@ const { Title, Text } = Typography;
 const CoursesList = ({ location }: { location?: "hub" }) => {
 	const { t } = useTranslate();
 
-	const {
-		data: courses,
-		isFetched,
-		isLoading,
-	} = useQuery({
+	const { data: courses, isPending } = useQuery({
 		queryKey: ["courses"],
 		queryFn: () =>
 			axios.get<
@@ -39,17 +36,11 @@ const CoursesList = ({ location }: { location?: "hub" }) => {
 		refetchInterval: 60000,
 	});
 
-	if (isLoading) {
-		return (
-			<div className={styles.loadingContainer}>
-				<Spin />
-			</div>
-		);
-	}
+	if (isPending) return <CoursesListSkeleton />;
 
 	return (
 		<>
-			{!!courses?.data && isFetched ? (
+			{courses?.data?.length ? (
 				<Row gutter={[16, 16]} wrap>
 					{courses.data.map((course, idx) => {
 						return (

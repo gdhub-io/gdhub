@@ -7,11 +7,12 @@ import dynamic from "next/dynamic";
 import { useSession } from "next-auth/react";
 import { useState } from "react";
 import { ProtectedPageHeader } from "@/components/layouts/ProtectedPageHeader";
+import { AdviceRequestsSkeleton } from "@/components/MyAdviceRequests/AdviceRequestsSkeleton";
 import styles from "./style.module.scss";
 
 const MyAdviceRequests = dynamic(
 	() => import("@/components/MyAdviceRequests"),
-	{ ssr: false },
+	{ ssr: false, loading: () => <AdviceRequestsSkeleton /> },
 );
 const UserAdviceArchiveModal = dynamic(
 	() => import("@/components/modals/UserAdviceArchiveModal"),

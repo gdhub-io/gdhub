@@ -10,6 +10,7 @@ import {
 	type SpaceHeaderConfig,
 	useSetSpaceHeader,
 } from "@/components/layouts/SpaceHeader";
+import { PendingLabel } from "@/components/ui";
 import type { Permission } from "@/config/spaces";
 
 /**
@@ -59,6 +60,7 @@ export const ScoutSpace = ({ children }: { children: ReactNode }) => {
 			SHIPPED.find((item) => pathname.startsWith(item.key)) ?? SHIPPED[0];
 
 		return {
+			scope: "/scout",
 			trail: {
 				parent: { href: SHIPPED[0].key, label: "Scout" },
 				current: { label: selected.name },
@@ -76,7 +78,14 @@ export const ScoutSpace = ({ children }: { children: ReactNode }) => {
 									</Tooltip>
 								),
 							}
-						: { key, label: <Link href={key}>{name}</Link> },
+						: {
+								key,
+								label: (
+									<Link href={key} prefetch>
+										<PendingLabel>{name}</PendingLabel>
+									</Link>
+								),
+							},
 			),
 			menuSelectedKeys: [selected.key],
 		};

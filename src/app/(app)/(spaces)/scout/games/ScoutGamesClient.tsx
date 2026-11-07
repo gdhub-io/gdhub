@@ -28,6 +28,7 @@ import { ProtectedPageHeader } from "@/components/layouts/ProtectedPageHeader";
 import { SavedSearches } from "@/components/scout/SavedSearches";
 import { AppAvatar } from "@/components/ui/AppAvatar";
 import { AppImage } from "@/components/ui/AppImage";
+import { skeletonColumns, skeletonRows } from "@/components/ui/table";
 import { formatDollar } from "@/helpers/format";
 import {
 	estimateInputRows,
@@ -239,7 +240,7 @@ export function ScoutGamesClient() {
 		staleTime: 5 * 60 * 1000,
 	});
 
-	const { data, isFetching } = useQuery({
+	const { data, isFetching, isPending } = useQuery({
 		// Held until the focus is known, so the list is fetched once with the
 		// scout's filters rather than once empty and again with them.
 		enabled: filters !== null,
@@ -541,11 +542,20 @@ export function ScoutGamesClient() {
 				/>
 			</Flex>
 
+			{/* Pending also covers the wait for the cabinet, while the query is still disabled. */}
 			<Table
 				rowKey="id"
-				loading={isFetching}
-				columns={columns}
-				dataSource={data?.data ?? []}
+				loading={!isPending && isFetching}
+				columns={
+					isPending
+						? skeletonColumns<ScoutGame>(
+								columns.map((column) => ({ ...column, sorter: undefined })),
+							)
+						: columns
+				}
+				dataSource={
+					isPending ? skeletonRows<ScoutGame>(8, "id") : (data?.data ?? [])
+				}
 				pagination={false}
 				onChange={(_pagination, _filters, sorter) =>
 					applySort(Array.isArray(sorter) ? sorter[0] : sorter)
@@ -554,7 +564,7 @@ export function ScoutGamesClient() {
 				// the only target.
 				onRow={(game) => ({
 					className: styles.row,
-					onClick: () => setOpenProjectId(game.id),
+					onClick: () => !isPending && setOpenProjectId(game.id),
 				})}
 				// Any `scroll.x` turns on `table-layout: fixed`, which is what makes
 				// the widths above binding; narrower than that, the table scrolls

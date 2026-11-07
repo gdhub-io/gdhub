@@ -4,12 +4,13 @@ import { useTranslate } from "@tolgee/react";
 import { Button } from "antd";
 import dynamic from "next/dynamic";
 import Link from "next/link";
+import { CoursesListSkeleton } from "@/components/CoursesList/CoursesListSkeleton";
 import { ProtectedPageHeader } from "@/components/layouts/ProtectedPageHeader";
 import styles from "./style.module.scss";
 
 const CoursesList = dynamic(
 	() => import("@/components/CoursesList").then((m) => m.default),
-	{ ssr: false },
+	{ ssr: false, loading: () => <CoursesListSkeleton /> },
 );
 
 export default function HubCoursesClient() {

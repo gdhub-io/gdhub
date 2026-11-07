@@ -8,6 +8,7 @@ import {
 	type SpaceHeaderConfig,
 	useSetSpaceHeader,
 } from "@/components/layouts/SpaceHeader";
+import { PendingLabel } from "@/components/ui";
 import type { Permission } from "@/config/spaces";
 
 const MENU_ITEMS: {
@@ -52,13 +53,21 @@ export const AdvisorSpace = ({ children }: { children: ReactNode }) => {
 			MENU_ITEMS.find((item) => pathname.startsWith(item.key)) ?? MENU_ITEMS[0];
 
 		return {
+			scope: "/advisor",
 			trail: {
 				parent: { href: MENU_ITEMS[0].key, label: "Advisor" },
 				current: { label: selected.name },
 				space: { kind: "advisor" },
 			},
 			menuItems: MENU_ITEMS.filter((item) => can(item.permission)).map(
-				({ key, name }) => ({ key, label: <Link href={key}>{name}</Link> }),
+				({ key, name }) => ({
+					key,
+					label: (
+						<Link href={key} prefetch>
+							<PendingLabel>{name}</PendingLabel>
+						</Link>
+					),
+				}),
 			),
 			menuSelectedKeys: [selected.key],
 		};

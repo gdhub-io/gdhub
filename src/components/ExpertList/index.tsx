@@ -1,9 +1,10 @@
 import type { Language, SkillLevel } from "@gdhub-io/gdhub-prisma";
-import { useQuery } from "@tanstack/react-query";
+import { keepPreviousData, useQuery } from "@tanstack/react-query";
 import { useTranslate } from "@tolgee/react";
-import { Button, Col, Row, Space, Spin, Typography } from "antd";
+import { Button, Col, Row, Space, Typography } from "antd";
 import axios from "axios";
 import { avatarImage } from "@/helpers/image";
+import { ExpertListSkeleton } from "./ExpertListSkeleton";
 import styles from "./style.module.scss";
 
 type Expert = {
@@ -38,9 +39,7 @@ const ExpertList = ({
 }) => {
 	const { t } = useTranslate();
 
-	console.log("filter", filter);
-
-	const { data: experts, isLoading } = useQuery<Expert[]>({
+	const { data: experts, isPending } = useQuery<Expert[]>({
 		queryKey: ["experts", JSON.stringify(filter)],
 		queryFn: () =>
 			axios
@@ -52,15 +51,11 @@ const ExpertList = ({
 				})
 				.then((res) => res.data),
 		staleTime: Infinity,
+		// A filter change keeps the current cards on screen until the new list lands.
+		placeholderData: keepPreviousData,
 	});
 
-	if (isLoading) {
-		return (
-			<div className={styles.loadingContainer}>
-				<Spin />
-			</div>
-		);
-	}
+	if (isPending) return <ExpertListSkeleton />;
 
 	return (
 		<>

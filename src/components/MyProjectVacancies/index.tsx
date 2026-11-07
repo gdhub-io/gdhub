@@ -479,10 +479,12 @@ const MyProjectVacancies = () => {
 				)}
 			</Flex>
 
-			{projectVacancies?.data.length > 0 ? (
+			{!contextProject ||
+			isLoadingMyMyProjectVacancies ||
+			projectVacancies?.data.length > 0 ? (
 				<ModernTable
 					showHeader
-					loading={isLoadingMyMyProjectVacancies}
+					loading={!contextProject || isLoadingMyMyProjectVacancies}
 					columns={vacanciesColumns.filter((column) => !column.hidden)}
 					dataSource={projectVacancies?.data?.map((m: any) => ({
 						...m,

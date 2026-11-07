@@ -14,6 +14,18 @@
 	margin-bottom: 24px;
 }
 
+// Fills the hero box, which keeps its own ratio and corners.
+.heroSkeleton {
+	display: block;
+	width: 100%;
+	height: 100%;
+
+	:global(.ant-skeleton-node) {
+		width: 100%;
+		height: 100%;
+	}
+}
+
 .reviewsBadge {
 	position: absolute;
 	right: 16px;

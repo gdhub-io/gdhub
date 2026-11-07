@@ -9,6 +9,7 @@ import { useSession } from "next-auth/react";
 import qs from "qs";
 import { useAccess } from "@/components/access/AccessProvider";
 import { AdviceRequestStatus } from "@/config/prisma-enums";
+import { HubQuickCountsSkeleton } from "./HubQuickCountsSkeleton";
 import styles from "./styles.module.scss";
 
 type AdviceRequest = {
@@ -30,11 +31,13 @@ type AdviceRequest = {
  */
 export function HubQuickCounts({ className }: { className?: string }) {
 	const { t } = useTranslate();
-	const { data: session } = useSession();
+	const { data: session, status } = useSession();
 	const { can } = useAccess();
 	const userId = session?.user?.id;
 
-	const { data: adviceRequests } = useQuery<AdviceRequest[]>({
+	const { data: adviceRequests, isPending: advicePending } = useQuery<
+		AdviceRequest[]
+	>({
 		queryKey: ["advice-requests"],
 		queryFn: () =>
 			axios
@@ -49,20 +52,22 @@ export function HubQuickCounts({ className }: { className?: string }) {
 		enabled: !!userId && can("hub.experts.request"),
 	});
 
-	const { data: latestUsers } = useQuery<unknown[]>({
+	const { data: latestUsers, isPending: usersPending } = useQuery<unknown[]>({
 		queryKey: ["latest-users"],
 		queryFn: () =>
 			axios.get<unknown[]>("/api/users/latest").then((r) => r.data),
 	});
 
-	const { data: hotVacancies } = useQuery<unknown[]>({
+	const { data: hotVacancies, isPending: vacanciesPending } = useQuery<
+		unknown[]
+	>({
 		queryKey: ["hot-team-vacancies"],
 		queryFn: () =>
 			axios.get<unknown[]>("/api/vacancies/hot").then((r) => r.data),
 		enabled: can("hub.jobs.view"),
 	});
 
-	const { data: latestEvents } = useQuery<unknown[]>({
+	const { data: latestEvents, isPending: eventsPending } = useQuery<unknown[]>({
 		queryKey: ["latest-events"],
 		queryFn: () =>
 			axios
@@ -115,6 +120,15 @@ export function HubQuickCounts({ className }: { className?: string }) {
 		// user may not see stays at 0 and the pill never appears.
 	].filter((item) => item.count > 0);
 
+	// A disabled query stays pending forever, so only the ones allowed to run count.
+	const isPending =
+		usersPending ||
+		(can("hub.experts.request") &&
+			(status === "loading" || (!!userId && advicePending))) ||
+		(can("hub.jobs.view") && vacanciesPending) ||
+		(can("hub.events.view") && eventsPending);
+
+	if (isPending) return <HubQuickCountsSkeleton />;
 	if (!counts.length) return null;
 
 	return (

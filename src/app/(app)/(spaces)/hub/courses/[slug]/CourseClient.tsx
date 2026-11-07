@@ -79,7 +79,7 @@ const CourseClient = () => {
 	const params = useParams<{ slug: string }>();
 	const slug = params?.slug;
 
-	const { data, isLoading, isError } = useQuery({
+	const { data, isPending, isError } = useQuery({
 		queryKey: ["course", slug],
 		queryFn: () =>
 			axios.get<CourseDetail>(`/api/courses/${slug}`).then((res) => res.data),
@@ -134,29 +134,18 @@ const CourseClient = () => {
 		),
 	}));
 
-	const breadcrumbs = data
-		? [
-				{
-					title: (
-						<Link href="/hub/courses">{t("hub.menu.courses", "Courses")}</Link>
-					),
-				},
-				{ title: data.direction?.name },
-				{ title: data.name },
-			]
-		: undefined;
+	const breadcrumbs = [
+		{
+			title: (
+				<Link href="/hub/courses">{t("hub.menu.courses", "Courses")}</Link>
+			),
+		},
+		...(data
+			? [{ title: data.direction?.name }, { title: data.name }]
+			: [{ title: line(160, 14) }]),
+	];
 
-	if (isLoading) {
-		return (
-			<div className="layout-background">
-				<div className={styles.container}>
-					<Skeleton active paragraph={{ rows: 8 }} />
-				</div>
-			</div>
-		);
-	}
-
-	if (isError || !data) {
+	if (!isPending && (isError || !data)) {
 		return (
 			<div className="layout-background">
 				<ProtectedPageHeader
@@ -186,10 +175,12 @@ const CourseClient = () => {
 						<div
 							className={[
 								styles.hero,
-								directionBgClass(data.direction?.name),
+								directionBgClass(data?.direction?.name),
 							].join(" ")}
 						>
-							{data.image ? (
+							{isPending ? (
+								<Skeleton.Node active className={styles.heroSkeleton} />
+							) : data?.image ? (
 								<AppImage
 									src={data.image}
 									alt={data.name}
@@ -244,17 +235,26 @@ const CourseClient = () => {
 							</div>
 						) : null}
 
-						<Title level={1} className={styles.title}>
-							{data.name}
-						</Title>
+						{isPending ? (
+							<Flex vertical gap={12} className={styles.title}>
+								{line("70%", 36)}
+								{line("100%", 14)}
+								{line("100%", 14)}
+								{line("60%", 14)}
+							</Flex>
+						) : (
+							<Title level={1} className={styles.title}>
+								{data?.name}
+							</Title>
+						)}
 
-						{data.shortLine ? (
+						{data?.shortLine ? (
 							<Paragraph className={styles.shortLine}>
 								{data.shortLine}
 							</Paragraph>
 						) : null}
 
-						{data.description ? (
+						{data?.description ? (
 							<Paragraph className={styles.description}>
 								{data.description}
 							</Paragraph>
@@ -323,12 +323,18 @@ const CourseClient = () => {
 					<Col xs={24} lg={9}>
 						<div className={styles.sidebar}>
 							<Flex align="baseline" gap={8} justify="flex-end">
-								<Title level={2} className={styles.price}>
-									{price != null
-										? Number(price).toFixed(2)
-										: t("course.priceFree", "Free")}
-								</Title>
-								{price != null ? <Text type="secondary">EUR</Text> : null}
+								{isPending ? (
+									line(120, 32)
+								) : (
+									<>
+										<Title level={2} className={styles.price}>
+											{price != null
+												? Number(price).toFixed(2)
+												: t("course.priceFree", "Free")}
+										</Title>
+										{price != null ? <Text type="secondary">EUR</Text> : null}
+									</>
+								)}
 							</Flex>
 
 							<Row gutter={12} className={styles.metaRow}>
@@ -340,7 +346,7 @@ const CourseClient = () => {
 												{t("course.meta.lessons", "Lessons")}
 											</Text>
 											<Text className={styles.metaValue}>
-												{lessonsCount || "—"}
+												{isPending ? line(32, 14) : lessonsCount || "—"}
 											</Text>
 										</div>
 									</div>
@@ -361,11 +367,13 @@ const CourseClient = () => {
 							</Row>
 
 							<div className={styles.infoList}>
-								{startDate ? (
+								{isPending || startDate ? (
 									<InfoRow
 										icon={<IconClock size={16} stroke={1.5} />}
 										label={t("course.meta.startsAt", "Starts at")}
-										value={dayjs(startDate).format("ll")}
+										value={
+											isPending ? line(90, 14) : dayjs(startDate).format("ll")
+										}
 									/>
 								) : null}
 								{/* <InfoRow
@@ -377,9 +385,11 @@ const CourseClient = () => {
 									icon={<IconLanguage size={16} stroke={1.5} />}
 									label={t("course.meta.language", "Language")}
 									value={
-										data.language === "ru"
-											? t("course.language.ru", "Russian")
-											: t("course.language.en", "English")
+										isPending
+											? line(70, 14)
+											: data?.language === "ru"
+												? t("course.language.ru", "Russian")
+												: t("course.language.en", "English")
 									}
 								/>
 								{/* {totalDurationHours ? (
@@ -452,6 +462,10 @@ const CourseClient = () => {
 		</div>
 	);
 };
+
+const line = (width: number | string, height: number) => (
+	<Skeleton.Input active size="small" style={{ width, height, minWidth: 0 }} />
+);
 
 const InfoRow = ({
 	icon,

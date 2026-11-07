@@ -328,7 +328,7 @@ export default function MyProjectDevlogPage() {
 			}
 		>
 			<ModernTable<ProjectReportWithProject>
-				loading={isFetching}
+				loading={!project || isFetching}
 				rowKey="id"
 				dataSource={projectReports}
 				columns={columns}

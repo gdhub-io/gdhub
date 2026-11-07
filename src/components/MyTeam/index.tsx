@@ -13,6 +13,7 @@ import {
 	IconDotsVertical,
 	IconExternalLink,
 	IconHandStop,
+	IconMail,
 	IconPencil,
 	IconPlus,
 	IconTrash,
@@ -51,7 +52,7 @@ import { AppAvatar } from "@/components/ui/AppAvatar";
 import { TeamMemberStatus } from "@/config/prisma-enums";
 import { ProjectContext } from "@/contexts/ProjectContext";
 import { gtmEventTrigger } from "@/helpers/gtm";
-import EquitySection from "./EquitySection";
+import EquitySection, { EquitySectionSkeleton } from "./EquitySection";
 import InvestorModal from "./InvestorModal";
 import ProjectAdviceArchiveModal from "./ProjectAdviceArchiveModal";
 
@@ -77,6 +78,8 @@ const MyTeam = () => {
 	const { t } = useTranslate();
 	const [modal, contextHolder] = Modal.useModal();
 	const contextProject = useContext(ProjectContext)?.contextProject;
+	// Until the project arrives its team-scoped queries are idle, not empty.
+	const projectLoading = !contextProject;
 	const { can } = useAccess();
 	const [isInviteModalOpen, setIsInviteModalOpen] = useState(false);
 	const [isEquityModalOpen, setIsEquityModalOpen] = useState(false);
@@ -127,14 +130,14 @@ const MyTeam = () => {
 					params: { teamId: contextProject?.team?.id },
 				},
 			),
-		enabled: !!contextProject?.team?.id && can("project.equity.view"),
+		// The route answers only to `project.members.invite`, the same check the tab uses.
+		enabled: !!contextProject?.team?.id && can("project.members.invite"),
 	});
 
 	const {
 		data: advisors,
 		refetch: fetchAdvisors,
 		isLoading: isLoadingAdvisors,
-		isFetched: isFetchedAdvisors,
 	} = useQuery({
 		queryKey: ["team-advisors", contextProject?.team?.id],
 		queryFn: () =>
@@ -153,7 +156,6 @@ const MyTeam = () => {
 		data: investors,
 		refetch: fetchInvestors,
 		isLoading: isLoadingInvestors,
-		isFetched: isFetchedInvestors,
 	} = useQuery({
 		queryKey: ["team-investors", contextProject?.team?.id],
 		queryFn: () =>
@@ -166,7 +168,7 @@ const MyTeam = () => {
 	const {
 		data: projectEquity,
 		refetch: fetchProjectEquity,
-		isLoading: isLoadingEquity,
+		isPending: isPendingEquity,
 	} = useQuery({
 		queryKey: ["project-equity", contextProject?.id],
 		queryFn: () =>
@@ -847,6 +849,7 @@ const MyTeam = () => {
 	return (
 		<>
 			{/* The project's equity breakdown */}
+			{isPendingEquity && <EquitySectionSkeleton />}
 			{projectEquity?.data && contextProject?.id && (
 				<EquitySection
 					projectId={contextProject.id}
@@ -965,7 +968,7 @@ const MyTeam = () => {
 			>
 				<Tabs.TabPane tab={t("Members")} key="members">
 					<ModernTable
-						loading={isLoadingMyTeam || isFiring}
+						loading={projectLoading || isLoadingMyTeam || isFiring}
 						columns={columns}
 						dataSource={team?.data.members?.map((m: any) => ({
 							...m,
@@ -974,37 +977,41 @@ const MyTeam = () => {
 						pagination={false}
 					/>
 				</Tabs.TabPane>
-				{can("project.members.invite") &&
-					pendingInvitations?.data &&
-					pendingInvitations.data.length > 0 && (
-						<Tabs.TabPane
-							tab={t("Pending Invitations")}
-							key="pending-invitations"
-						>
-							<ModernTable
-								loading={isLoadingPendingInvitations || isCanceling}
-								columns={pendingInvitationsColumns}
-								dataSource={
-									pendingInvitations?.data?.map((invitation) => ({
-										...invitation,
-										key: invitation.id,
-									})) || []
-								}
-								pagination={false}
-							/>
-						</Tabs.TabPane>
-					)}
-				<Tabs.TabPane tab={t("Advisors")} key="advisors">
-					{isFetchedAdvisors && advisors?.data?.length ? (
+				{/* Always present for inviters, so the tab bar does not shift once the list arrives. */}
+				{can("project.members.invite") && (
+					<Tabs.TabPane
+						tab={t("Pending Invitations")}
+						key="pending-invitations"
+					>
 						<ModernTable
-							loading={isLoadingAdvisors}
-							columns={advisorsColumns}
-							dataSource={
-								advisors?.data?.map((advisor) => ({
-									...advisor,
-									key: advisor.id,
-								})) || []
+							loading={
+								projectLoading || isLoadingPendingInvitations || isCanceling
 							}
+							columns={pendingInvitationsColumns}
+							dataSource={pendingInvitations?.data?.map((invitation) => ({
+								...invitation,
+								key: invitation.id,
+							}))}
+							emptyState={{
+								icon: IconMail,
+								title: t(
+									"component.myTeam.noPendingInvitations",
+									"No pending invitations",
+								),
+							}}
+							pagination={false}
+						/>
+					</Tabs.TabPane>
+				)}
+				<Tabs.TabPane tab={t("Advisors")} key="advisors">
+					{projectLoading || isLoadingAdvisors || advisors?.data?.length ? (
+						<ModernTable
+							loading={projectLoading || isLoadingAdvisors}
+							columns={advisorsColumns}
+							dataSource={advisors?.data?.map((advisor) => ({
+								...advisor,
+								key: advisor.id,
+							}))}
 							pagination={false}
 						/>
 					) : (
@@ -1024,23 +1031,22 @@ const MyTeam = () => {
 				</Tabs.TabPane>
 				{can("project.equity.view") && (
 					<Tabs.TabPane tab={t("Investors")} key="investors">
-						{isFetchedInvestors && investors?.data?.length ? (
+						{projectLoading || isLoadingInvestors || investors?.data?.length ? (
 							<>
 								<Paragraph type="secondary" style={{ marginTop: 16 }}>
 									{t("table.investors.description")}
 								</Paragraph>
 
 								<ModernTable
-									loading={isLoadingInvestors}
+									loading={projectLoading || isLoadingInvestors}
 									columns={investorsColumns}
-									dataSource={
-										investors?.data?.map((investor) => ({
-											...investor,
-											key: investor.id,
-										})) || []
-									}
+									dataSource={investors?.data?.map((investor) => ({
+										...investor,
+										key: investor.id,
+									}))}
 									pagination={false}
 									summary={(pageData) => {
+										if (!investors?.data?.length) return null;
 										// Calculate total value and share
 										const totalValueByCurrency: Record<string, number> = {};
 										let totalShare = 0;

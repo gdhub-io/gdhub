@@ -11,6 +11,7 @@ import { useTranslate } from "@tolgee/react";
 import Link from "next/link";
 import type React from "react";
 import { avatarImage } from "@/helpers/image";
+import { projectSpaceHref } from "@/helpers/project-space";
 import { useUserSpaces } from "@/hooks/useUserSpaces";
 import type { UserSpaceGroup } from "@/repositories/user/spaces";
 import styles from "./style.module.scss";
@@ -145,7 +146,7 @@ export function SpaceSwitcherMenu({
 					kind: "project",
 					title: t("space.switcher.projects", "Projects"),
 					viewAllHref: "/hub",
-					href: (space) => `/user/project/${space.slug ?? space.id}`,
+					href: (space) => projectSpaceHref(space.slug ?? space.id),
 					group: data.projects,
 				},
 				{
