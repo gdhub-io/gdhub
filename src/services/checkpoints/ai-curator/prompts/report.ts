@@ -228,7 +228,6 @@ export const reportMessages = (input: ReportInput, locale = "en") => [
 					: ""
 			}
 
-			Answer via the ${REPORT_FUNCTION_NAME} function.
 		` + hintBlock(input.hint),
 	},
 ];

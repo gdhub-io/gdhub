@@ -1,4 +1,4 @@
-import { generateText, Output } from "ai";
+import { type FlexibleSchema, generateText, Output } from "ai";
 import { stripIndents } from "common-tags";
 import { z } from "zod";
 import { AI_MODELS } from "@/config/ai-models";
@@ -122,12 +122,12 @@ const voice = (
 `;
 
 /** One structured call on the curator's model: traced, metered, null when unusable. */
-export const runStructured = async <S extends z.ZodType>(
+export const runStructured = async <T>(
 	name: string,
-	schema: S,
+	schema: FlexibleSchema<T>,
 	request: { instructions: string; prompt: string },
 	meter?: AiMeter,
-) => {
+): Promise<T | null> => {
 	const started = Date.now();
 	const result = await generateText({
 		model: aiModel(AI_MODELS.curatorReview),
@@ -136,7 +136,7 @@ export const runStructured = async <S extends z.ZodType>(
 	});
 	traceGenerated(name, AI_MODELS.curatorReview, started, request, result);
 	await recordAiUsage(meter, AI_MODELS.curatorReview, result.usage);
-	return (result.output as z.infer<S> | undefined) ?? null;
+	return (result.output as T | undefined) ?? null;
 };
 
 /** A task by its own words in text the author reads; its id stays in id fields. */

@@ -1,11 +1,8 @@
-import { generateText, Output } from "ai";
 import { stripIndents } from "common-tags";
 import { z } from "zod";
-import { AI_MODELS } from "@/config/ai-models";
 import { fenced } from "@/lib/checkpoints/curator-text";
-import { aiModel } from "@/services/ai/model";
-import { traceGenerated } from "@/services/ai-trace";
-import { type AiMeter, recordAiUsage } from "@/services/ai-usage";
+import type { AiMeter } from "@/services/ai-usage";
+import { runStructured } from "@/services/checkpoints/ai-review";
 import type { JournalEntry } from "@/types/checkpoint-curator";
 import {
 	AUTHOR_VOICE,
@@ -70,21 +67,10 @@ export const composePlanLetter = async (
 		` + hintBlock(input.hint),
 	};
 	try {
-		const started = Date.now();
-		const result = await generateText({
-			model: aiModel(AI_MODELS.curatorReview),
-			output: Output.object({ schema: letterSchema, name: "letter" }),
-			...request,
-		});
-		traceGenerated(
-			"planLetter",
-			AI_MODELS.curatorReview,
-			started,
-			request,
-			result,
+		return (
+			(await runStructured("planLetter", letterSchema, request, meter))
+				?.message ?? null
 		);
-		await recordAiUsage(meter, AI_MODELS.curatorReview, result.usage);
-		return result.output?.message ?? null;
 	} catch (error) {
 		console.error("[checkpoint-curator] plan letter failed", error);
 		return null;

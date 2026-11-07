@@ -194,7 +194,6 @@ export const goalCheckMessages = (input: GoalCheckInput, locale = "en") => [
 					: "This is the project's first checkpoint."
 			}
 
-			Answer via the ${GOAL_CHECK_FUNCTION_NAME} function.
 		` + hintBlock(input.hint),
 	},
 ];

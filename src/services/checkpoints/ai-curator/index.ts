@@ -17,15 +17,9 @@
  * author. The verdict it proposes is settled by `settleVerdict`, in code.
  */
 
-import { generateText, jsonSchema, Output } from "ai";
-import { AI_MODELS } from "@/config/ai-models";
-import { aiModel } from "@/services/ai/model";
-import { traceGenerated } from "@/services/ai-trace";
-import {
-	type AiMeter,
-	type AiPurpose,
-	recordAiUsage,
-} from "@/services/ai-usage";
+import { jsonSchema } from "ai";
+import type { AiMeter, AiPurpose } from "@/services/ai-usage";
+import { runStructured } from "@/services/checkpoints/ai-review";
 import type {
 	CuratorOptions,
 	GoalCheckInput,
@@ -44,42 +38,26 @@ import {
 	reportSchema,
 } from "./prompts/report";
 
-type Message = { role: "system" | "user"; content: string };
-
 const meter = (options: CuratorOptions, purpose: AiPurpose) =>
 	options.checkpointId
 		? { checkpointId: options.checkpointId, purpose }
 		: undefined;
 
 class CheckpointCuratorService {
-	get model() {
-		return AI_MODELS.curatorReview;
-	}
-
-	/** One structured answer, through the AI SDK like every other checkpoint call. */
+	/** One structured answer held to the prompt's schema; null when the model fails. */
 	private async call<T>(
 		name: string,
 		parameters: Record<string, unknown>,
-		messages: Message[],
+		[system, user]: { content: string }[],
 		meter?: AiMeter,
 	): Promise<T | null> {
-		const request = {
-			instructions: messages
-				.filter((m) => m.role === "system")
-				.map((m) => m.content)
-				.join("\n\n"),
-			messages: messages.filter((m) => m.role !== "system"),
-		};
 		try {
-			const started = Date.now();
-			const result = await generateText({
-				model: aiModel(this.model),
-				output: Output.object({ schema: jsonSchema<T>(parameters), name }),
-				...request,
-			});
-			traceGenerated(name, this.model, started, request, result);
-			await recordAiUsage(meter, this.model, result.usage);
-			return (result.output as T | undefined) ?? null;
+			return await runStructured(
+				name,
+				jsonSchema<T>(parameters),
+				{ instructions: system.content, prompt: user.content },
+				meter,
+			);
 		} catch (error) {
 			console.error(`[checkpoint-curator] ${name} failed:`, error);
 			return null;

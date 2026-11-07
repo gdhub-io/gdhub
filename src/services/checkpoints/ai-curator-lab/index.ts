@@ -192,7 +192,7 @@ const CALLS: LabCall[] = [
 			ru: "Проверка цели и предложения задач",
 		},
 		when: { en: "After payment", ru: "После оплаты" },
-		model: checkpointCurator.model,
+		model: AI_MODELS.curatorReview,
 		schema: goalCheckInput,
 		situations: goalCheckSituations,
 		run: async (input, locale) => ({
@@ -366,7 +366,7 @@ const CALLS: LabCall[] = [
 		},
 		label: { en: "Final report and verdict", ru: "Итоговый отчёт и вердикт" },
 		when: { en: "Day 29", ru: "День 29" },
-		model: checkpointCurator.model,
+		model: AI_MODELS.curatorReview,
 		schema: reportInput,
 		situations: reportSituations,
 		run: async ({ goal, items: rows, ...rest }, locale) => {

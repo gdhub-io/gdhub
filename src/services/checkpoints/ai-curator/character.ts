@@ -1,15 +1,12 @@
-import { generateText, Output } from "ai";
 import { stripIndents } from "common-tags";
 import { z } from "zod";
-import { AI_MODELS } from "@/config/ai-models";
 import { CHECKPOINT_DAYS } from "@/config/checkpoint";
 import {
 	CURATOR_CHARACTERS,
 	characterFor,
 } from "@/lib/checkpoints/curator-characters";
-import { aiModel } from "@/services/ai/model";
-import { traceGenerated } from "@/services/ai-trace";
-import { type AiMeter, recordAiUsage } from "@/services/ai-usage";
+import type { AiMeter } from "@/services/ai-usage";
+import { runStructured } from "@/services/checkpoints/ai-review";
 import type { CuratorPersona } from "@/types/checkpoint-curator";
 
 const sheetSchema = z.object({
@@ -77,23 +74,8 @@ export const createCharacter = async (
 		`,
 	};
 	try {
-		const started = Date.now();
-		const result = await generateText({
-			model: aiModel(AI_MODELS.curatorReview),
-			output: Output.object({ schema: sheetSchema, name: "character" }),
-			...request,
-		});
-		traceGenerated(
-			"character",
-			AI_MODELS.curatorReview,
-			started,
-			request,
-			result,
-		);
-		await recordAiUsage(meter, AI_MODELS.curatorReview, result.usage);
-		return result.output
-			? JSON.stringify({ role: key, ...result.output })
-			: key;
+		const sheet = await runStructured("character", sheetSchema, request, meter);
+		return sheet ? JSON.stringify({ role: key, ...sheet }) : key;
 	} catch (error) {
 		console.error("[checkpoint-curator] character failed", error);
 		return key;
