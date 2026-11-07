@@ -13,6 +13,8 @@ exports[`AI output schemas > call notes 1`] = `
           "dueDay": {
             "anyOf": [
               {
+                "maximum": 9007199254740991,
+                "minimum": -9007199254740991,
                 "type": "integer",
               },
               {
@@ -573,6 +575,8 @@ exports[`AI output schemas > review letter 1`] = `
           "dueDay": {
             "anyOf": [
               {
+                "maximum": 9007199254740991,
+                "minimum": -9007199254740991,
                 "type": "integer",
               },
               {

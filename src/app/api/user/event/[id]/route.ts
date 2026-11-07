@@ -29,7 +29,7 @@ const UserEventUpdateSchema = z.object({
 	url: z.string().nullish(),
 	image: z.string().nullish(),
 	isFree: z.boolean().optional(),
-	content: z.record(z.any()).nullish(),
+	content: z.record(z.string(), z.any()).nullish(),
 	certificationEnabled: z.boolean().optional(),
 });
 
