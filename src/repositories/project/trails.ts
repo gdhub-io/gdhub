@@ -17,16 +17,10 @@ const PUBLIC_STATUSES = Object.keys(
 	TRAIL_STATUS_BY_PROJECT_STATUS,
 ) as ProjectStatus[];
 
-/**
- * Every public project's road through the default workflow, for the trails graph.
- * Reads nothing about people: no author, team or curator, only what the
- * project page already shows to anyone.
- */
-export async function getPublicProjectTrails(
-	now = new Date(),
-): Promise<ProjectTrailDto[]> {
+/** The projects the trails graph considers, before `toProjectTrail` drops any. */
+export function getTrailRows(now = new Date()) {
 	const since = new Date(now.getTime() - TRAILS_WINDOW_DAYS * MS_PER_DAY);
-	const rows = await prisma.project.findMany({
+	return prisma.project.findMany({
 		where: {
 			status: { in: PUBLIC_STATUSES },
 			// Rings are the default template's stages; a custom workflow has no place on them.
@@ -52,10 +46,20 @@ export async function getPublicProjectTrails(
 			name: true,
 			coverImage: true,
 			status: true,
+			createdAt: true,
 			workflow: {
 				select: {
 					currentStepId: true,
-					steps: { select: { id: true, order: true, name: true, done: true } },
+					steps: {
+						select: {
+							id: true,
+							order: true,
+							name: true,
+							done: true,
+							finishedAt: true,
+							plannedAt: true,
+						},
+					},
 				},
 			},
 			checkpoints: {
@@ -69,7 +73,17 @@ export async function getPublicProjectTrails(
 			},
 		},
 	});
+}
 
+/**
+ * Every public project's road through the default workflow, for the trails graph.
+ * Reads nothing about people: no author, team or curator, only what the
+ * project page already shows to anyone.
+ */
+export async function getPublicProjectTrails(
+	now = new Date(),
+): Promise<ProjectTrailDto[]> {
+	const rows = await getTrailRows(now);
 	const trails = rows.flatMap((row) => toProjectTrail(row) ?? []);
 	const scores = gameScores(
 		await getGameScoreInputs(

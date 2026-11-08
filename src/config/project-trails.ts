@@ -24,6 +24,9 @@ export const TRAILS_MAX_SWAY = 0.35;
 /** Spacing of the faint dots that draw each ring. */
 export const TRAILS_RING_DOT_SPACING = 18;
 
+/** A project in Project Completion within this many days of its creation was clicked there, and stays off the graph. */
+export const TRAILS_RUSHED_TO_COMPLETION_DAYS = 1;
+
 /** Only projects with any activity in this many days make the graph. */
 export const TRAILS_WINDOW_DAYS = 365;
 
