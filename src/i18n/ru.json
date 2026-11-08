@@ -3404,6 +3404,40 @@
 	"job-card": {
 		"details-button": "Подробнее"
 	},
+	"lab": {
+		"projectTrails": {
+			"card": {
+				"checkpointClosed": "Контрольная точка {order} · закрыта",
+				"checkpointDay": "Контрольная точка {order} · день {day} из {total}",
+				"checkpointEnds": "Контрольная точка {order} заканчивается через {left} дней",
+				"checkpointReview": "Контрольная точка {order} · на рассмотрении",
+				"completed": "{stage} · завершено",
+				"days": "{total} дней",
+				"reviewLine": "{total} дней сделано, ожидаем вердикт",
+				"stageDone": "{stage} выполнен",
+				"stageGoal": "Цель этого этапа",
+				"workingOn": "Работа над {stage}"
+			},
+			"empty": "Пока нет публичных проектов",
+			"fitView": "Просмотр",
+			"home": "На главную",
+			"legend": {
+				"checkpoint": "Чекпоинт",
+				"signal": "Активная контрольная точка: сигнал до её конца"
+			},
+			"next": "следующий: {stage}",
+			"openProject": "Открыть проект",
+			"stageOf": "Этап {n} из {count}",
+			"status": {
+				"abandoned": "Приостановленный",
+				"cancelled": "Отменён",
+				"inProgress": "В процессе",
+				"released": "Релиз"
+			},
+			"title": "Проектные тропы",
+			"window": "Последние {days} дней"
+		}
+	},
 	"landing": {
 		"about": {
 			"abovetitle": "Узнать о нас",
