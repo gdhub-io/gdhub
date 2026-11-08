@@ -5,6 +5,7 @@ import { json, pipe, withAuth, withValidation } from "@/lib/api-handlers";
 import { pageMeta, paginateInMemory } from "@/lib/pagination";
 import { activityScore, MONTH_MS } from "@/lib/scout/activity-score";
 import { withSpaceGuard } from "@/lib/space-guard";
+import { getLastProjectActivity } from "@/repositories/project/activity";
 import { CONFIRMED_MEMBERS } from "@/repositories/project/team";
 import {
 	ABANDONED_FILTER,
@@ -144,25 +145,30 @@ export const GET = pipe(
 	// the other. Applause goes through the client extension rather than a join:
 	// the relation form ships one row per activity per project and sums them in
 	// Node, where the extension groups them in one statement.
-	const [applause, recentReports, totalCount] = await Promise.all([
-		prisma.project.getApplauseCounts({ projectIds }),
-		prisma.projectReport
-			.groupBy({
-				by: ["projectId"],
-				where: {
-					projectId: { in: projectIds },
-					publishedAt: { gt: new Date(Date.now() - MONTH_MS) },
-				},
-				_count: { _all: true },
-			})
-			.then(
-				(rows) =>
-					new Map(rows.map((row) => [row.projectId, row._count._all] as const)),
-			),
-		// Only the SQL-paged branch needs it: everywhere else the rows in hand
-		// are the whole answer, and `paginateInMemory` counts them.
-		byActivity ? prisma.project.count({ where }) : Promise.resolve(0),
-	]);
+	const [applause, lastActivity, recentReports, totalCount] = await Promise.all(
+		[
+			prisma.project.getApplauseCounts({ projectIds }),
+			getLastProjectActivity(projectIds),
+			prisma.projectReport
+				.groupBy({
+					by: ["projectId"],
+					where: {
+						projectId: { in: projectIds },
+						publishedAt: { gt: new Date(Date.now() - MONTH_MS) },
+					},
+					_count: { _all: true },
+				})
+				.then(
+					(rows) =>
+						new Map(
+							rows.map((row) => [row.projectId, row._count._all] as const),
+						),
+				),
+			// Only the SQL-paged branch needs it: everywhere else the rows in hand
+			// are the whole answer, and `paginateInMemory` counts them.
+			byActivity ? prisma.project.count({ where }) : Promise.resolve(0),
+		],
+	);
 
 	const rows = projects.map((project) => {
 		const members = project.team?.members ?? [];
@@ -203,7 +209,7 @@ export const GET = pipe(
 				steps,
 				currentStepOrder: project.workflow?.currentStep?.order ?? null,
 			}),
-			lastActivityAt: project.updatedAt,
+			lastActivityAt: lastActivity.get(project.id) ?? project.updatedAt,
 		};
 	});
 

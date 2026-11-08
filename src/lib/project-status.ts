@@ -1,6 +1,7 @@
 import { type Prisma, ProjectStatus } from "@gdhub-io/gdhub-prisma";
 import dayjs from "dayjs";
 
+export const DORMANT_AFTER_MONTHS = 3;
 export const ARCHIVE_AFTER_DORMANT_DAYS = 14;
 
 export const resolveDormantTransition = ({

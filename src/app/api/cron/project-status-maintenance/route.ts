@@ -3,41 +3,15 @@ import dayjs from "dayjs";
 import { runWithCronLog } from "@/decorators/QueueCronLog";
 import { json, withAuth } from "@/lib/api-handlers";
 import {
-	ARCHIVE_AFTER_DORMANT_DAYS,
+	DORMANT_AFTER_MONTHS,
 	resolveDormantTransition,
 	statusChangeData,
 } from "@/lib/project-status";
+import { getLastProjectActivity } from "@/repositories/project/activity";
 import { NovuService } from "@/services/novu";
 import { prisma } from "@/services/prisma";
 import { isProjectAvailableOnStores } from "@/services/prisma/queries";
-
-const DORMANT_AFTER_MONTHS = 3;
-
-const pickMaxDate = (current: Date | undefined, candidate?: Date | null) => {
-	if (!candidate) return current;
-	if (!current) return candidate;
-	return candidate > current ? candidate : current;
-};
-
-const toMaxDateMap = <TItem>(
-	items: TItem[],
-	keyOf: (item: TItem) => string,
-	dateOf: (item: TItem) => Date,
-) => {
-	const result = new Map<string, Date>();
-
-	for (const item of items) {
-		const key = keyOf(item);
-		const date = dateOf(item);
-		const existing = result.get(key);
-
-		if (!existing || date > existing) {
-			result.set(key, date);
-		}
-	}
-
-	return result;
-};
+import { putToSleep } from "@/services/project/dormancy";
 
 export const GET = withAuth({ mode: "vercel_cron" })(async () => {
 	const result = await runWithCronLog(
@@ -65,16 +39,12 @@ export const GET = withAuth({ mode: "vercel_cron" })(async () => {
 					name: true,
 					slug: true,
 					status: true,
-					updatedAt: true,
 					dormantAt: true,
-					statusChangedAt: true,
-					team: {
-						select: {
-							id: true,
-						},
-					},
 					authorId: true,
 					links: true,
+					workflow: {
+						select: { currentStep: { select: { order: true } } },
+					},
 					author: {
 						select: {
 							email: true,
@@ -98,177 +68,8 @@ export const GET = withAuth({ mode: "vercel_cron" })(async () => {
 				};
 			}
 
-			const projectIds = projects.map((project) => project.id);
-			const teamIds = projects.flatMap((project) =>
-				project.team?.id ? [project.team.id] : [],
-			);
-
-			const [
-				reports,
-				vacancies,
-				teamMembers,
-				teamInvestors,
-				projectEquities,
-				workflowUpdates,
-				workflowStepUpdates,
-				workflowTaskUpdates,
-				workflows,
-				equityAllocations,
-				equityPromises,
-			] = await Promise.all([
-				prisma.projectReport.findMany({
-					where: { projectId: { in: projectIds } },
-					select: { projectId: true, publishedAt: true },
-				}),
-				prisma.teamVacancy.findMany({
-					where: { teamId: { in: teamIds } },
-					select: { teamId: true, updatedAt: true },
-				}),
-				prisma.teamMember.findMany({
-					where: { teamId: { in: teamIds } },
-					select: { teamId: true, updatedAt: true },
-				}),
-				prisma.teamInvestor.findMany({
-					where: { teamId: { in: teamIds } },
-					select: { teamId: true, updatedAt: true },
-				}),
-				prisma.projectEquity.findMany({
-					where: { projectId: { in: projectIds } },
-					select: { id: true, projectId: true, updatedAt: true },
-				}),
-				prisma.projectWorkflow.findMany({
-					where: { projectId: { in: projectIds } },
-					select: { id: true, projectId: true, updatedAt: true },
-				}),
-				prisma.projectWorkflowStep.findMany({
-					where: { projectWorkflow: { projectId: { in: projectIds } } },
-					select: {
-						id: true,
-						projectWorkflow: {
-							select: { projectId: true },
-						},
-						updatedAt: true,
-					},
-				}),
-				prisma.projectWorkflowTask.groupBy({
-					by: ["stepId"],
-					where: {
-						step: { projectWorkflow: { projectId: { in: projectIds } } },
-					},
-					_max: { updatedAt: true },
-				}),
-				prisma.projectWorkflow.findMany({
-					where: {
-						projectId: {
-							in: projectIds,
-						},
-					},
-					select: {
-						projectId: true,
-						currentStep: {
-							select: {
-								id: true,
-								name: true,
-								order: true,
-							},
-						},
-						steps: {
-							select: {
-								id: true,
-								name: true,
-								order: true,
-							},
-						},
-					},
-				}),
-				prisma.equityAllocation.findMany({
-					where: { equity: { projectId: { in: projectIds } } },
-					select: {
-						equity: { select: { projectId: true } },
-						updatedAt: true,
-						id: true,
-					},
-				}),
-				prisma.equityPromise.findMany({
-					where: { allocation: { equity: { projectId: { in: projectIds } } } },
-					select: {
-						allocation: {
-							select: {
-								equity: {
-									select: {
-										projectId: true,
-									},
-								},
-							},
-						},
-						createdAt: true,
-						executedAt: true,
-					},
-				}),
-			]);
-
-			const maxReportByProject = toMaxDateMap(
-				reports,
-				(item) => item.projectId,
-				(item) => item.publishedAt,
-			);
-			const maxVacancyByTeam = toMaxDateMap(
-				vacancies,
-				(item) => item.teamId,
-				(item) => item.updatedAt,
-			);
-			const maxTeamMemberByTeam = toMaxDateMap(
-				teamMembers,
-				(item) => item.teamId,
-				(item) => item.updatedAt,
-			);
-			const maxTeamInvestorByTeam = toMaxDateMap(
-				teamInvestors,
-				(item) => item.teamId,
-				(item) => item.updatedAt,
-			);
-			const maxProjectEquityByProject = toMaxDateMap(
-				projectEquities,
-				(item) => item.projectId,
-				(item) => item.updatedAt,
-			);
-			const maxWorkflowByProject = toMaxDateMap(
-				workflowUpdates,
-				(item) => item.projectId,
-				(item) => item.updatedAt,
-			);
-			const maxWorkflowStepByProject = toMaxDateMap(
-				workflowStepUpdates,
-				(item) => item.projectWorkflow.projectId,
-				(item) => item.updatedAt,
-			);
-			const projectIdByStepId = new Map(
-				workflowStepUpdates.map((step) => [
-					step.id,
-					step.projectWorkflow.projectId,
-				]),
-			);
-			const maxWorkflowTaskByProject = toMaxDateMap(
-				workflowTaskUpdates.flatMap((task) =>
-					task._max.updatedAt
-						? [{ ...task, updatedAt: task._max.updatedAt }]
-						: [],
-				),
-				(item) => projectIdByStepId.get(item.stepId) ?? "",
-				(item) => item.updatedAt,
-			);
-			const maxEquityAllocationByProject = toMaxDateMap(
-				equityAllocations,
-				(item) => item.equity.projectId,
-				(item) => item.updatedAt,
-			);
-			const workflowByProjectId = new Map(
-				workflows.map((workflow) => [workflow.projectId, workflow]),
-			);
-			const maxEquityPromiseByProject = toMaxDateMap(
-				equityPromises,
-				(item) => item.allocation.equity.projectId,
-				(item) => item.executedAt ?? item.createdAt,
+			const lastActivityByProject = await getLastProjectActivity(
+				projects.map((project) => project.id),
 			);
 
 			const dormantProjectIds: string[] = [];
@@ -276,93 +77,16 @@ export const GET = withAuth({ mode: "vercel_cron" })(async () => {
 			const archivedProjectIds: string[] = [];
 
 			for (const project of projects) {
-				let lastActivityAt: Date | undefined = project.updatedAt;
-				const teamId = project.team?.id;
-
-				lastActivityAt = pickMaxDate(
-					lastActivityAt,
-					maxReportByProject.get(project.id),
-				);
-				lastActivityAt = pickMaxDate(
-					lastActivityAt,
-					teamId ? maxVacancyByTeam.get(teamId) : undefined,
-				);
-				lastActivityAt = pickMaxDate(
-					lastActivityAt,
-					teamId ? maxTeamMemberByTeam.get(teamId) : undefined,
-				);
-				lastActivityAt = pickMaxDate(
-					lastActivityAt,
-					teamId ? maxTeamInvestorByTeam.get(teamId) : undefined,
-				);
-				lastActivityAt = pickMaxDate(
-					lastActivityAt,
-					maxProjectEquityByProject.get(project.id),
-				);
-				lastActivityAt = pickMaxDate(
-					lastActivityAt,
-					maxEquityAllocationByProject.get(project.id),
-				);
-				lastActivityAt = pickMaxDate(
-					lastActivityAt,
-					maxEquityPromiseByProject.get(project.id),
-				);
-				lastActivityAt = pickMaxDate(
-					lastActivityAt,
-					maxWorkflowByProject.get(project.id),
-				);
-				lastActivityAt = pickMaxDate(
-					lastActivityAt,
-					maxWorkflowStepByProject.get(project.id),
-				);
-				lastActivityAt = pickMaxDate(
-					lastActivityAt,
-					maxWorkflowTaskByProject.get(project.id),
-				);
-
+				const lastActivityAt = lastActivityByProject.get(project.id);
 				if (!lastActivityAt) continue;
 
 				if (
 					project.status === ProjectStatus.Approved &&
-					!isProjectAvailableOnStores({
-						links: project.links,
-						workflow: workflowByProjectId.get(project.id),
-					}) &&
+					!isProjectAvailableOnStores(project) &&
 					lastActivityAt <= dormantThreshold
 				) {
-					await prisma.project.update({
-						where: {
-							id: project.id,
-							status: ProjectStatus.Approved,
-						},
-						data: statusChangeData(ProjectStatus.Dormant, now),
-					});
-
+					await putToSleep(project, now);
 					dormantProjectIds.push(project.id);
-
-					try {
-						await NovuService.send({
-							template: "default-message",
-							to: {
-								subscriberId: project.authorId,
-								email: project.author.email || undefined,
-							},
-							payload: {
-								title: "Project status changed to Dormant",
-								message:
-									`Your project "${project.name}" was moved to Dormant due to inactivity. ` +
-									"To restore activity, publish a devlog or make other project updates. " +
-									`If there is no activity in the next ${ARCHIVE_AFTER_DORMANT_DAYS} days, the project will be archived.`,
-								redirectUrl: `${process.env.NEXT_PUBLIC_APP_URL}/user/project/${project.slug}`,
-							},
-						});
-					} catch (error) {
-						console.error(
-							`Failed to send Dormant notification for project ${project.id}`,
-							error,
-						);
-					}
-
 					continue;
 				}
 
