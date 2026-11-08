@@ -54,6 +54,7 @@ Landing, about, public project / event / job / course pages, verify, footer, coo
 | 01.12 | Legal Details Page | — |
 | 01.13 | Verify Page - Empty State | 2 |
 | 01.14 | Main Footer | — |
+| 01.15 | Project Trails — `/lab/project-trails` (experimental) | 5 |
 
 ### 02 · Account
 
