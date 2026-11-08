@@ -2,6 +2,7 @@ import { ProjectStatus } from "@gdhub-io/gdhub-prisma";
 import { describe, expect, it } from "vitest";
 import {
 	resolveDormantTransition,
+	shouldGoDormant,
 	statusChangeData,
 } from "@/lib/project-status";
 
@@ -85,5 +86,39 @@ describe("statusChangeData", () => {
 				now: new Date("2026-10-10T04:00:00Z"),
 			}),
 		).toBeNull();
+	});
+});
+
+describe("shouldGoDormant", () => {
+	const now = new Date("2026-11-08T04:00:00Z");
+
+	it("puts a project to sleep after three months with nothing done", () => {
+		expect(
+			shouldGoDormant({
+				lastActivityAt: new Date("2026-08-08T04:00:00Z"),
+				onStores: false,
+				now,
+			}),
+		).toBe(true);
+	});
+
+	it("leaves one with anything done within three months", () => {
+		expect(
+			shouldGoDormant({
+				lastActivityAt: new Date("2026-08-09T00:00:00Z"),
+				onStores: false,
+				now,
+			}),
+		).toBe(false);
+	});
+
+	it("never puts a released game to sleep", () => {
+		expect(
+			shouldGoDormant({
+				lastActivityAt: new Date("2025-01-01T00:00:00Z"),
+				onStores: true,
+				now,
+			}),
+		).toBe(false);
 	});
 });

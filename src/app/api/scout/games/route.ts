@@ -5,6 +5,7 @@ import { json, pipe, withAuth, withValidation } from "@/lib/api-handlers";
 import { pageMeta, paginateInMemory } from "@/lib/pagination";
 import { activityScore, MONTH_MS } from "@/lib/scout/activity-score";
 import { withSpaceGuard } from "@/lib/space-guard";
+import { getLastProjectActivity } from "@/repositories/project/activity";
 import { CONFIRMED_MEMBERS } from "@/repositories/project/team";
 import {
 	ABANDONED_FILTER,
@@ -140,8 +141,7 @@ export const GET = pipe(
 
 	const projectIds = projects.map((project) => project.id);
 
-	// Both are batched over the ids the read returned, and neither depends on
-	// the other. Applause goes through the client extension rather than a join:
+	// Batched over the ids the read returned, and independent of each other. Applause goes through the client extension rather than a join:
 	// the relation form ships one row per activity per project and sums them in
 	// Node, where the extension groups them in one statement.
 	const [applause, recentReports, totalCount] = await Promise.all([
@@ -203,12 +203,23 @@ export const GET = pipe(
 				steps,
 				currentStepOrder: project.workflow?.currentStep?.order ?? null,
 			}),
-			lastActivityAt: project.updatedAt,
 		};
 	});
 
+	// Only for the page shown: the spec is a dozen queries over every id it gets.
+	const withLastActivity = async (pageRows: typeof rows) => {
+		const latest = await getLastProjectActivity(pageRows.map((row) => row.id));
+		return pageRows.map((row) => ({
+			...row,
+			lastActivityAt: latest.get(row.id) ?? null,
+		}));
+	};
+
 	if (byActivity) {
-		return json({ data: rows, meta: pageMeta(totalCount, page, limit) });
+		return json({
+			data: await withLastActivity(rows),
+			meta: pageMeta(totalCount, page, limit),
+		});
 	}
 
 	/**
@@ -237,5 +248,5 @@ export const GET = pipe(
 
 	const { rows: data, meta } = paginateInMemory(sorted, page, limit);
 
-	return json({ data, meta });
+	return json({ data: await withLastActivity(data), meta });
 });

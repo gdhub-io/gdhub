@@ -53,6 +53,8 @@
 		"rbac:backfill:staging": "dotenv -e .env.staging.local -- bun run scripts/rbac-backfill.ts",
 		"rbac:seed-matrix:prod": "dotenv -e .env.prod.local -- bun run scripts/rbac-seed-matrix.ts",
 		"rbac:backfill:prod": "dotenv -e .env.prod.local -- bun run scripts/rbac-backfill.ts",
+		"project:dormancy-repair": "dotenv -- bun run scripts/project-dormancy-repair.ts",
+		"project:dormancy-repair:prod": "dotenv -e .env.prod.local -- bun run scripts/project-dormancy-repair.ts",
 		"test-env": "bun run scripts/test-env.ts",
 		"cassettes:prune": "bun run scripts/prune-cassettes.ts",
 		"dev:test": "scripts/stand.sh dev",
