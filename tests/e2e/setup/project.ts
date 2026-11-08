@@ -20,10 +20,11 @@ export async function createProjectInHub(
 
 	await Promise.all([
 		// Creation runs AI validation and, on a cold dev server, compiles the route.
-		page.waitForURL(/\/user\/project\/[^/]+$/, { timeout: 60_000 }),
+		page.waitForURL(/\/user\/project\/[^/]+\/workflow$/, { timeout: 60_000 }),
 		modal.getByRole("button", { name: /^create$/i }).click(),
 	]);
-	const slug = new URL(page.url()).pathname.split("/").at(-1);
+	// The space opens on its workflow tab: /user/project/<slug>/workflow.
+	const slug = new URL(page.url()).pathname.split("/").at(-2);
 	expect(slug, "project slug in URL").toBeTruthy();
 	return slug as string;
 }
