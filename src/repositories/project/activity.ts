@@ -1,8 +1,10 @@
+import { Prisma } from "@gdhub-io/gdhub-prisma";
 import {
 	CheckpointItemKind,
 	InvitationStatus,
 	TeamMemberStatus,
 } from "@/config/prisma-enums";
+import { type ActivitySpec, lastActivity, latestOf } from "@/lib/activity";
 import { prisma } from "@/services/prisma";
 
 export type ProjectActivityKind =
@@ -15,6 +17,9 @@ export type ProjectActivityKind =
 	| "stage"
 	| "reworded"
 	| "created";
+
+// A member fired since still joined once; the history keeps both.
+const JOINED_STATUSES = [TeamMemberStatus.Hired, TeamMemberStatus.Fired];
 
 export type ProjectActivity = {
 	id: string;
@@ -80,8 +85,7 @@ export async function getProjectActivity(
 		prisma.teamMember.findMany({
 			where: {
 				team: { projectId },
-				// A member fired since still joined once; the history keeps both.
-				status: { in: [TeamMemberStatus.Hired, TeamMemberStatus.Fired] },
+				status: { in: JOINED_STATUSES },
 				startedAt: { lt: before },
 			},
 			orderBy: { startedAt: "desc" },
@@ -287,3 +291,165 @@ export async function getProjectActivity(
 		next: page.length === limit ? (page.at(-1)?.at ?? null) : null,
 	};
 }
+
+/**
+ * What counts as a project being worked on. Dates are the events' own, never a
+ * row's `updatedAt` on the project itself, which views and system writes move.
+ * Every kind in the activity feed is covered (`FEED_KIND_SOURCE`); the spec adds
+ * checkpoints, the author's own edits, status changes and equity.
+ */
+export const PROJECT_ACTIVITY = {
+	created: (ids) =>
+		prisma.project
+			.findMany({
+				where: { id: { in: ids } },
+				select: { id: true, createdAt: true },
+			})
+			.then((rows) => rows.map((row) => ({ id: row.id, at: row.createdAt }))),
+	// Approval, an admin's change, or the cron waking it on an event.
+	statusChanged: (ids) =>
+		prisma.project
+			.findMany({
+				where: { id: { in: ids } },
+				select: { id: true, statusChangedAt: true },
+			})
+			.then((rows) =>
+				rows.map((row) => ({ id: row.id, at: row.statusChangedAt })),
+			),
+	devlog: (ids) =>
+		prisma.projectReport
+			.groupBy({
+				by: ["projectId"],
+				where: { projectId: { in: ids }, isSystem: false },
+				_max: { publishedAt: true },
+			})
+			.then((rows) =>
+				rows.map((row) => ({ id: row.projectId, at: row._max.publishedAt })),
+			),
+	artifact: (ids) =>
+		prisma.projectArtifact
+			.groupBy({
+				by: ["projectId"],
+				where: { projectId: { in: ids } },
+				_max: { createdAt: true },
+			})
+			.then((rows) =>
+				rows.map((row) => ({ id: row.projectId, at: row._max.createdAt })),
+			),
+	team: async (ids) => {
+		const teams = await prisma.team.findMany({
+			where: { projectId: { in: ids } },
+			select: { id: true, projectId: true },
+		});
+		const projectOf = new Map(
+			teams.flatMap((team) =>
+				team.projectId ? [[team.id, team.projectId] as const] : [],
+			),
+		);
+		const teamIds = [...projectOf.keys()];
+		const [members, vacancies, investors] = await Promise.all([
+			prisma.teamMember.groupBy({
+				by: ["teamId"],
+				where: { teamId: { in: teamIds }, status: { in: JOINED_STATUSES } },
+				_max: { startedAt: true, finishedAt: true },
+			}),
+			prisma.teamVacancy.groupBy({
+				by: ["teamId"],
+				where: { teamId: { in: teamIds } },
+				_max: { publishedAt: true, closedAt: true },
+			}),
+			prisma.teamInvestor.groupBy({
+				by: ["teamId"],
+				where: { teamId: { in: teamIds } },
+				_max: { createdAt: true, purchasedAt: true },
+			}),
+		]);
+		return [...members, ...vacancies, ...investors].flatMap(
+			({ teamId, _max }) => {
+				const id = projectOf.get(teamId);
+				return id ? [{ id, at: latestOf(...Object.values(_max)) }] : [];
+			},
+		);
+	},
+	// A step's `updatedAt`, not `finishedAt`: going back a stage clears the dates
+	// it leaves, and is a move all the same. Steps carry no view counter.
+	stage: async (ids) => {
+		const workflows = await prisma.projectWorkflow.findMany({
+			where: { projectId: { in: ids } },
+			select: { id: true, projectId: true },
+		});
+		const steps = await prisma.projectWorkflowStep.groupBy({
+			by: ["projectWorkflowId"],
+			where: { projectWorkflowId: { in: workflows.map((row) => row.id) } },
+			_max: { updatedAt: true },
+		});
+		const projectOf = new Map(workflows.map((row) => [row.id, row.projectId]));
+		return steps.flatMap((row) => {
+			const id = projectOf.get(row.projectWorkflowId);
+			return id ? [{ id, at: row._max.updatedAt }] : [];
+		});
+	},
+	checkpoint: (ids) =>
+		prisma.projectCheckpoint
+			.groupBy({
+				by: ["projectId"],
+				where: { projectId: { in: ids } },
+				_max: {
+					createdAt: true,
+					startedAt: true,
+					revisedAt: true,
+					decidedAt: true,
+				},
+			})
+			.then((rows) =>
+				rows.map(({ projectId, _max }) => ({
+					id: projectId,
+					at: latestOf(...Object.values(_max)),
+				})),
+			),
+	// The audit log names who wrote; only the author's own edits count.
+	edited: (ids) =>
+		prisma.$queryRaw<{ id: string; at: Date }[]>`
+			SELECT a."entityId" AS id, max(a."createdAt") AS at
+			FROM "AuditLog" a
+			JOIN "Project" p ON p.id = a."entityId" AND p."authorId" = a."actorUserId"
+			WHERE a.entity = 'Project' AND a."entityId" IN (${Prisma.join(ids)})
+				AND a.action = 'UPDATE' AND a.status = 'OK'
+			GROUP BY a."entityId"`,
+	equity: (ids) =>
+		prisma.projectEquity
+			.findMany({
+				where: { projectId: { in: ids } },
+				select: {
+					projectId: true,
+					updatedAt: true,
+					equityAllocations: { select: { updatedAt: true } },
+				},
+			})
+			.then((rows) =>
+				rows.map((row) => ({
+					id: row.projectId,
+					at: latestOf(
+						row.updatedAt,
+						...row.equityAllocations.map((allocation) => allocation.updatedAt),
+					),
+				})),
+			),
+} satisfies ActivitySpec<string>;
+
+/** Which source covers each kind the feed shows, so a new feed kind cannot go uncounted. */
+export const FEED_KIND_SOURCE = {
+	created: "created",
+	devlog: "devlog",
+	artifact: "artifact",
+	joined: "team",
+	left: "team",
+	vacancyOpened: "team",
+	vacancyClosed: "team",
+	stage: "stage",
+	reworded: "checkpoint",
+} satisfies Record<ProjectActivityKind, keyof typeof PROJECT_ACTIVITY>;
+
+/** When each project was last worked on, by `PROJECT_ACTIVITY`. */
+export const getLastProjectActivity = (projectIds: string[]) =>
+	lastActivity(PROJECT_ACTIVITY, projectIds);

@@ -1,11 +1,10 @@
+import { Prisma } from "@gdhub-io/gdhub-prisma";
 import { beforeEach, describe, expect, it, vi } from "vitest";
 import { recordContentViews } from "../src/repositories/content/views";
 import { prisma } from "../src/services/prisma";
 
 const tx = {
-	projectReport: {
-		updateMany: vi.fn(),
-	},
+	$executeRaw: vi.fn(),
 	contentView: {
 		createManyAndReturn: vi.fn(),
 		updateMany: vi.fn(),
@@ -20,16 +19,11 @@ vi.mock("../src/services/prisma", () => ({
 	},
 }));
 
-vi.mock("@gdhub-io/gdhub-prisma", async (importOriginal) => {
-	const actual = await importOriginal<Record<string, unknown>>();
-
-	return {
-		...actual,
-		withAuditContext: vi.fn((_context: unknown, run: () => unknown) => run()),
-	};
-});
-
-const { withAuditContext } = await import("@gdhub-io/gdhub-prisma");
+/** The SQL text of the counter bump, with its parameters as Prisma renders them. */
+const bump = () => {
+	const [strings, ...values] = tx.$executeRaw.mock.calls[0];
+	return Prisma.sql(strings, ...values);
+};
 
 const VIEWED_ON = new Date("2026-08-20T00:00:00.000Z");
 
@@ -54,6 +48,8 @@ describe("recordContentViews", () => {
 		tx.contentView.createManyAndReturn.mockResolvedValue([]);
 	});
 
+	// Raw SQL, never a Prisma update: that would move `updatedAt`, which reads as
+	// the project being worked on.
 	it("counts a subject once per viewer per day", async () => {
 		tx.contentView.createManyAndReturn.mockResolvedValue([{ subjectId: "a" }]);
 
@@ -61,17 +57,17 @@ describe("recordContentViews", () => {
 
 		// "b" lost the unique index to a row the viewer already owned today.
 		expect(recorded).toBe(1);
-		expect(tx.projectReport.updateMany).toHaveBeenCalledWith({
-			where: { id: { in: ["a"] } },
-			data: { viewsCount: { increment: 1 } },
-		});
+		expect(bump().text).toBe(
+			'UPDATE "ProjectReport" SET "viewsCount" = "viewsCount" + 1 WHERE "id" IN ($1)',
+		);
+		expect(bump().values).toEqual(["a"]);
 	});
 
 	it("leaves the counter alone when nothing was new", async () => {
 		const recorded = await record(["a", "b"]);
 
 		expect(recorded).toBe(0);
-		expect(tx.projectReport.updateMany).not.toHaveBeenCalled();
+		expect(tx.$executeRaw).not.toHaveBeenCalled();
 	});
 
 	it("remembers that an already-counted view also happened on the page", async () => {
@@ -130,17 +126,6 @@ describe("recordContentViews", () => {
 				skipDuplicates: true,
 				data: [expect.objectContaining({ fromFeed: false, fromPage: true })],
 			}),
-		);
-	});
-
-	it("keeps the counter bump out of the audit log", async () => {
-		// Every subject model is audited, so an unsuppressed bump would write an
-		// AuditLog row — and re-read the rows — on every recorded view.
-		await record(["a"]);
-
-		expect(withAuditContext).toHaveBeenCalledWith(
-			expect.objectContaining({ suppressAudit: true }),
-			expect.any(Function),
 		);
 	});
 });

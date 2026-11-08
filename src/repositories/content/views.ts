@@ -1,8 +1,4 @@
-import {
-	ContentViewSubject,
-	getAuditContext,
-	withAuditContext,
-} from "@gdhub-io/gdhub-prisma";
+import { ContentViewSubject, Prisma } from "@gdhub-io/gdhub-prisma";
 import { prisma } from "@/services/prisma";
 import type { ContentViewSource } from "@/types/content-views";
 
@@ -17,20 +13,24 @@ type ViewCountedModel =
 	| "teamVacancy"
 	| "project";
 
-/**
- * The two calls a subject's table has to answer. Prisma's per-model delegates
- * have no common supertype, so the shared shape is spelled out rather than
- * inferred.
- */
+/** Prisma's per-model delegates have no common supertype, so the one call is spelled out. */
 type ViewCountedDelegate = {
 	findMany(args: {
 		where: { id: { in: string[] } };
 		select: { id: true };
 	}): Promise<{ id: string }[]>;
-	updateMany(args: {
-		where: { id: { in: string[] } };
-		data: { viewsCount: { increment: number } };
-	}): Promise<unknown>;
+};
+
+/** The tables behind the models, for the raw counter bump. */
+const TABLE: Record<ViewCountedModel, string> = {
+	projectReport: "ProjectReport",
+	blogPost: "BlogPost",
+	course: "Course",
+	event: "Event",
+	speciality: "Speciality",
+	scoutCabinet: "ScoutCabinet",
+	teamVacancy: "TeamVacancy",
+	project: "Project",
 };
 
 /** Wiring a new domain is a `viewsCount` column and one line here. */
@@ -85,54 +85,47 @@ export async function recordContentViews({
 
 	const known = found.map((row) => row.id);
 
-	// Seeing something is not an auditable act. Left alone the counter bump would
-	// write an `AuditLog` row per request — over a second pool connection, after
-	// re-running the query above — recording a field the allowlist does not even
-	// carry.
-	return withAuditContext({ ...getAuditContext(), suppressAudit: true }, () =>
-		prisma.$transaction(async (tx) => {
-			const created = await tx.contentView.createManyAndReturn({
-				data: known.map((subjectId) => ({
+	return prisma.$transaction(async (tx) => {
+		const created = await tx.contentView.createManyAndReturn({
+			data: known.map((subjectId) => ({
+				subjectType,
+				subjectId,
+				viewerKey,
+				viewedOn,
+				fromFeed,
+				fromPage: !fromFeed,
+			})),
+			skipDuplicates: true,
+			select: { subjectId: true },
+		});
+
+		// Raw, because a Prisma update also moves `updatedAt`, and the project
+		// status cron would read every visitor as the author working on it.
+		if (created.length > 0) {
+			await tx.$executeRaw`UPDATE ${Prisma.raw(`"${TABLE[model]}"`)} SET "viewsCount" = "viewsCount" + 1 WHERE "id" IN (${Prisma.join(created.map((row) => row.subjectId))})`;
+		}
+
+		// Meeting content in a feed and then opening it is one view, but the row
+		// has to remember both — that split is the only thing `fromFeed` and
+		// `fromPage` are for.
+		if (created.length < known.length) {
+			const fresh = new Set(created.map((row) => row.subjectId));
+			const flag = fromFeed ? "fromFeed" : "fromPage";
+
+			await tx.contentView.updateMany({
+				where: {
 					subjectType,
-					subjectId,
+					subjectId: { in: known.filter((id) => !fresh.has(id)) },
 					viewerKey,
 					viewedOn,
-					fromFeed,
-					fromPage: !fromFeed,
-				})),
-				skipDuplicates: true,
-				select: { subjectId: true },
+					[flag]: false,
+				},
+				data: { [flag]: true },
 			});
+		}
 
-			if (created.length > 0) {
-				await (tx[model] as ViewCountedDelegate).updateMany({
-					where: { id: { in: created.map((row) => row.subjectId) } },
-					data: { viewsCount: { increment: 1 } },
-				});
-			}
-
-			// Meeting content in a feed and then opening it is one view, but the row
-			// has to remember both — that split is the only thing `fromFeed` and
-			// `fromPage` are for.
-			if (created.length < known.length) {
-				const fresh = new Set(created.map((row) => row.subjectId));
-				const flag = fromFeed ? "fromFeed" : "fromPage";
-
-				await tx.contentView.updateMany({
-					where: {
-						subjectType,
-						subjectId: { in: known.filter((id) => !fresh.has(id)) },
-						viewerKey,
-						viewedOn,
-						[flag]: false,
-					},
-					data: { [flag]: true },
-				});
-			}
-
-			return created.length;
-		}),
-	);
+		return created.length;
+	});
 }
 
 /** Drops view rows past their retention. The subjects' counters are unaffected. */

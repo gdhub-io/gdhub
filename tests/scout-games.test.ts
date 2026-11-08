@@ -30,6 +30,11 @@ vi.mock("@/lib/space-guard", () => ({
 	withSpaceGuard: () => (handler: unknown) => handler,
 }));
 
+// The activity spec has its own suite (activity.test.ts).
+vi.mock("@/repositories/project/activity", () => ({
+	getLastProjectActivity: async () => new Map(),
+}));
+
 vi.mock("@/services/prisma", () => ({
 	prisma: {
 		project: {
