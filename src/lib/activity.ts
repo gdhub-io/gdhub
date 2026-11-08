@@ -11,6 +11,13 @@ export type ActivitySpec<Kind extends string> = Record<
 	(ids: string[]) => Promise<ActivityRows>
 >;
 
+/** The latest of the dates given, ignoring the missing ones. */
+export const latestOf = (...dates: (Date | null | undefined)[]) =>
+	dates.reduce<Date | null>(
+		(latest, date) => (date && (!latest || date > latest) ? date : latest),
+		null,
+	);
+
 /** The latest event of any kind in `spec` for each subject; one with none is absent. */
 export async function lastActivity<Kind extends string>(
 	spec: ActivitySpec<Kind>,
@@ -22,8 +29,8 @@ export async function lastActivity<Kind extends string>(
 	const sources = Object.values(spec) as ActivitySpec<Kind>[Kind][];
 	for (const rows of await Promise.all(sources.map((rowsOf) => rowsOf(ids)))) {
 		for (const { id, at } of rows) {
-			const known = latest.get(id);
-			if (at && (!known || at > known)) latest.set(id, at);
+			const next = latestOf(latest.get(id), at);
+			if (next) latest.set(id, next);
 		}
 	}
 	return latest;

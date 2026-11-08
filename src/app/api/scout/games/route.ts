@@ -141,34 +141,28 @@ export const GET = pipe(
 
 	const projectIds = projects.map((project) => project.id);
 
-	// Both are batched over the ids the read returned, and neither depends on
-	// the other. Applause goes through the client extension rather than a join:
+	// Batched over the ids the read returned, and independent of each other. Applause goes through the client extension rather than a join:
 	// the relation form ships one row per activity per project and sums them in
 	// Node, where the extension groups them in one statement.
-	const [applause, lastActivity, recentReports, totalCount] = await Promise.all(
-		[
-			prisma.project.getApplauseCounts({ projectIds }),
-			getLastProjectActivity(projectIds),
-			prisma.projectReport
-				.groupBy({
-					by: ["projectId"],
-					where: {
-						projectId: { in: projectIds },
-						publishedAt: { gt: new Date(Date.now() - MONTH_MS) },
-					},
-					_count: { _all: true },
-				})
-				.then(
-					(rows) =>
-						new Map(
-							rows.map((row) => [row.projectId, row._count._all] as const),
-						),
-				),
-			// Only the SQL-paged branch needs it: everywhere else the rows in hand
-			// are the whole answer, and `paginateInMemory` counts them.
-			byActivity ? prisma.project.count({ where }) : Promise.resolve(0),
-		],
-	);
+	const [applause, recentReports, totalCount] = await Promise.all([
+		prisma.project.getApplauseCounts({ projectIds }),
+		prisma.projectReport
+			.groupBy({
+				by: ["projectId"],
+				where: {
+					projectId: { in: projectIds },
+					publishedAt: { gt: new Date(Date.now() - MONTH_MS) },
+				},
+				_count: { _all: true },
+			})
+			.then(
+				(rows) =>
+					new Map(rows.map((row) => [row.projectId, row._count._all] as const)),
+			),
+		// Only the SQL-paged branch needs it: everywhere else the rows in hand
+		// are the whole answer, and `paginateInMemory` counts them.
+		byActivity ? prisma.project.count({ where }) : Promise.resolve(0),
+	]);
 
 	const rows = projects.map((project) => {
 		const members = project.team?.members ?? [];
@@ -209,12 +203,23 @@ export const GET = pipe(
 				steps,
 				currentStepOrder: project.workflow?.currentStep?.order ?? null,
 			}),
-			lastActivityAt: lastActivity.get(project.id) ?? project.updatedAt,
 		};
 	});
 
+	// Only for the page shown: the spec is a dozen queries over every id it gets.
+	const withLastActivity = async (pageRows: typeof rows) => {
+		const latest = await getLastProjectActivity(pageRows.map((row) => row.id));
+		return pageRows.map((row) => ({
+			...row,
+			lastActivityAt: latest.get(row.id) ?? null,
+		}));
+	};
+
 	if (byActivity) {
-		return json({ data: rows, meta: pageMeta(totalCount, page, limit) });
+		return json({
+			data: await withLastActivity(rows),
+			meta: pageMeta(totalCount, page, limit),
+		});
 	}
 
 	/**
@@ -243,5 +248,5 @@ export const GET = pipe(
 
 	const { rows: data, meta } = paginateInMemory(sorted, page, limit);
 
-	return json({ data, meta });
+	return json({ data: await withLastActivity(data), meta });
 });

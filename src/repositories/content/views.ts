@@ -21,9 +21,17 @@ type ViewCountedDelegate = {
 	}): Promise<{ id: string }[]>;
 };
 
-/** Model names are the table names: no model here is `@@map`ped. */
-const tableOf = (model: ViewCountedModel) =>
-	Prisma.raw(`"${model[0].toUpperCase()}${model.slice(1)}"`);
+/** The tables behind the models, for the raw counter bump. */
+const TABLE: Record<ViewCountedModel, string> = {
+	projectReport: "ProjectReport",
+	blogPost: "BlogPost",
+	course: "Course",
+	event: "Event",
+	speciality: "Speciality",
+	scoutCabinet: "ScoutCabinet",
+	teamVacancy: "TeamVacancy",
+	project: "Project",
+};
 
 /** Wiring a new domain is a `viewsCount` column and one line here. */
 const SUBJECT_MODEL: Record<ContentViewSubject, ViewCountedModel> = {
@@ -94,7 +102,7 @@ export async function recordContentViews({
 		// Raw, because a Prisma update also moves `updatedAt`, and the project
 		// status cron would read every visitor as the author working on it.
 		if (created.length > 0) {
-			await tx.$executeRaw`UPDATE ${tableOf(model)} SET "viewsCount" = "viewsCount" + 1 WHERE "id" IN (${Prisma.join(created.map((row) => row.subjectId))})`;
+			await tx.$executeRaw`UPDATE ${Prisma.raw(`"${TABLE[model]}"`)} SET "viewsCount" = "viewsCount" + 1 WHERE "id" IN (${Prisma.join(created.map((row) => row.subjectId))})`;
 		}
 
 		// Meeting content in a feed and then opening it is one view, but the row

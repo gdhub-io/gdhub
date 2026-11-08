@@ -1,6 +1,9 @@
 import { describe, expect, it } from "vitest";
 import { lastActivity } from "@/lib/activity";
-import { PROJECT_ACTIVITY } from "@/repositories/project/activity";
+import {
+	FEED_KIND_SOURCE,
+	PROJECT_ACTIVITY,
+} from "@/repositories/project/activity";
 
 const at = (day: string) => new Date(`2026-${day}T00:00:00Z`);
 
@@ -49,13 +52,15 @@ describe("PROJECT_ACTIVITY", () => {
 			"devlog",
 			"edited",
 			"equity",
-			"joined",
-			"left",
-			"reworded",
 			"stage",
 			"statusChanged",
-			"vacancyClosed",
-			"vacancyOpened",
+			"team",
 		]);
+	});
+
+	it("counts every kind the activity feed shows", () => {
+		for (const source of Object.values(FEED_KIND_SOURCE)) {
+			expect(PROJECT_ACTIVITY).toHaveProperty(source);
+		}
 	});
 });

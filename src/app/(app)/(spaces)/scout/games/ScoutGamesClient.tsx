@@ -76,7 +76,7 @@ type ScoutGame = {
 	devlogCount: number;
 	activityScore: number;
 	estimatedInvestment: InvestmentEstimate | null;
-	lastActivityAt: string;
+	lastActivityAt: string | null;
 };
 
 /** Columns the table can order by. `activity` is when it was last touched. */
@@ -465,7 +465,8 @@ export function ScoutGamesClient() {
 				align: "right" as const,
 				sorter: true,
 				sortOrder: orderOf("activity"),
-				render: (value: string) => dayjs(value).fromNow(),
+				render: (value: string | null) =>
+					value ? dayjs(value).fromNow() : "—",
 			},
 			{
 				key: "open",

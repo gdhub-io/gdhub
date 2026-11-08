@@ -1,15 +1,10 @@
-import { AuditStatus } from "@gdhub-io/gdhub-prisma";
+import { Prisma } from "@gdhub-io/gdhub-prisma";
 import {
-	AuditAction,
 	CheckpointItemKind,
 	InvitationStatus,
 	TeamMemberStatus,
 } from "@/config/prisma-enums";
-import {
-	type ActivityRows,
-	type ActivitySpec,
-	lastActivity,
-} from "@/lib/activity";
+import { type ActivitySpec, lastActivity, latestOf } from "@/lib/activity";
 import { prisma } from "@/services/prisma";
 
 export type ProjectActivityKind =
@@ -22,6 +17,9 @@ export type ProjectActivityKind =
 	| "stage"
 	| "reworded"
 	| "created";
+
+// A member fired since still joined once; the history keeps both.
+const JOINED_STATUSES = [TeamMemberStatus.Hired, TeamMemberStatus.Fired];
 
 export type ProjectActivity = {
 	id: string;
@@ -87,8 +85,7 @@ export async function getProjectActivity(
 		prisma.teamMember.findMany({
 			where: {
 				team: { projectId },
-				// A member fired since still joined once; the history keeps both.
-				status: { in: [TeamMemberStatus.Hired, TeamMemberStatus.Fired] },
+				status: { in: JOINED_STATUSES },
 				startedAt: { lt: before },
 			},
 			orderBy: { startedAt: "desc" },
@@ -295,28 +292,13 @@ export async function getProjectActivity(
 	};
 }
 
-const latestOf = (...dates: (Date | null | undefined)[]) =>
-	dates.reduce<Date | null>(
-		(latest, date) => (date && (!latest || date > latest) ? date : latest),
-		null,
-	);
-
-const byTeamProject = <T extends { team: { projectId: string | null } }>(
-	rows: T[],
-	at: (row: T) => Date | null,
-): ActivityRows =>
-	rows.flatMap((row) =>
-		row.team.projectId ? [{ id: row.team.projectId, at: at(row) }] : [],
-	);
-
 /**
- * What counts as a project being worked on: every kind in its activity feed,
- * plus what the feed does not show. Dates are the events' own, never a row's
- * `updatedAt`, which a view or a system write moves as well.
+ * What counts as a project being worked on. Dates are the events' own, never a
+ * row's `updatedAt` on the project itself, which views and system writes move.
+ * Every kind in the activity feed is covered (`FEED_KIND_SOURCE`); the spec adds
+ * checkpoints, the author's own edits, status changes and equity.
  */
-export const PROJECT_ACTIVITY: ActivitySpec<
-	ProjectActivityKind | "statusChanged" | "checkpoint" | "edited" | "equity"
-> = {
+export const PROJECT_ACTIVITY = {
 	created: (ids) =>
 		prisma.project
 			.findMany({
@@ -328,7 +310,7 @@ export const PROJECT_ACTIVITY: ActivitySpec<
 	statusChanged: (ids) =>
 		prisma.project
 			.findMany({
-				where: { id: { in: ids }, statusChangedAt: { not: null } },
+				where: { id: { in: ids } },
 				select: { id: true, statusChangedAt: true },
 			})
 			.then((rows) =>
@@ -354,133 +336,119 @@ export const PROJECT_ACTIVITY: ActivitySpec<
 			.then((rows) =>
 				rows.map((row) => ({ id: row.projectId, at: row._max.createdAt })),
 			),
-	joined: (ids) =>
-		prisma.teamMember
-			.findMany({
-				where: { team: { projectId: { in: ids } } },
-				select: { startedAt: true, team: { select: { projectId: true } } },
-			})
-			.then((rows) => byTeamProject(rows, (row) => row.startedAt)),
-	left: (ids) =>
-		prisma.teamMember
-			.findMany({
-				where: { team: { projectId: { in: ids } }, finishedAt: { not: null } },
-				select: { finishedAt: true, team: { select: { projectId: true } } },
-			})
-			.then((rows) => byTeamProject(rows, (row) => row.finishedAt)),
-	vacancyOpened: (ids) =>
-		prisma.teamVacancy
-			.findMany({
-				where: { team: { projectId: { in: ids } }, publishedAt: { not: null } },
-				select: { publishedAt: true, team: { select: { projectId: true } } },
-			})
-			.then((rows) => byTeamProject(rows, (row) => row.publishedAt)),
-	vacancyClosed: (ids) =>
-		prisma.teamVacancy
-			.findMany({
-				where: { team: { projectId: { in: ids } }, closedAt: { not: null } },
-				select: { closedAt: true, team: { select: { projectId: true } } },
-			})
-			.then((rows) => byTeamProject(rows, (row) => row.closedAt)),
+	team: async (ids) => {
+		const teams = await prisma.team.findMany({
+			where: { projectId: { in: ids } },
+			select: { id: true, projectId: true },
+		});
+		const projectOf = new Map(
+			teams.flatMap((team) =>
+				team.projectId ? [[team.id, team.projectId] as const] : [],
+			),
+		);
+		const teamIds = [...projectOf.keys()];
+		const [members, vacancies, investors] = await Promise.all([
+			prisma.teamMember.groupBy({
+				by: ["teamId"],
+				where: { teamId: { in: teamIds }, status: { in: JOINED_STATUSES } },
+				_max: { startedAt: true, finishedAt: true },
+			}),
+			prisma.teamVacancy.groupBy({
+				by: ["teamId"],
+				where: { teamId: { in: teamIds } },
+				_max: { publishedAt: true, closedAt: true },
+			}),
+			prisma.teamInvestor.groupBy({
+				by: ["teamId"],
+				where: { teamId: { in: teamIds } },
+				_max: { createdAt: true, purchasedAt: true },
+			}),
+		]);
+		return [...members, ...vacancies, ...investors].flatMap(
+			({ teamId, _max }) => {
+				const id = projectOf.get(teamId);
+				return id ? [{ id, at: latestOf(...Object.values(_max)) }] : [];
+			},
+		);
+	},
 	// A step's `updatedAt`, not `finishedAt`: going back a stage clears the dates
 	// it leaves, and is a move all the same. Steps carry no view counter.
-	stage: (ids) =>
-		prisma.projectWorkflowStep
-			.findMany({
-				where: { projectWorkflow: { projectId: { in: ids } } },
-				select: {
-					updatedAt: true,
-					projectWorkflow: { select: { projectId: true } },
-				},
-			})
-			.then((rows) =>
-				rows.map((row) => ({
-					id: row.projectWorkflow.projectId,
-					at: row.updatedAt,
-				})),
-			),
-	reworded: (ids) =>
-		prisma.projectCheckpoint
-			.groupBy({
-				by: ["projectId"],
-				where: { projectId: { in: ids } },
-				_max: { revisedAt: true },
-			})
-			.then((rows) =>
-				rows.map((row) => ({ id: row.projectId, at: row._max.revisedAt })),
-			),
+	stage: async (ids) => {
+		const workflows = await prisma.projectWorkflow.findMany({
+			where: { projectId: { in: ids } },
+			select: { id: true, projectId: true },
+		});
+		const steps = await prisma.projectWorkflowStep.groupBy({
+			by: ["projectWorkflowId"],
+			where: { projectWorkflowId: { in: workflows.map((row) => row.id) } },
+			_max: { updatedAt: true },
+		});
+		const projectOf = new Map(workflows.map((row) => [row.id, row.projectId]));
+		return steps.flatMap((row) => {
+			const id = projectOf.get(row.projectWorkflowId);
+			return id ? [{ id, at: row._max.updatedAt }] : [];
+		});
+	},
 	checkpoint: (ids) =>
 		prisma.projectCheckpoint
 			.groupBy({
 				by: ["projectId"],
 				where: { projectId: { in: ids } },
-				_max: { createdAt: true, startedAt: true, decidedAt: true },
+				_max: {
+					createdAt: true,
+					startedAt: true,
+					revisedAt: true,
+					decidedAt: true,
+				},
 			})
 			.then((rows) =>
 				rows.map(({ projectId, _max }) => ({
 					id: projectId,
-					at: latestOf(_max.createdAt, _max.startedAt, _max.decidedAt),
+					at: latestOf(...Object.values(_max)),
 				})),
 			),
 	// The audit log names who wrote; only the author's own edits count.
-	edited: async (ids) => {
-		const [projects, edits] = await Promise.all([
-			prisma.project.findMany({
-				where: { id: { in: ids } },
-				select: { id: true, authorId: true },
-			}),
-			prisma.auditLog.groupBy({
-				by: ["entityId", "actorUserId"],
-				where: {
-					entity: "Project",
-					entityId: { in: ids },
-					action: AuditAction.UPDATE,
-					status: AuditStatus.OK,
-					actorUserId: { not: null },
-				},
-				_max: { createdAt: true },
-			}),
-		]);
-		const authorOf = new Map(projects.map((row) => [row.id, row.authorId]));
-		return edits.flatMap((row) =>
-			row.entityId && authorOf.get(row.entityId) === row.actorUserId
-				? [{ id: row.entityId, at: row._max.createdAt }]
-				: [],
-		);
-	},
-	equity: async (ids) => {
-		const [equities, investors] = await Promise.all([
-			prisma.projectEquity.findMany({
+	edited: (ids) =>
+		prisma.$queryRaw<{ id: string; at: Date }[]>`
+			SELECT a."entityId" AS id, max(a."createdAt") AS at
+			FROM "AuditLog" a
+			JOIN "Project" p ON p.id = a."entityId" AND p."authorId" = a."actorUserId"
+			WHERE a.entity = 'Project' AND a."entityId" IN (${Prisma.join(ids)})
+				AND a.action = 'UPDATE' AND a.status = 'OK'
+			GROUP BY a."entityId"`,
+	equity: (ids) =>
+		prisma.projectEquity
+			.findMany({
 				where: { projectId: { in: ids } },
 				select: {
 					projectId: true,
 					updatedAt: true,
 					equityAllocations: { select: { updatedAt: true } },
 				},
-			}),
-			prisma.teamInvestor.findMany({
-				where: { team: { projectId: { in: ids } } },
-				select: {
-					createdAt: true,
-					purchasedAt: true,
-					team: { select: { projectId: true } },
-				},
-			}),
-		]);
-		return [
-			...equities.map((row) => ({
-				id: row.projectId,
-				at: latestOf(
-					row.updatedAt,
-					...row.equityAllocations.map((a) => a.updatedAt),
-				),
-			})),
-			...byTeamProject(investors, (row) =>
-				latestOf(row.createdAt, row.purchasedAt),
+			})
+			.then((rows) =>
+				rows.map((row) => ({
+					id: row.projectId,
+					at: latestOf(
+						row.updatedAt,
+						...row.equityAllocations.map((allocation) => allocation.updatedAt),
+					),
+				})),
 			),
-		];
-	},
-};
+} satisfies ActivitySpec<string>;
+
+/** Which source covers each kind the feed shows, so a new feed kind cannot go uncounted. */
+export const FEED_KIND_SOURCE = {
+	created: "created",
+	devlog: "devlog",
+	artifact: "artifact",
+	joined: "team",
+	left: "team",
+	vacancyOpened: "team",
+	vacancyClosed: "team",
+	stage: "stage",
+	reworded: "checkpoint",
+} satisfies Record<ProjectActivityKind, keyof typeof PROJECT_ACTIVITY>;
 
 /** When each project was last worked on, by `PROJECT_ACTIVITY`. */
 export const getLastProjectActivity = (projectIds: string[]) =>

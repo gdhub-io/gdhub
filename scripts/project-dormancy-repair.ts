@@ -11,13 +11,16 @@
  * same as the cron does; the cron archives it after the usual grace period.
  */
 import { ProjectStatus, QueueJobStatus } from "@gdhub-io/gdhub-prisma";
-import dayjs from "dayjs";
 import { lastActivity } from "@/lib/activity";
-import { DORMANT_AFTER_MONTHS } from "@/lib/project-status";
+import { shouldGoDormant } from "@/lib/project-status";
 import { PROJECT_ACTIVITY } from "@/repositories/project/activity";
 import { prisma } from "@/services/prisma";
 import { isProjectAvailableOnStores } from "@/services/prisma/queries";
-import { putToSleep } from "@/services/project/dormancy";
+import {
+	IDLE_PROJECT_SELECT,
+	IDLE_PROJECT_WHERE,
+	putToSleep,
+} from "@/services/project/dormancy";
 import { announceDbTarget } from "./_db-target";
 
 const REACTIVATING_SINCE = new Date("2026-10-09T00:00:00Z");
@@ -46,20 +49,11 @@ async function main() {
 
 	const projects = await prisma.project.findMany({
 		where: {
+			...IDLE_PROJECT_WHERE,
 			id: { in: woken },
 			status: ProjectStatus.Approved,
-			finishedAt: null,
-			author: { profile: { isActive: true } },
 		},
-		select: {
-			id: true,
-			name: true,
-			slug: true,
-			authorId: true,
-			links: true,
-			author: { select: { email: true } },
-			workflow: { select: { currentStep: { select: { order: true } } } },
-		},
+		select: IDLE_PROJECT_SELECT,
 	});
 
 	// The reactivation itself is the one status change that must not count.
@@ -68,10 +62,16 @@ async function main() {
 		projects.map((project) => project.id),
 	);
 	const now = new Date();
-	const threshold = dayjs(now).subtract(DORMANT_AFTER_MONTHS, "month").toDate();
 	const idle = projects.filter((project) => {
 		const at = latest.get(project.id);
-		return !isProjectAvailableOnStores(project) && (!at || at <= threshold);
+		return (
+			at &&
+			shouldGoDormant({
+				lastActivityAt: at,
+				onStores: isProjectAvailableOnStores(project),
+				now,
+			})
+		);
 	});
 
 	console.info(
@@ -79,7 +79,7 @@ async function main() {
 	);
 	for (const project of idle) {
 		console.info(
-			`  ${project.slug}  last activity ${latest.get(project.id)?.toISOString().slice(0, 10) ?? "none"}`,
+			`  ${project.slug}  last activity ${latest.get(project.id)?.toISOString().slice(0, 10)}`,
 		);
 	}
 
