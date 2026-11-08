@@ -11,7 +11,14 @@ import {
 } from "@/lib/workflow/project-trails";
 
 const steps = ["Introduction", "Ideation", "Prototype", "Production"].map(
-	(name, index) => ({ id: `s${index}`, order: index, name, done: false }),
+	(name, index) => ({
+		id: `s${index}`,
+		order: index,
+		name,
+		done: false,
+		finishedAt: null as Date | null,
+		plannedAt: null as Date | null,
+	}),
 );
 
 const row = (overrides: Partial<ProjectTrailRow> = {}): ProjectTrailRow => ({
@@ -20,6 +27,7 @@ const row = (overrides: Partial<ProjectTrailRow> = {}): ProjectTrailRow => ({
 	name: "Game",
 	coverImage: null,
 	status: ProjectStatus.Approved,
+	createdAt: new Date("2026-11-01T10:00:00Z"),
 	workflow: { currentStepId: "s2", steps },
 	checkpoints: [],
 	...overrides,
@@ -96,6 +104,50 @@ describe("toProjectTrail", () => {
 	it("leaves out a project still on the first stage", () => {
 		expect(toProjectTrail(row({ workflow: { currentStepId: "s0", steps } }))).toBeNull();
 		expect(toProjectTrail(row({ workflow: { currentStepId: null, steps } }))).toBeNull();
+	});
+
+	describe("a project that reached Project Completion", () => {
+		const completed = (dates: {
+			finishedAt?: string;
+			plannedAt?: string;
+		}): ProjectTrailRow["workflow"] => ({
+			currentStepId: "s4",
+			steps: [
+				...steps,
+				{ ...steps[0], id: "s4", order: 4, name: "Project Completion" },
+			].map((step) => ({
+				...step,
+				finishedAt:
+					step.id === "s3" && dates.finishedAt ? new Date(dates.finishedAt) : null,
+				plannedAt:
+					step.id === "s4" && dates.plannedAt ? new Date(dates.plannedAt) : null,
+			})),
+		});
+
+		it("is left out when it got there within a day of its creation", () => {
+			expect(
+				toProjectTrail(
+					row({ workflow: completed({ finishedAt: "2026-11-02T09:00:00Z" }) }),
+				),
+			).toBeNull();
+		});
+
+		it("reads the date it entered the stage when the one before has none", () => {
+			expect(
+				toProjectTrail(
+					row({ workflow: completed({ plannedAt: "2026-11-01T12:00:00Z" }) }),
+				),
+			).toBeNull();
+		});
+
+		it("stays when it took longer, or nothing says when it got there", () => {
+			expect(
+				toProjectTrail(
+					row({ workflow: completed({ finishedAt: "2026-11-03T10:00:00Z" }) }),
+				),
+			).not.toBeNull();
+			expect(toProjectTrail(row({ workflow: completed({}) }))).not.toBeNull();
+		});
 	});
 
 	it("keeps only checkpoints that ran, on the stage they ran on", () => {

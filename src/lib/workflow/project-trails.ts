@@ -4,9 +4,10 @@ import {
 	TRAILS_MAX_SWAY,
 	TRAILS_RING_DOT_SPACING,
 	TRAILS_RING_STEP,
+	TRAILS_RUSHED_TO_COMPLETION_DAYS,
 	TRAILS_STAGE_WEIGHTS,
 } from "@/config/project-trails";
-import { checkpointProgress } from "@/lib/checkpoints/days";
+import { checkpointProgress, MS_PER_DAY } from "@/lib/checkpoints/days";
 import { matchKey } from "@/lib/workflow/matchKey";
 import type {
 	ProjectTrailCheckpointDto,
@@ -40,9 +41,17 @@ export type ProjectTrailRow = {
 	name: string;
 	coverImage: string | null;
 	status: ProjectStatus;
+	createdAt: Date;
 	workflow: {
 		currentStepId: string | null;
-		steps: { id: string; order: number; name: string; done: boolean }[];
+		steps: {
+			id: string;
+			order: number;
+			name: string;
+			done: boolean;
+			finishedAt: Date | null;
+			plannedAt: Date | null;
+		}[];
 	} | null;
 	checkpoints: {
 		stepId: string | null;
@@ -57,7 +66,8 @@ export type ProjectTrailRow = {
  * stands on its last finished one, or on the first if it finished none.
  * Introduction is the centre every road leaves from, not a stage on it: it is
  * dropped by name wherever the workflow has it, and a project still on it — or
- * on its first stage — has no road yet and is left out.
+ * on its first stage — has no road yet and is left out, and so is one that
+ * reached Project Completion within a day of its creation.
  */
 export const toProjectTrail = (
 	row: ProjectTrailRow,
@@ -80,6 +90,7 @@ export const toProjectTrail = (
 	const isIntroduction = (step: { name: string }) =>
 		matchKey(step.name) === INTRODUCTION;
 	if (currentIndex === 0 || isIntroduction(steps[currentIndex])) return null;
+	if (rushedToCompletion(row.createdAt, steps, currentIndex)) return null;
 
 	return {
 		id: row.id,
@@ -116,6 +127,27 @@ export const toProjectTrail = (
 };
 
 const INTRODUCTION = matchKey("Introduction");
+const COMPLETION = matchKey("Project Completion");
+
+/**
+ * Entering a stage stamps the one left behind with `finishedAt` (since
+ * 2026-10-08) and the new one with `plannedAt` unless its author had planned
+ * it; the first is taken when present, the second for older moves.
+ */
+const rushedToCompletion = (
+	createdAt: Date,
+	steps: NonNullable<ProjectTrailRow["workflow"]>["steps"],
+	currentIndex: number,
+) => {
+	if (matchKey(steps[currentIndex].name) !== COMPLETION) return false;
+	const reachedAt =
+		steps[currentIndex - 1]?.finishedAt ?? steps[currentIndex].plannedAt;
+	return (
+		!!reachedAt &&
+		reachedAt.getTime() - createdAt.getTime() <=
+			TRAILS_RUSHED_TO_COMPLETION_DAYS * MS_PER_DAY
+	);
+};
 
 /** Share of an active checkpoint's 28 days already behind it, 0..1, counted as the checkpoint pages count. */
 const checkpointShare = (startedAt: string | null, now: Date) => {
