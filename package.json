@@ -155,7 +155,7 @@
 		"openai": "^7.27.0",
 		"path-to-regexp": "^6.2.1",
 		"pdf-lib": "^1.17.1",
-		"pdf-parse": "^1.1.1",
+		"pdf-parse": "^2.4.5",
 		"react": "^19",
 		"react-country-flag": "^3.0.2",
 		"react-dom": "^19",
