@@ -1,0 +1,53 @@
+.card {
+	width: 280px;
+	padding: var(--gd-space-3);
+}
+
+.title {
+	font-size: var(--gd-font-size-body-lg);
+}
+
+// The point's glyph, drawn in currentColor: the same shapes as on the graph.
+.marker {
+	position: relative;
+	flex: 0 0 auto;
+	width: 12px;
+	height: 12px;
+
+	&::before {
+		content: "";
+		position: absolute;
+		inset: 2px;
+		border-radius: 50%;
+		corner-shape: round;
+		background: currentColor;
+	}
+
+	// Hollow: where the project stands, and the goals still ahead.
+	&[data-marker="now"]::before,
+	&[data-marker="stageGoal"]::before,
+	&[data-marker="checkpointEnd"]::before {
+		background: transparent;
+		border: 1.5px solid currentColor;
+	}
+
+	&[data-marker^="checkpoint"]::before {
+		border-radius: 0;
+		transform: rotate(45deg) scale(0.85);
+	}
+}
+
+
+
+.project {
+	flex: 1 1 auto;
+	min-width: 0;
+}
+
+.project :global(.ant-badge-status-dot) {
+	corner-shape: round;
+}
+
+.status {
+	font-size: var(--gd-font-size-caption);
+}

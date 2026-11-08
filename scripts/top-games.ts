@@ -14,15 +14,12 @@
 import { cp, mkdir, rm, writeFile } from "node:fs/promises";
 import path from "node:path";
 import { ProjectStatus } from "@gdhub-io/gdhub-prisma";
-import { activityScore, MONTH_MS } from "@/lib/scout/activity-score";
+import { GAME_SCORE_WEIGHTS, gameScores } from "@/lib/scout/game-score";
+import { getGameScoreInputs } from "@/repositories/project/score";
 import { CONFIRMED_MEMBERS } from "@/repositories/project/team";
 import { ABANDONED_FILTER } from "@/repositories/scout/games";
 import { prisma } from "@/services/prisma";
 import { announceDbTarget } from "./_db-target";
-
-// Each metric is log-scaled against the best in the set, so one viral devlog
-// cannot drown the rest; the weights then say what a top game is.
-const WEIGHTS = { activity: 0.5, applause: 0.3, views: 0.2 };
 
 const limit = Number(process.argv[2] ?? 3);
 // The slide shows this many faces and folds the rest into the count.
@@ -49,8 +46,6 @@ const projects = await prisma.project.findMany({
 		genre: true,
 		platform: true,
 		status: true,
-		updatedAt: true,
-		viewsCount: true,
 		workflow: { select: { currentStep: { select: { name: true } } } },
 		team: {
 			select: {
@@ -61,51 +56,16 @@ const projects = await prisma.project.findMany({
 				},
 			},
 		},
-		_count: { select: { reports: true } },
 	},
 });
 
-const ids = projects.map((project) => project.id);
-
-const [applause, recentReports, devlogViews] = await Promise.all([
-	prisma.project.getApplauseCounts({ projectIds: ids }),
-	prisma.projectReport.groupBy({
-		by: ["projectId"],
-		where: {
-			projectId: { in: ids },
-			publishedAt: { gt: new Date(now.getTime() - MONTH_MS) },
-		},
-		_count: { _all: true },
-	}),
-	prisma.projectReport.groupBy({
-		by: ["projectId"],
-		where: { projectId: { in: ids } },
-		_sum: { viewsCount: true },
-	}),
-]);
-
-const recentBy = new Map(recentReports.map((r) => [r.projectId, r._count._all]));
-const devlogViewsBy = new Map(
-	devlogViews.map((r) => [r.projectId, r._sum.viewsCount ?? 0]),
+const inputs = await getGameScoreInputs(
+	projects.map((project) => project.id),
+	now,
 );
+const rows = projects.map((project, index) => ({ project, ...inputs[index] }));
+const scores = gameScores(inputs);
 
-const rows = projects.map((project) => ({
-	project,
-	activity: activityScore(
-		project._count.reports,
-		recentBy.get(project.id) ?? 0,
-		project.updatedAt,
-		now.getTime(),
-	),
-	applause: applause.get(project.id) ?? 0,
-	views: project.viewsCount + (devlogViewsBy.get(project.id) ?? 0),
-}));
-
-const max = {
-	activity: Math.max(0, ...rows.map((r) => r.activity)),
-	applause: Math.max(0, ...rows.map((r) => r.applause)),
-	views: Math.max(0, ...rows.map((r) => r.views)),
-};
 // The carousel slide has room for a short paragraph, not the whole pitch.
 const excerpt = (text: string | null, max = 320) => {
 	const plain = (text ?? "")
@@ -117,19 +77,8 @@ const excerpt = (text: string | null, max = 320) => {
 	return `${plain.slice(0, plain.lastIndexOf(" ", max))}…`;
 };
 
-const scaled = (value: number, top: number) =>
-	top > 0 ? Math.log1p(value) / Math.log1p(top) : 0;
-
 const top = rows
-	.map((row) => ({
-		...row,
-		score: Math.round(
-			100 *
-				(WEIGHTS.activity * scaled(row.activity, max.activity) +
-					WEIGHTS.applause * scaled(row.applause, max.applause) +
-					WEIGHTS.views * scaled(row.views, max.views)),
-		),
-	}))
+	.map((row, index) => ({ ...row, score: scores[index] }))
 	.sort((a, b) => b.score - a.score || b.activity - a.activity)
 	.slice(0, limit);
 
@@ -204,7 +153,7 @@ const games = await Promise.all(
 
 const snapshot = {
 	date,
-	weights: WEIGHTS,
+	weights: GAME_SCORE_WEIGHTS,
 	ranked: rows.length,
 	games,
 };

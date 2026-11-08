@@ -27,7 +27,7 @@ type ShareLineInput = {
 /** The card holds two short sentences; past this the schema refuses the line. */
 const SHARE_LINE_MAX = 200;
 
-const lineSchema = z.object({
+export const lineSchema = z.object({
 	line: z
 		.string()
 		.max(SHARE_LINE_MAX)

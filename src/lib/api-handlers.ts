@@ -16,7 +16,7 @@
 
 import { type UserRole, withAuditContext } from "@gdhub-io/gdhub-prisma";
 import { type NextRequest, NextResponse } from "next/server";
-import type { ZodSchema, z } from "zod";
+import { type ZodSchema, z } from "zod";
 import { auth } from "@/auth";
 import { env } from "@/helpers/env";
 import type { SpaceAccess } from "@/services/access/types";
@@ -231,7 +231,10 @@ export function withValidation<S extends ZodSchema>(
 
 			const result = schema.safeParse(raw);
 			if (!result.success) {
-				return apiError.badRequest("Validation failed", result.error.format());
+				return apiError.badRequest(
+					"Validation failed",
+					z.formatError(result.error),
+				);
 			}
 
 			return handler(req, ctx, { ...locals, body: result.data } as L & {
