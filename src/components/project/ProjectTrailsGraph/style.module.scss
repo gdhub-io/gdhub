@@ -1,0 +1,35 @@
+.root {
+	position: absolute;
+	inset: 0;
+	overflow: hidden;
+	background: var(--gd-neutral-950);
+}
+
+.canvas {
+	position: absolute;
+	inset: 0;
+}
+
+.anchor {
+	position: absolute;
+	width: 1px;
+	height: 1px;
+	pointer-events: none;
+}
+
+.legend {
+	position: absolute;
+	left: var(--gd-space-6);
+	right: var(--gd-space-6);
+	bottom: var(--gd-space-6);
+	pointer-events: none;
+
+	// The global superellipse corner squares a dot; a dot stays round.
+	:global(.ant-badge-status-dot) {
+		corner-shape: round;
+	}
+}
+
+.legendLabel {
+	font-size: var(--gd-font-size-caption);
+}

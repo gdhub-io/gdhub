@@ -1,0 +1,46 @@
+.screen {
+	position: fixed;
+	inset: 0;
+}
+
+.header {
+	position: absolute;
+	top: 0;
+	left: 0;
+	right: 0;
+	padding: var(--gd-space-4) var(--gd-space-6);
+	background: linear-gradient(var(--gd-neutral-950), transparent);
+	pointer-events: none;
+
+	> * {
+		pointer-events: auto;
+	}
+}
+
+.logo {
+	display: inline-flex;
+	height: 31px;
+
+	svg {
+		height: 100%;
+		width: auto;
+	}
+}
+
+.divider {
+	height: 20px;
+	margin: 0;
+}
+
+.title {
+	font-size: var(--gd-font-size-h3);
+	font-weight: 500;
+}
+
+// Frame 01.15.1: centred on the viewport whatever the two side groups measure.
+.window {
+	position: absolute;
+	left: 50%;
+	transform: translateX(-50%);
+	color: var(--gd-color-text-secondary);
+}

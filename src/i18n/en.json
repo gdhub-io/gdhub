@@ -3404,6 +3404,40 @@
 	"job-card": {
 		"details-button": "Details"
 	},
+	"lab": {
+		"projectTrails": {
+			"card": {
+				"checkpointClosed": "Checkpoint {order} · closed",
+				"checkpointDay": "Checkpoint {order} · day {day} of {total}",
+				"checkpointEnds": "Checkpoint {order} ends in {left} days",
+				"checkpointReview": "Checkpoint {order} · in review",
+				"completed": "{stage} · completed",
+				"days": "{total} days",
+				"reviewLine": "{total} days done, waiting for the verdict",
+				"stageDone": "{stage} done",
+				"stageGoal": "The goal of this stage",
+				"workingOn": "Working on {stage}"
+			},
+			"empty": "No public projects yet",
+			"fitView": "Fit view",
+			"home": "Go to home",
+			"legend": {
+				"checkpoint": "Checkpoint",
+				"signal": "Active checkpoint: signal to its end"
+			},
+			"next": "next: {stage}",
+			"openProject": "Open project",
+			"stageOf": "Stage {n} of {count}",
+			"status": {
+				"abandoned": "Dormant",
+				"cancelled": "Cancelled",
+				"inProgress": "In progress",
+				"released": "Released"
+			},
+			"title": "Project Trails",
+			"window": "Last {days} days"
+		}
+	},
 	"landing": {
 		"about": {
 			"abovetitle": "Know about us",
