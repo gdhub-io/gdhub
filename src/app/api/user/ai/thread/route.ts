@@ -10,7 +10,7 @@ import { langGraphService } from "@/services/langgraph";
 import { prisma } from "@/services/prisma";
 
 const CreateThreadSchema = z.object({
-	metadata: z.record(z.unknown()).optional(),
+	metadata: z.record(z.string(), z.unknown()).optional(),
 });
 
 type CreateThreadBody = z.infer<typeof CreateThreadSchema>;

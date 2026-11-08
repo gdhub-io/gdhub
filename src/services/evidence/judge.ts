@@ -47,7 +47,7 @@ const contentParts = (content: EvidenceContent) => [
 	})),
 ];
 
-const judgeSchema = z.object({
+export const judgeSchema = z.object({
 	match: z
 		.enum([
 			EvidenceMatch.Matches,

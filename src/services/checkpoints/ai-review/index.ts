@@ -144,7 +144,7 @@ const taskName = (tasks: CuratorTask[], id: string) =>
 	tasks.find((task) => task.id === id)?.text ?? id;
 
 // Nullable rather than optional: strict structured outputs require every key.
-const adviceSchema = z.object({
+export const adviceSchema = z.object({
 	message: z
 		.string()
 		.nullable()
@@ -263,7 +263,7 @@ const directionRead = (target: string) =>
 		})
 		.describe(`The direction toward ${target}.`);
 
-const assessmentSchema = z.object({
+export const assessmentSchema = z.object({
 	inShort: z
 		.string()
 		.describe(
@@ -457,7 +457,7 @@ export const midwayAdviceInput = (
 	marketing: input.marketing,
 });
 
-const letterSchema = z.object({
+export const letterSchema = z.object({
 	message: z
 		.string()
 		.describe(

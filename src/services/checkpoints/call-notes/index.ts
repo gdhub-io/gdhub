@@ -83,7 +83,7 @@ const directionSaid = (target: string) =>
 	});
 
 // Nullable rather than optional: strict structured outputs require every key.
-const schema = z.object({
+export const callNotesSchema = z.object({
 	inShort: z
 		.string()
 		.describe(
@@ -172,7 +172,7 @@ export const writeCallNotes = async (
 ): Promise<CallNotes | null> => {
 	const { output, usage } = await generateText({
 		model: aiModel(AI_MODELS.callNotes),
-		output: Output.object({ schema, name: "call_notes" }),
+		output: Output.object({ schema: callNotesSchema, name: "call_notes" }),
 		instructions: stripIndents`
 			You write the notes of a call between a game team and its curator on
 			GDHub. The team reads them to remember what was said and agreed.
