@@ -5,9 +5,9 @@ export const CONSENT_DECIDED_KEY = "cookie_consent_is_true";
 /** Analytics consent. The name predates the marketing split; existing cookies keep it. */
 export const GOOGLE_CONSENT_COOKIE_KEY = "google_consent_is_true";
 export const MARKETING_CONSENT_COOKIE_KEY = "marketing_consent_is_true";
-const CONSENT_VERSION_KEY = "cookie_consent_version";
+export const CONSENT_VERSION_KEY = "cookie_consent_version";
 // 2: marketing split from analytics. A yes given under version 1 never covered advertising, so everyone is asked again.
-const CONSENT_VERSION = "2";
+export const CONSENT_VERSION = "2";
 const EXPIRES_DAYS = 365;
 
 export const hasGoogleConsent = (): boolean =>
