@@ -21,13 +21,7 @@ import {
 import { useTranslate } from "@tolgee/react";
 import { App, Skeleton } from "antd";
 import { useSession } from "next-auth/react";
-import {
-	type ReactNode,
-	useCallback,
-	useEffect,
-	useRef,
-	useState,
-} from "react";
+import { type ReactNode, useCallback, useEffect, useState } from "react";
 import {
 	CuratorAside,
 	teamProject,
@@ -42,16 +36,13 @@ import type { CheckpointCallDto } from "@/types/checkpoint-call";
 import { CallHeader, type CallHeaderProps, callTime } from "./CallHeader";
 import { CallLayout, CallStage, LiveStage, ParticipantTile } from "./CallParts";
 import { CallTeam } from "./CallTeam";
+import { isOn, useLocalMedia, useStageFullscreen } from "./call-media";
 import { DAILY_EMULATED, emulatedCall } from "./emulated-call";
 import { type CallDevices, PreJoin } from "./PreJoin";
 import styles from "./style.module.scss";
 import { playTestTone } from "./tone";
 
 const LEVEL_INTERVAL_MS = 100;
-
-type TrackState = string | undefined;
-const isOn = (state: TrackState) =>
-	!!state && state !== "off" && state !== "blocked";
 
 export type OpenCallProps = {
 	call: CheckpointCallDto;
@@ -201,23 +192,6 @@ function Room({ call, header, onJoinedChange, refetch, below }: OpenCallProps) {
 	);
 }
 
-function useLocalMedia() {
-	const daily = useDaily();
-	const localId = useLocalSessionId();
-	const [video, audio] = useParticipantProperty(localId, [
-		"tracks.video.state",
-		"tracks.audio.state",
-	]) as [TrackState, TrackState];
-	const camOn = isOn(video);
-	const micOn = isOn(audio);
-
-	return {
-		localId,
-		mic: { on: micOn, onToggle: () => daily?.setLocalAudio(!micOn) },
-		camera: { on: camOn, onToggle: () => daily?.setLocalVideo(!camOn) },
-	};
-}
-
 function Lobby({
 	call,
 	onJoin,
@@ -330,17 +304,7 @@ function Live({ call }: { call: CheckpointCallDto }) {
 	const { screens, isSharingScreen, startScreenShare, stopScreenShare } =
 		useScreenShare();
 	const { isRecording } = useRecording();
-	const stageRef = useRef<HTMLDivElement>(null);
-	const [fullscreen, setFullscreen] = useState(false);
-
-	useEffect(() => {
-		const sync = () =>
-			setFullscreen(
-				!!stageRef.current && document.fullscreenElement === stageRef.current,
-			);
-		document.addEventListener("fullscreenchange", sync);
-		return () => document.removeEventListener("fullscreenchange", sync);
-	}, []);
+	const { stageRef, fullscreen } = useStageFullscreen();
 
 	const screen = screens[0];
 
@@ -356,13 +320,7 @@ function Live({ call }: { call: CheckpointCallDto }) {
 				onToggle: () =>
 					isSharingScreen ? stopScreenShare() : startScreenShare(),
 			}}
-			fullscreen={{
-				on: fullscreen,
-				onToggle: () =>
-					void (fullscreen
-						? document.exitFullscreen()
-						: stageRef.current?.requestFullscreen()),
-			}}
+			fullscreen={fullscreen}
 			screen={
 				screen && (
 					<div className={styles.tile}>
@@ -392,7 +350,7 @@ function useParticipant(id: string, call: CheckpointCallDto) {
 		"local",
 		"tracks.video.state",
 		"tracks.audio.state",
-	]) as [string, string, boolean, TrackState, TrackState];
+	]) as [string, string, boolean, string | undefined, string | undefined];
 	const curator = userId === call.curator.id;
 
 	let image: string | null | undefined = null;

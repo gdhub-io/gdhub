@@ -1,0 +1,44 @@
+vars: {
+  d2-config: {
+    layout-engine: elk
+  }
+}
+
+direction: down
+
+title: "Sborka: the host gathers the guests, then goes on air" {
+  shape: text
+  near: top-center
+  style.font-size: 22
+}
+
+closed: "The room is closed\nguests on /live/room/sborka wait\nthe page asks again every few seconds"
+
+open: "The host opens the room" {shape: diamond}
+closed -> open
+refused: "Refused\nonly hub.live_room.manage opens it"
+open -> refused: "not a host"
+
+gather: "Everyone gathers\nguests join with a name and a role\n(the role starts as their speciality)\nnothing is broadcast, nothing costs"
+open -> gather: "host"
+
+direct: "The host directs\norder, who is on screen, mute,\nnames and roles, the title" {
+  grid-columns: 1
+  shared: "Shared with everyone in the room\nthe guests see it, read-only"
+  self: "A guest renames only themselves"
+}
+gather -> direct
+
+air: "On air\nDaily draws the Sborka picture\nand sends it to the RTMP target"
+direct -> air: "Start broadcast"
+air -> direct: "Stop broadcast\nthe call goes on"
+
+end: "The show ends for everyone\nthe room is deleted, the broadcast stops"
+direct -> end: "the host ends the room\nor closes the tab"
+air -> end: "the host leaves"
+
+Critical: {
+  near: bottom-right
+  a: "A guest's browser reports the host gone;\nthe server closes the room only if\nnobody who may host is still in it"
+  b: "Only the room's owner can rename someone else"
+}

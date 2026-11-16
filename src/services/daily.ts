@@ -38,40 +38,45 @@ const daily = async <T>(
 
 const seconds = (date: Date) => Math.floor(date.getTime() / 1000);
 
-/**
- * The call's room and its URL: a private, audio-recordable room that lives as
- * long as the call's window, made by whoever asks first.
- */
-export const callRoom = async (name: string, closesAt: Date) => {
-	const existing = await daily<{ url: string }>(`/rooms/${name}`).catch(
-		() => null,
-	);
-	if (existing) return existing.url;
+/** A room's URL while it exists, `null` once it is deleted or expired. */
+export const roomUrl = async (name: string) =>
+	(await daily<{ url: string }>(`/rooms/${name}`).catch(() => null))?.url ??
+	null;
 
-	const room = await daily<{ url: string }>("/rooms", {
-		method: "POST",
-		body: {
-			name,
-			privacy: "private",
-			properties: {
-				exp: seconds(closesAt),
-				eject_at_room_exp: true,
-				max_participants: CALL_MAX_PARTICIPANTS,
-				enable_recording: "cloud-audio-only",
+/** A private room that lives until `closesAt`, made by whoever asks first. */
+const ensureRoom = async (
+	name: string,
+	closesAt: Date,
+	properties: Record<string, unknown>,
+) =>
+	(await roomUrl(name)) ??
+	(
+		await daily<{ url: string }>("/rooms", {
+			method: "POST",
+			body: {
+				name,
+				privacy: "private",
+				properties: {
+					exp: seconds(closesAt),
+					eject_at_room_exp: true,
+					...properties,
+				},
 			},
-		},
-	});
-	return room.url;
-};
+		})
+	).url;
 
-/** The curator owns the call and starts its recording by joining. */
-export const callToken = async (input: {
+type TokenInput = {
 	room: string;
 	userId: string;
 	userName: string;
-	curator: boolean;
+	owner: boolean;
 	closesAt: Date;
-}) =>
+};
+
+const meetingToken = async (
+	input: TokenInput,
+	properties: Record<string, unknown> = {},
+) =>
 	(
 		await daily<{ token: string }>("/meeting-tokens", {
 			method: "POST",
@@ -80,16 +85,49 @@ export const callToken = async (input: {
 					room_name: input.room,
 					user_id: input.userId,
 					user_name: input.userName,
-					is_owner: input.curator,
+					is_owner: input.owner,
 					exp: seconds(input.closesAt),
-					...(input.curator && {
-						start_cloud_recording: true,
-						start_cloud_recording_opts: { type: "cloud-audio-only" },
-					}),
+					...properties,
 				},
 			},
 		})
 	).token;
+
+/** A checkpoint call's room: audio-recordable, sized to the team. */
+export const callRoom = (name: string, closesAt: Date) =>
+	ensureRoom(name, closesAt, {
+		max_participants: CALL_MAX_PARTICIPANTS,
+		enable_recording: "cloud-audio-only",
+	});
+
+/** The curator owns the call and starts its recording by joining. */
+export const callToken = (
+	input: Omit<TokenInput, "owner"> & { curator: boolean },
+) =>
+	meetingToken(
+		{ ...input, owner: input.curator },
+		input.curator
+			? {
+					start_cloud_recording: true,
+					start_cloud_recording_opts: { type: "cloud-audio-only" },
+				}
+			: {},
+	);
+
+/** A live studio room: screen sharing on, no recording. */
+export const liveRoom = (
+	name: string,
+	closesAt: Date,
+	maxParticipants: number,
+) =>
+	ensureRoom(name, closesAt, {
+		max_participants: maxParticipants,
+		enable_screenshare: true,
+	});
+
+/** The studio's host owns the room: they mute, direct and broadcast it. */
+export const liveToken = (input: TokenInput) =>
+	meetingToken(input, { enable_screenshare: true });
 
 /** Ends the call for everyone: a deleted room ejects whoever is in it. */
 export const closeCallRoom = (name: string) =>

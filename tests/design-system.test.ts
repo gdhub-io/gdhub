@@ -49,6 +49,13 @@ describe("direction palette", () => {
 		}
 	});
 
+	// The broadcast draws a white icon on the vivid fill: 3:1 is the bar for a graphic.
+	it("keeps a white icon readable on every vivid fill", () => {
+		for (const [slug, { vivid }] of Object.entries(directionColors)) {
+			expect(contrast("#FFFFFF", vivid), slug).toBeGreaterThanOrEqual(3);
+		}
+	});
+
 	it("keeps every tint visibly coloured rather than grey", () => {
 		for (const [slug, { tint }] of Object.entries(directionColors)) {
 			if (slug === "other") continue;

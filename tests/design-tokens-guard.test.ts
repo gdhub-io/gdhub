@@ -50,6 +50,8 @@ const ALLOWED: Record<string, string> = {
 	"src/components/GameCard/DefaultCover.tsx": "placeholder cover art gradients",
 	"src/components/VerifyCertificate/VerifyResult.tsx": "avatar placeholder fill",
 	"src/components/layouts/Header/Header.stories.tsx": "avatar fill in a story",
+	"src/components/live/Sborka/program.module.scss":
+		"the live broadcast's own art (03.15.15–20), mirrored from public/vcs/sborka/VideoGrid.js",
 
 	// A printed document, rendered outside the browser by DocuSeal: it has its
 	// own serif typography and border, and no custom properties to resolve.

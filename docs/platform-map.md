@@ -196,6 +196,7 @@ Catalogs, people cards, talent pool.
 | 03.12 | Popover — Project | 2 |
 | 03.13 | Popover — Certificate | — |
 | 03.14 | Popover variants note | — |
+| 03.15 | Live studio · Sborka — admin and guest — `/live/room/sborka` | 20 |
 
 ### 04 · Project space
 
