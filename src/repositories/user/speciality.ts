@@ -48,3 +48,11 @@ export async function hasQualifiedSpeciality(
 
 	return count > 0;
 }
+
+/** The speciality a user leads with: the featured one, else the first added. */
+export const getLeadSpeciality = (userId: string) =>
+	prisma.speciality.findFirst({
+		where: { userId },
+		orderBy: [{ isFeatured: "desc" }, { createdAt: "asc" }],
+		select: { name: true, direction: { select: { name: true } } },
+	});

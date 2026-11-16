@@ -1,0 +1,255 @@
+// Frames 03.15.1–14 of platform-design.pen; the broadcast preview mirrors 03.15.15–20.
+
+.page {
+	display: flex;
+	flex-direction: column;
+	gap: var(--gd-space-6);
+}
+
+.header {
+	display: flex;
+	align-items: center;
+	justify-content: space-between;
+	gap: var(--gd-space-4);
+	flex-wrap: wrap;
+}
+
+.titles {
+	display: flex;
+	flex-direction: column;
+	gap: var(--gd-space-1);
+	min-width: 0;
+}
+
+.titleRow {
+	display: flex;
+	align-items: center;
+	gap: var(--gd-space-3);
+}
+
+.title.title {
+	margin: 0;
+}
+
+.split {
+	display: grid;
+	grid-template-columns: minmax(0, 1fr) 400px;
+	gap: var(--gd-space-8);
+	align-items: start;
+
+	@media (max-width: 1199px) {
+		grid-template-columns: minmax(0, 1fr);
+	}
+}
+
+.main {
+	display: flex;
+	flex-direction: column;
+	gap: var(--gd-space-6);
+	min-width: 0;
+}
+
+// Outlined panels, rows edge to edge (ui-guidelines §1 and §8).
+.panel {
+	border: 1px solid var(--gd-color-border-strong);
+	border-radius: var(--gd-radius-panel);
+	overflow: hidden;
+	padding: var(--gd-space-6) 0 var(--gd-space-2);
+}
+
+.panelHead {
+	display: flex;
+	align-items: center;
+	justify-content: space-between;
+	gap: var(--gd-space-3);
+	padding: 0 var(--gd-space-6) var(--gd-space-2);
+}
+
+.panelBody {
+	padding: 0 var(--gd-space-6) var(--gd-space-4);
+	display: flex;
+	flex-direction: column;
+	gap: var(--gd-space-4);
+}
+
+.counter {
+	display: inline-flex;
+	align-items: center;
+	gap: var(--gd-space-2);
+	color: var(--gd-color-text-secondary);
+	font-size: var(--gd-font-size-body);
+}
+
+.row {
+	display: flex;
+	align-items: center;
+	gap: var(--gd-space-3);
+	min-height: 56px;
+	padding: 0 var(--gd-space-6);
+	border-top: 1px solid var(--gd-color-border);
+	background: var(--gd-color-surface);
+}
+
+.row[data-interactive="true"]:hover {
+	background: var(--gd-neutral-100);
+}
+
+.row[data-dragging="true"] {
+	box-shadow: var(--gd-elevation-e3);
+	position: relative;
+	z-index: 1;
+}
+
+.grip {
+	display: inline-flex;
+	align-items: center;
+	justify-content: center;
+	// The visual stays 16 wide; the hit area reaches 32 (ui-guidelines, Craft).
+	width: 32px;
+	height: 32px;
+	margin: 0 calc(var(--gd-space-2) * -1);
+	color: var(--gd-color-text-tertiary);
+	cursor: grab;
+	touch-action: none;
+}
+
+.who {
+	display: flex;
+	flex-direction: column;
+	gap: var(--gd-space-1);
+	flex: 1;
+	min-width: 0;
+}
+
+.nameLine {
+	display: flex;
+	align-items: center;
+	gap: var(--gd-space-1);
+	min-width: 0;
+	height: 20px;
+	line-height: 20px;
+
+	// The pencil keeps its size without pushing the role line away.
+	:global(.ant-btn) {
+		margin-block: calc(var(--gd-space-1) * -1);
+	}
+}
+
+.name {
+	font-weight: 500;
+	min-width: 0;
+}
+
+.meta {
+	display: flex;
+	height: 20px;
+	align-items: center;
+	gap: var(--gd-space-1);
+	color: var(--gd-color-text-secondary);
+	font-size: var(--gd-font-size-body-sm);
+	min-width: 0;
+}
+
+.metaText {
+	min-width: 0;
+	overflow: hidden;
+	text-overflow: ellipsis;
+	white-space: nowrap;
+}
+
+.buttons {
+	display: flex;
+	align-items: center;
+	gap: var(--gd-space-3);
+	flex-shrink: 0;
+}
+
+.childRow {
+	display: flex;
+	align-items: center;
+	gap: var(--gd-space-2);
+	min-height: 32px;
+	padding: 0 var(--gd-space-6) var(--gd-space-2) 92px;
+	background: var(--gd-color-surface);
+	color: var(--gd-color-text-secondary);
+	font-size: var(--gd-font-size-body-sm);
+}
+
+.childLabel {
+	display: flex;
+	align-items: center;
+	gap: var(--gd-space-1);
+	flex: 1;
+}
+
+.onAir {
+	color: var(--gd-color-accent);
+}
+
+.form {
+	display: grid;
+	grid-template-columns: 1fr 1fr;
+	gap: var(--gd-space-4);
+}
+
+.formWide {
+	grid-column: 1 / -1;
+}
+
+.help {
+	display: flex;
+	align-items: center;
+	gap: var(--gd-space-2);
+	color: var(--gd-color-text-secondary);
+	font-size: var(--gd-font-size-body-sm);
+}
+
+.centre {
+	display: flex;
+	flex-direction: column;
+	align-items: center;
+	justify-content: center;
+	gap: var(--gd-space-4);
+	min-height: 480px;
+	text-align: center;
+}
+
+.join {
+	display: grid;
+	grid-template-columns: minmax(0, 1fr) 360px;
+	gap: var(--gd-space-6);
+	padding: var(--gd-space-6);
+
+	@media (max-width: 991px) {
+		grid-template-columns: minmax(0, 1fr);
+	}
+}
+
+.preview {
+	position: relative;
+	aspect-ratio: 16 / 9;
+	border-radius: var(--gd-radius-card);
+	overflow: hidden;
+	background: var(--gd-neutral-800);
+}
+
+.previewVideo {
+	width: 100%;
+	height: 100%;
+	object-fit: cover;
+}
+
+.previewControls {
+	position: absolute;
+	left: 50%;
+	bottom: var(--gd-space-4);
+	transform: translateX(-50%);
+	display: flex;
+	gap: var(--gd-space-3);
+}
+
+.joinForm {
+	display: flex;
+	flex-direction: column;
+	gap: var(--gd-space-4);
+}

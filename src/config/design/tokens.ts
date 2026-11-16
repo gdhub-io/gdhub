@@ -115,6 +115,8 @@ export type DirectionColor = {
 	tint: string;
 	/** Label and icon drawn on `tint`. */
 	ink: string;
+	/** The selected fill on a dark surface (the live broadcast), where the tint reads grey. */
+	vivid: string;
 };
 
 /**
@@ -126,26 +128,29 @@ export type DirectionColor = {
  * Ink sits near L≈25. It is the tint's own hue pulled dark, which ties the icon
  * to its chip while keeping it crisp — a mid-dark ink measured only ~6:1 against
  * its tint and washed out at 16px.
+ *
+ * Vivid is the tint's hue at S≈62%, L≈46%: the fill of a selected direction on
+ * a dark surface, under a white icon. Management and other stay muted on purpose.
  */
 export const directionColors = {
-	development: { tint: "#DCE9FB", ink: "#163A6E" },
-	"web-development": { tint: "#D6EEF6", ink: "#0E4354" },
-	"game-design": { tint: "#E5DFFA", ink: "#382A7A" },
-	"2d-art-animation": { tint: "#FBDEDC", ink: "#7A2A28" },
-	"3d-art-animation": { tint: "#FBE3D0", ink: "#6E3C12" },
-	management: { tint: "#DDE6F3", ink: "#2F3F55" },
-	"game-writer": { tint: "#F5EEC6", ink: "#55480F" },
-	learning: { tint: "#D5EEE6", ink: "#10493E" },
-	"technical-art": { tint: "#E4F0CE", ink: "#3A5418" },
-	"music-sound": { tint: "#D7EAF8", ink: "#114059" },
-	marketing: { tint: "#FBDFD2", ink: "#78341F" },
-	vfx: { tint: "#EDE0F7", ink: "#532C74" },
-	qa: { tint: "#D9EDDF", ink: "#1F5330" },
-	hr: { tint: "#F9DEEB", ink: "#6E2B4B" },
-	"video-editing": { tint: "#F4DEF2", ink: "#5E2B57" },
-	"backend-development": { tint: "#DFE3F5", ink: "#2A3370" },
-	investment: { tint: "#D8ECDF", ink: "#1B4C33" },
-	other: { tint: "#E9E7E4", ink: "#44433F" },
+	development: { tint: "#DCE9FB", ink: "#163A6E", vivid: "#2D6ABE" },
+	"web-development": { tint: "#D6EEF6", ink: "#0E4354", vivid: "#2D9ABE" },
+	"game-design": { tint: "#E5DFFA", ink: "#382A7A", vivid: "#4D2DBE" },
+	"2d-art-animation": { tint: "#FBDEDC", ink: "#7A2A28", vivid: "#BE362D" },
+	"3d-art-animation": { tint: "#FBE3D0", ink: "#6E3C12", vivid: "#BE6D2D" },
+	management: { tint: "#DDE6F3", ink: "#2F3F55", vivid: "#416CAA" },
+	"game-writer": { tint: "#F5EEC6", ink: "#55480F", vivid: "#A18F26" },
+	learning: { tint: "#D5EEE6", ink: "#10493E", vivid: "#26A17A" },
+	"technical-art": { tint: "#E4F0CE", ink: "#3A5418", vivid: "#709924" },
+	"music-sound": { tint: "#D7EAF8", ink: "#114059", vivid: "#2D80BE" },
+	marketing: { tint: "#FBDFD2", ink: "#78341F", vivid: "#BE5B2D" },
+	vfx: { tint: "#EDE0F7", ink: "#532C74", vivid: "#7F2DBE" },
+	qa: { tint: "#D9EDDF", ink: "#1F5330", vivid: "#26A14B" },
+	hr: { tint: "#F9DEEB", ink: "#6E2B4B", vivid: "#BE2D73" },
+	"video-editing": { tint: "#F4DEF2", ink: "#5E2B57", vivid: "#BE2DB1" },
+	"backend-development": { tint: "#DFE3F5", ink: "#2A3370", vivid: "#2D47BE" },
+	investment: { tint: "#D8ECDF", ink: "#1B4C33", vivid: "#26A151" },
+	other: { tint: "#E9E7E4", ink: "#44433F", vivid: "#7F776C" },
 } as const satisfies Record<string, DirectionColor>;
 
 export type DirectionSlug = keyof typeof directionColors;

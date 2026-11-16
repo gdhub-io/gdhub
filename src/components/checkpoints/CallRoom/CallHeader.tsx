@@ -4,13 +4,14 @@ import { IconLink, IconMessageCircle, IconPhoneOff } from "@tabler/icons-react";
 import { useTranslate } from "@tolgee/react";
 import { Button, Popconfirm } from "antd";
 import dayjs from "dayjs";
-import { type ReactNode, useEffect, useState } from "react";
+import type { ReactNode } from "react";
 import { CuratorHeader } from "@/components/checkpoints/CuratorReview/CuratorHeader";
 import type { StatusTone } from "@/components/ui";
 import { FINAL_SESSION } from "@/config/checkpoint";
 import { CheckpointCuratorKind } from "@/config/prisma-enums";
 import { firstName } from "@/helpers/format";
 import type { CheckpointCallDto } from "@/types/checkpoint-call";
+import { useClock } from "./call-media";
 
 export type CallHeaderProps = {
 	call: Pick<
@@ -46,17 +47,8 @@ export type CallHeaderProps = {
  */
 function LiveFor({ since }: { since: string }) {
 	const { t } = useTranslate();
-	const [now, setNow] = useState(() => Date.now());
-	useEffect(() => {
-		const timer = setInterval(() => setNow(Date.now()), 1000);
-		return () => clearInterval(timer);
-	}, []);
-	const seconds = Math.max(0, Math.floor((now - Date.parse(since)) / 1000));
-	const pad = (n: number) => String(n).padStart(2, "0");
-	const hours = Math.floor(seconds / 3600);
-	const clock = `${pad(Math.floor(seconds / 60) % 60)}:${pad(seconds % 60)}`;
 	return t("checkpoints.call.status.liveFor", "Live · {time}", {
-		time: hours ? `${hours}:${clock}` : clock,
+		time: useClock(since),
 	});
 }
 
